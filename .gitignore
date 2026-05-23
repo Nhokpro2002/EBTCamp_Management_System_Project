@@ -1,0 +1,43 @@
+# =========================
+# PocketBase runtime data
+# =========================
+
+# Database + uploaded files
+pb_data/
+Pocketbase/**/pb_data/
+
+# Logs
+*.log
+
+# Temp/cache
+tmp/
+temp/
+*.tmp
+
+# =========================
+# Ignore generated binaries
+# =========================
+
+*.exe
+*.zip
+*.tar
+*.gz
+
+# =========================
+# IDE / OS
+# =========================
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# =========================
+# KEEP important PocketBase files
+# =========================
+
+!pb_hooks/
+!pb_hooks/**
+
+!pb_migrations/
+!pb_migrations/**
