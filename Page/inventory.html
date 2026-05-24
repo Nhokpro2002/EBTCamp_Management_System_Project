@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <!--font chữ Nunito đẹp-->
+    <!-- font Nunito -->
 
     <style>
         body {
@@ -161,21 +161,33 @@
                     <img id="modalImage" src="" style="width: 100%; height: auto; border-radius: 8px;">
                 </div>
                 <div style="flex: 2; min-height: 100px;">
-                    <p><strong>Name</strong><span id="modalName"></span></p>
-                    <p><strong>XCode:</strong> <span id="modalXCode"></span></p>
-                    <p><strong>QCode:</strong> <span id="modalQCode"></span></p>
-                    <p><strong>QRCode:</strong> <span id="modalQRCode"></span></p>
-                    <p><strong>Brand:</strong> <span id="modalBrand"></span></p>
-                    <p><strong>Specification:</strong> <span id="modalSpecification"></span></p>
-                    <p><strong>Stock:</strong> <span id="modalStock"></span></p>
-                    <p><strong>Model:</strong> <span id="modalModel"></span></p>
+                    <p style="margin-bottom: 0;"><strong>Name:</strong> <span id="modalName"></span></p>
+                    <p style="margin-bottom: 0;"><strong>XCode:</strong> <span id="modalXCode"></span></p>
+                    <p style="margin-bottom: 0;"><strong>QCode:</strong> <span id="modalQCode"></span></p>
+                    <p style="margin-bottom: 0;"><strong>QRCode:</strong> <span id="modalQRCode"></span></p>
+                    <p style="margin-bottom: 0;"><strong>Brand:</strong> <span id="modalBrand"></span></p>
+                    <p style="margin-bottom: 0;"><strong>Specification:</strong> <span id="modalSpecification"></span>
+                    </p>
+                    <p style="margin-bottom: 0;"><strong>Stock:</strong> <span id="modalStock"></span></p>
+                    <p style="margin-bottom: 0;"><strong>Model:</strong> <span id="modalModel"></span></p>
                 </div>
             </div>
-            <div style="min-height: 100px; background-color: aquamarine;">
 
+            <div style="min-height: 100px; border-top: 2px solid #ccc; ">
+                <!--render order history of this item-->
+                <table id="order_history_table">
+                    <thead>
+                        <tr>
+                            <th>Order Code</th> <!--Mã đơn hàng-->
+                            <th>XCode</th> <!--XCode mỗi lần mua có thể khác nhau-->
+                            <th>QCode</th> <!--QCode giống nhau (nếu có)-->
+                            <th>Unit Price</th> <!--Đơn giá-->
+                            <th>Quantity</th> <!--Số lượng-->
+                            <th>Total Price</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
-
-            <!-- 2 div con chia tỉ lệ 1:2 -->
 
         </div>
     </div>
@@ -191,16 +203,17 @@
 
 <script>
 
-    let itemData = null;
-    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3OTYwOTAyNywiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.PCdtJepeT7HYK6wrTieIBrw1oBvnGv212SIeuwUReSU";
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3OTcyMzE5NCwiaWQiOiIzNjFta2I3aGwza25nb2kiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.GwJ2BUEBxofo4q6l81y_F8XpoIzP-RFpJqrgZNMKrKY";
     const POCKETBASE_URL = "http://127.0.0.1:8090";
-    const COLLECTION_NAME = "Items";
+    const COLLECTION_ITEMS = "Items";
+    const COLLECTION_ORDER_ITEMS = "Order_Items";
+    const COLLECTION_ORDERS = "Orders";
 
     $(document).ready(function () {
 
         async function fetchData() {
             try {
-                const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_NAME}/records`, {
+                const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records`, {
                     headers: {
                         'Authorization': `Bearer ${TOKEN}`,
                         'Content-Type': 'application/json'
@@ -210,24 +223,11 @@
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const result = await response.json();
-                itemData = result;
+
                 console.log('Fetched records:', result);
 
-                /*
-                const tableData = result.items.map(item => [
-                    `<img class = "item_img_cell" src="${item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_NAME + '/' + item.id + '/' + item.image : ''}" alt="img" width="50" title="Click to see more">`,
-                    item.name || '',
-                    item.x_code || '',
-                    item.q_code || '',
-                    item.qr_code || '',
-                    item.brand || '',
-                    item.stock,
-                    item.model || ''
-                ]);
-                */
-
                 const tableData = result.items.map(item => ({
-                    image: item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_NAME + '/' + item.id + '/' + item.image : '',
+                    image: item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_ITEMS + '/' + item.id + '/' + item.image : '',
                     name: item.name || '',
                     x_code: item.x_code || '',
                     q_code: item.q_code || '',
@@ -265,18 +265,6 @@
                         },
                         { targets: 7, width: "100px" }
                     ],
-                    /*
-                    columns: [
-                        { title: "Image" },
-                        { title: "Name" },
-                        { title: "XCode" },
-                        { title: "QCode" },
-                        { title: "QRCode" },
-                        { title: "Brand" },
-                        { title: "Stock" },
-                        { title: "Model" }
-                    ]
-                        */
 
                     columns: [
                         {
@@ -315,14 +303,55 @@
         fetchData();
     });
 
+    /*
+
+    */
+    async function getItemOrderHistory(itemModel) {
+
+        try {
+
+            const filter = encodeURIComponent(`model="${itemModel}"`);
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records?filter=${filter}`, {
+                headers: {
+                    'Authorization': `Bearer ${TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            itemData = result;
+            console.log('Fetched records:', result);
+
+            const itemOrderHistoryData = result.items.map(item => ({
+
+                order_code: item.order || '',
+                q_code: item.q_code || '',
+                qr_code: item.qr_code || '',
+                brand: item.brand || '',
+                specification: item.specification || '',
+                stock: item.stock || 0,
+                model: item.model || ''
+            }));
+
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+
     $(document).on('click', '.item_img_cell', function () {
 
         const table = $('#my_table').DataTable();
 
-        // lấy row hiện tại
+        // get current row in table 
         const row = $(this).closest('tr');
 
-        // lấy full object data
+        // get full object data
         const data = table.row(row).data();
 
         $('#modalImage').attr('src', data.image);
