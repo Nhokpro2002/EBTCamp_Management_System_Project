@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap CSS -->
+    <link href="../CSS/bootstrap.min.css" rel="stylesheet">
+    <link href="../CSS/bootstrap.min.css.map" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <!-- font Nunito -->
+
+    <!-- use version 0.20.3 -->
+    <script type="text/javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .sidebar {
+            background-color: #fffdfd;
+            height: 95vh;
+            /* full height viewport */
+        }
+
+        .topbar {
+            background-color: #8a8383;
+            height: 50px;
+        }
+
+        li.nav-item.mb-2.d-flex.align-items-center {
+            cursor: pointer;
+            transition: color 0.3s, background-color 0.3s;
+        }
+
+        li.nav-item.mb-2.d-flex.align-items-center:hover {
+            background-color: #D3D3D3;
+            border-radius: 3px;
+        }
+
+        .nav-item:hover .material-icons,
+        .nav-item:hover .nav-link {
+            color: #000 !important;
+        }
+
+        #my_table tbody tr {
+            border-bottom: 2px solid #ccc;
+            border-top: 2px solid #ccc;
+            border-right: 2px solid #ccc;
+            border-left: 2px solid #ccc;
+        }
+
+        #my_table th {
+            padding: 10px 15px;
+            white-space: nowrap;
+        }
+
+        #my_table_wrapper {
+            width: 1200px !important;
+        }
+
+        .item_img_cell:hover {
+            cursor: pointer;
+        }
+
+        #modalClose:hover {
+            color: red;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+
+            background: red;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #item_data_table_wrapper {
+            padding-top: 4px;
+        }
+
+        .form-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid p-3">
+        <div class="row h-100">
+            <div class="col-2 sidebar border" style="border-radius: 4.8px 0px 0px 4.8px !important;">
+                <div style="text-align: center; margin-top: 15px;">
+
+                    <span style="font-size: larger; font-weight: 700;">EBT
+                        Camp</span>
+                </div>
+                <ul class="nav flex-column p-3">
+                    <li class="nav-item mb-2 d-flex align-items-center">
+                        <span class="material-icons ms-2 text-secondary">
+                            home
+                        </span>
+                        <a class="nav-link text-secondary fw-bold" href="#dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item mb-2 d-flex align-items-center">
+                        <span class="material-icons ms-2 text-secondary">
+                            warehouse
+                        </span>
+                        <a class="nav-link text-secondary fw-bold" href="#inventory">Inventory</a>
+                    </li>
+                    <li class="nav-item mb-2 d-flex align-items-center">
+                        <span class="material-icons ms-2 text-secondary">
+                            category
+                        </span>
+                        <a class="nav-link text-secondary fw-bold" href="#production">Production</a>
+                    </li>
+                    <li class="nav-item mb-2 d-flex align-items-center">
+                        <span class="material-icons ms-2 text-secondary">
+                            list_alt
+                        </span>
+                        <a class="nav-link text-secondary fw-bold" href="#order">Order</a>
+                    </li>
+                    <li class="nav-item mb-2 d-flex align-items-center">
+                        <span class="material-icons ms-2 text-secondary">
+                            account_box
+                        </span>
+                        <a class="nav-link text-secondary fw-bold" href="#useraccess">User Access</a>
+                    </li>
+                    <li class="nav-item mb-2 d-flex align-items-center">
+                        <span class="material-icons ms-2 text-secondary">
+                            help_center
+                        </span>
+                        <a class="nav-link text-secondary fw-bold" href="#support">Support</a>
+                    </li>
+                    <li class="nav-item mb-2 d-flex align-items-center">
+                        <span class="material-icons ms-2 text-secondary">
+                            settings
+                        </span>
+                        <a class="nav-link text-secondary fw-bold" href="#settings">Settings</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-10 d-flex flex-column" style="padding-left: 0px !important; padding-right: 0px !important;">
+                <div class="topbar border" style="border-radius: 0px 4.8px 0px 0px !important;"></div>
+                <div class="main-content d-flex justify-content-center" style="height: 645px; overflow: auto">
+
+                    <div class="container-fluid w-100" style="padding: 0px !important;">
+
+                        <div class="card shadow-sm" style="height: 100%;">
+                            <div
+                                class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+                                <span class="fw-bold">
+                                    Add Item To Order
+                                </span>
+
+                                <div style="display:flex; gap:20px;">
+
+                                    <!-- Receipt icon -->
+                                    <div style="position:relative; display:inline-block;">
+                                        <span class="material-icons" style="font-size: 25px;">
+                                            receipt
+                                        </span>
+
+                                        <span class="badge-count" id="receiptCount">
+                                            0
+                                        </span>
+                                    </div>
+
+                                    <!-- Cart icon -->
+                                    <div style="position:relative; display: inline-block;">
+                                        <span class="material-icons" style="font-size: 25px;">
+                                            shopping_cart
+                                        </span>
+
+                                        <span class="badge-count" id="cartCount">
+                                            0
+                                        </span>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                            <!--<div class="card-body">
+
+                                <div class="form-scroll-wrapper">
+
+                                    
+                                    <form id="orderForm" class="d-flex flex-column gap-3">
+                                        <div class="item-row d-flex flex-nowrap gap-3 align-items-end">
+
+                                            
+                                            <div style="min-width:220px;">
+                                                <label class="form-label fw-bold">Requester</label>
+                                                <input type="text" class="form-control requester">
+                                            </div>
+
+                                            
+                                            <div style="min-width: 220px;">
+                                                <label class="form-label fw-bold">Project Name</label>
+                                                <input type="text" class="form-control project_name">
+                                            </div>
+
+                                            
+                                            <div style="min-width:180px;">
+                                                <label class="form-label fw-bold">Model</label>
+                                                <input type="text" class="form-control model">
+                                            </div>
+
+                                           
+                                            <div style="min-width:220px;">
+                                                <label class="form-label fw-bold">Item Name</label>
+                                                <input type="text" class="form-control item_name">
+                                            </div>
+
+                                            
+                                            <div style="min-width:160px;">
+                                                <label class="form-label fw-bold">XCode</label>
+                                                <input type="text" class="form-control x_code">
+                                            </div>
+
+                                            
+                                            <div style="min-width:160px;">
+                                                <label class="form-label fw-bold">QCode</label>
+                                                <input type="text" class="form-control q_code">
+                                            </div>
+
+                                            
+                                            <div style="min-width:300px;">
+                                                <label class="form-label fw-bold">Description</label>
+                                                <textarea class="form-control escription" rows="1"></textarea>
+                                            </div>
+
+                                            
+                                            <div style="min-width:300px;">
+                                                <label class="form-label fw-bold">Note</label>
+                                                <textarea class="form-control note" rows="1"></textarea>
+                                            </div>
+
+                                            
+                                            <div style="min-width:150px;">
+                                                <label class="form-label fw-bold">Unit Price</label>
+                                                <input type="number" class="form-control unit_price">
+                                            </div>
+
+                                            
+                                            <div style="min-width:140px;">
+                                                <label class="form-label fw-bold">Quantity</label>
+                                                <input type="number" class="form-control quantity">
+                                            </div>
+
+                                            
+                                            <div style="min-width:220px;">
+                                                <label class="form-label fw-bold">Status</label>
+
+                                                <select class="form-select status">
+                                                    <option value=""></option>
+                                                    <option value="Request Code">Request Code</option>
+                                                    <option value="Wait Pur Process">Wait Pur Process</option>
+                                                    <option value="Request PO">Request PO</option>
+                                                    <option value="Pending Delivery">Pending Delivery</option>
+                                                    <option value="Completed">Completed</option>
+                                                </select>
+                                            </div>
+
+                                            
+                                            <div style="min-width:180px;">
+                                                <label class="form-label fw-bold">Progress PO</label>
+                                                <input type="text" class="form-control progress_po">
+                                            </div>
+
+                                            
+                                            <div style="min-width:180px;">
+                                                <label class="form-label fw-bold">Requested Date</label>
+                                                <input type="date" class="form-control requested_date">
+                                            </div>
+
+                                            
+                                            <div style="min-width:180px;">
+                                                <label class="form-label fw-bold">Order Date</label>
+                                                <input type="date" class="form-control order_date">
+                                            </div>
+
+                                            
+                                            <div style="min-width:180px;">
+                                                <label class="form-label fw-bold">Receive Date</label>
+                                                <input type="date" class="form-control receive_date">
+                                            </div>
+
+                                        </div>
+
+                                </div>
+
+                                </form>
+
+                            </div> -->
+
+
+                            <div class="card-body">
+
+                                <!-- vùng scroll ngang -->
+                                <div class="form-scroll-wrapper">
+
+                                    <!-- form -->
+                                    <form id="orderForm" class="d-flex flex-column gap-3">
+
+                                        <!-- ROW -->
+                                        <div class="item-row d-flex flex-nowrap gap-3 align-items-end">
+
+                                            <!-- Requester -->
+                                            <div class="field-col" style="min-width:220px;">
+                                                <label class="form-label fw-bold">Requester</label>
+                                                <input type="text" class="form-control requester">
+                                            </div>
+
+                                            <!-- Project Name -->
+                                            <div class="field-col" style="min-width:220px;">
+                                                <label class="form-label fw-bold">Project Name</label>
+                                                <input type="text" class="form-control project_name">
+                                            </div>
+
+                                            <!-- Model -->
+                                            <div class="field-col" style="min-width:180px;">
+                                                <label class="form-label fw-bold">Model</label>
+                                                <input type="text" class="form-control model">
+                                            </div>
+
+                                            <!-- Item Name -->
+                                            <div class="field-col" style="min-width:220px;">
+                                                <label class="form-label fw-bold">Item Name</label>
+                                                <input type="text" class="form-control item_name">
+                                            </div>
+
+                                            <!-- XCode -->
+                                            <div class="field-col" style="min-width:160px;">
+                                                <label class="form-label fw-bold">XCode</label>
+                                                <input type="text" class="form-control x_code">
+                                            </div>
+
+                                            <!-- QCode -->
+                                            <div class="field-col" style="min-width:160px;">
+                                                <label class="form-label fw-bold">QCode</label>
+                                                <input type="text" class="form-control q_code">
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div class="field-col" style="min-width:300px;">
+                                                <label class="form-label fw-bold">Description</label>
+                                                <textarea class="form-control description" rows="1"></textarea>
+                                            </div>
+
+                                            <!-- Note -->
+                                            <div class="field-col" style="min-width:300px;">
+                                                <label class="form-label fw-bold">Note</label>
+                                                <textarea class="form-control note" rows="1"></textarea>
+                                            </div>
+
+                                            <!-- Unit Price -->
+                                            <div class="field-col" style="min-width:150px;">
+                                                <label class="form-label fw-bold">Unit Price</label>
+                                                <input type="number" class="form-control unit_price">
+                                            </div>
+
+                                            <!-- Quantity -->
+                                            <div class="field-col" style="min-width:140px;">
+                                                <label class="form-label fw-bold">Quantity</label>
+                                                <input type="number" class="form-control quantity">
+                                            </div>
+
+                                            <!-- Status -->
+                                            <div class="field-col" style="min-width:220px;">
+                                                <label class="form-label fw-bold">Status</label>
+
+                                                <select class="form-select status">
+                                                    <option value=""></option>
+                                                    <option value="Request Code">Request Code</option>
+                                                    <option value="Wait Pur Process">Wait Pur Process</option>
+                                                    <option value="Request PO">Request PO</option>
+                                                    <option value="Pending Delivery">Pending Delivery</option>
+                                                    <option value="Completed">Completed</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Progress PO -->
+                                            <div class="field-col" style="min-width:180px;">
+                                                <label class="form-label fw-bold">Progress PO</label>
+                                                <input type="text" class="form-control progress_po">
+                                            </div>
+
+                                            <!-- Requested Date -->
+                                            <div class="field-col" style="min-width:180px;">
+                                                <label class="form-label fw-bold">Requested Date</label>
+                                                <input type="date" class="form-control requested_date">
+                                            </div>
+
+                                            <!-- Order Date -->
+                                            <div class="field-col" style="min-width:180px;">
+                                                <label class="form-label fw-bold">Order Date</label>
+                                                <input type="date" class="form-control order_date">
+                                            </div>
+
+                                            <!-- Receive Date -->
+                                            <div class="field-col" style="min-width:180px;">
+                                                <label class="form-label fw-bold">Receive Date</label>
+                                                <input type="date" class="form-control receive_date">
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+                            <!-- Buttons -->
+                            <div class="mt-4 d-flex gap-2">
+
+                                <button type="submit" class="btn btn-primary">
+                                    Save Item
+                                </button>
+
+                                <button type="reset" class="btn btn-secondary">
+                                    Reset
+                                </button>
+
+                                <button type="button" id="addItemButton" style="background-color: rgb(33, 197, 33); ">
+                                    Add Item
+                                </button>
+
+                                <button type="reset" class="btn btn-secondary">
+                                    Export Excel
+                                </button>
+
+                            </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div id="item_inventory_modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+
+        <div
+            style="background: white; padding: 20px; border-radius: 8px; min-width: 1100px; max-height: 650px; position: relative">
+
+            <!-- Nút đóng modal -->
+            <span class="material-icons" id="modalClose"
+                style="position: absolute; top: 4px; right: 10px; cursor: pointer; font-weight: bold;">
+                close
+            </span>
+
+            <div style="min-height: 100px">
+                <!--Item data is in inventory-->
+                <table id="item_data_table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Model</th>
+                            <th>Name</th>
+                            <th>XCode</th>
+                            <th>QCode</th>
+                            <th>QRCode</th>
+                            <th>Brand</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap JS -->
+    <!--<script src="../Script/bootstrap.bundle.min.js"></script>-->
+    <!--<script src="../Script/bootstrap.bundle.min.js.map"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="../Libs/DataTables/datatables.min.js"></script>
+
+</body>
+
+<script>
+
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3OTg0NDQ0MiwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ._NMtcZZnN20gC98MBh6Ta7s9V2cfKN9pvOtOxFD2xHM";
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+    const COLLECTION_ITEMS = "Items";
+    const COLLECTION_ORDER_ITEMS = "Order_Items";
+    const COLLECTION_ORDERS = "Orders";
+
+    let itemTable = null;
+
+    $(document).ready(function () {
+
+        // window.alert(window.innerWidth + " x " + window.innerHeight);
+        // Spec: 1528 * 732;
+
+    });
+
+    async function getInventoryItemData() {
+        try {
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records`, {
+                headers: {
+                    'Authorization': `Bearer ${TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+
+            console.log('Fetched records:', result);
+
+            const tableData = result.items.map(item => ({
+                image: item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_ITEMS + '/' + item.id + '/' + item.image : '',
+                name: item.name || '',
+                x_code: item.x_code || '',
+                q_code: item.q_code || '',
+                qr_code: item.qr_code || '',
+                brand: item.brand || '',
+                specification: item.specification || '',
+                stock: item.stock || 0,
+                model: item.model || ''
+            }));
+
+            if (itemTable) {
+
+                itemTable.clear();
+                itemTable.rows.add(tableData);
+                itemTable.draw();
+
+                return;
+            }
+
+            itemTable = $('#item_data_table').DataTable({
+                data: tableData,
+                scrollY: '500px',
+                paging: true,
+                sort: false,
+                select: true,
+                columnDefs: [
+                    { targets: 0, width: "100px" },
+                    { targets: 1, width: "150px" },
+                    { targets: 2, width: "100px" },
+                    { targets: 3, width: "100px" },
+                    { targets: 4, width: "100px" },
+                    { targets: 5, width: "120px" },
+                    { targets: 6, width: "100px", className: "dt-left" },
+                    { targets: 7, width: "100px" }
+                ],
+
+                columns: [
+                    {
+                        title: "Image",
+                        data: "image",
+                        render: function (data) {
+                            return `<img src="${data}" width="50" >`;
+                        }
+                    },
+                    { title: "Name", data: "name" },
+                    { title: "XCode", data: "x_code" },
+                    { title: "QCode", data: "q_code" },
+                    { title: "QRCode", data: "qr_code" },
+                    { title: "Brand", data: "brand" },
+                    {
+                        title: "Stock",
+                        data: "stock",
+                        render: function (data) {
+                            if (data <= 0) {
+                                return `0 <span style="color:red; font-weight:bold;"> &nbsp; Out of stock</span>`;
+                            } else if (data < 20) {
+                                return `${data} <span style="color:orange; font-weight:bold; font-size: 14.5px"> &nbsp; Low stock</span>`;
+                            }
+                            return data;
+                        }
+                    },
+                    { title: "Model", data: "model" }
+                ]
+            });
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    $(document).on('click', '#model', function () {
+        $('#item_inventory_modal').css('display', 'flex');
+        $('body').css('overflow', 'hidden');
+
+        getInventoryItemData();
+    });
+
+    // Function close modal
+    function closeModal() {
+        $('#item_inventory_modal').hide();
+        $('body').css('overflow', 'auto');
+    }
+
+    // Close modal
+    $('#modalClose').on('click', closeModal)
+
+
+    $('#item_data_table').on('click', 'tbody tr', function () {
+
+        // get row data when user click in
+        const data = itemTable.row(this).data();
+        $('.model').val(data.model);
+        $('.item_name').val(data.name);
+        $('.x_code').val(data.x_code);
+        $('.q_code').val(data.q_code);
+
+        closeModal();
+        //console.log(data);
+
+    });
+
+    // ADD NEW ITEM
+    $('#addItemButton').on('click', function () {
+
+        // clone row đầu tiên
+        const newRow = $('.item-row:first').clone();
+
+        // clear input
+        newRow.find('.requester').val('');
+        newRow.find('.project_name').val('');
+        newRow.find('.model').val('');
+        newRow.find('.item_name').val('');
+        newRow.find('.x_code').val('');
+        newRow.find('.q_code').val('');
+        newRow.find('.description').val('');
+        newRow.find('.note').val('');
+        newRow.find('.unit_price').val('');
+        newRow.find('.status').val('');
+        newRow.find('.progress_po').val('');
+        newRow.find('.requested_date').val('');
+        newRow.find('.order_date').val('');
+        newRow.find('.order_date').val('');
+        newRow.find('.receive_date').val('');
+
+        // append
+        $('#orderForm').append(newRow);
+    });
+
+
+</script>
+
+</html>
