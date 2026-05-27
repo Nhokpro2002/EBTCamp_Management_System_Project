@@ -98,6 +98,32 @@
             overflow-y: hidden;
             padding-bottom: 10px;
         }
+
+        .btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            filter: brightness(0.95);
+            transform: translateY(-1px);
+        }
+
+        .main-content {
+            overflow: auto;
+            position: relative;
+        }
+
+        .custom-header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+        }
     </style>
 </head>
 
@@ -159,22 +185,45 @@
             <div class="col-10 d-flex flex-column" style="padding-left: 0px !important; padding-right: 0px !important;">
                 <div class="topbar border" style="border-radius: 0px 4.8px 0px 0px !important;"></div>
                 <div class="main-content d-flex justify-content-center" style="height: 645px; overflow: auto">
-
                     <div class="container-fluid w-100" style="padding: 0px !important;">
 
                         <div class="card shadow-sm" style="height: 100%;">
-                            <div
-                                class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <div class="card-header custom-header d-flex justify-content-between align-items-center">
 
-                                <span class="fw-bold">
-                                    Add Item To Order
-                                </span>
+                                <div class="d-flex gap-2">
+
+                                    <button type="button" id="addItemButton" class="btn btn-add"
+                                        style="background-color: #21c15b; color: #ffffff;">
+                                        <span><strong>Add</strong></span>
+                                    </button>
+
+                                    <button type="button" id="deleteItemButton" class="btn btn-add"
+                                        style="background-color: #d24620; color: #ffffff;">
+                                        <span><strong>Delete</strong></span>
+                                    </button>
+
+                                    <button type="reset" class="btn btn-reset"
+                                        style="background-color: #7b828c; color: #ffffff;">
+                                        <span><strong>Reset</strong></span>
+                                    </button>
+
+                                    <button type="submit" id="saveButton" class="btn btn-save"
+                                        style="background-color: #3a80d6; color: #ffffff;">
+                                        <span><strong>Save</strong></span>
+                                    </button>
+
+                                    <button type="button" class="btn btn-export"
+                                        style="background-color: #14e1c1c4; color: #0f172a;">
+                                        <span><strong>Export Excel</strong></span>
+                                    </button>
+
+                                </div>
 
                                 <div style="display:flex; gap:20px;">
 
                                     <!-- Receipt icon -->
                                     <div style="position:relative; display:inline-block;">
-                                        <span class="material-icons" style="font-size: 25px;">
+                                        <span class="material-icons icon-style">
                                             receipt
                                         </span>
 
@@ -185,7 +234,7 @@
 
                                     <!-- Cart icon -->
                                     <div style="position:relative; display: inline-block;">
-                                        <span class="material-icons" style="font-size: 25px;">
+                                        <span class="material-icons icon-style">
                                             shopping_cart
                                         </span>
 
@@ -195,123 +244,7 @@
                                     </div>
 
                                 </div>
-
-
                             </div>
-
-                            <!--<div class="card-body">
-
-                                <div class="form-scroll-wrapper">
-
-                                    
-                                    <form id="orderForm" class="d-flex flex-column gap-3">
-                                        <div class="item-row d-flex flex-nowrap gap-3 align-items-end">
-
-                                            
-                                            <div style="min-width:220px;">
-                                                <label class="form-label fw-bold">Requester</label>
-                                                <input type="text" class="form-control requester">
-                                            </div>
-
-                                            
-                                            <div style="min-width: 220px;">
-                                                <label class="form-label fw-bold">Project Name</label>
-                                                <input type="text" class="form-control project_name">
-                                            </div>
-
-                                            
-                                            <div style="min-width:180px;">
-                                                <label class="form-label fw-bold">Model</label>
-                                                <input type="text" class="form-control model">
-                                            </div>
-
-                                           
-                                            <div style="min-width:220px;">
-                                                <label class="form-label fw-bold">Item Name</label>
-                                                <input type="text" class="form-control item_name">
-                                            </div>
-
-                                            
-                                            <div style="min-width:160px;">
-                                                <label class="form-label fw-bold">XCode</label>
-                                                <input type="text" class="form-control x_code">
-                                            </div>
-
-                                            
-                                            <div style="min-width:160px;">
-                                                <label class="form-label fw-bold">QCode</label>
-                                                <input type="text" class="form-control q_code">
-                                            </div>
-
-                                            
-                                            <div style="min-width:300px;">
-                                                <label class="form-label fw-bold">Description</label>
-                                                <textarea class="form-control escription" rows="1"></textarea>
-                                            </div>
-
-                                            
-                                            <div style="min-width:300px;">
-                                                <label class="form-label fw-bold">Note</label>
-                                                <textarea class="form-control note" rows="1"></textarea>
-                                            </div>
-
-                                            
-                                            <div style="min-width:150px;">
-                                                <label class="form-label fw-bold">Unit Price</label>
-                                                <input type="number" class="form-control unit_price">
-                                            </div>
-
-                                            
-                                            <div style="min-width:140px;">
-                                                <label class="form-label fw-bold">Quantity</label>
-                                                <input type="number" class="form-control quantity">
-                                            </div>
-
-                                            
-                                            <div style="min-width:220px;">
-                                                <label class="form-label fw-bold">Status</label>
-
-                                                <select class="form-select status">
-                                                    <option value=""></option>
-                                                    <option value="Request Code">Request Code</option>
-                                                    <option value="Wait Pur Process">Wait Pur Process</option>
-                                                    <option value="Request PO">Request PO</option>
-                                                    <option value="Pending Delivery">Pending Delivery</option>
-                                                    <option value="Completed">Completed</option>
-                                                </select>
-                                            </div>
-
-                                            
-                                            <div style="min-width:180px;">
-                                                <label class="form-label fw-bold">Progress PO</label>
-                                                <input type="text" class="form-control progress_po">
-                                            </div>
-
-                                            
-                                            <div style="min-width:180px;">
-                                                <label class="form-label fw-bold">Requested Date</label>
-                                                <input type="date" class="form-control requested_date">
-                                            </div>
-
-                                            
-                                            <div style="min-width:180px;">
-                                                <label class="form-label fw-bold">Order Date</label>
-                                                <input type="date" class="form-control order_date">
-                                            </div>
-
-                                            
-                                            <div style="min-width:180px;">
-                                                <label class="form-label fw-bold">Receive Date</label>
-                                                <input type="date" class="form-control receive_date">
-                                            </div>
-
-                                        </div>
-
-                                </div>
-
-                                </form>
-
-                            </div> -->
 
 
                             <div class="card-body">
@@ -430,26 +363,6 @@
                                 </div>
 
                             </div>
-                            <!-- Buttons -->
-                            <div class="mt-4 d-flex gap-2">
-
-                                <button type="submit" class="btn btn-primary">
-                                    Save Item
-                                </button>
-
-                                <button type="reset" class="btn btn-secondary">
-                                    Reset
-                                </button>
-
-                                <button type="button" id="addItemButton" style="background-color: rgb(33, 197, 33); ">
-                                    Add Item
-                                </button>
-
-                                <button type="reset" class="btn btn-secondary">
-                                    Export Excel
-                                </button>
-
-                            </div>
 
                             </form>
 
@@ -507,7 +420,7 @@
 
 <script>
 
-    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3OTg0NDQ0MiwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ._NMtcZZnN20gC98MBh6Ta7s9V2cfKN9pvOtOxFD2xHM";
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3OTk2MDU3MiwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.0hIKB79SwYIeFR2WlhBLvDk07OplyY44sj1DgV3LWMs";
     const POCKETBASE_URL = "http://127.0.0.1:8090";
     const COLLECTION_ITEMS = "Items";
     const COLLECTION_ORDER_ITEMS = "Order_Items";
@@ -609,7 +522,7 @@
         }
     }
 
-    $(document).on('click', '#model', function () {
+    $(document).on('click', '.model', function () {
         $('#item_inventory_modal').css('display', 'flex');
         $('body').css('overflow', 'hidden');
 
@@ -626,31 +539,34 @@
     $('#modalClose').on('click', closeModal)
 
 
-    $('#item_data_table').on('click', 'tbody tr', function () {
+    $('#item_data_table').on('click', 'tbody tr', function (event) {
 
         // get row data when user click in
         const data = itemTable.row(this).data();
+
         $('.model').val(data.model);
         $('.item_name').val(data.name);
         $('.x_code').val(data.x_code);
         $('.q_code').val(data.q_code);
 
+
         closeModal();
-        //console.log(data);
 
     });
 
-    // ADD NEW ITEM
+    // Add new empty row
     $('#addItemButton').on('click', function () {
 
-        // clone row đầu tiên
+        // clone first row
         const newRow = $('.item-row:first').clone();
+
+        newRow.find('label').remove();
 
         // clear input
         newRow.find('.requester').val('');
         newRow.find('.project_name').val('');
-        newRow.find('.model').val('');
-        newRow.find('.item_name').val('');
+        newRow.find('.model').val(''); -
+            newRow.find('.item_name').val('');
         newRow.find('.x_code').val('');
         newRow.find('.q_code').val('');
         newRow.find('.description').val('');
@@ -666,6 +582,39 @@
         // append
         $('#orderForm').append(newRow);
     });
+
+    // Delete last row function
+    $('#deleteItemButton').on('click', function () {
+
+        if ($('.item-row').length > 1) {
+            $('.item-row:last').remove();
+        } else {
+            return;
+        }
+
+    });
+
+    // Save item_order list 
+    $('#saveButton').on('click', function () {
+
+        const rows = document.querySelectorAll('.item-row');
+
+        const matrixData = Array.from(rows).map(row => {
+            const childDivs = row.querySelectorAll(':scope > div');
+
+            const rowValues = Array.from(childDivs).map(div => {
+                const input = div.querySelector('input');
+                return input ? input.value.trim() : ''
+            });
+
+            return rowValues;
+        })
+
+        console.log(matrixData);
+
+    });
+
+
 
 
 </script>
