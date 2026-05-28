@@ -399,7 +399,7 @@
                                                 <span class="big-dot" onclick="toggleMenu(this)">...</span>
 
                                                 <div class="action-popup">
-                                                    <button onclick="handleUpdate(this)">Update</button>
+                                                    <button type="button" onclick="handleUpdate(this)">Update</button>
                                                     <button type="button" onclick="handleDelete(this)">Delete</button>
                                                 </div>
                                             </div>
@@ -699,7 +699,7 @@
     $('#modalClose').on('click', closeModal)
 
 
-    $('#item_data_table').on('click', 'tbody tr', function (event) {
+    $('#item_data_table').on('click', 'tbody tr', async function () {
 
         // get row data when user click in
         const data = itemTable.row(this).data();
