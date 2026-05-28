@@ -13,21 +13,21 @@
 
     <!-- use version 0.20.3 -->
     <script type="text/javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: 'Nunito', sans-serif;
         }
 
         .sidebar {
-            background-color: #fffdfd;
-            height: 95vh;
+            background-color: #111827;
+            height: 96.3vh;
             /* full height viewport */
         }
 
         .topbar {
             background-color: #8a8383;
-            height: 50px;
+            height: 60px;
         }
 
         li.nav-item.mb-2.d-flex.align-items-center {
@@ -42,7 +42,15 @@
 
         .nav-item:hover .material-icons,
         .nav-item:hover .nav-link {
-            color: #000 !important;
+            color: #00fff7 !important;
+
+            /* hiệu ứng phát quang */
+            text-shadow:
+                0 0 5px rgba(0, 255, 247, 0.7),
+                0 0 10px rgba(0, 255, 247, 0.6),
+                0 0 20px rgba(0, 255, 247, 0.5);
+
+            transition: all 0.25s ease;
         }
 
         #my_table tbody tr {
@@ -124,6 +132,69 @@
             background: #fff;
             border-bottom: 1px solid #ddd;
         }
+
+        .sidebar-menu .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 12px 14px;
+            border-radius: 14px;
+
+            color: #b8c2cc;
+            font-weight: 600;
+            text-decoration: none;
+
+            transition: all 0.25s ease;
+        }
+
+        /* icon */
+        .sidebar-menu .menu-link .material-icons {
+            font-size: 22px;
+            transition: all 0.25s ease;
+        }
+
+        /* hover */
+        .sidebar-menu .menu-link:hover {
+            background: rgba(0, 255, 208, 0.12);
+            color: #00ffd0;
+
+            transform: translateX(4px);
+
+            box-shadow: 0 0 12px rgba(0, 255, 208, 0.18);
+        }
+
+        .nav-link .menu-link .active:hover {
+            color: #00ffd0;
+        }
+
+        .nav-link .menu-link {
+            font-size: 20px;
+        }
+
+        .sidebar-menu .menu-link:hover .material-icons {
+            color: #7dd3c7;
+        }
+
+        /* active */
+        .sidebar-menu .menu-link.active {
+            background: linear-gradient(135deg,
+                    rgba(0, 255, 208, 0.22),
+                    rgba(0, 255, 208, 0.08));
+            font-size: 18px;
+
+            color: #7dd3c7;
+
+            border: 1px solid rgba(0, 255, 208, 0.35);
+
+            box-shadow:
+                0 0 15px rgba(0, 255, 208, 0.2),
+                inset 0 0 8px rgba(0, 255, 208, 0.08);
+        }
+
+        .sidebar-menu .menu-link.active .material-icons {
+            color: #7dd3c7;
+        }
     </style>
 </head>
 
@@ -132,53 +203,77 @@
     <div class="container-fluid p-3">
         <div class="row h-100">
             <div class="col-2 sidebar border" style="border-radius: 4.8px 0px 0px 4.8px !important;">
-                <div style="text-align: center; margin-top: 15px;">
+                <div style="text-align: center; margin-top: 8px;">
+                    <span class="material-icons"
+                        style="font-size: xx-large; font-weight: 700; color: #00ffd0; position: relative; top: 4px;">precision_manufacturing</span>
 
-                    <span style="font-size: larger; font-weight: 700;">EBT
+
+                    <span style="font-size: xx-large; font-weight: 700; color: #00ffd0; letter-spacing: 2px;">EBT
                         Camp</span>
                 </div>
-                <ul class="nav flex-column p-3">
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            home
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#dashboard">Dashboard</a>
+
+                <ul class="nav flex-column p-3 sidebar-menu">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#dashboard">
+                            <span class="material-icons">
+                                home
+                            </span>
+                            Dashboard
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            warehouse
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#inventory">Inventory</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#inventory">
+                            <span class="material-icons">
+                                warehouse
+                            </span>
+                            Warehouse
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            category
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#production">Production</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#production">
+                            <span class="material-icons">
+                                category
+                            </span>
+                            Production
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            list_alt
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#order">Order</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#order">
+                            <span class="material-icons">
+                                list_alt
+                            </span>
+                            Order
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            account_box
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#useraccess">User Access</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#useraccess">
+                            <span class="material-icons">
+                                account_box
+                            </span>
+                            User Access
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            help_center
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#support">Support</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#support">
+                            <span class="material-icons">
+                                help_center
+                            </span>
+                            Support
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            settings
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#settings">Settings</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#settings">
+                            <span class="material-icons">
+                                settings
+                            </span>
+                            Settings
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -202,7 +297,7 @@
                                         <span><strong>Delete</strong></span>
                                     </button>
 
-                                    <button type="reset" class="btn btn-reset"
+                                    <button type="reset" id="resetButton" class="btn btn-reset"
                                         style="background-color: #7b828c; color: #ffffff;">
                                         <span><strong>Reset</strong></span>
                                     </button>
@@ -212,7 +307,7 @@
                                         <span><strong>Save</strong></span>
                                     </button>
 
-                                    <button type="button" class="btn btn-export"
+                                    <button type="button" id="exportExcelButton" class="btn btn-export"
                                         style="background-color: #14e1c1c4; color: #0f172a;">
                                         <span><strong>Export Excel</strong></span>
                                     </button>
@@ -261,7 +356,15 @@
                                             <!-- Requester -->
                                             <div class="field-col" style="min-width:220px;">
                                                 <label class="form-label fw-bold">Requester</label>
-                                                <input type="text" class="form-control requester">
+                                                <!--<input type="text" class="form-control requester">-->
+                                                <select class="form-select requester">
+                                                    <option value="Equipment Part">Equipment Part</option>
+                                                    <option value="Vu Manh Cong">Vu Manh Cong</option>
+                                                    <option value="Hoang Dac Huy">Hoang Dac Huy</option>
+                                                    <option value="Nguyen Huy Hoang">Nguyen Huy Hoang</option>
+                                                    <option value="Vu Minh Hieu">Nguyen Huy Hoang</option>
+
+                                                </select>
                                             </div>
 
                                             <!-- Project Name -->
@@ -420,13 +523,15 @@
 
 <script>
 
-    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3OTk2MDU3MiwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.0hIKB79SwYIeFR2WlhBLvDk07OplyY44sj1DgV3LWMs";
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDAxOTA5MCwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.KJ8aGEOQN4br-BLIK7uXGiZqd_ngJF_BhXBylscnCj0";
     const POCKETBASE_URL = "http://127.0.0.1:8090";
     const COLLECTION_ITEMS = "Items";
     const COLLECTION_ORDER_ITEMS = "Order_Items";
     const COLLECTION_ORDERS = "Orders";
 
     let itemTable = null;
+    let currentItemRow = null;
+    let dataExportExcel = [];
 
     $(document).ready(function () {
 
@@ -523,6 +628,7 @@
     }
 
     $(document).on('click', '.model', function () {
+        currentItemRow = $(this).closest('.item-row');
         $('#item_inventory_modal').css('display', 'flex');
         $('body').css('overflow', 'hidden');
 
@@ -544,11 +650,10 @@
         // get row data when user click in
         const data = itemTable.row(this).data();
 
-        $('.model').val(data.model);
-        $('.item_name').val(data.name);
-        $('.x_code').val(data.x_code);
-        $('.q_code').val(data.q_code);
-
+        currentItemRow.find('.model').val(data.model);
+        currentItemRow.find('.item_name').val(data.name);
+        currentItemRow.find('.x_code').val(data.x_code);
+        currentItemRow.find('.q_code').val(data.q_code);
 
         closeModal();
 
@@ -565,8 +670,8 @@
         // clear input
         newRow.find('.requester').val('');
         newRow.find('.project_name').val('');
-        newRow.find('.model').val(''); -
-            newRow.find('.item_name').val('');
+        newRow.find('.model').val('');
+        newRow.find('.item_name').val('');
         newRow.find('.x_code').val('');
         newRow.find('.q_code').val('');
         newRow.find('.description').val('');
@@ -595,23 +700,144 @@
     });
 
     // Save item_order list 
-    $('#saveButton').on('click', function () {
+    $('#saveButton').on('click', async function () {
 
-        const rows = document.querySelectorAll('.item-row');
+        try {
 
-        const matrixData = Array.from(rows).map(row => {
-            const childDivs = row.querySelectorAll(':scope > div');
+            const orderItems = [];
 
-            const rowValues = Array.from(childDivs).map(div => {
-                const input = div.querySelector('input');
-                return input ? input.value.trim() : ''
+            $('.item-row').each(function () {
+
+                const row = $(this);
+
+                const item = {
+                    requester: row.find('.requester').val(),
+                    project_name: row.find('.project_name').val(),
+                    model: row.find('.model').val(),
+                    item_name: row.find('.item_name').val(),
+                    x_code: row.find('.x_code').val(),
+                    q_code: row.find('.q_code').val(),
+                    description: row.find('.description').val(),
+                    note: row.find('.note').val(),
+                    unit_price: row.find('.unit_price').val(),
+                    quantity: row.find('.quantity').val(),
+                    status: row.find('.status').val(),
+                    progress_po: row.find('.progress_po').val(),
+                    requested_date: row.find('.requested_date').val(),
+                    order_date: row.find('.order_date').val(),
+                    receive_date: row.find('.receive_date').val()
+                };
+
+                orderItems.push(item);
             });
 
-            return rowValues;
-        })
+            dataExportExcel = orderItems;
 
-        console.log(matrixData);
+            console.log(orderItems);
 
+
+            const savePromises = orderItems.map(async (item) => {
+
+                const response = await fetch(
+                    `${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(item)
+                    }
+                );
+
+                if (!response.ok) {
+
+                    const errorText = await response.text();
+
+                    throw new Error(
+                        `Save failed: ${response.status} - ${errorText}`
+                    );
+                }
+
+                return await response.json();
+            });
+
+            // đợi save hết
+            const results = await Promise.all(savePromises);
+
+            console.log("SAVE SUCCESS:", results);
+
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Save order items successfully!',
+                confirmButtonColor: '#3085d6'
+            });
+
+        } catch (error) {
+            console.error("SAVE ERROR:", error);
+
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Save failed!',
+                confirmButtonColor: '#d33'
+            });
+
+        }
+
+    });
+
+
+
+    $('#exportExcelButton').on('click', function () {
+
+        if (!Array.isArray(dataExportExcel) || dataExportExcel.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No data',
+                text: 'Chưa có dữ liệu để export!'
+            });
+            return;
+        }
+
+        const worksheet = XLSX.utils.json_to_sheet(dataExportExcel);
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "OrderItems");
+
+        XLSX.writeFile(workbook, "order_items.xlsx");
+    });
+
+    $('#resetButton').on('click', function () {
+
+        $('.item-row').find('.requester').val('');
+        $('.item-row').find('.project_name').val('');
+        $('.item-row').find('.model').val('');
+        $('.item-row').find('.item_name').val('');
+        $('.item-row').find('.x_code').val('');
+        $('.item-row').find('.project_name').val('');
+        $('.item-row').find('.project_name').val('');
+        $('.item-row').find('.project_name').val('');
+        $('.item-row').find('.project_name').val('');
+
+        newRow.find('.requester').val('');
+        newRow.find('.project_name').val('');
+        newRow.find('.model').val('');
+        newRow.find('.item_name').val('');
+        newRow.find('.x_code').val('');
+        newRow.find('.q_code').val('');
+        newRow.find('.description').val('');
+        newRow.find('.note').val('');
+        newRow.find('.unit_price').val('');
+        newRow.find('.status').val('');
+        newRow.find('.progress_po').val('');
+        newRow.find('.requested_date').val('');
+        newRow.find('.order_date').val('');
+        newRow.find('.order_date').val('');
+        newRow.find('.receive_date').val('');
     });
 
 
