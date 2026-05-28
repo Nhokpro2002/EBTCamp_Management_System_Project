@@ -195,6 +195,46 @@
         .sidebar-menu .menu-link.active .material-icons {
             color: #7dd3c7;
         }
+
+        .big-dot {
+            display: inline-block;
+            transform: scale(3);
+            transform-origin: left center;
+            line-height: 1;
+
+        }
+
+        .big-dot:hover {
+            cursor: pointer;
+        }
+
+        .action-popup {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 99999;
+        }
+
+        .action-popup.show {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .action-popup button {
+            border: none;
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .action-popup button:hover {
+            background: #e9e9e9;
+        }
     </style>
 </head>
 
@@ -345,85 +385,99 @@
                             <div class="card-body">
 
                                 <!-- vùng scroll ngang -->
-                                <div class="form-scroll-wrapper">
+                                <div class="form-scroll-wrapper" style="position: relative;">
 
                                     <!-- form -->
-                                    <form id="orderForm" class="d-flex flex-column gap-3">
+                                    <form id="orderForm" class="d-flex flex-column gap-3" style="position: relative;">
 
                                         <!-- ROW -->
                                         <div class="item-row d-flex flex-nowrap gap-3 align-items-end">
 
+                                            <div class="field-col"
+                                                style="min-width: 100px; position: relative; bottom: 13px;">
+                                                <label class="fw-bold" style="display: block;">Action</label>
+                                                <span class="big-dot" onclick="toggleMenu(this)">...</span>
+
+                                                <div class="action-popup">
+                                                    <button onclick="handleUpdate(this)">Update</button>
+                                                    <button type="button" onclick="handleDelete(this)">Delete</button>
+                                                </div>
+                                            </div>
+
+
+
                                             <!-- Requester -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="form-label fw-bold">Requester</label>
+                                                <label class="fw-bold">Requester</label>
                                                 <!--<input type="text" class="form-control requester">-->
                                                 <select class="form-select requester">
                                                     <option value="Equipment Part">Equipment Part</option>
                                                     <option value="Vu Manh Cong">Vu Manh Cong</option>
                                                     <option value="Hoang Dac Huy">Hoang Dac Huy</option>
                                                     <option value="Nguyen Huy Hoang">Nguyen Huy Hoang</option>
-                                                    <option value="Vu Minh Hieu">Nguyen Huy Hoang</option>
+                                                    <option value="Vu Minh Hieu">Vu Minh Hieu</option>
+                                                    <option value="Pham Van Trung">Pham Van Trung</option>
 
                                                 </select>
                                             </div>
 
                                             <!-- Project Name -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="form-label fw-bold">Project Name</label>
+                                                <label class="fw-bold">Project Name</label>
                                                 <input type="text" class="form-control project_name">
                                             </div>
 
                                             <!-- Model -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="form-label fw-bold">Model</label>
+                                                <label class="fw-bold">Model</label>
                                                 <input type="text" class="form-control model">
                                             </div>
 
                                             <!-- Item Name -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="form-label fw-bold">Item Name</label>
+                                                <label class="fw-bold">Item Name</label>
                                                 <input type="text" class="form-control item_name">
                                             </div>
 
                                             <!-- XCode -->
                                             <div class="field-col" style="min-width:160px;">
-                                                <label class="form-label fw-bold">XCode</label>
+                                                <label class="fw-bold">XCode</label>
                                                 <input type="text" class="form-control x_code">
                                             </div>
 
                                             <!-- QCode -->
                                             <div class="field-col" style="min-width:160px;">
-                                                <label class="form-label fw-bold">QCode</label>
+                                                <label class="fw-bold">QCode</label>
                                                 <input type="text" class="form-control q_code">
                                             </div>
 
                                             <!-- Description -->
                                             <div class="field-col" style="min-width:300px;">
-                                                <label class="form-label fw-bold">Description</label>
+                                                <label class="fw-bold">Description</label>
                                                 <textarea class="form-control description" rows="1"></textarea>
                                             </div>
 
                                             <!-- Note -->
                                             <div class="field-col" style="min-width:300px;">
-                                                <label class="form-label fw-bold">Note</label>
+                                                <label class="fw-bold">Note</label>
                                                 <textarea class="form-control note" rows="1"></textarea>
                                             </div>
 
                                             <!-- Unit Price -->
                                             <div class="field-col" style="min-width:150px;">
-                                                <label class="form-label fw-bold">Unit Price</label>
+                                                <label class="fw-bold">Unit Price</label>
                                                 <input type="number" class="form-control unit_price">
                                             </div>
 
                                             <!-- Quantity -->
                                             <div class="field-col" style="min-width:140px;">
-                                                <label class="form-label fw-bold">Quantity</label>
+                                                <label class="fw-bold">Quantity</label>
                                                 <input type="number" class="form-control quantity">
                                             </div>
 
                                             <!-- Status -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="form-label fw-bold">Status</label>
+                                                <label class="fw-bold">Status</label>
 
                                                 <select class="form-select status">
                                                     <option value=""></option>
@@ -437,25 +491,25 @@
 
                                             <!-- Progress PO -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="form-label fw-bold">Progress PO</label>
+                                                <label class="fw-bold">Progress PO</label>
                                                 <input type="text" class="form-control progress_po">
                                             </div>
 
                                             <!-- Requested Date -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="form-label fw-bold">Requested Date</label>
+                                                <label class="fw-bold">Requested Date</label>
                                                 <input type="date" class="form-control requested_date">
                                             </div>
 
                                             <!-- Order Date -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="form-label fw-bold">Order Date</label>
+                                                <label class="fw-bold">Order Date</label>
                                                 <input type="date" class="form-control order_date">
                                             </div>
 
                                             <!-- Receive Date -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="form-label fw-bold">Receive Date</label>
+                                                <label class="fw-bold">Receive Date</label>
                                                 <input type="date" class="form-control receive_date">
                                             </div>
 
@@ -523,7 +577,7 @@
 
 <script>
 
-    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDAxOTA5MCwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.KJ8aGEOQN4br-BLIK7uXGiZqd_ngJF_BhXBylscnCj0";
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDAzNjkwNiwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ._a6IypXB0AxzFRaSyxhM4J2Vk_ooVG2rdUk0_-fdRUU";
     const POCKETBASE_URL = "http://127.0.0.1:8090";
     const COLLECTION_ITEMS = "Items";
     const COLLECTION_ORDER_ITEMS = "Order_Items";
@@ -813,31 +867,137 @@
 
     $('#resetButton').on('click', function () {
 
-        $('.item-row').find('.requester').val('');
-        $('.item-row').find('.project_name').val('');
-        $('.item-row').find('.model').val('');
-        $('.item-row').find('.item_name').val('');
-        $('.item-row').find('.x_code').val('');
-        $('.item-row').find('.project_name').val('');
-        $('.item-row').find('.project_name').val('');
-        $('.item-row').find('.project_name').val('');
-        $('.item-row').find('.project_name').val('');
 
-        newRow.find('.requester').val('');
-        newRow.find('.project_name').val('');
-        newRow.find('.model').val('');
-        newRow.find('.item_name').val('');
-        newRow.find('.x_code').val('');
-        newRow.find('.q_code').val('');
-        newRow.find('.description').val('');
-        newRow.find('.note').val('');
-        newRow.find('.unit_price').val('');
-        newRow.find('.status').val('');
-        newRow.find('.progress_po').val('');
-        newRow.find('.requested_date').val('');
-        newRow.find('.order_date').val('');
-        newRow.find('.order_date').val('');
-        newRow.find('.receive_date').val('');
+    });
+
+    function toggleMenu(el) {
+        let popup = document.querySelector('.action-popup');
+
+        if (!popup) {
+            popup = document.createElement('div');
+            popup.className = 'action-popup';
+            popup.innerHTML = `
+            <button onclick="handleUpdate()">Update</button>
+            <button onclick="handleDelete()">Delete</button>
+        `;
+            document.body.appendChild(popup);
+        }
+
+        // get span position
+        const rect = el.getBoundingClientRect();
+        popup.style.position = 'fixed';
+        popup.style.top = `${rect.bottom + window.scrollY}px`;
+        popup.style.left = `${rect.left + window.scrollX}px`;
+
+        popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.big-dot') && !e.target.closest('.action-popup')) {
+            const popup = document.querySelector('.action-popup');
+            if (popup) popup.style.display = 'none';
+        }
+    });
+
+    async function handleUpdate(btn) {
+        try {
+            const curentItemRow = $(btn).closest('.item-row');
+
+            let objectData = {
+                requester: curentItemRow.find('.requester').val(),
+                project_name: curentItemRow.find('.project_name').val(),
+                model: curentItemRow.find('.model').val(),
+                item_name: curentItemRow.find('.item_name').val(),
+                x_code: curentItemRow.find('.x_code').val(),
+                q_code: curentItemRow.find('.q_code').val(),
+                description: curentItemRow.find('.description').val(),
+                note: curentItemRow.find('.note').val(),
+                unit_price: curentItemRow.find('.unit_price').val(),
+                quantity: curentItemRow.find('.quantity').val(),
+                status: curentItemRow.find('.status').val(),
+                progress_po: curentItemRow.find('.progress_po').val(),
+                requested_date: curentItemRow.find('.requested_date').val(),
+                order_date: curentItemRow.find('.order_date').val(),
+                receive_date: curentItemRow.find('.receive_date').val()
+            };
+
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records/${curentItemRow.data('id')}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(objectData)
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Save failed: ${response.status} - ${errorText}`);
+            }
+
+            const result = await response.json();
+
+            // Hiển thị Toast sau khi update thành công
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Updated successfully'
+            });
+
+            return result;
+
+        } catch (error) {
+            console.error(error);  // Log error
+        }
+    }
+
+    function handleDelete(btn) {
+        const curentItemRow = $(btn).closest('.item-row');
+        curentItemRow.remove();
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+
+            didOpen: (toast) => {
+
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+
+            }
+        });
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Deleted successfully'
+        });
+
+    }
+
+    document.addEventListener('click', function (e) {
+
+        if (!e.target.closest('.field-col')) {
+            document.querySelectorAll('.action-popup')
+                .forEach(p => p.classList.remove('show'));
+        }
+
     });
 
 
