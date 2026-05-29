@@ -235,6 +235,34 @@
         .action-popup button:hover {
             background: #e9e9e9;
         }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            /* xếp dọc */
+            align-items: center;
+            gap: 10px;
+            min-width: 60px;
+        }
+
+        /* checkbox ALL to như label */
+        .checkbox-all input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* checkbox row nhỏ hơn */
+        .checkbox_row {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        label.checkbox-all {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
@@ -332,7 +360,7 @@
                                         <span><strong>Add</strong></span>
                                     </button>
 
-                                    <button type="button" id="deleteItemButton" class="btn btn-add"
+                                    <button type="button" id="deleteItemButton" class="btn btn-delete"
                                         style="background-color: #d24620; color: #ffffff;">
                                         <span><strong>Delete</strong></span>
                                     </button>
@@ -340,6 +368,11 @@
                                     <button type="reset" id="resetButton" class="btn btn-reset"
                                         style="background-color: #7b828c; color: #ffffff;">
                                         <span><strong>Reset</strong></span>
+                                    </button>
+
+                                    <button type="button" id="updateButton" class="btn btn-update"
+                                        style="background-color: #129658; color: #ffffff;" onclick="handleUpdate()">
+                                        <span><strong>Update</strong></span>
                                     </button>
 
                                     <button type="submit" id="saveButton" class="btn btn-save"
@@ -393,22 +426,24 @@
                                         <!-- ROW -->
                                         <div class="item-row d-flex flex-nowrap gap-3 align-items-end">
 
-                                            <div class="field-col"
-                                                style="min-width: 100px; position: relative; bottom: 13px;">
-                                                <label class="fw-bold" style="display: block;">Action</label>
-                                                <span class="big-dot" onclick="toggleMenu(this)">...</span>
+                                            <div class="field-col checkbox-group">
 
-                                                <div class="action-popup">
-                                                    <button type="button" onclick="handleUpdate(this)">Update</button>
-                                                    <button type="button" onclick="handleDelete(this)">Delete</button>
-                                                </div>
+                                                <!-- Checkbox ALL -->
+                                                <label class="checkbox-all">
+                                                    <input type="checkbox" id="checkbox_all">
+                                                </label>
+
+                                                <!-- Checkbox ROW -->
+
+                                                <input type="checkbox" class="checkbox_row">
+
+
                                             </div>
-
 
 
                                             <!-- Requester -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="fw-bold">Requester</label>
+                                                <label class="fw-bold pb-2">Requester</label>
                                                 <!--<input type="text" class="form-control requester">-->
                                                 <select class="form-select requester">
                                                     <option value="Equipment Part">Equipment Part</option>
@@ -423,61 +458,61 @@
 
                                             <!-- Project Name -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="fw-bold">Project Name</label>
+                                                <label class="fw-bold pb-2">Project Name</label>
                                                 <input type="text" class="form-control project_name">
                                             </div>
 
                                             <!-- Model -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="fw-bold">Model</label>
+                                                <label class="fw-bold pb-2">Model</label>
                                                 <input type="text" class="form-control model">
                                             </div>
 
                                             <!-- Item Name -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="fw-bold">Item Name</label>
+                                                <label class="fw-bold pb-2">Item Name</label>
                                                 <input type="text" class="form-control item_name">
                                             </div>
 
                                             <!-- XCode -->
                                             <div class="field-col" style="min-width:160px;">
-                                                <label class="fw-bold">XCode</label>
+                                                <label class="fw-bold pb-2">XCode</label>
                                                 <input type="text" class="form-control x_code">
                                             </div>
 
                                             <!-- QCode -->
                                             <div class="field-col" style="min-width:160px;">
-                                                <label class="fw-bold">QCode</label>
+                                                <label class="fw-bold pb-2">QCode</label>
                                                 <input type="text" class="form-control q_code">
                                             </div>
 
                                             <!-- Description -->
                                             <div class="field-col" style="min-width:300px;">
-                                                <label class="fw-bold">Description</label>
+                                                <label class="fw-bold pb-2">Description</label>
                                                 <textarea class="form-control description" rows="1"></textarea>
                                             </div>
 
                                             <!-- Note -->
                                             <div class="field-col" style="min-width:300px;">
-                                                <label class="fw-bold">Note</label>
+                                                <label class="fw-bold pb-2">Note</label>
                                                 <textarea class="form-control note" rows="1"></textarea>
                                             </div>
 
                                             <!-- Unit Price -->
                                             <div class="field-col" style="min-width:150px;">
-                                                <label class="fw-bold">Unit Price</label>
+                                                <label class="fw-bold pb-2">Unit Price</label>
                                                 <input type="number" class="form-control unit_price">
                                             </div>
 
                                             <!-- Quantity -->
                                             <div class="field-col" style="min-width:140px;">
-                                                <label class="fw-bold">Quantity</label>
+                                                <label class="fw-bold pb-2">Quantity</label>
                                                 <input type="number" class="form-control quantity">
                                             </div>
 
                                             <!-- Status -->
                                             <div class="field-col" style="min-width:220px;">
-                                                <label class="fw-bold">Status</label>
+                                                <label class="fw-bold pb-2">Status</label>
 
                                                 <select class="form-select status">
                                                     <option value=""></option>
@@ -491,25 +526,25 @@
 
                                             <!-- Progress PO -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="fw-bold">Progress PO</label>
+                                                <label class="fw-bold pb-2">Progress PO</label>
                                                 <input type="text" class="form-control progress_po">
                                             </div>
 
                                             <!-- Requested Date -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="fw-bold">Requested Date</label>
+                                                <label class="fw-bold pb-2">Requested Date</label>
                                                 <input type="date" class="form-control requested_date">
                                             </div>
 
                                             <!-- Order Date -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="fw-bold">Order Date</label>
+                                                <label class="fw-bold pb-2">Order Date</label>
                                                 <input type="date" class="form-control order_date">
                                             </div>
 
                                             <!-- Receive Date -->
                                             <div class="field-col" style="min-width:180px;">
-                                                <label class="fw-bold">Receive Date</label>
+                                                <label class="fw-bold pb-2">Receive Date</label>
                                                 <input type="date" class="form-control receive_date">
                                             </div>
 
@@ -577,7 +612,7 @@
 
 <script>
 
-    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDAzNjkwNiwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ._a6IypXB0AxzFRaSyxhM4J2Vk_ooVG2rdUk0_-fdRUU";
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDEwMzY5NywiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.CEE0NKfgJC8aunM-OFgsAiQpuJ4OcALGdZs7pW6KdTE";
     const POCKETBASE_URL = "http://127.0.0.1:8090";
     const COLLECTION_ITEMS = "Items";
     const COLLECTION_ORDER_ITEMS = "Order_Items";
@@ -722,7 +757,8 @@
         newRow.find('label').remove();
 
         // clear input
-        newRow.find('.requester').val('');
+        newRow.find('.checkbox_row').prop('checked', false);
+        newRow.find('.requester').val('Equipment Part');
         newRow.find('.project_name').val('');
         newRow.find('.model').val('');
         newRow.find('.item_name').val('');
@@ -742,14 +778,91 @@
         $('#orderForm').append(newRow);
     });
 
-    // Delete last row function
+    // Delete rows with checked = true
     $('#deleteItemButton').on('click', function () {
 
-        if ($('.item-row').length > 1) {
-            $('.item-row:last').remove();
-        } else {
+        const checkedRows = $('.checkbox_row:checked').closest('.item-row');
+        if (checkedRows.length == 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'Please select at least one row.'
+            });
+
             return;
         }
+
+
+        if ($('.item-row').length == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'The table must contain at least one row.'
+            });
+
+            checkedRows.find('.checkbox_row').prop('checked', false);
+
+            return;
+        }
+
+        checkedRows.remove();
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+
+            didOpen: (toast) => {
+
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+
+            }
+        });
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Deleted successfully'
+        });
+
+    });
+
+
+    $('#resetButton').on('click', function () {
+
+        const checkedRows = $('.checkbox_row:checked').closest('.item-row');
+        if (checkedRows.length == 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'Please select at least one row.'
+            });
+
+            return;
+        }
+
+        checkedRows.each(function () {
+            $(this).find('.checkbox_row').prop('checked', false);
+            $(this).find('.requester').val('');
+            $(this).find('.project_name').val('');
+            $(this).find('.model').val('');
+            $(this).find('.item_name').val('');
+            $(this).find('.x_code').val('');
+            $(this).find('.x_code').val('');
+            $(this).find('.q_code').val('');
+            $(this).find('.description').val('');
+            $(this).find('.note').val('');
+            $(this).find('.unit_price').val('');
+            $(this).find('.note').val('');
+            $(this).find('.quantity').val('');
+            $(this).find('.status').val('');
+            $(this).find('.progress_po').val('');
+            $(this).find('.requested_date').val();
+            $(this).find('.order_date').val('');
+            $(this).find('.receive_date').val('');
+        })
 
     });
 
@@ -777,7 +890,7 @@
                     quantity: row.find('.quantity').val(),
                     status: row.find('.status').val(),
                     progress_po: row.find('.progress_po').val(),
-                    requested_date: row.find('.requested_date').val(),
+                    order_date: row.find('.requested_date').val(),
                     order_date: row.find('.order_date').val(),
                     receive_date: row.find('.receive_date').val()
                 };
@@ -870,135 +983,97 @@
 
     });
 
-    function toggleMenu(el) {
-        let popup = document.querySelector('.action-popup');
 
-        if (!popup) {
-            popup = document.createElement('div');
-            popup.className = 'action-popup';
-            popup.innerHTML = `
-            <button onclick="handleUpdate()">Update</button>
-            <button onclick="handleDelete()">Delete</button>
-        `;
-            document.body.appendChild(popup);
-        }
+    async function handleUpdate() {
 
-        // get span position
-        const rect = el.getBoundingClientRect();
-        popup.style.position = 'fixed';
-        popup.style.top = `${rect.bottom + window.scrollY}px`;
-        popup.style.left = `${rect.left + window.scrollX}px`;
-
-        popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-    }
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.big-dot') && !e.target.closest('.action-popup')) {
-            const popup = document.querySelector('.action-popup');
-            if (popup) popup.style.display = 'none';
-        }
-    });
-
-    async function handleUpdate(btn) {
         try {
-            const curentItemRow = $(btn).closest('.item-row');
 
-            let objectData = {
-                requester: curentItemRow.find('.requester').val(),
-                project_name: curentItemRow.find('.project_name').val(),
-                model: curentItemRow.find('.model').val(),
-                item_name: curentItemRow.find('.item_name').val(),
-                x_code: curentItemRow.find('.x_code').val(),
-                q_code: curentItemRow.find('.q_code').val(),
-                description: curentItemRow.find('.description').val(),
-                note: curentItemRow.find('.note').val(),
-                unit_price: curentItemRow.find('.unit_price').val(),
-                quantity: curentItemRow.find('.quantity').val(),
-                status: curentItemRow.find('.status').val(),
-                progress_po: curentItemRow.find('.progress_po').val(),
-                requested_date: curentItemRow.find('.requested_date').val(),
-                order_date: curentItemRow.find('.order_date').val(),
-                receive_date: curentItemRow.find('.receive_date').val()
-            };
+            const checkedRows = $('.checkbox_row:checked')
+                .closest('.item-row');
 
-            const response = await fetch(
-                `${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records/${curentItemRow.data('id')}`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(objectData)
-                }
-            );
+            if (checkedRows.length === 0) {
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Save failed: ${response.status} - ${errorText}`);
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select at least one row'
+                });
+
+                return;
             }
 
-            const result = await response.json();
+            const updatePromises = [];
 
-            // Hiển thị Toast sau khi update thành công
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 1500,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-                }
+            checkedRows.each(function () {
+
+                const currentItemRow = $(this);
+
+                let objectData = {
+                    requester: currentItemRow.find('.requester').val(),
+                    project_name: currentItemRow.find('.project_name').val(),
+                    model: currentItemRow.find('.model').val(),
+                    item_name: currentItemRow.find('.item_name').val(),
+                    x_code: currentItemRow.find('.x_code').val(),
+                    q_code: currentItemRow.find('.q_code').val(),
+                    description: currentItemRow.find('.description').val(),
+                    note: currentItemRow.find('.note').val(),
+                    unit_price: currentItemRow.find('.unit_price').val(),
+                    quantity: currentItemRow.find('.quantity').val(),
+                    status: currentItemRow.find('.status').val(),
+                    progress_po: currentItemRow.find('.progress_po').val(),
+                    requested_date: currentItemRow.find('.requested_date').val(),
+                    order_date: currentItemRow.find('.order_date').val(),
+                    receive_date: currentItemRow.find('.receive_date').val()
+                };
+
+                const request = fetch(
+                    `${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records/${currentItemRow.data('id')}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(objectData)
+                    }
+                );
+
+                updatePromises.push(request);
+
             });
 
-            Toast.fire({
+            await Promise.all(updatePromises);
+
+            Swal.fire({
                 icon: 'success',
-                title: 'Updated successfully'
+                title: 'Success',
+                text: 'Updated selected rows successfully'
             });
-
-            return result;
 
         } catch (error) {
-            console.error(error);  // Log error
+
+            console.error(error);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Update failed'
+            });
+
         }
     }
 
-    function handleDelete(btn) {
-        const curentItemRow = $(btn).closest('.item-row');
-        curentItemRow.remove();
 
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
+    const checkboxAll = document.getElementById("checkbox_all");
 
-            didOpen: (toast) => {
-
-                toast.addEventListener('mouseenter', Swal.stopTimer);
-                toast.addEventListener('mouseleave', Swal.resumeTimer);
-
-            }
+    checkboxAll.addEventListener("change", function () {
+        const checkboxRows = document.querySelectorAll(".checkbox_row");
+        checkboxRows.forEach(function (checkbox) {
+            checkbox.checked = checkboxAll.checked;
         });
-
-        Toast.fire({
-            icon: 'success',
-            title: 'Deleted successfully'
-        });
-
-    }
-
-    document.addEventListener('click', function (e) {
-
-        if (!e.target.closest('.field-col')) {
-            document.querySelectorAll('.action-popup')
-                .forEach(p => p.classList.remove('show'));
-        }
 
     });
+
 
 
 
