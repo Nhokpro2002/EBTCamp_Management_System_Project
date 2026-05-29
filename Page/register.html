@@ -1,11 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
      <title>EBT Camp - Register</title>
 
      <!-- Bootstrap -->
@@ -17,11 +15,7 @@
      <!-- Font -->
      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-     <link href="../CSS/bootstrap.min.css" rel="stylesheet">
-     <link href="../CSS/bootstrap.min.css.map" rel="stylesheet">
-
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
      <style>
@@ -34,7 +28,6 @@
                     linear-gradient(rgba(7, 12, 22, 0.92),
                          rgba(7, 12, 22, 0.92)),
                     url('https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?q=80&w=1920');
-
                background-size: cover;
                background-position: center;
                min-height: 100vh;
@@ -58,8 +51,6 @@
                     0 0 80px rgba(0, 0, 0, 0.5);
           }
 
-          /* LEFT */
-
           .left-panel {
                flex: 1;
                position: relative;
@@ -67,7 +58,6 @@
                     linear-gradient(135deg,
                          rgba(0, 255, 200, 0.12),
                          rgba(0, 170, 255, 0.08));
-
                padding: 35px;
                display: flex;
                flex-direction: column;
@@ -80,7 +70,6 @@
                background-image:
                     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-
                background-size: 40px 40px;
                pointer-events: none;
           }
@@ -119,14 +108,11 @@
                color: #00ffd0;
           }
 
-          /* RIGHT */
-
           .right-panel {
                width: 470px;
                background: rgba(10, 15, 25, 0.96);
                border-left: 1px solid rgba(255, 255, 255, 0.05);
                padding: 8px 35px 35px 35px;
-
           }
 
           .register-title {
@@ -171,7 +157,6 @@
                background: linear-gradient(90deg,
                          #00ffd0,
                          #00bfff);
-
                color: #02131f;
                font-weight: 800;
                transition: 0.3s;
@@ -203,7 +188,6 @@
                box-shadow:
                     0 0 10px #00ff84,
                     0 0 20px #00ff84;
-
                display: inline-block;
                margin-right: 8px;
           }
@@ -232,10 +216,8 @@
 
           .error {
                position: absolute;
-               /* nằm trên input, không chiếm space */
                left: 0;
                bottom: -18px;
-               /* cách input 2px, chỉnh tuỳ bạn */
                color: #ff6b6b;
                font-size: 0.85rem;
                pointer-events: none;
@@ -260,390 +242,288 @@
 
      <div class="register-container">
 
-          <!-- LEFT -->
+          <!-- LEFT PANEL -->
           <div class="left-panel">
-
                <div class="grid-overlay"></div>
-
                <div class="system-status">
                     <span class="signal"></span>
                     SYSTEM ONLINE
                </div>
 
                <div style="position: relative; z-index: 2;">
-
-                    <div class="brand">
-                         EBT CAMP
-                    </div>
-
+                    <div class="brand">EBT CAMP</div>
                     <div class="sub-title">
-
                          Engineering inventory management platform for
                          production systems, machine components,
                          purchasing operations and industrial workflow.
-
                     </div>
 
                     <div class="tech-card">
-
                          <div class="tech-item">
                               <span class="material-icons">precision_manufacturing</span>
                               Machine Equipment Monitoring
                          </div>
-
                          <div class="tech-item">
                               <span class="material-icons">inventory_2</span>
                               Smart Inventory Control
                          </div>
-
                          <div class="tech-item">
                               <span class="material-icons">qr_code_scanner</span>
                               QR / Barcode Tracking
                          </div>
-
                          <div class="tech-item">
                               <span class="material-icons">engineering</span>
                               Engineering Purchase Workflow
                          </div>
-
                     </div>
-
                </div>
-
           </div>
 
-          <!-- RIGHT -->
+          <!-- RIGHT PANEL -->
           <div class="right-panel">
 
-               <div class="register-title">
-                    Create Account
-               </div>
-
-               <div class="register-desc">
-                    Register engineering staff account
-               </div>
+               <div class="register-title">Create Account</div>
+               <div class="register-desc">Register engineering staff account</div>
 
                <form onsubmit="return false;">
 
-                    <div style="margin-bottom: 1rem !important; position: relative;">
-
-                         <label class="form-label">
-                              Full Name
-                         </label>
-
-                         <input type="text" class="form-control" id="full_name" placeholder="Enter full name">
-                         <div class="error" id="errorFullName"></div>
-
+                    <div style="margin-bottom: 1rem; position: relative;">
+                         <label class="form-label">Employee ID</label>
+                         <input type="text" class="form-control" id="employee_id" placeholder="Enter Employee ID">
+                         <div class="error" id="error_employee_id"></div>
                     </div>
 
-                    <div style="margin-bottom: 1rem !important; position: relative;">
-
-                         <label class="form-label">
-                              Employee ID
-                         </label>
-
-                         <input type="text" class="form-control" id="employee_id" placeholder="VH......">
-                         <div class="error" id="errorEmployeeID"></div>
-
+                    <div style="margin-bottom: 1rem; position: relative;">
+                         <label class="form-label">VH Code</label>
+                         <input type="text" class="form-control" id="vh_code" placeholder="VH......">
+                         <div class="error" id="error_vh_code"></div>
                     </div>
 
-                    <div style="margin-bottom: 1rem !important; position: relative;">
-
-                         <label class="form-label">
-                              Email
-                         </label>
-
+                    <div style="margin-bottom: 1rem; position: relative;">
+                         <label class="form-label">Email</label>
                          <input type="email" class="form-control" id="email" placeholder="name@lgdisplay.com">
                          <div class="error" id="errorEmail"></div>
-
                     </div>
 
-                    <div style="margin-bottom: 1rem !important; position: relative;">
-
-                         <label class="form-label">
-                              Department
-                         </label>
-
+                    <div style="margin-bottom: 1rem; position: relative;">
+                         <label class="form-label">Department</label>
                          <select class="form-control" id="department">
-
                               <option>Bộ phận Part Leader Công</option>
+                              <option>Bộ phận Part Leader Mạnh</option>
+                              <option>Bộ phận Part Leader Minh</option>
 
                          </select>
-
                     </div>
 
-                    <div style="margin-bottom: 1rem !important; position: relative;">
-
-                         <label class="form-label">
-                              Password
-                         </label>
-
+                    <div style="margin-bottom: 1rem; position: relative;">
+                         <label class="form-label">Password</label>
                          <input type="password" class="form-control" id="password" placeholder="••••••••">
                          <div class="error" id="errorPassword"></div>
-
                     </div>
 
-                    <div class="mb-4" position: relative;>
-
-                         <label class="form-label">
-                              Confirm Password
-                         </label>
-
+                    <div style="margin-bottom: 1rem; position: relative;">
+                         <label class="form-label">Confirm Password</label>
                          <input type="password" class="form-control" id="passwordConfirm" placeholder="••••••••">
                          <div class="error" id="errorPasswordConfirm"></div>
-
                     </div>
 
-                    <button type="button" id="register-btn" onclick="registerNewUser()">
-
-                         REGISTER SYSTEM ACCOUNT
-
-                    </button>
+                    <button type="button" id="register-btn" onclick="registerNewUser()">REGISTER SYSTEM ACCOUNT</button>
 
                </form>
 
                <div class="footer-text">
-
                     Already have account?
-                    <a href="http://127.0.0.1:5500/Page/login.html">
-                         Sign In
-                    </a>
-
+                    <a href="http://127.0.0.1:5500/Page/login.html">Sign In</a>
                </div>
 
           </div>
 
      </div>
 
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-          crossorigin="anonymous"></script>
+     <script>
+          const USERS = "users";
+          const POCKETBASE_URL = "http://127.0.0.1:8090";
+
+          let touched = {
+               employee_id: false,
+               vh_code: false,
+               email: false,
+               password: false,
+               passwordConfirm: false
+          };
+
+          function validateForm() {
+               let valid = true;
+
+               // EMPLOYEE ID
+               const emp = $("#employee_id").val().trim();
+
+               const onlyValidChars = /^[a-z0-9]{10,255}$/.test(emp);
+               const hasLetter = /[a-z]/.test(emp);
+               const hasNumber = /[0-9]/.test(emp);
+
+               if (touched.employee_id) {
+
+                    if (!onlyValidChars || !hasLetter || !hasNumber) {
+
+                         $("#error_employee_id").text(
+                              "10-255 chars, must contain lowercase letters and numbers"
+                         );
+
+                         $("#employee_id")
+                              .addClass("is-invalid")
+                              .removeClass("is-valid");
+
+                         valid = false;
+
+                    } else {
+
+                         $("#error_employee_id").text("");
+
+                         $("#employee_id")
+                              .addClass("is-valid")
+                              .removeClass("is-invalid");
+                    }
+               }
+
+               // VH CODE
+               const vhCode = $("#vh_code").val().trim();
+               const vhCodeRegex = /^VH\d{6}$/;
+               if (touched.vh_code) {
+                    if (!vhCodeRegex.test(vhCode)) {
+                         $("#error_vh_code").text("Must be VH + 6 numberic digits");
+                         $("#vh_code").addClass("is-invalid").removeClass("is-valid");
+                         valid = false;
+                    } else {
+                         $("#error_vh_code").text("");
+                         $("#vh_code").addClass("is-valid").removeClass("is-invalid");
+                    }
+               }
+
+               // EMAIL
+               const email = $("#email").val().trim();
+               const emailRegex = /^[A-Za-z0-9._%+-]+@lgdisplay\.com$/;
+               if (touched.email) {
+                    if (!emailRegex.test(email)) {
+                         $("#errorEmail").text("Must be @lgdisplay.com");
+                         $("#email").addClass("is-invalid").removeClass("is-valid");
+                         valid = false;
+                    } else {
+                         $("#errorEmail").text("");
+                         $("#email").addClass("is-valid").removeClass("is-invalid");
+                    }
+               }
+
+               // PASSWORD
+               const password = $("#password").val();
+               const okPassword =
+                    /^.{8,30}$/.test(password) &&
+                    /[A-Z]/.test(password) &&
+                    /[0-9]/.test(password) &&
+                    /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+               if (touched.password) {
+                    if (!okPassword) {
+                         $("#errorPassword").text("8-30 chars, upper, number, special");
+                         $("#password").addClass("is-invalid").removeClass("is-valid");
+                         valid = false;
+                    } else {
+                         $("#errorPassword").text("");
+                         $("#password").addClass("is-valid").removeClass("is-invalid");
+                    }
+               }
+
+               // CONFIRM PASSWORD
+               const confirm = $("#passwordConfirm").val();
+               if (touched.passwordConfirm) {
+                    if (confirm !== password || confirm === "") {
+                         $("#errorPasswordConfirm").text("Not match password");
+                         $("#passwordConfirm").addClass("is-invalid").removeClass("is-valid");
+                         valid = false;
+                    } else {
+                         $("#errorPasswordConfirm").text("");
+                         $("#passwordConfirm").addClass("is-valid").removeClass("is-invalid");
+                    }
+               }
+
+               $("#register-btn").prop("disabled", !valid);
+               return valid;
+          }
+
+          function setupTouchEvents() {
+               $("#employee_id, #vh_code, #email, #password, #passwordConfirm").on("blur", function () {
+                    const id = $(this).attr("id");
+                    touched[id] = true;
+                    validateForm();
+               });
+
+               $("input").on("input", function () {
+                    validateForm();
+               });
+          }
+
+          async function registerNewUser() {
+               Object.keys(touched).forEach(k => touched[k] = true);
+
+               if (!validateForm()) {
+                    Swal.fire("Error", "Please fix validation errors", "error");
+                    return;
+               }
+
+               const newUserData = {
+                    employee_id: $("#employee_id").val().trim(),
+                    vh_code: $("#vh_code").val().trim(),
+                    email: $("#email").val().trim(),
+                    department: $("#department").val(),
+                    password: $("#password").val(),
+                    passwordConfirm: $("#passwordConfirm").val()
+               };
+
+               try {
+                    const res = await fetch(`${POCKETBASE_URL}/api/collections/${USERS}/records`, {
+                         method: "POST",
+                         headers: { "Content-Type": "application/json" },
+                         body: JSON.stringify(newUserData)
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || "Create failed");
+
+                    Swal.fire({
+                         icon: "success",
+                         title: "Success",
+                         text: "Register account successfully",
+                         confirmButtonText: "OK"
+                    }).then((result) => {
+
+                         if (result.isConfirmed) {
+
+                              Swal.showLoading();
+
+                              setTimeout(() => {
+                                   window.location.href =
+                                        "http://127.0.0.1:5500/Page/login.html";
+                              }, 1000);
+                         }
+                    });
+               } catch (error) {
+                    Swal.fire({
+                         icon: "error",
+                         title: "Error",
+                         text: error.message,
+                         showConfirmButton: true
+
+                         // Ở đây có thể thêm tính năng, khi nhấn button "OK" thì sẽ reset toàn bộ các field input ở form
+                    });
+               }
+          }
+
+          $(document).ready(function () {
+               setupTouchEvents();
+               validateForm();
+          });
+     </script>
 
 </body>
 
 </html>
-
-<script>
-
-     const USERS = "users";
-     const POCKETBASE_URL = "http://127.0.0.1:8090";
-
-     /* =========================
-        TOUCHED STATE
-     ========================= */
-
-     let touched = {
-          full_name: false,
-          employee_id: false,
-          email: false,
-          password: false,
-          passwordConfirm: false
-     };
-
-     /* =========================
-        VALIDATION RULES
-     ========================= */
-
-     function validateForm() {
-
-          let valid = true;
-
-          // FULL NAME
-          const fullName = $("#full_name").val().trim();
-          const fullNameRegex = /^[A-Za-zÀ-ỹ\s]{10,255}$/;
-
-          if (touched.full_name) {
-               if (!fullNameRegex.test(fullName)) {
-                    $("#errorFullName").text("10-255 chars, letters only");
-                    $("#full_name").addClass("is-invalid").removeClass("is-valid");
-                    valid = false;
-               } else {
-                    $("#errorFullName").text("");
-                    $("#full_name").addClass("is-valid").removeClass("is-invalid");
-               }
-          }
-
-          // EMPLOYEE ID
-          const emp = $("#employee_id").val().trim();
-          const empRegex = /^VH\d{6}$/;
-
-          if (touched.employee_id) {
-               if (!empRegex.test(emp)) {
-                    $("#errorEmployeeID").text("Must be VH + 6 digits number");
-                    $("#employee_id").addClass("is-invalid").removeClass("is-valid");
-                    valid = false;
-               } else {
-                    $("#errorEmployeeID").text("");
-                    $("#employee_id").addClass("is-valid").removeClass("is-invalid");
-               }
-          }
-
-          // EMAIL
-          const email = $("#email").val().trim();
-          const emailRegex = /^[A-Za-z0-9._%+-]+@lgdisplay\.com$/;
-
-          if (touched.email) {
-               if (!emailRegex.test(email)) {
-                    $("#errorEmail").text("Must be @lgdisplay.com");
-                    $("#email").addClass("is-invalid").removeClass("is-valid");
-                    valid = false;
-               } else {
-                    $("#errorEmail").text("");
-                    $("#email").addClass("is-valid").removeClass("is-invalid");
-               }
-          }
-
-          // PASSWORD
-          const password = $("#password").val();
-
-          const okPassword =
-               /^.{8,30}$/.test(password) &&
-               /[A-Z]/.test(password) &&
-               /[0-9]/.test(password) &&
-               /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-          if (touched.password) {
-               if (!okPassword) {
-                    $("#errorPassword").text("8-30 chars, upper, number, special");
-                    $("#password").addClass("is-invalid").removeClass("is-valid");
-                    valid = false;
-               } else {
-                    $("#errorPassword").text("");
-                    $("#password").addClass("is-valid").removeClass("is-invalid");
-               }
-          }
-
-          // CONFIRM PASSWORD
-          const confirm = $("#passwordConfirm").val();
-
-          if (touched.passwordConfirm) {
-               if (confirm !== password || confirm === "") {
-                    $("#errorPasswordConfirm").text("Not match password");
-                    $("#passwordConfirm").addClass("is-invalid").removeClass("is-valid");
-                    valid = false;
-               } else {
-                    $("#errorPasswordConfirm").text("");
-                    $("#passwordConfirm").addClass("is-valid").removeClass("is-invalid");
-               }
-          }
-
-          // disable button
-          $("#register-btn").prop("disabled", !valid);
-
-          return valid;
-     }
-
-     /* =========================
-        MARK FIELD TOUCH
-     ========================= */
-
-     function setupTouchEvents() {
-
-          $("#full_name").on("blur", function () {
-               touched.full_name = true;
-               validateForm();
-          });
-
-          $("#employee_id").on("blur", function () {
-               touched.employee_id = true;
-               validateForm();
-          });
-
-          $("#email").on("blur", function () {
-               touched.email = true;
-               validateForm();
-          });
-
-          $("#password").on("blur", function () {
-               touched.password = true;
-               validateForm();
-          });
-
-          $("#passwordConfirm").on("blur", function () {
-               touched.passwordConfirm = true;
-               validateForm();
-          });
-
-          // optional live validation (nhẹ)
-          $("input").on("input", function () {
-               validateForm();
-          });
-     }
-
-     /* =========================
-        REGISTER USER
-     ========================= */
-
-     async function registerNewUser() {
-
-          // force mark all touched
-          Object.keys(touched).forEach(k => touched[k] = true);
-
-          if (!validateForm()) {
-               Swal.fire("Error", "Please fix validation errors", "error");
-               return;
-          }
-
-          const newUserData = {
-               full_name: $("#full_name").val().trim(),
-               employee_id: $("#employee_id").val().trim(),
-               email: $("#email").val().trim(),
-               department: $("#department").val(),
-               password: $("#password").val(),
-               passwordConfirm: $("#passwordConfirm").val()
-          };
-
-          try {
-
-               const res = await fetch(
-                    `${POCKETBASE_URL}/api/collections/${USERS}/records`,
-                    {
-                         method: "POST",
-                         headers: { "Content-Type": "application/json" },
-                         body: JSON.stringify(newUserData)
-                    }
-               );
-
-               const data = await res.json();
-
-               if (!res.ok) {
-                    throw new Error(data.message || "Create failed");
-               }
-
-               Swal.fire({
-                    icon: "success",
-                    title: "Success",
-                    text: "Account created",
-                    showConfirmButton: true
-               }).then(() => {
-                    setTimeout(() => {
-                         window.location.href = "http://127.0.0.1:5500/Page/login.html";
-                    }, 1000);
-               });
-
-
-
-          } catch (error) {
-
-               Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: error.message
-               });
-          }
-     }
-
-
-     /* =========================
-        INIT
-     ========================= */
-
-     $(document).ready(function () {
-
-          setupTouchEvents();
-
-          // initial state (no errors shown)
-          validateForm();
-     });
-
-</script>
