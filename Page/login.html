@@ -16,6 +16,12 @@
      <!-- Font -->
      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+     <!-- Sweetalert -->
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+     <!--  -->
+     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
      <style>
           * {
                font-family: 'Nunito', sans-serif;
@@ -277,13 +283,13 @@
                <form>
 
                     <div class="mb-3">
-                         <label class="form-label">Employee ID</label>
-                         <input type="text" class="form-control" placeholder="EMP-2026-001">
+                         <label class="form-label">Employee Email</label>
+                         <input type="text" id="email" class="form-control" placeholder="name@lgdisplay.com">
                     </div>
 
                     <div class="mb-3">
                          <label class="form-label">Password</label>
-                         <input type="password" class="form-control" placeholder="••••••••">
+                         <input type="password" id="password" class="form-control" placeholder="••••••••">
                     </div>
 
                     <button type="submit" class="login-btn">
@@ -304,3 +310,52 @@
 </body>
 
 </html>
+
+<script>
+
+     const USERS = "users";
+     const POCKETBASE_URL = "http://127.0.0.1:8090";
+
+
+     async function login() {
+
+          const loginData = {
+               email: $("#email").val().trim(),
+               password: $("#password").val()
+          };
+
+          try {
+               const res = await fetch(`${POCKETBASE_URL}/api/collections/${USERS}/auth-with-password`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(loginData)
+               });
+
+               const data = await res.json();
+               if (!res.ok) throw new Error(data.message || "Create failed");
+
+               Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: "Register account successfully",
+                    confirmButtonText: "OK"
+               }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                         Swal.showLoading();
+
+                         setTimeout(() => {
+                              window.location.href =
+                                   "http://127.0.0.1:5500/Page/login.html";
+                         }, 1000);
+                    }
+               });
+
+          } catch (error) {
+
+          }
+     }
+
+
+</script>
