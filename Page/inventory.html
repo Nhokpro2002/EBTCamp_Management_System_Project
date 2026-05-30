@@ -17,17 +17,16 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
+            height: 100%;
         }
 
         .sidebar {
-            background-color: #fffdfd;
-            height: 95vh;
-            /* full height viewport */
+            background-color: #111827;
         }
 
         .topbar {
             background-color: #8a8383;
-            height: 50px;
+            height: 60px;
         }
 
         li.nav-item.mb-2.d-flex.align-items-center {
@@ -42,7 +41,15 @@
 
         .nav-item:hover .material-icons,
         .nav-item:hover .nav-link {
-            color: #000 !important;
+            color: #00fff7 !important;
+
+            /* hiệu ứng phát quang */
+            text-shadow:
+                0 0 5px rgba(0, 255, 247, 0.7),
+                0 0 10px rgba(0, 255, 247, 0.6),
+                0 0 20px rgba(0, 255, 247, 0.5);
+
+            transition: all 0.25s ease;
         }
 
         #my_table tbody tr {
@@ -68,68 +75,279 @@
         #modalClose:hover {
             color: red;
         }
+
+        .badge-count {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+
+            background: red;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #item_data_table_wrapper {
+            padding-top: 4px;
+        }
+
+        .form-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            filter: brightness(0.95);
+            transform: translateY(-1px);
+        }
+
+        .main-content {
+            overflow: auto;
+            position: relative;
+        }
+
+        .custom-header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sidebar-menu .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 12px 14px;
+            border-radius: 14px;
+
+            color: #b8c2cc;
+            font-weight: 600;
+            text-decoration: none;
+
+            transition: all 0.25s ease;
+        }
+
+        /* icon */
+        .sidebar-menu .menu-link .material-icons {
+            font-size: 22px;
+            transition: all 0.25s ease;
+        }
+
+        /* hover */
+        .sidebar-menu .menu-link:hover {
+            background: rgba(0, 255, 208, 0.12);
+            color: #00ffd0;
+
+            transform: translateX(4px);
+
+            box-shadow: 0 0 12px rgba(0, 255, 208, 0.18);
+        }
+
+        .nav-link .menu-link .active:hover {
+            color: #00ffd0;
+        }
+
+        .nav-link .menu-link {
+            font-size: 20px;
+        }
+
+        .sidebar-menu .menu-link:hover .material-icons {
+            color: #7dd3c7;
+        }
+
+        /* active */
+        .sidebar-menu .menu-link.active {
+            background: linear-gradient(135deg,
+                    rgba(0, 255, 208, 0.22),
+                    rgba(0, 255, 208, 0.08));
+            font-size: 18px;
+
+            color: #7dd3c7;
+
+            border: 1px solid rgba(0, 255, 208, 0.35);
+
+            box-shadow:
+                0 0 15px rgba(0, 255, 208, 0.2),
+                inset 0 0 8px rgba(0, 255, 208, 0.08);
+        }
+
+        .sidebar-menu .menu-link.active .material-icons {
+            color: #7dd3c7;
+        }
+
+        .big-dot {
+            display: inline-block;
+            transform: scale(3);
+            transform-origin: left center;
+            line-height: 1;
+
+        }
+
+        .big-dot:hover {
+            cursor: pointer;
+        }
+
+        .action-popup {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 99999;
+        }
+
+        .action-popup.show {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .action-popup button {
+            border: none;
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .action-popup button:hover {
+            background: #e9e9e9;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            /* xếp dọc */
+            align-items: center;
+            gap: 10px;
+            min-width: 60px;
+        }
+
+        /* checkbox ALL to như label */
+        .checkbox-all input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* checkbox row nhỏ hơn */
+        .checkbox_row {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        label.checkbox-all {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="container-fluid p-3">
+    <div class="container-fluid vh-100">
         <div class="row h-100">
             <div class="col-2 sidebar border" style="border-radius: 4.8px 0px 0px 4.8px !important;">
-                <div style="text-align: center; margin-top: 15px;">
+                <div style="text-align: center; margin-top: 8px;">
+                    <span class="material-icons"
+                        style="font-size: xx-large; font-weight: 700; color: #00ffd0; position: relative; top: 4px;">precision_manufacturing</span>
 
-                    <span style="font-size: larger; font-weight: 700;">EBT
+
+                    <span style="font-size: xx-large; font-weight: 700; color: #00ffd0; letter-spacing: 2px;">EBT
                         Camp</span>
                 </div>
-                <ul class="nav flex-column p-3">
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            home
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#dashboard">Dashboard</a>
+
+                <ul class="nav flex-column p-3 sidebar-menu">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#dashboard">
+                            <span class="material-icons">
+                                home
+                            </span>
+                            Dashboard
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            warehouse
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#inventory">Inventory</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#inventory">
+                            <span class="material-icons">
+                                warehouse
+                            </span>
+                            Warehouse
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            category
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#production">Production</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#production">
+                            <span class="material-icons">
+                                category
+                            </span>
+                            Production
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            list_alt
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#order">Order</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#order">
+                            <span class="material-icons">
+                                list_alt
+                            </span>
+                            Order
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            account_box
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#useraccess">User Access</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#useraccess">
+                            <span class="material-icons">
+                                account_box
+                            </span>
+                            User Access
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            help_center
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#support">Support</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#support">
+                            <span class="material-icons">
+                                help_center
+                            </span>
+                            Support
+                        </a>
                     </li>
-                    <li class="nav-item mb-2 d-flex align-items-center">
-                        <span class="material-icons ms-2 text-secondary">
-                            settings
-                        </span>
-                        <a class="nav-link text-secondary fw-bold" href="#settings">Settings</a>
+
+                    <li class="nav-item mb-2">
+                        <a class="nav-link menu-link active" href="#settings">
+                            <span class="material-icons">
+                                settings
+                            </span>
+                            Settings
+                        </a>
                     </li>
                 </ul>
             </div>
             <div class="col-10 d-flex flex-column" style="padding-left: 0px !important; padding-right: 0px !important;">
                 <div class="topbar border" style="border-radius: 0px 4.8px 0px 0px !important;"></div>
-                <div class="border main-content d-flex justify-content-center px-1"
-                    style="height: 645px; border-radius: 0px 0px 4.8px 0px !important">
+                <div class="border main-content d-flex justify-content-center px-1 flex-grow-1"
+                    style="border-radius: 0px 0px 4.8px 0px !important; overflow: auto;">
                     <table id="my_table">
                         <thead>
                             <tr>
@@ -211,7 +429,7 @@
 
 <script>
 
-    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3OTg0NDQ0MiwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ._NMtcZZnN20gC98MBh6Ta7s9V2cfKN9pvOtOxFD2xHM";
+    //const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDE4OTk3NCwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.L_3ZsgM6wYhttr712yjPdmhl-mL6aeK1JBu_eudBJIU";
     const POCKETBASE_URL = "http://127.0.0.1:8090";
     const COLLECTION_ITEMS = "Items";
     const COLLECTION_ORDER_ITEMS = "Order_Items";
@@ -224,9 +442,11 @@
 
         async function fetchData() {
             try {
+
+                const token = localStorage.getItem('token');
                 const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records`, {
                     headers: {
-                        'Authorization': `Bearer ${TOKEN}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -311,10 +531,11 @@
 
         try {
 
+            const token = localStorage.getItem('token');
             const filter = encodeURIComponent(`model="${itemModel}"`);
             const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records?filter=${filter}`, {
                 headers: {
-                    'Authorization': `Bearer ${TOKEN}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -341,7 +562,6 @@
 
             if ($.fn.DataTable.isDataTable('#order_history_table')) {
                 $('#order_history_table').DataTable().destroy();
-                //$('#order_history_table').empty(); // optional
             }
 
             $('#order_history_table').DataTable({
