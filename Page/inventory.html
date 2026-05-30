@@ -9,19 +9,26 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <!-- font Nunito -->
 
     <!-- use version 0.20.3 -->
     <script type="text/javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body {
             font-family: 'Nunito', sans-serif;
             height: 100%;
+            background: #f5f7fb;
+            color: #1f2937;
         }
 
         .sidebar {
-            background-color: #111827;
+            background: linear-gradient(180deg, #0d6efd, #0b5ed7);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .topbar {
@@ -37,19 +44,6 @@
         li.nav-item.mb-2.d-flex.align-items-center:hover {
             background-color: #D3D3D3;
             border-radius: 3px;
-        }
-
-        .nav-item:hover .material-icons,
-        .nav-item:hover .nav-link {
-            color: #00fff7 !important;
-
-            /* hiệu ứng phát quang */
-            text-shadow:
-                0 0 5px rgba(0, 255, 247, 0.7),
-                0 0 10px rgba(0, 255, 247, 0.6),
-                0 0 20px rgba(0, 255, 247, 0.5);
-
-            transition: all 0.25s ease;
         }
 
         #my_table tbody tr {
@@ -80,16 +74,13 @@
             position: absolute;
             top: -6px;
             right: -8px;
-
             background: red;
             color: white;
             font-size: 10px;
             font-weight: bold;
-
             width: 16px;
             height: 16px;
             border-radius: 50%;
-
             display: flex;
             align-items: center;
             justify-content: center;
@@ -136,15 +127,12 @@
             display: flex;
             align-items: center;
             gap: 12px;
-
             padding: 12px 14px;
             border-radius: 14px;
-
-            color: #b8c2cc;
-            font-weight: 600;
+            color: #fff;
             text-decoration: none;
-
             transition: all 0.25s ease;
+            border: 1px solid transparent;
         }
 
         /* icon */
@@ -155,12 +143,10 @@
 
         /* hover */
         .sidebar-menu .menu-link:hover {
-            background: rgba(0, 255, 208, 0.12);
-            color: #00ffd0;
-
+            background: rgba(59, 130, 246, 0.12);
+            color: #3b82f6;
             transform: translateX(4px);
-
-            box-shadow: 0 0 12px rgba(0, 255, 208, 0.18);
+            border: 1px solid rgba(59, 130, 246, 0.25);
         }
 
         .nav-link .menu-link .active:hover {
@@ -172,27 +158,19 @@
         }
 
         .sidebar-menu .menu-link:hover .material-icons {
-            color: #7dd3c7;
+            color: #fff;
         }
 
         /* active */
         .sidebar-menu .menu-link.active {
-            background: linear-gradient(135deg,
-                    rgba(0, 255, 208, 0.22),
-                    rgba(0, 255, 208, 0.08));
-            font-size: 18px;
-
-            color: #7dd3c7;
-
-            border: 1px solid rgba(0, 255, 208, 0.35);
-
-            box-shadow:
-                0 0 15px rgba(0, 255, 208, 0.2),
-                inset 0 0 8px rgba(0, 255, 208, 0.08);
+            background: #3b82f6;
+            color: white;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
         }
 
         .sidebar-menu .menu-link.active .material-icons {
-            color: #7dd3c7;
+            color: #fff;
         }
 
         .big-dot {
@@ -269,83 +247,97 @@
 
     <div class="container-fluid vh-100">
         <div class="row h-100">
-            <div class="col-2 sidebar border" style="border-radius: 4.8px 0px 0px 4.8px !important;">
+            <div class="sidebar border"
+                style="border-radius: 4.8px 0px 0px 4.8px !important; width: 15%; flex: 0 0 auto;">
                 <div style="text-align: center; margin-top: 8px;">
                     <span class="material-icons"
-                        style="font-size: xx-large; font-weight: 700; color: #00ffd0; position: relative; top: 4px;">precision_manufacturing</span>
+                        style="font-size: xx-large; font-weight: 700; color: #fff; position: relative; top: 4px;">precision_manufacturing</span>
 
 
-                    <span style="font-size: xx-large; font-weight: 700; color: #00ffd0; letter-spacing: 2px;">EBT
+                    <span
+                        style="font-size: xx-large; font-weight: 700; color: #fff; letter-spacing: 2px; font-family: 'Segoe UI'">EBT
                         Camp</span>
                 </div>
 
                 <ul class="nav flex-column p-3 sidebar-menu">
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#dashboard">
-                            <span class="material-icons">
-                                home
-                            </span>
+                        <a class="nav-link menu-link" href="#dashboard">
+                            <i class="bi bi-house me-2"></i>
                             Dashboard
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#inventory">
-                            <span class="material-icons">
-                                warehouse
-                            </span>
+                        <a class="nav-link menu-link" href="#inventory">
+                            <i class="bi-box-seam me-2"></i>
                             Warehouse
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#production">
-                            <span class="material-icons">
-                                category
-                            </span>
-                            Production
-                        </a>
-                    </li>
-
-                    <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#order">
-                            <span class="material-icons">
-                                list_alt
-                            </span>
+                        <a class="nav-link menu-link" href="#order">
+                            <i class="bi bi-list-ul me-2"></i>
                             Order
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#useraccess">
-                            <span class="material-icons">
-                                account_box
-                            </span>
+                        <a class="nav-link menu-link" href="#useraccess">
+                            <i class="bi bi-people me-2"></i>
                             User Access
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#support">
-                            <span class="material-icons">
-                                help_center
-                            </span>
+                        <a class="nav-link menu-link" href="#support">
+                            <i class="bi bi-question-square me-2"></i>
                             Support
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#settings">
-                            <span class="material-icons">
-                                settings
-                            </span>
+                        <a class="nav-link menu-link" href="#settings">
+                            <i class="bi bi-gear me-2"></i>
                             Settings
                         </a>
                     </li>
                 </ul>
             </div>
-            <div class="col-10 d-flex flex-column" style="padding-left: 0px !important; padding-right: 0px !important;">
-                <div class="topbar border" style="border-radius: 0px 4.8px 0px 0px !important;"></div>
+            <div class="col-10 d-flex flex-column flex-grow-1"
+                style="padding-left: 0px !important; padding-right: 0px !important;">
+                <div class="topbar border"
+                    style="border-radius: 0px 4.8px 0px 0px !important; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; box-sizing: border-box; height: 60px; background-color: #fff;">
+
+                    <!-- Khối chứa thông báo và thông tin user -->
+                    <div style="display: flex; align-items: center; gap: 15px;">
+
+                        <!-- 1. Biểu tượng thông báo (Sử dụng SVG icon) -->
+                        <div class="notification-icon" style="position: relative; cursor: pointer;">
+                            <svg xmlns="http://w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <!-- Chấm đỏ thông báo chưa đọc (Tùy chọn) -->
+                            <span
+                                style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: red; border-radius: 50%;"></span>
+                        </div>
+
+                        <!-- 2. Tên người dùng -->
+                        <span class="user-name"
+                            style="font-family: sans-serif; font-size: 14px; color: #333; font-weight: 500;">
+                            Nguyễn Văn A
+                        </span>
+
+                        <!-- 3. Logo/Avatar người dùng -->
+                        <div class="user-avatar">
+                            <img src="https://placeholder.com" alt="User Avatar"
+                                style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;" />
+                        </div>
+
+                    </div>
+                </div>
+
                 <div class="border main-content d-flex justify-content-center px-1 flex-grow-1"
                     style="border-radius: 0px 0px 4.8px 0px !important; overflow: auto;">
                     <table id="my_table">
