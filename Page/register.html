@@ -19,130 +19,111 @@
      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
      <style>
-          * {
-               font-family: 'Nunito', sans-serif;
-          }
-
           body {
-               background:
-                    linear-gradient(rgba(7, 12, 22, 0.92),
-                         rgba(7, 12, 22, 0.92)),
-                    url('https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?q=80&w=1920');
-               background-size: cover;
-               background-position: center;
+               background: #f5f7fb;
                min-height: 100vh;
                display: flex;
                justify-content: center;
                align-items: center;
-               overflow: hidden;
+               font-family: 'Nunito', sans-serif;
           }
 
           .register-container {
                width: 1160px;
                max-width: 1180px;
                height: 720px;
-               background: rgba(15, 23, 42, 0.92);
-               border: 1px solid rgba(255, 255, 255, 0.08);
-               border-radius: 18px;
+               background: #ffffff;
+               border: 1px solid #e5e7eb;
+               border-radius: 16px;
                overflow: hidden;
                display: flex;
-               box-shadow:
-                    0 0 30px rgba(0, 255, 200, 0.12),
-                    0 0 80px rgba(0, 0, 0, 0.5);
+               box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
           }
 
           .left-panel {
                flex: 1;
                position: relative;
-               background:
-                    linear-gradient(135deg,
-                         rgba(0, 255, 200, 0.12),
-                         rgba(0, 170, 255, 0.08));
-               padding: 35px;
-               display: flex;
-               flex-direction: column;
-               justify-content: center;
+               padding: 40px;
+               background: linear-gradient(135deg, #eff6ff, #f0fdf4);
           }
 
           .grid-overlay {
                position: absolute;
                inset: 0;
                background-image:
-                    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
                background-size: 40px 40px;
                pointer-events: none;
           }
 
           .brand {
-               font-size: 40px;
+               font-size: 38px;
                font-weight: 800;
-               color: #00ffd0;
-               letter-spacing: 2px;
+               color: #2563eb;
           }
 
           .sub-title {
-               margin-top: 16px;
-               color: #cbd5e1;
-               font-size: 17px;
-               line-height: 1.7;
+               margin-top: 12px;
+               color: #475569;
+               font-size: 15px;
+               line-height: 1.6;
           }
 
           .tech-card {
-               margin-top: 40px;
-               background: rgba(255, 255, 255, 0.04);
-               border: 1px solid rgba(255, 255, 255, 0.06);
-               border-radius: 14px;
-               padding: 24px;
+               margin-top: 35px;
+               background: #ffffff;
+               border: 1px solid #e5e7eb;
+               border-radius: 12px;
+               padding: 20px;
           }
 
           .tech-item {
                display: flex;
                align-items: center;
-               gap: 14px;
-               color: #dbeafe;
-               margin-bottom: 18px;
+               gap: 12px;
+               color: #334155;
+               margin-bottom: 14px;
           }
 
           .tech-item .material-icons {
-               color: #00ffd0;
+               color: #2563eb;
           }
 
           .right-panel {
                width: 470px;
-               background: rgba(10, 15, 25, 0.96);
-               border-left: 1px solid rgba(255, 255, 255, 0.05);
-               padding: 8px 35px 35px 35px;
+               background: #ffffff;
+               border-left: 1px solid #e5e7eb;
+               padding: 30px 35px;
           }
 
           .register-title {
-               color: white;
-               font-size: 30px;
+               font-size: 26px;
                font-weight: 800;
+               color: #111827;
           }
 
           .register-desc {
-               color: #94a3b8;
-               margin-bottom: 8px;
+               color: #64748b;
+               margin-bottom: 10px;
           }
 
           .form-label {
-               color: #cbd5e1;
+               color: #374151;
                font-weight: 700;
           }
 
           .form-control {
-               height: 40px;
-               background: rgba(255, 255, 255, 0.05);
-               border: 1px solid rgba(255, 255, 255, 0.08);
-               color: white;
+               height: 42px;
+               border-radius: 8px;
+               border: 1px solid #d1d5db;
+               background: #fff;
+               color: #111827;
           }
 
           .form-control:focus {
-               background: rgba(255, 255, 255, 0.06);
-               color: white;
-               border-color: #00ffd0;
-               box-shadow: 0 0 0 0.2rem rgba(0, 255, 208, 0.15);
+               border-color: #3b82f6;
+               box-shadow: 0 0 0 .2rem rgba(59, 130, 246, .15);
           }
 
           .form-control::placeholder {
@@ -151,53 +132,47 @@
 
           #register-btn {
                width: 100%;
-               height: 40px;
+               height: 42px;
                border: none;
                border-radius: 10px;
-               background: linear-gradient(90deg,
-                         #00ffd0,
-                         #00bfff);
-               color: #02131f;
-               font-weight: 800;
-               transition: 0.3s;
+               background: #2563eb;
+               color: white;
+               font-weight: 700;
+               transition: 0.2s;
           }
 
           #register-btn:hover {
-               transform: translateY(-2px);
-               box-shadow:
-                    0 10px 25px rgba(0, 255, 208, 0.25);
+               background: #1d4ed8;
+               transform: translateY(-1px);
           }
 
           .footer-text {
                text-align: center;
-               margin-top: 15px;
+               margin-top: 14px;
                color: #64748b;
           }
 
           .footer-text a {
-               color: #00ffd0;
-               text-decoration: none;
+               color: #2563eb;
                font-weight: 700;
+               text-decoration: none;
           }
 
           .signal {
                width: 10px;
                height: 10px;
                border-radius: 50%;
-               background: #00ff84;
-               box-shadow:
-                    0 0 10px #00ff84,
-                    0 0 20px #00ff84;
+               background: #22c55e;
                display: inline-block;
-               margin-right: 8px;
+               margin-right: 6px;
           }
 
           .system-status {
                position: absolute;
-               top: 25px;
-               right: 25px;
-               color: #d1fae5;
-               font-size: 14px;
+               top: 20px;
+               right: 20px;
+               font-size: 13px;
+               color: #16a34a;
           }
 
           @media(max-width: 500px) {
@@ -218,13 +193,12 @@
                position: absolute;
                left: 0;
                bottom: -18px;
-               color: #ff6b6b;
-               font-size: 0.85rem;
-               pointer-events: none;
+               color: #ef4444;
+               font-size: 12px;
           }
 
           input.is-invalid {
-               border-color: #ff6b6b;
+               border-color: #ef4444;
           }
 
           input.is-valid {
