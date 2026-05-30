@@ -292,7 +292,7 @@
                          <input type="password" id="password" class="form-control" placeholder="••••••••">
                     </div>
 
-                    <button type="submit" class="login-btn">
+                    <button type="button" onclick="login()" class="login-btn">
                          LOGIN
                     </button>
 
@@ -313,15 +313,15 @@
 
 <script>
 
-     const USERS = "users";
+     const USERS = "Users";
      const POCKETBASE_URL = "http://127.0.0.1:8090";
 
 
      async function login() {
 
           const loginData = {
-               email: $("#email").val().trim(),
-               password: $("#password").val()
+               identity: $("#email").val().trim(),
+               password: $("#password").val().trim()
           };
 
           try {
@@ -332,12 +332,16 @@
                });
 
                const data = await res.json();
-               if (!res.ok) throw new Error(data.message || "Create failed");
+               if (!res.ok) throw new Error(data.message || "email or eassword incorect");
+
+               // Save token 
+               localStorage.setItem("token", data.token);
+               localStorage.setItem("user", JSON.stringify(data.record));
 
                Swal.fire({
                     icon: "success",
                     title: "Success",
-                    text: "Register account successfully",
+                    text: "Login successfully",
                     confirmButtonText: "OK"
                }).then((result) => {
 
@@ -347,7 +351,7 @@
 
                          setTimeout(() => {
                               window.location.href =
-                                   "http://127.0.0.1:5500/Page/login.html";
+                                   "http://127.0.0.1:5500/Page/dashboard.html";
                          }, 1000);
                     }
                });
