@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <!-- font Nunito -->
 
     <!-- use version 0.20.3 -->
@@ -17,16 +18,21 @@
     <style>
         body {
             font-family: 'Nunito', sans-serif;
+            height: 100%;
+            background: #f5f7fb;
+            color: #1f2937;
         }
 
         .sidebar {
-            background-color: #111827;
-            height: 96.3vh;
-            /* full height viewport */
+            background: linear-gradient(180deg, #0d6efd, #0b5ed7);
+            color: white;
+
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .topbar {
-            background-color: #8a8383;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
             height: 60px;
         }
 
@@ -38,19 +44,6 @@
         li.nav-item.mb-2.d-flex.align-items-center:hover {
             background-color: #D3D3D3;
             border-radius: 3px;
-        }
-
-        .nav-item:hover .material-icons,
-        .nav-item:hover .nav-link {
-            color: #00fff7 !important;
-
-            /* hiệu ứng phát quang */
-            text-shadow:
-                0 0 5px rgba(0, 255, 247, 0.7),
-                0 0 10px rgba(0, 255, 247, 0.6),
-                0 0 20px rgba(0, 255, 247, 0.5);
-
-            transition: all 0.25s ease;
         }
 
         #my_table tbody tr {
@@ -108,10 +101,116 @@
         }
 
         .btn {
+
             border: none;
-            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 8px 14px;
+            transition: 0.2s;
+            color: white;
+        }
+
+        .btn-add {
+            background: #22c55e;
+        }
+
+        .btn-add:hover {
+            background: #16a34a;
+        }
+
+        .btn-save {
+            background: #3b82f6;
+        }
+
+        .btn-save:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .btn-reset {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .btn-export {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #d97706;
+        }
+
+        .btn-update {
+            background-color: darkorchid;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(0, 255, 208, 0.15);
+            color: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #00ffd0;
+        }
+
+        label {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #00ffd0;
+        }
+
+        #my_table {
+            background: white;
+            color: #111827;
+        }
+
+        #my_table thead th {
+            background: #f1f5f9;
+            color: #111827;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        #my_table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        #my_table tbody td {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-control,
+        .form-select {
+            background: white;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
-            transition: all 0.2s ease;
+            color: #111827;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 .2rem rgba(59, 130, 246, .2);
+        }
+
+        .badge-count {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
         }
 
         .btn:hover {
@@ -122,15 +221,15 @@
         .main-content {
             overflow: auto;
             position: relative;
+            background: #f5f7fb;
         }
 
         .custom-header {
             position: sticky;
             top: 0;
             z-index: 999;
-
-            background: #fff;
-            border-bottom: 1px solid #ddd;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .sidebar-menu .menu-link {
@@ -141,11 +240,11 @@
             padding: 12px 14px;
             border-radius: 14px;
 
-            color: #b8c2cc;
-            font-weight: 600;
+            color: #fff;
             text-decoration: none;
 
             transition: all 0.25s ease;
+            border: 1px solid transparent;
         }
 
         /* icon */
@@ -156,16 +255,14 @@
 
         /* hover */
         .sidebar-menu .menu-link:hover {
-            background: rgba(0, 255, 208, 0.12);
-            color: #00ffd0;
-
+            background: rgba(59, 130, 246, 0.12);
+            color: #3b82f6;
             transform: translateX(4px);
-
-            box-shadow: 0 0 12px rgba(0, 255, 208, 0.18);
+            border: 1px solid rgba(59, 130, 246, 0.25);
         }
 
         .nav-link .menu-link .active:hover {
-            color: #00ffd0;
+            color: #fff;
         }
 
         .nav-link .menu-link {
@@ -173,27 +270,19 @@
         }
 
         .sidebar-menu .menu-link:hover .material-icons {
-            color: #7dd3c7;
+            color: #fff;
         }
 
         /* active */
         .sidebar-menu .menu-link.active {
-            background: linear-gradient(135deg,
-                    rgba(0, 255, 208, 0.22),
-                    rgba(0, 255, 208, 0.08));
-            font-size: 18px;
-
-            color: #7dd3c7;
-
-            border: 1px solid rgba(0, 255, 208, 0.35);
-
-            box-shadow:
-                0 0 15px rgba(0, 255, 208, 0.2),
-                inset 0 0 8px rgba(0, 255, 208, 0.08);
+            background: #3b82f6;
+            color: white;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
         }
 
-        .sidebar-menu .menu-link.active .material-icons {
-            color: #7dd3c7;
+        .sidebar-menu .menu-link.active .material-icons-outlined {
+            color: #fff;
         }
 
         .big-dot {
@@ -206,34 +295,6 @@
 
         .big-dot:hover {
             cursor: pointer;
-        }
-
-        .action-popup {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            display: none;
-            z-index: 99999;
-        }
-
-        .action-popup.show {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .action-popup button {
-            border: none;
-            background: #f5f5f5;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .action-popup button:hover {
-            background: #e9e9e9;
         }
 
         .checkbox-group {
@@ -268,22 +329,24 @@
 
 <body>
 
-    <div class="container-fluid p-3">
+    <div class="container-fluid vh-100">
         <div class="row h-100">
-            <div class="col-2 sidebar border" style="border-radius: 4.8px 0px 0px 4.8px !important;">
+            <div class="sidebar border"
+                style="border-radius: 4.8px 0px 0px 4.8px !important; width: 15%; flex: 0 0 auto;">
                 <div style="text-align: center; margin-top: 8px;">
                     <span class="material-icons"
-                        style="font-size: xx-large; font-weight: 700; color: #00ffd0; position: relative; top: 4px;">precision_manufacturing</span>
+                        style="font-size: xx-large; font-weight: 700; color: #fff; position: relative; top: 4px;">precision_manufacturing</span>
 
 
-                    <span style="font-size: xx-large; font-weight: 700; color: #00ffd0; letter-spacing: 2px;">EBT
+                    <span
+                        style="font-size: xx-large; font-weight: 700; color: #fff; letter-spacing: 2px; font-family: 'Segoe UI'">EBT
                         Camp</span>
                 </div>
 
                 <ul class="nav flex-column p-3 sidebar-menu">
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#dashboard">
-                            <span class="material-icons">
+                        <a class="nav-link menu-link" href="#dashboard">
+                            <span class="material-icons-outlined">
                                 home
                             </span>
                             Dashboard
@@ -291,8 +354,8 @@
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#inventory">
-                            <span class="material-icons">
+                        <a class="nav-link menu-link" href="#inventory">
+                            <span class="material-icons-outlined">
                                 warehouse
                             </span>
                             Warehouse
@@ -300,8 +363,8 @@
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#production">
-                            <span class="material-icons">
+                        <a class="nav-link menu-link" href="#production">
+                            <span class="material-icons-outlined">
                                 category
                             </span>
                             Production
@@ -309,8 +372,8 @@
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#order">
-                            <span class="material-icons">
+                        <a class="nav-link menu-link" href="#order">
+                            <span class="material-icons-outlined">
                                 list_alt
                             </span>
                             Order
@@ -318,8 +381,8 @@
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#useraccess">
-                            <span class="material-icons">
+                        <a class="nav-link menu-link" href="#useraccess">
+                            <span class="material-icons-outlined">
                                 account_box
                             </span>
                             User Access
@@ -327,8 +390,8 @@
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#support">
-                            <span class="material-icons">
+                        <a class="nav-link menu-link" href="#support">
+                            <span class="material-icons-outlined">
                                 help_center
                             </span>
                             Support
@@ -336,8 +399,8 @@
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a class="nav-link menu-link active" href="#settings">
-                            <span class="material-icons">
+                        <a class="nav-link menu-link" href="#settings">
+                            <span class="material-icons-outlined">
                                 settings
                             </span>
                             Settings
@@ -345,9 +408,42 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-10 d-flex flex-column" style="padding-left: 0px !important; padding-right: 0px !important;">
-                <div class="topbar border" style="border-radius: 0px 4.8px 0px 0px !important;"></div>
-                <div class="main-content d-flex justify-content-center" style="height: 645px; overflow: auto">
+            <div class="col-10 d-flex flex-column flex-grow-1"
+                style="padding-left: 0px !important; padding-right: 0px !important;">
+                <div class="topbar border"
+                    style="border-radius: 0px 4.8px 0px 0px !important; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; box-sizing: border-box; height: 60px; background-color: #fff;">
+
+                    <!-- Khối chứa thông báo và thông tin user -->
+                    <div style="display: flex; align-items: center; gap: 15px;">
+
+                        <!-- 1. Biểu tượng thông báo (Sử dụng SVG icon) -->
+                        <div class="notification-icon" style="position: relative; cursor: pointer;">
+                            <svg xmlns="http://w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <!-- Chấm đỏ thông báo chưa đọc (Tùy chọn) -->
+                            <span
+                                style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: red; border-radius: 50%;"></span>
+                        </div>
+
+                        <!-- 2. Tên người dùng -->
+                        <span class="user-name"
+                            style="font-family: sans-serif; font-size: 14px; color: #333; font-weight: 500;">
+                            Nguyễn Văn A
+                        </span>
+
+                        <!-- 3. Logo/Avatar người dùng -->
+                        <div class="user-avatar">
+                            <img src="https://placeholder.com" alt="User Avatar"
+                                style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="main-content d-flex justify-content-center flex-grow-1" ;>
                     <div class="container-fluid w-100" style="padding: 0px !important;">
 
                         <div class="card shadow-sm" style="height: 100%;">
@@ -355,39 +451,35 @@
 
                                 <div class="d-flex gap-2">
 
-                                    <button type="button" id="addItemButton" class="btn btn-add"
-                                        style="background-color: #21c15b; color: #ffffff;">
+                                    <button type="button" id="addItemButton" class="btn btn-add">
                                         <span><strong>Add</strong></span>
                                     </button>
 
-                                    <button type="button" id="deleteItemButton" class="btn btn-delete"
-                                        style="background-color: #d24620; color: #ffffff;">
+                                    <button type="button" id="deleteItemButton" class="btn btn-delete">
                                         <span><strong>Delete</strong></span>
                                     </button>
 
-                                    <button type="reset" id="resetButton" class="btn btn-reset"
-                                        style="background-color: #7b828c; color: #ffffff;">
+
+                                    <button type="reset" id="resetButton" class="btn btn-reset">
                                         <span><strong>Reset</strong></span>
                                     </button>
 
                                     <button type="button" id="updateButton" class="btn btn-update"
-                                        style="background-color: #129658; color: #ffffff;" onclick="handleUpdate()">
+                                        onclick="handleUpdate()">
                                         <span><strong>Update</strong></span>
                                     </button>
 
-                                    <button type="submit" id="saveButton" class="btn btn-save"
-                                        style="background-color: #3a80d6; color: #ffffff;">
+                                    <button type="submit" id="saveButton" class="btn btn-save">
                                         <span><strong>Save</strong></span>
                                     </button>
 
-                                    <button type="button" id="exportExcelButton" class="btn btn-export"
-                                        style="background-color: #14e1c1c4; color: #0f172a;">
+                                    <button type="button" id="exportExcelButton" class="btn btn-export">
                                         <span><strong>Export Excel</strong></span>
                                     </button>
 
                                 </div>
 
-                                <div style="display:flex; gap:20px;">
+                                <div style="display:flex; gap:20px; padding-right: 10px;">
 
                                     <!-- Receipt icon -->
                                     <div style="position:relative; display:inline-block;">
@@ -556,7 +648,6 @@
 
                             </div>
 
-                            </form>
 
                         </div>
                     </div>
@@ -564,7 +655,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
     <div id="item_inventory_modal"
@@ -612,8 +702,6 @@
 
 <script>
 
-    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDEwMzY5NywiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.CEE0NKfgJC8aunM-OFgsAiQpuJ4OcALGdZs7pW6KdTE";
-    const POCKETBASE_URL = "http://127.0.0.1:8090";
     const COLLECTION_ITEMS = "Items";
     const COLLECTION_ORDER_ITEMS = "Order_Items";
     const COLLECTION_ORDERS = "Orders";
@@ -631,9 +719,10 @@
 
     async function getInventoryItemData() {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records`, {
                 headers: {
-                    'Authorization': `Bearer ${TOKEN}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -776,6 +865,28 @@
 
         // append
         $('#orderForm').append(newRow);
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1000,
+            timerProgressBar: true,
+
+            didOpen: (toast) => {
+
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+
+            }
+        });
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Saved successfully'
+        });
+
+
     });
 
     // Delete rows with checked = true
@@ -871,6 +982,8 @@
 
         try {
 
+            const token = localStorage.getItem('token');
+
             const orderItems = [];
 
             $('.item-row').each(function () {
@@ -910,7 +1023,7 @@
                     {
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${TOKEN}`,
+                            'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(item)
@@ -988,6 +1101,8 @@
 
         try {
 
+            const token = localStorage.getItem('token');
+
             const checkedRows = $('.checkbox_row:checked')
                 .closest('.item-row');
 
@@ -1031,7 +1146,7 @@
                     {
                         method: 'PATCH',
                         headers: {
-                            'Authorization': `Bearer ${TOKEN}`,
+                            'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(objectData)
@@ -1074,7 +1189,15 @@
 
     });
 
+    document.querySelectorAll('.menu-link').forEach(item => {
+        item.addEventListener('click', function () {
+            document.querySelectorAll('.menu-link').forEach(el => {
+                el.classList.remove('active');
+            });
 
+            this.classList.add('active');
+        });
+    });
 
 
 
