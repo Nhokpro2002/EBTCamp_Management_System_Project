@@ -107,4 +107,17 @@ Các fields cần có cho một dự án setup máy
 + responsible person
 + items (this will link to another item table) => get items from inventory to setup machine(robot)
 + members in project (link to users table in db by id)
++ dự án chia làm mấy giai đoạn - các task trong mỗi giai đoạn 
 + task (link to task table in db )
+
+Bảng Tasks table in pocketbase
+một task cần biết nó thuộc giai đoạn nào và của dự án nào, 
+ngày tạo, 
+ngày kết thúc, 
+nội dung
+người xử lý task đó: 1 hoặc nhiều người
+trạng thái task đó
+
+Bảng user
+bảng này đã tạo trong db, có thể thêm field khi cần
+
