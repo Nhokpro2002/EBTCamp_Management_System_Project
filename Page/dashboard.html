@@ -79,6 +79,13 @@
             border-radius: 50%;
             object-fit: cover;
         }
+
+
+        /* base style */
+        #out-of-stock,
+        #low-stock:hover {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -100,6 +107,10 @@
                         nhưng eng thông thường sẽ chỉ xem được các vấn đề, ... mà họ đang chịu trách nhiệm-->
                     </a>
 
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
+                        <i class="bi bi-box-seam me-2"></i> Inventory
+                    </a>
+
                     <a class="nav-link" href="http://127.0.0.1:5500/Page/orders.html" id="orders-link">
                         <i class="bi bi-cart me-2"></i> Orders
                     </a>
@@ -108,9 +119,9 @@
                         <i class="bi bi-gear me-2"></i> Settings
                     </a>
 
-                    <!--<a class="nav-link" href="#">
-                        <i class="bi bi-bar-chart me-2"></i> Analytics
-                    </a>-->
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/projects.html" id="projects-link">
+                        <i class="bi bi-tools me-2"></i> Projects
+                    </a>
 
                     <a class="nav-link" href="http://127.0.0.1:5500/Page/users.html" id="users-link">
                         <i class="bi bi-people me-2"></i> Users
@@ -127,7 +138,7 @@
                 <div class="topbar d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h3 class="fw-bold mb-0">Dashboard Page</h3>
-                        <small class="text-muted">Welcome back, Vũ Mạnh Công 👋</small>
+                        <small class="text-muted">Welcome back, User 👋</small>
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
@@ -143,11 +154,28 @@
                 <div class="row g-4 mb-4">
 
                     <div class="col-md-3">
-                        <div class="card card-stat bg-primary p-4 shadow">
-                            <h6>Total Revenue</h6>
-                            <h2>$48,920</h2>
-                            <p class="mb-0">+12% this month</p>
-                            <i class="bi bi-currency-dollar"></i>
+                        <div class="card card-stat bg-primary p-3 shadow position-relative">
+                            <h6 class="mb-3">Projects</h6>
+                            <div class="mb-2" id="total-projects">
+                                <span>Total Projects:</span>
+                                <strong>10</strong>
+                            </div>
+
+                            <div class="mb-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Click to view all projets that done">
+                                <span>✅ Done:</span>
+                                <strong>
+                                    5
+                                </strong>
+                            </div>
+                            <div class="mb-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Click to view all products that are processed">
+                                <span>⏳ Processing:</span>
+                                <strong>
+                                    5
+                                </strong>
+                            </div>
+                            <i class="bi bi-boxes"></i>
                         </div>
                     </div>
 
@@ -170,11 +198,34 @@
                     </div>
 
                     <div class="col-md-3">
-                        <div class="card card-stat bg-danger p-4 shadow">
-                            <h6>Conversion</h6>
-                            <h2>4.8%</h2>
-                            <p class="mb-0">Stable performance</p>
-                            <i class="bi bi-graph-up-arrow"></i>
+                        <div class="card card-stat bg-primary text-white p-3 shadow position-relative">
+                            <h6 class="mb-3">Inventory Status</h6>
+
+                            <div class="mb-2" id="total-items">
+                                <span>📦 Total Items:</span>
+                                <strong id="inventory-all-item-stock">1,240</strong>
+                            </div>
+
+                            <div class="mb-2" id="out-of-stock" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Click to view all products that are out of stock"
+                                onclick="loadInventoryFilterPage('out-stock')">
+                                <span>🔴 Out of Stock:</span>
+                                <strong id="item-out-of-stock">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="mb-2" id="low-stock" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Click to view products that are low stock"
+                                onclick="loadInventoryFilterPage('low-stock')">
+                                <span>🟡 Low Stock:</span>
+                                <strong id="item-low-stock">
+                                    0
+                                </strong>
+                            </div>
+
+
+                            <i class="bi bi-box-seam-fill card-icon"></i>
                         </div>
                     </div>
 
@@ -182,118 +233,8 @@
 
                 <!-- Content -->
                 <div class="row g-4">
-
-                    <!-- Table -->
-                    <div class="col-lg-8">
-                        <div class="card table-card p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <h5 class="fw-bold">Recent Orders</h5>
-                                <button class="btn btn-primary btn-sm">
-                                    View All
-                                </button>
-                            </div>
-
-                            <div class="table-responsive">
-                                <table class="table align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th>Customer</th>
-                                            <th>Product</th>
-                                            <th>Status</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <tr>
-                                            <td>John Smith</td>
-                                            <td>MacBook Pro</td>
-                                            <td>
-                                                <span class="badge bg-success">
-                                                    Completed
-                                                </span>
-                                            </td>
-                                            <td>$2,400</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Emma Watson</td>
-                                            <td>iPhone 15</td>
-                                            <td>
-                                                <span class="badge bg-warning text-dark">
-                                                    Pending
-                                                </span>
-                                            </td>
-                                            <td>$1,200</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Michael Lee</td>
-                                            <td>AirPods Max</td>
-                                            <td>
-                                                <span class="badge bg-danger">
-                                                    Cancelled
-                                                </span>
-                                            </td>
-                                            <td>$560</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Progress -->
-                    <div class="col-lg-4">
-                        <div class="card table-card p-4">
-                            <h5 class="fw-bold mb-4">Project Progress</h5>
-
-                            <div class="mb-4">
-                                <div class="d-flex justify-content-between">
-                                    <span>UI Design</span>
-                                    <span>85%</span>
-                                </div>
-
-                                <div class="progress mt-2">
-                                    <div class="progress-bar bg-primary" style="width:85%"></div>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <div class="d-flex justify-content-between">
-                                    <span>Backend API</span>
-                                    <span>70%</span>
-                                </div>
-
-                                <div class="progress mt-2">
-                                    <div class="progress-bar bg-success" style="width:70%"></div>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <div class="d-flex justify-content-between">
-                                    <span>Database</span>
-                                    <span>60%</span>
-                                </div>
-
-                                <div class="progress mt-2">
-                                    <div class="progress-bar bg-warning" style="width:60%"></div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Deployment</span>
-                                    <span>40%</span>
-                                </div>
-
-                                <div class="progress mt-2">
-                                    <div class="progress-bar bg-danger" style="width:40%"></div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                    <iframe id="content-frame" style="width:100%; height:100%; border:none;" src="">
+                    </iframe>
 
                 </div>
 
@@ -307,7 +248,23 @@
 </body>
 <script>
 
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+    const COLLECTION_ORDER_ITEMS = "Order_Items";
+    const COLLECTION_ORDERS = "Orders";
+    const COLLECTION_ITEMS = "Items";
+    const COLLECTION_EXPORT_ITEM = "Export_Items";
+
+    let inventoryData = {};
+
     $(document).ready(function () {
+
+        // Init tooltip 
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+
+
+        // process focus option sidebar
+
         const currentPage = window.location.pathname;
 
         if (currentPage.includes('dashboard')) {
@@ -318,8 +275,63 @@
             document.getElementById('users-link').classList.add('active');
         } else if (currentPage.includes('orders')) {
             document.getElementById('settings-link').classList.add('active');
+        } else if (currentPage.includes('projects')) {
+            document.getElementById('projects-link').classList.add('active');
         }
+
+        // process inventory data
+        // fetch data of all items in the warehouse
+        // filter out items that are out of stock
+        // filter out items that are low in stock
+        // calculate the total number of items in the inventory
+
+        async function getInventoryData() {
+            try {
+
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                inventoryData = await response.json();
+
+
+                $('#inventory-all-item-stock').text(inventoryData.items.length);
+
+                const outOfStockCount = inventoryData.items.filter(item => Number(item.remain) === 0).length;
+
+                const lowStockCount = inventoryData.items.filter(item => {
+                    const remain = Number(item.remain);
+                    return remain > 0 && remain <= 10;
+                }).length;
+
+                // Update UI
+                $('#item-out-of-stock').text(outOfStockCount);
+                $('#item-low-stock').text(lowStockCount);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        getInventoryData();
+
+
     })
+
+    /*
+    Function open popup
+    */
+    function loadInventoryFilterPage(type) {
+        const iframe = document.getElementById('content-frame');
+        iframe.src = `dashboard_inventory_filter.html?type=${type}`;
+    }
+
 </script>
 
 </html>

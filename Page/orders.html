@@ -224,12 +224,20 @@
                               <i class="bi bi-house-door me-2"></i> Dashboard
                          </a>
 
-                         <a class="nav-link" href="#" id="orders-link">
+                         <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
+                              <i class="bi bi-box-seam me-2"></i> Inventory
+                         </a>
+
+                         <a class=" nav-link" href="#" id="orders-link">
                               <i class="bi bi-cart me-2"></i> Orders
                          </a>
 
                          <a class="nav-link" href="http://127.0.0.1:5500/Page/settings.html" id="settings-link">
                               <i class="bi bi-gear me-2"></i> Settings
+                         </a>
+
+                         <a class="nav-link" href="http://127.0.0.1:5500/Page/projects.html" id="projects-link">
+                              <i class="bi bi-tools me-2"></i> Projects
                          </a>
 
                          <a class="nav-link" href="http://127.0.0.1:5500/Page/users.html" id="users-link">
@@ -246,7 +254,7 @@
                     <div class="topbar d-flex justify-content-between align-items-center mb-4">
                          <div>
                               <h3 class="fw-bold mb-0">Orders Page</h3>
-                              <small class="text-muted">Welcome back, Vũ Mạnh Công👋</small>
+                              <small class="text-muted">Welcome back, User👋</small>
                          </div>
 
                          <div class="d-flex align-items-center gap-3">
@@ -487,6 +495,8 @@
      const COLLECTION_ITEMS = "Items";
      const COLLECTION_ORDER_ITEMS = "Order_Items";
      const COLLECTION_ORDERS = "Orders";
+     const POCKETBASE_URL = "http://127.0.0.1:8090";
+
 
      let itemTable = null;
      let currentItemRow = null;
@@ -506,6 +516,8 @@
                document.getElementById('users-link').classList.add('active');
           } else if (currentPage.includes('settings')) {
                document.getElementById('settings-link').classList.add('active');
+          } else if (currentPage.includes('projects')) {
+               document.getElementById('projects-link').classList.add('active');
           }
      });
 

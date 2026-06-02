@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+
+    <div style="width: 900px; height: 600px;">
+        <table id="my_table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>QRCode</th>
+                    <th>Brand</th>
+                    <th>Remain</th>
+                    <th>Model</th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+    <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../Libs/DataTables/datatables.min.js"></script>
+
+</body>
+
+<script>
+
+
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+    const COLLECTION_ITEMS = "Items";
+    $(document).ready(function () {
+        const params = new URLSearchParams(window.location.search);
+
+        const type = params.get("type");
+
+
+
+        // Case 1: user click see item out stock => api return item out stock
+        if (type == "out-stock") {
+            getItemsOutStock();
+        } else {
+            getItemsLowStock();
+        }
+    })
+
+    /*
+    Get all items that out of stock in inventory
+    */
+    async function getItemsLowStock() {
+        try {
+
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records?filter=remain%20%3E%200%20%26%26%20remain%20%3C%3D%2010`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+
+            const tableData = result.items.map(item => ({
+                image: item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_ITEMS + '/' + item.id + '/' + item.image : '',
+                name: item.name || '',
+                code: item.code || '',
+                qr_code: item.qr_code || '',
+                brand: item.brand || '',
+                description: item.description || '',
+                remain: item.remain || 0,
+                model: item.model || ''
+            }));
+
+            if ($.fn.DataTable.isDataTable('#my_table')) {
+                $('#my_table').DataTable().destroy();
+            }
+
+            $('#my_table').DataTable({
+                data: tableData,
+                scrollY: '500px',
+                paging: true,
+                sort: false,
+                select: true,
+                columnDefs: [
+                    { targets: 0, width: "100px" },
+                    { targets: 1, width: "150px" },
+                    { targets: 2, width: "100px" },
+                    { targets: 3, width: "100px" },
+                    { targets: 4, width: "100px" },
+                    { targets: 5, width: "120px" },
+                    { targets: 6, width: "100px", className: "dt-left" },
+                ],
+
+                columns: [
+                    {
+                        title: "Image",
+                        data: "image",
+                        render: function (data) {
+                            return `<img class="item_img_cell" src="${data}" width="50" title="Click to see more">`;
+
+                        }
+                    },
+                    { title: "Name", data: "name" },
+                    { title: "Code", data: "code" },
+                    { title: "QRCode", data: "qr_code" },
+                    { title: "Brand", data: "brand" },
+                    {
+                        title: "Remain",
+                        data: "remain",
+                        render: function (data) {
+                            if (data <= 0) {
+                                return `0 <span style="color:red; font-weight:bold;"> &nbsp; Out of stock</span>`;
+                            } else if (data < 20) {
+                                return `${data} <span style="color:orange; font-weight:bold; font-size: 14.5px"> &nbsp; Low stock</span>`;
+                            }
+                            return data;
+                        }
+                    },
+                    { title: "Model", data: "model" }
+                ]
+            });
+
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    }
+
+
+    /*
+    Get all items that are low stock in inventory
+    */
+    async function getItemsOutStock() {
+        try {
+
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records?filter=remain=0`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+
+            const tableData = result.items.map(item => ({
+                image: item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_ITEMS + '/' + item.id + '/' + item.image : '',
+                name: item.name || '',
+                code: item.code || '',
+                qr_code: item.qr_code || '',
+                brand: item.brand || '',
+                description: item.description || '',
+                remain: item.remain || 0,
+                model: item.model || ''
+            }));
+
+            $('#my_table').DataTable({
+                data: tableData,
+                scrollY: '500px',
+                paging: true,
+                sort: false,
+                select: true,
+                columnDefs: [
+                    { targets: 0, width: "100px" },
+                    { targets: 1, width: "150px" },
+                    { targets: 2, width: "100px" },
+                    { targets: 3, width: "100px" },
+                    { targets: 4, width: "100px" },
+                    { targets: 5, width: "120px" },
+                    { targets: 6, width: "100px", className: "dt-left" },
+                ],
+
+                columns: [
+                    {
+                        title: "Image",
+                        data: "image",
+                        render: function (data) {
+                            return `<img class="item_img_cell" src="${data}" width="50" title="Click to see more">`;
+
+                        }
+                    },
+                    { title: "Name", data: "name" },
+                    { title: "Code", data: "code" },
+                    { title: "QRCode", data: "qr_code" },
+                    { title: "Brand", data: "brand" },
+                    {
+                        title: "Remain",
+                        data: "remain",
+                        render: function (data) {
+                            if (data <= 0) {
+                                return `0 <span style="color:red; font-weight:bold;"> &nbsp; Out of stock</span>`;
+                            } else if (data < 20) {
+                                return `${data} <span style="color:orange; font-weight:bold; font-size: 14.5px"> &nbsp; Low stock</span>`;
+                            }
+                            return data;
+                        }
+                    },
+                    { title: "Model", data: "model" }
+                ]
+            });
+
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    }
+
+
+
+</script>
+
+</html>

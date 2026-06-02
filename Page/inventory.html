@@ -19,56 +19,78 @@
 
     <style>
         body {
-            font-family: 'Nunito', sans-serif;
-            height: 100%;
-            background: #f5f7fb;
-            color: #1f2937;
-        }
-
-        .sidebar {
-            background: linear-gradient(180deg, #0d6efd, #0b5ed7);
-            color: white;
+            background: #f4f7fb;
             font-family: 'Segoe UI', sans-serif;
         }
 
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0d6efd, #0b5ed7);
+            color: white;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
         .topbar {
-            background-color: #8a8383;
-            height: 60px;
+            background: white;
+            border-radius: 20px;
+            padding: 16px 24px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
-        li.nav-item.mb-2.d-flex.align-items-center {
-            cursor: pointer;
-            transition: color 0.3s, background-color 0.3s;
+        .card-stat {
+            border: none;
+            border-radius: 20px;
+            color: white;
+            overflow: hidden;
+            position: relative;
         }
 
-        li.nav-item.mb-2.d-flex.align-items-center:hover {
-            background-color: #D3D3D3;
-            border-radius: 3px;
+        .card-stat i {
+            font-size: 3rem;
+            opacity: 0.2;
+            position: absolute;
+            right: 20px;
+            bottom: 10px;
         }
 
-        #my_table tbody tr {
-            border-bottom: 2px solid #ccc;
-            border-top: 2px solid #ccc;
-            border-right: 2px solid #ccc;
-            border-left: 2px solid #ccc;
+        .table-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
-        #my_table th {
-            padding: 10px 15px;
-            white-space: nowrap;
+        .progress {
+            height: 8px;
+            border-radius: 20px;
         }
 
-        #my_table_wrapper {
-            width: 1200px !important;
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
-        .item_img_cell:hover {
-            cursor: pointer;
+        .form-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 10px;
         }
 
-        #modalClose:hover {
-            color: red;
-        }
 
         .badge-count {
             position: absolute;
@@ -86,344 +108,156 @@
             justify-content: center;
         }
 
-        #item_data_table_wrapper {
-            padding-top: 4px;
-        }
-
-        .form-scroll-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding-bottom: 10px;
-        }
-
-        .btn {
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            filter: brightness(0.95);
-            transform: translateY(-1px);
-        }
-
-        .main-content {
-            overflow: auto;
-            position: relative;
-        }
-
-        .custom-header {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .sidebar-menu .menu-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            color: #fff;
-            text-decoration: none;
-            transition: all 0.25s ease;
-            border: 1px solid transparent;
-        }
-
-        /* icon */
-        .sidebar-menu .menu-link .material-icons {
-            font-size: 22px;
-            transition: all 0.25s ease;
-        }
-
-        /* hover */
-        .sidebar-menu .menu-link:hover {
-            background: rgba(59, 130, 246, 0.12);
-            color: #3b82f6;
-            transform: translateX(4px);
-            border: 1px solid rgba(59, 130, 246, 0.25);
-        }
-
-        .nav-link .menu-link .active:hover {
-            color: #00ffd0;
-        }
-
-        .nav-link .menu-link {
-            font-size: 20px;
-        }
-
-        .sidebar-menu .menu-link:hover .material-icons {
-            color: #fff;
-        }
-
-        /* active */
-        .sidebar-menu .menu-link.active {
-            background: #3b82f6;
+        .badge-count {
+            background: #ef4444;
             color: white;
-            border: 1px solid #3b82f6;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
-        }
-
-        .sidebar-menu .menu-link.active .material-icons {
-            color: #fff;
-        }
-
-        .big-dot {
-            display: inline-block;
-            transform: scale(3);
-            transform-origin: left center;
-            line-height: 1;
-
-        }
-
-        .big-dot:hover {
-            cursor: pointer;
-        }
-
-        .action-popup {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            display: none;
-            z-index: 99999;
-        }
-
-        .action-popup.show {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .action-popup button {
-            border: none;
-            background: #f5f5f5;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .action-popup button:hover {
-            background: #e9e9e9;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            /* xếp dọc */
-            align-items: center;
-            gap: 10px;
-            min-width: 60px;
-        }
-
-        /* checkbox ALL to như label */
-        .checkbox-all input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        /* checkbox row nhỏ hơn */
-        .checkbox_row {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            margin-bottom: 5px;
-        }
-
-        label.checkbox-all {
-            margin-bottom: 5px;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container-fluid vh-100">
-        <div class="row h-100">
-            <div class="sidebar border"
-                style="border-radius: 4.8px 0px 0px 4.8px !important; width: 15%; flex: 0 0 auto;">
-                <div style="text-align: center; margin-top: 8px;">
-                    <span class="material-icons"
-                        style="font-size: xx-large; font-weight: 700; color: #fff; position: relative; top: 4px;">precision_manufacturing</span>
+    <div class="container-fluid">
+        <div class="row">
 
+            <!-- Sidebar -->
+            <div class="col-lg-2 p-4 sidebar">
+                <h3 class="fw-bold mb-5">
+                    <i class="bi bi-grid-1x2-fill"></i> EBT Camp
+                </h3>
 
-                    <span
-                        style="font-size: xx-large; font-weight: 700; color: #fff; letter-spacing: 2px; font-family: 'Segoe UI'">EBT
-                        Camp</span>
-                </div>
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/dashboard.html" id="dashboard-link">
+                        <i class="bi bi-house-door me-2"></i> Dashboard
+                    </a>
 
-                <ul class="nav flex-column p-3 sidebar-menu">
-                    <li class="nav-item mb-2">
-                        <a class="nav-link menu-link" href="http://127.0.0.1:5500/Page/dashboard.html">
-                            <i class="bi bi-house me-2"></i>
-                            Dashboard
-                        </a>
-                    </li>
+                    <a class="nav-link" href="#" id="inventory-link">
+                        <i class="bi bi-box-seam me-2"></i> Inventory
+                    </a>
 
-                    <li class="nav-item mb-2">
-                        <a class="nav-link menu-link" href="http://127.0.0.1:5500/Page/inventory.html">
-                            <i class="bi-box-seam me-2"></i>
-                            Warehouse
-                        </a>
-                    </li>
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/orders.html" id="orders-link">
+                        <i class="bi bi-cart me-2"></i> Orders
+                    </a>
 
-                    <li class="nav-item mb-2">
-                        <a class="nav-link menu-link" href="http://127.0.0.1:5500/Page/order.html">
-                            <i class="bi bi-list-ul me-2"></i>
-                            Order
-                        </a>
-                    </li>
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/settings.html" id="settings-link">
+                        <i class="bi bi-gear me-2"></i> Settings
+                    </a>
 
-                    <li class="nav-item mb-2">
-                        <a class="nav-link menu-link" href="http://127.0.0.1:5500/Page/user.html">
-                            <i class="bi bi-people me-2"></i>
-                            User Access
-                        </a>
-                    </li>
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/projects.html" id="projects-link">
+                        <i class="bi bi-tools me-2"></i> Projects
+                    </a>
 
-                    <li class="nav-item mb-2">
-                        <a class="nav-link menu-link" href="http://127.0.0.1:5500/Page/suport.html">
-                            <i class="bi bi-question-square me-2"></i>
-                            Support
-                        </a>
-                    </li>
-
-                    <li class="nav-item mb-2">
-                        <a class="nav-link menu-link" href="http://127.0.0.1:5500/Page/settings.html">
-                            <i class="bi bi-gear me-2"></i>
-                            Settings
-                        </a>
-                    </li>
-                </ul>
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/users.html" id="users-link">
+                        <i class="bi bi-people me-2"></i> Users
+                        <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
+                    </a>
+                </nav>
             </div>
-            <div class="col-10 d-flex flex-column flex-grow-1"
-                style="padding-left: 0px !important; padding-right: 0px !important;">
-                <div class="topbar border"
-                    style="border-radius: 0px 4.8px 0px 0px !important; display: flex; justify-content: flex-end; align-items: center; padding: 0 20px; box-sizing: border-box; height: 60px; background-color: #fff;">
 
-                    <!-- Khối chứa thông báo và thông tin user -->
-                    <div style="display: flex; align-items: center; gap: 15px;">
+            <!-- Main -->
+            <div class="col-lg-10 p-4">
 
-                        <!-- 1. Biểu tượng thông báo (Sử dụng SVG icon) -->
-                        <div class="notification-icon" style="position: relative; cursor: pointer;">
-                            <svg xmlns="http://w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                            </svg>
-                            <!-- Chấm đỏ thông báo chưa đọc (Tùy chọn) -->
-                            <span
-                                style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: red; border-radius: 50%;"></span>
-                        </div>
+                <!-- Topbar -->
+                <div class="topbar d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-0">Inventory package</h3>
+                        <small class="text-muted">Welcome back, User👋</small>
+                    </div>
 
-                        <!-- 2. Tên người dùng -->
-                        <span class="user-name"
-                            style="font-family: sans-serif; font-size: 14px; color: #333; font-weight: 500;">
-                            Nguyễn Văn A
-                        </span>
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-light rounded-circle">
+                            <i class="bi bi-bell"></i>
+                        </button>
 
-                        <!-- 3. Logo/Avatar người dùng -->
-                        <div class="user-avatar">
-                            <img src="https://placeholder.com" alt="User Avatar"
-                                style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;" />
-                        </div>
-
+                        <img src="https://i.pravatar.cc/100" class="avatar" alt="avatar" />
                     </div>
                 </div>
-
-                <div class="border main-content d-flex justify-content-center px-1 flex-grow-1"
-                    style="border-radius: 0px 0px 4.8px 0px !important; overflow: auto;">
+                <!-- Content -->
+                <div class="row g-4">
                     <table id="my_table">
                         <thead>
                             <tr>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>XCode</th>
-                                <th>QCode</th>
+                                <th>Code</th>
                                 <th>QRCode</th>
                                 <th>Brand</th>
-                                <th>Stock</th>
+                                <th>Remain</th>
                                 <th>Model</th>
                             </tr>
                         </thead>
                     </table>
+
                 </div>
+
+            </div>
+        </div>
+
+        <div id="itemModal"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+
+            <div
+                style="background: white; padding: 20px; border-radius: 8px; min-width: 900px; max-width: 1150px; min-height: 700px; position: relative">
+
+
+                <span class="material-icons" id="modalClose"
+                    style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-weight: bold;">
+                    close
+                </span>
+                <div style="display: flex; gap: 10px; height: 250px;">
+                    <div style="flex: 1; max-height: 200px; max-width: 200px;">
+                        <img id="modalImage" src="" style="width: 100%; height: auto; border-radius: 8px;">
+                    </div>
+                    <div style="flex: 2; min-height: 100px;">
+                        <p style="margin-bottom: 0;"><strong>Name:</strong> <span id="modalName"></span></p>
+                        <p style="margin-bottom: 0;"><strong>Code:</strong> <span id="modalCode"></span></p>
+                        <p style="margin-bottom: 0;"><strong>QRCode:</strong> <span id="modalQRCode"></span></p>
+                        <p style="margin-bottom: 0;"><strong>Brand:</strong> <span id="modalBrand"></span></p>
+                        <p style="margin-bottom: 0;"><strong>Description:</strong> <span id="modalDescription"></span>
+                        </p>
+                        <p style="margin-bottom: 0;"><strong>Remain:</strong> <span id="modalRemain"></span></p>
+                        <p style="margin-bottom: 0;"><strong>Model:</strong> <span id="modalModel"></span></p>
+                    </div>
+                </div>
+
+                <div style="min-height: 100px; border-top: 2px solid #ccc; ">
+
+                    <table id="order_history_table">
+                        <thead>
+                            <tr>
+
+                                <th>Status</th>
+                                <th>Code</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th>Total Price</th>
+                                <th>Order Date</th>
+                                <th>Requested Date</th>
+                                <th>Recieve Date</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <div id="itemModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
 
-        <div
-            style="background: white; padding: 20px; border-radius: 8px; min-width: 900px; max-width: 1150px; min-height: 700px; position: relative">
-
-            <!-- Nút đóng modal -->
-            <span class="material-icons" id="modalClose"
-                style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-weight: bold;">
-                close
-            </span>
-            <div style="display: flex; gap: 10px; height: 250px;">
-                <div style="flex: 1; max-height: 200px; max-width: 200px;">
-                    <img id="modalImage" src="" style="width: 100%; height: auto; border-radius: 8px;">
-                </div>
-                <div style="flex: 2; min-height: 100px;">
-                    <p style="margin-bottom: 0;"><strong>Name:</strong> <span id="modalName"></span></p>
-                    <p style="margin-bottom: 0;"><strong>XCode:</strong> <span id="modalXCode"></span></p>
-                    <p style="margin-bottom: 0;"><strong>QCode:</strong> <span id="modalQCode"></span></p>
-                    <p style="margin-bottom: 0;"><strong>QRCode:</strong> <span id="modalQRCode"></span></p>
-                    <p style="margin-bottom: 0;"><strong>Brand:</strong> <span id="modalBrand"></span></p>
-                    <p style="margin-bottom: 0;"><strong>Specification:</strong> <span id="modalSpecification"></span>
-                    </p>
-                    <p style="margin-bottom: 0;"><strong>Stock:</strong> <span id="modalStock"></span></p>
-                    <p style="margin-bottom: 0;"><strong>Model:</strong> <span id="modalModel"></span></p>
-                </div>
-            </div>
-
-            <div style="min-height: 100px; border-top: 2px solid #ccc; ">
-                <!--render order history of this item-->
-                <table id="order_history_table">
-                    <thead>
-                        <tr>
-
-                            <th>Status</th>
-                            <th>XCode</th>
-                            <th>QCode</th>
-                            <th>Unit Price</th>
-                            <th>Quantity</th>
-                            <th>Total Price</th>
-                            <th>Order Date</th>
-                            <th>Requested Date</th>
-                            <th>Recieve Date</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-
-        </div>
-    </div>
     <!-- Bootstrap JS -->
     <!--<script src="../Script/bootstrap.bundle.min.js"></script>-->
     <!--<script src="../Script/bootstrap.bundle.min.js.map"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../Libs/DataTables/datatables.min.js"></script>
 
 </body>
 
 <script>
 
-    //const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc4MDE4OTk3NCwiaWQiOiJhMHpxZ2ZtMTJpbnFxdmsiLCJyZWZyZXNoYWJsZSI6dHJ1ZSwidHlwZSI6ImF1dGgifQ.L_3ZsgM6wYhttr712yjPdmhl-mL6aeK1JBu_eudBJIU";
-    const POCKETBASE_URL = "http://127.0.0.1:8090";
-    const COLLECTION_ITEMS = "Items";
     const COLLECTION_ORDER_ITEMS = "Order_Items";
     const COLLECTION_ORDERS = "Orders";
 
@@ -431,6 +265,22 @@
 
         // window.alert(window.innerWidth + " x " + window.innerHeight);
         // Spec: 1528 * 732;
+
+        const currentPage = window.location.pathname;
+
+        if (currentPage.includes('dashboard')) {
+            document.getElementById('dashboard-link').classList.add('active');
+        } else if (currentPage.includes('orders')) {
+            document.getElementById('orders-link').classList.add('active');
+        } else if (currentPage.includes('users')) {
+            document.getElementById('users-link').classList.add('active');
+        } else if (currentPage.includes('settings')) {
+            document.getElementById('settings-link').classList.add('active');
+        } else if (currentPage.includes('inventory')) {
+            document.getElementById('inventory-link').classList.add('active');
+        } else if (currentPage.includes('projects')) {
+            document.getElementById('projects-link').classList.add('active');
+        }
 
         async function fetchData() {
             try {
@@ -452,12 +302,11 @@
                 const tableData = result.items.map(item => ({
                     image: item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_ITEMS + '/' + item.id + '/' + item.image : '',
                     name: item.name || '',
-                    x_code: item.x_code || '',
-                    q_code: item.q_code || '',
+                    code: item.code || '',
                     qr_code: item.qr_code || '',
                     brand: item.brand || '',
-                    specification: item.specification || '',
-                    stock: item.stock || 0,
+                    description: item.description || '',
+                    remain: item.remain || 0,
                     model: item.model || ''
                 }));
 
@@ -475,7 +324,6 @@
                         { targets: 4, width: "100px" },
                         { targets: 5, width: "120px" },
                         { targets: 6, width: "100px", className: "dt-left" },
-                        { targets: 7, width: "100px" }
                     ],
 
                     columns: [
@@ -488,13 +336,12 @@
                             }
                         },
                         { title: "Name", data: "name" },
-                        { title: "XCode", data: "x_code" },
-                        { title: "QCode", data: "q_code" },
+                        { title: "Code", data: "code" },
                         { title: "QRCode", data: "qr_code" },
                         { title: "Brand", data: "brand" },
                         {
-                            title: "Stock",
-                            data: "stock",
+                            title: "Remain",
+                            data: "remain",
                             render: function (data) {
                                 if (data <= 0) {
                                     return `0 <span style="color:red; font-weight:bold;"> &nbsp; Out of stock</span>`;
@@ -542,11 +389,10 @@
             const itemOrderHistoryData = result.items.map(item => ({
 
                 status: item.status || '',
-                x_code: item.x_code || '',
-                q_code: item.q_code || '',
-                unit_price: "$" + item.unit_price || 0,
+                code: item.code || '',
+                unit_price: item.unit_price ? "$" + item.unit_price : "$0",
                 quantity: item.quantity || '',
-                total_price: "$" + item.unit_price * item.quantity || '',
+                total_price: "$" + (item.unit_price * item.quantity),
                 order_date: item.order_date,
                 requested_date: item.requested_date,
                 receive_date: item.receive_date
@@ -563,7 +409,7 @@
                 paging: true,
                 select: true,
                 ordering: true,
-                order: [[6, 'desc'], [7, 'desc'], [8, 'desc']],
+                order: [[7, 'desc'], [6, 'desc'], [5, 'desc']],
                 columnDefs: [
                     { targets: [0, 1, 2, 3, 4, 5], orderable: false },
                     { targets: 0, width: "100px" },
@@ -574,7 +420,6 @@
                     { targets: 5, width: "120px", className: "dt-left" },
                     { targets: 6, width: "140px", className: "dt-left", orderable: true },
                     { targets: 7, width: "140px", className: "dt-left", orderable: true },
-                    { targets: 8, width: "140px", className: "dt-left", orderable: true },
                 ],
 
                 columns: [
@@ -625,8 +470,7 @@
         `;
                         }
                     },
-                    { title: "XCode", data: "x_code" },
-                    { title: "QCode", data: "q_code" },
+                    { title: "Code", data: "code" },
                     { title: "Unit Price", data: "unit_price" },
                     { title: "Quantity", data: "quantity" },
                     { title: "Total Price", data: "total_price" },
@@ -655,12 +499,11 @@
 
         $('#modalImage').attr('src', data.image);
         $('#modalName').text(data.name);
-        $('#modalXCode').text(data.x_code);
-        $('#modalQCode').text(data.q_code);
+        $('#modalCode').text(data.code);
         $('#modalQRCode').text(data.qr_code);
         $('#modalBrand').text(data.brand);
-        $('#modalSpecification').text(data.specification);
-        $('#modalStock').text(data.stock);
+        $('#modalDescription').text(data.description);
+        $('#modalRemain').text(data.remain);
         $('#modalModel').text(data.model);
 
         $('#itemModal').css('display', 'flex');
