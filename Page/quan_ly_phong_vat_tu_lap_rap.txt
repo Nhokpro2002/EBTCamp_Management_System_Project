@@ -102,11 +102,9 @@ click ra danh sách
 🟢 4 info
 
 
-+ engnieer sẽ vẽ một sơ đồ gồm các điểm tròn nối với nhau,
-  đây là các giai đoạn của dự án,
-  logo của eng trên hệ thống di chuyển đến điểm nào thì có nghĩa họ đang xử lý phần việc nào đó của công đoạn đó
-+ mỗi khi gặp lỗi, 
-phải tách một nhánh riêng để xử lý lỗi đó(kiểu git), 
-sau khi fix được sẽ di chuyển lại về nhánh chính để xử lý dự án cả dự án là 100%, 
-chia 5 giai đoạn thì mỗi giai đoạn là 20% hoặc có giai đoạn khó hay nhiều task hơn thì tỉ lệ sẽ chênh nhau mỗi giai đoạn, 
-nếu càng có nhiều task thì mỗi task lại chiếm phần trăm khác nhau sao cho tổng các task = 100 
+Các fields cần có cho một dự án setup máy
++ start date -> end date
++ responsible person
++ items (this will link to another item table) => get items from inventory to setup machine(robot)
++ members in project (link to users table in db by id)
++ task (link to task table in db )
