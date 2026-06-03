@@ -118,6 +118,11 @@ nội dung
 người xử lý task đó: 1 hoặc nhiều người
 trạng thái task đó
 
+Nếu muốn có thể thêm bảng stage, giúp link bảng Tasks và bảng Proejcts
+
+Có thể tạo thêm bảng problems nếu cần thiết
+
+
 Bảng user
 bảng này đã tạo trong db, có thể thêm field khi cần
 
