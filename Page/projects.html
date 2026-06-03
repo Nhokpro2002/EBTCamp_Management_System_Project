@@ -11,6 +11,7 @@
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     <style>
@@ -23,6 +24,8 @@
             min-height: 100vh;
             background: linear-gradient(180deg, #0d6efd, #0b5ed7);
             color: white;
+            z-index: 1000;
+            position: fixed;
         }
 
         .sidebar .nav-link {
@@ -86,6 +89,60 @@
         #low-stock:hover {
             cursor: pointer;
         }
+
+        .card-stat:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-item {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: .3s;
+            margin-bottom: 10px;
+        }
+
+        .project-item:hover {
+            background: #f8fafc;
+        }
+
+        .project-item.active {
+            border: 2px solid #0d6efd;
+        }
+
+        .kanban-column {
+            height: 70vh;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .task-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            /*border-left: 5px solid #0d6efd;*/
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+        }
+
+        .card {
+            height: 85vh;
+        }
+
+        .card-footer {
+            background: #fff;
+            position: sticky;
+            bottom: 0;
+        }
     </style>
 </head>
 
@@ -132,7 +189,7 @@
             </div>
 
             <!-- Main -->
-            <div class="col-lg-10 p-4">
+            <div class="col-lg-10 p-4" style="margin-left: 16.666667%;">
 
                 <!-- Topbar -->
                 <div class="topbar d-flex justify-content-between align-items-center mb-4">
@@ -154,44 +211,392 @@
 
                 <!-- Content -->
                 <div class="row g-4">
-                    <div class="row g-4 mb-4">
 
-                        <div class="col-md-3">
-                            <div class="card card-stat bg-primary p-3 shadow position-relative">
-                                <h6 class="mb-3">OVERALL PROCESS</h6>
+                    <!-- PROJECT LIST -->
+                    <div class="col-lg-3">
 
-                                <!--<i class="bi bi-percent"></i>-->
+                        <div class="card shadow border-0 rounded-4 h-100">
+
+                            <div class="card-header bg-white border-0">
+                                <h5 class="fw-bold mb-0">Projects</h5>
                             </div>
+
+                            <div id="projectList" class="card-body"
+                                style="height: 792px; position: sticky; overflow-y: auto;">
+
+                                <!--Searching box-->
+                                <input class="form-control mb-3" placeholder="Search project...">
+
+                                <!--Card name project-->
+                                <div class="project-item active">
+                                    <div class="fw-bold">
+                                        Website Redesign
+                                    </div>
+
+                                    <div class="progress mt-2">
+                                        <div class="progress-bar" style="width:75%">
+                                            <!--tính toán task done/total-task => change width attribute-->
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
                         </div>
 
-                        <div class="col-md-3">
-                            <div class="card card-stat bg-primary p-3 shadow position-relative">
-                                <h6 class="mb-3">TASKS</h6>
+                    </div>
 
-                                <!--<i class="bi bi-list-task"></i>-->
+                    <!-- RIGHT AREA -->
+                    <div class="col-lg-9">
+
+                        <!-- KPI -->
+                        <div class="row g-3">
+
+                            <div class="col-md-6" id="area-overall-process">
+                                <div class="card card-stat p-3 shadow"
+                                    style="height:160px;background:linear-gradient(135deg,#667eea,#764ba2)">
+                                    <h6>OVERALL PROCESS</h6>
+                                    <h1 class="fw-bold">75%</h1>
+
+                                    <div class="progress mt-3">
+                                        <div class="progress-bar bg-success" style="width:75%">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
+                            <div class="col-md-6" id="area-total-tasks">
+                                <div class="card card-stat p-3 shadow"
+                                    style="height:160px;background:linear-gradient(135deg,#42a5f5,#478ed1)">
+                                    <h6>TASKS</h6>
+
+                                    <h1>120</h1>
+
+                                    <div class="row text-center mt-3">
+                                        <div class="col">80<br>Done</div>
+                                        <div class="col">25<br>Process</div>
+                                        <div class="col">10<br>Pending</div>
+                                        <div class="col">5<br>Issue</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="area-due-this-week">
+                                <div class="card card-stat p-3 shadow"
+                                    style="height:160px;background:linear-gradient(135deg,#ffb347,#ff8c42)">
+                                    <h6>DUE THIS WEEK</h6>
+                                    <h1>24</h1>
+                                    <p>Tasks Due</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="area-issue">
+                                <div class="card card-stat p-3 shadow"
+                                    style="height:160px;background:linear-gradient(135deg,#ff4d4f,#d32f2f)">
+                                    <h6>ISSUE</h6>
+                                    <h1>5</h1>
+                                    <p>Problems</p>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <div class="col-md-3">
-                            <div class="card card-stat bg-primary p-3 shadow position-relative">
-                                <h6 class="mb-3">DUE THIS WEEK</h6>
+                        <!-- CHART + INFO -->
+                        <div class="row mt-4 g-3">
 
-                                <!--<i class="bi bi-cart-fill"></i>-->
+                            <!-- CHART -->
+                            <div class="col-lg-8">
+
+                                <div class="card shadow border-0 rounded-4 h-100">
+
+                                    <div class="card-header bg-white border-0">
+                                        <h5 class="fw-bold">
+                                            Overall Progress
+                                        </h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <canvas id="projectChart"></canvas>
+                                    </div>
+
+                                </div>
+
                             </div>
-                        </div>
 
-                        <div class="col-md-3">
-                            <div class="card card-stat bg-primary p-3 shadow position-relative">
-                                <h6 class="mb-3">ISSUE</h6>
+                            <!-- PROJECT INFO -->
+                            <div class="col-lg-4">
 
-                                <!--<i class="bi bi-box-seam-fill"></i>-->
+                                <div class="card shadow border-0 rounded-4 h-100">
+
+                                    <div class="card-header bg-white border-0">
+                                        <h5 class="fw-bold">
+                                            Project Information
+                                        </h5>
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <div class="mb-3">
+                                            <small class="text-muted">
+                                                Project Name
+                                            </small>
+
+                                            <div class="fw-bold">
+                                                Website Redesign
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <small class="text-muted">
+                                                PIC
+                                            </small>
+
+                                            <div>
+                                                Phạm Văn Trung
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <small class="text-muted">
+                                                Start Date
+                                            </small>
+
+                                            <div>
+                                                01/06/2026
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <small class="text-muted">
+                                                End Date
+                                            </small>
+
+                                            <div>
+                                                01/08/2026
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <small class="text-muted">
+                                                Status
+                                            </small>
+
+                                            <p>
+                                                Processing
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <small class="text-muted">
+                                                Member
+                                            </small>
+
+                                            <p>
+                                                Vũ Minh Hiếu, Đinh Khắc Tuân, Nguyễn Văn Công, ...
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
                             </div>
-                        </div>
 
+                        </div>
 
                     </div>
 
                 </div>
+
+                <!--<div class="container-fluid mt-4">-->
+                <div class="row g-3" style="padding-top: 20px;">
+
+                    <!-- Pending -->
+                    <div class="col-lg-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Pending</h5>
+                            </div>
+
+                            <div class="card-body kanban-column">
+
+                                <div class="task-card" style="border-left: 5px solid #838383;">
+                                    <div class="fw-bold">
+                                        Design Login Page
+                                    </div>
+
+                                    <div class="small text-muted mt-2">
+                                        Created: 03/06/2026
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Due: 10/06/2026
+                                    </div>
+
+                                    <div class="small">
+                                        Assignee: John Doe
+                                    </div>
+
+                                    <span class="badge bg-secondary">
+                                        Pending
+                                    </span>
+                                </div>
+
+
+                            </div>
+
+
+
+                            <div class="card-footer d-flex gap-2">
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
+                                </button>
+
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing -->
+                    <div class="col-lg-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-warning text-white">
+                                <h5 class="mb-0">Processing</h5>
+                            </div>
+
+                            <div class="card-body kanban-column">
+
+                                <div class="task-card" style="border-left: 5px solid #fdd90d;">
+                                    <div class="fw-bold">
+                                        API Integration
+                                    </div>
+
+                                    <div class="small text-muted mt-2">
+                                        Created: 01/06/2026
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Due: 08/06/2026
+                                    </div>
+
+                                    <div class="small">
+                                        Assignee: Alice Smith
+                                    </div>
+
+                                    <span class="badge bg-warning">
+                                        Processing
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="card-footer d-flex gap-2">
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
+                                </button>
+
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Done -->
+                    <div class="col-lg-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Done</h5>
+                            </div>
+
+                            <div class="card-body kanban-column">
+
+                                <div class="task-card" style="border-left: 5px solid #1af206;">
+                                    <div class="fw-bold">
+                                        Database Setup
+                                    </div>
+
+                                    <div class="small text-muted mt-2">
+                                        Created: 25/05/2026
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Finished: 30/05/2026
+                                    </div>
+
+                                    <div class="small">
+                                        Assignee: David Lee
+                                    </div>
+
+                                    <span class="badge bg-success">
+                                        Done
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="card-footer d-flex gap-2">
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
+                                </button>
+
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Problem -->
+                    <div class="col-lg-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="mb-0">Problem</h5>
+                            </div>
+
+                            <div class="card-body kanban-column">
+
+                                <div class="task-card" style="border-left: 5px solid #f50e06;">
+                                    <div class="fw-bold">
+                                        Payment Gateway Error
+                                    </div>
+
+                                    <div class="small text-muted mt-2">
+                                        Created: 02/06/2026
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Due: 05/06/2026
+                                    </div>
+
+                                    <div class="small">
+                                        Assignee: Michael Brown
+                                    </div>
+
+                                    <span class="badge bg-danger">
+                                        Blocked
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="card-footer d-flex gap-2">
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
+                                </button>
+
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--</div>-->
 
             </div>
         </div>
@@ -202,6 +607,11 @@
 
 </body>
 <script>
+
+    const COLLECTION_PROJECTS = "Projects";
+    const COLLECTION_TASKS = "Tasks";
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+    let projectData = {};
 
     $(document).ready(function () {
 
@@ -222,7 +632,159 @@
         }
 
 
+        const ctx = document.getElementById('projectChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Week 1',
+                    'Week 2',
+                    'Week 3',
+                    'Week 4',
+                    'Week 5'
+                ],
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Planned',
+                        data: [20, 40, 60, 80, 100],
+                        borderColor: '#0d6efd',
+                        tension: .4
+                    },
+                    {
+                        type: 'line',
+                        label: 'Actual',
+                        data: [15, 35, 55, 70, 85],
+                        borderColor: '#28a745',
+                        tension: .4
+                    },
+                    {
+                        label: 'Completed Tasks',
+                        data: [5, 10, 15, 20, 25],
+                        backgroundColor: '#cfe2ff'
+                    }
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Call API to get data from project and fill project name on the left
+        async function getAllProjectData() {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                projectData = result;
+
+                // call renderProjectItem
+                renderProjectItem(projectData);
+
+                // call fillAreaOverallProcess
+                fillAreaOverallProcess(projectData.items[0].id);
+
+
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        // call function 
+        getAllProjectData();
+
+        // Based on the number of projects, render the project-item tags accordingly.
     })
+
+    function renderProjectItem(projectData) {
+        const projectList = document.getElementById("projectList");
+        projectList.innerHTML = "";
+        for (let index = 0; index < projectData.items.length; index++) {
+
+            const div = document.createElement("div");
+            div.className = "project-item active";
+            const item = projectData.items[index];
+
+            div.innerHTML = `
+            <div class="fw-bold">${projectData.items[index].project_name}</div>
+            <div class="progress mt-2">           
+                </div>
+            </div>
+        `;
+
+            // Bind onclick event
+            div.addEventListener("click", function () {
+                fillAreaOverallProcess(item.id); // Call your function with project ID
+            });
+
+
+            projectList.appendChild(div);
+        }
+
+    }
+
+    /*
+    projectID: ID of project that is being focused on
+    Fill percent process project (%)
+    Count tasks are done
+    Percent = tasks done/total tasks
+    */
+    async function fillAreaOverallProcess(projectID) {
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=project="${projectID}"`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            let countTasksDone = 0;
+            let totalTasks = result.items.length;
+
+            for (let index = 0; index < result.items.length; index++) {
+                if (result.items[index].status == "Done") {
+                    countTasksDone++;
+                }
+            }
+
+            const percent = Math.floor((countTasksDone / totalTasks) * 100);
+            const h1Element = document.querySelector("#area-overall-process h1");
+            h1Element.textContent = `${percent}%`;
+
+            const progressBar = document.querySelector("#area-overall-process .progress-bar");
+
+            // Change the width to 50%
+            progressBar.style.width = `${percent}%`;
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    // start screen
+    // check account, if user login so user will have token to call api, if user don't login => make full white and alert => return login
+    // when user access screen
+    // call api get projects in pocketbase, auto focus on the first item
+    // get data in project record and related table to fill div
+    // every user change focus item project on the left, call api to get table related project that being focused
+
+
+
 
 
 
