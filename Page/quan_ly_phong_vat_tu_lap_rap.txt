@@ -126,3 +126,30 @@ Có thể tạo thêm bảng problems nếu cần thiết
 Bảng user
 bảng này đã tạo trong db, có thể thêm field khi cần
 
+1. Burndown Chart (Khuyến nghị nhất)
+Trục X: thời gian (ngày/tuần)
+Trục Y: số task còn lại
+Đường lý tưởng (Ideal)
+Đường thực tế (Actual)
+
+
+2. Line Chart - % hoàn thành theo thời gian
+
+Nếu hệ thống của bạn đơn giản hơn:
+
+Project Progress
+
+Project completion percentage over time.
+
+
+3. Doughnut/Pie Chart
+
+Để hiển thị trạng thái task:
+
+Done
+Processing
+Pending
+Overdue
+
+Ví dụ:
+
