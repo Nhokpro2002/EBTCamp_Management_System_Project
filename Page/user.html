@@ -175,6 +175,9 @@
 
 <script>
 
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+    const COLLECTION_USERS = "Users";
+
     function checkAuthentication() {
         const token = localStorage.getItem("token");
         if (!token || token.trim() === "") {
@@ -221,14 +224,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
 
-        // --- Dữ liệu user mẫu, thay bằng API của bạn ---
-        const userData = {
-            email: "johndoe@example.com",
-            employee_id: "EMP12345",
-            vh_code: "VH001",
-            department: "Engineering",
-            avatar: "https://i.pravatar.cc/150"
-        };
+        const userData = JSON.parse(localStorage.getItem("user"));
 
         // --- Render user info ---
         document.getElementById("user-email").textContent = userData.email;
@@ -265,23 +261,32 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append("avatar", selectedFile);
-
             try {
                 const token = localStorage.getItem("token");
-                // replace YOUR_USER_ID với id thực tế
-                const res = await fetch(`http://127.0.0.1:8090/api/collections/Users/records/YOUR_USER_ID/avatar`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: formData
-                });
+                const id = JSON.parse(localStorage.getItem("user")).id;
+                const formData = new FormData();
+                formData.append("avatar", selectedFile);
+
+                const res = await fetch(
+                    `${POCKETBASE_URL}/api/collections/${COLLECTION_USERS}/records/${id}`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: formData
+                    }
+                );
 
                 if (!res.ok) throw new Error("Upload failed");
 
-                Swal.fire({ icon: 'success', title: 'Avatar updated!', timer: 1500, showConfirmButton: false });
+                const dataResponse = await res.json();
+
+                console.log(await res.json());
+
+                Swal.fire({ icon: 'success', title: 'Avatar updated!', timer: 1500, showConfirmButton: true });
+
+                document.getElementById("user-avatar").src = POCKETBASE_URL + '/api/files/' + COLLECTION_USERS + '/' + id + '/' + dataResponse.avatar;
                 selectedFile = null;
 
             } catch (err) {
@@ -302,22 +307,6 @@
         window.location.href = "http://127.0.0.1:5500/Page/login.html";
     });
 
-    /*
-    const recordId = "123abc";
-
-fetch(`http://127.0.0.1:8090/api/collections/users/records/${recordId}`, {
-  method: "PATCH",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer YOUR_TOKEN" // nếu collection yêu cầu auth
-  },
-  body: JSON.stringify({
-    mk: "giá trị mới"
-  })
-})
-.then(res => res.json())
-.then(data => console.log(data))
-.catch(err => console.error(err));*/
 </script>
 
 </html>
