@@ -113,6 +113,12 @@
             color: white;
             box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
         }
+
+        tr td:first-child span {
+            min-width: 140px !important;
+            display: inline-block;
+            /* hoặc block nếu muốn */
+        }
     </style>
 </head>
 
@@ -136,20 +142,20 @@
                         <i class="bi bi-box-seam me-2"></i> Inventory
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/orders.html" id="orders-link">
-                        <i class="bi bi-cart me-2"></i> Orders
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/order.html" id="order-link">
+                        <i class="bi bi-cart me-2"></i> Order
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/settings.html" id="settings-link">
-                        <i class="bi bi-gear me-2"></i> Settings
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/setting.html" id="setting-link">
+                        <i class="bi bi-gear me-2"></i> Setting
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/projects.html" id="projects-link">
-                        <i class="bi bi-tools me-2"></i> Projects
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/project.html" id="project-link">
+                        <i class="bi bi-tools me-2"></i> Project
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/users.html" id="users-link">
-                        <i class="bi bi-people me-2"></i> Users
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/user.html" id="user-link">
+                        <i class="bi bi-people me-2"></i> User
                         <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
                     </a>
                 </nav>
@@ -170,7 +176,17 @@
                             <i class="bi bi-bell"></i>
                         </button>
 
-                        <img src="https://i.pravatar.cc/100" class="avatar" alt="avatar" />
+                        <div class="dropdown">
+                            <img src="https://i.pravatar.cc/100" class="avatar dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                style="width:40px;height:40px;border-radius:50%;cursor:pointer" />
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="http://127.0.0.1:5500/Page/login.html">Logout</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <!-- Content -->
@@ -180,7 +196,7 @@
                             <tr>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>Code</th>
+                                <th>XCode/QCode</th>
                                 <th>QRCode</th>
                                 <th>Brand</th>
                                 <th>Remain</th>
@@ -211,7 +227,7 @@
                     </div>
                     <div style="flex: 2; min-height: 100px;">
                         <p style="margin-bottom: 0;"><strong>Name:</strong> <span id="modalName"></span></p>
-                        <p style="margin-bottom: 0;"><strong>Code:</strong> <span id="modalCode"></span></p>
+                        <p style="margin-bottom: 0;"><strong>XCode/QCode:</strong> <span id="modalCode"></span></p>
                         <p style="margin-bottom: 0;"><strong>QRCode:</strong> <span id="modalQRCode"></span></p>
                         <p style="margin-bottom: 0;"><strong>Brand:</strong> <span id="modalBrand"></span></p>
                         <p style="margin-bottom: 0;"><strong>Description:</strong> <span id="modalDescription"></span>
@@ -228,7 +244,7 @@
                             <tr>
 
                                 <th>Status</th>
-                                <th>Code</th>
+                                <th>XCode/QCode</th>
                                 <th>Unit Price</th>
                                 <th>Quantity</th>
                                 <th>Total Price</th>
@@ -253,6 +269,7 @@
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../Libs/DataTables/datatables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 
@@ -260,6 +277,26 @@
 
     const COLLECTION_ORDER_ITEMS = "Order_Items";
     const COLLECTION_ORDERS = "Orders";
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+    const COLLECTION_ITEMS = "Items";
+
+    function checkAuthentication() {
+        const token = localStorage.getItem("token");
+        if (!token || token.trim() === "") {
+            Swal.fire({
+                icon: 'warning',      // icon của popup: 'warning', 'error', 'success', 'info', 'question'
+                title: 'Access Denied',
+                text: 'You must log in to access this page',
+                confirmButtonText: 'Go to Login'
+            }).then(() => {
+                window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
+            });
+
+            return; // ngăn chặn load tiếp các script
+        }
+    }
+
+    checkAuthentication();
 
     $(document).ready(function () {
 
@@ -270,16 +307,16 @@
 
         if (currentPage.includes('dashboard')) {
             document.getElementById('dashboard-link').classList.add('active');
-        } else if (currentPage.includes('orders')) {
-            document.getElementById('orders-link').classList.add('active');
-        } else if (currentPage.includes('users')) {
-            document.getElementById('users-link').classList.add('active');
-        } else if (currentPage.includes('settings')) {
-            document.getElementById('settings-link').classList.add('active');
+        } else if (currentPage.includes('order')) {
+            document.getElementById('order-link').classList.add('active');
+        } else if (currentPage.includes('user')) {
+            document.getElementById('user-link').classList.add('active');
+        } else if (currentPage.includes('setting')) {
+            document.getElementById('setting-link').classList.add('active');
         } else if (currentPage.includes('inventory')) {
             document.getElementById('inventory-link').classList.add('active');
-        } else if (currentPage.includes('projects')) {
-            document.getElementById('projects-link').classList.add('active');
+        } else if (currentPage.includes('project')) {
+            document.getElementById('project-link').classList.add('active');
         }
 
         async function fetchData() {
@@ -336,7 +373,7 @@
                             }
                         },
                         { title: "Name", data: "name" },
-                        { title: "Code", data: "code" },
+                        { title: "XCode/QCode", data: "code" },
                         { title: "QRCode", data: "qr_code" },
                         { title: "Brand", data: "brand" },
                         {
@@ -406,20 +443,21 @@
                 data: itemOrderHistoryData,
                 autoWidth: false,
                 scrollY: '300px',
+                scrollX: true,
                 paging: true,
                 select: true,
                 ordering: true,
                 order: [[7, 'desc'], [6, 'desc'], [5, 'desc']],
                 columnDefs: [
                     { targets: [0, 1, 2, 3, 4, 5], orderable: false },
-                    { targets: 0, width: "100px" },
+                    { targets: 0, width: "160px" },
                     { targets: 1, width: "120px" },
-                    { targets: 2, width: "120px" },
-                    { targets: 3, width: "120px", className: "dt-left" },
-                    { targets: 4, width: "100px", className: "dt-left" },
-                    { targets: 5, width: "120px", className: "dt-left" },
-                    { targets: 6, width: "140px", className: "dt-left", orderable: true },
-                    { targets: 7, width: "140px", className: "dt-left", orderable: true },
+                    { targets: 2, width: "100px", className: "dt-left" },
+                    { targets: 3, width: "100px", className: "dt-left" },
+                    { targets: 4, width: "140px", className: "dt-left" },
+                    { targets: 5, width: "160px", className: "dt-left" },
+                    { targets: 6, width: "160px", className: "dt-left", orderable: true },
+                    { targets: 7, width: "160px", className: "dt-left", orderable: true },
                 ],
 
                 columns: [
@@ -470,7 +508,7 @@
         `;
                         }
                     },
-                    { title: "Code", data: "code" },
+                    { title: "XCode/QCode", data: "code" },
                     { title: "Unit Price", data: "unit_price" },
                     { title: "Quantity", data: "quantity" },
                     { title: "Total Price", data: "total_price" },
@@ -521,26 +559,6 @@
         $('body').css('overflow', 'auto');
     });
 
-
-    /*
-    document.getElementById('file').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-
-        const reader = new FileReader();
-
-        reader.onload = (evt) => {
-            const data = evt.target.result;
-
-            const workbook = XLSX.read(data, {
-                type: 'array'
-            });
-
-            console.log(workbook);
-        };
-
-        reader.readAsArrayBuffer(file);
-    });
-    */
 
 
 </script>

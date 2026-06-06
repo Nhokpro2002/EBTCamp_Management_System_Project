@@ -250,86 +250,6 @@
             font-weight: 700;
             line-height: 1;
         }
-
-        .btn-custom-success {
-            background: linear-gradient(135deg, #28a745, #218838);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-custom-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-custom-danger {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-custom-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Thêm icon đẹp nếu dùng Font Awesome */
-        .btn i {
-            margin-right: 6px;
-        }
-
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        /* Popup */
-        .popup {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            width: 400px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
     </style>
 </head>
 
@@ -435,7 +355,7 @@
                                     <h1 class="fw-bold">0%</h1>
 
                                     <div class="progress mt-3">
-                                        <div class="progress-bar" style="background-color: rgb(17 23 194); width: 0%">
+                                        <div class="progress-bar bg-success" style="width:0%">
                                         </div>
                                     </div>
                                 </div>
@@ -490,7 +410,7 @@
                                 <div class="card card-stat p-3 shadow"
                                     style="height:160px;background:linear-gradient(135deg,#ffb347,#ff8c42)">
                                     <h6>DUE THIS WEEK</h6>
-                                    <h1>0</h1>
+                                    <h1>24</h1>
                                     <p>Tasks Due</p>
                                 </div>
                             </div>
@@ -516,13 +436,12 @@
 
                                     <div class="card-header bg-white border-0">
                                         <h5 class="fw-bold">
-                                            Project Name
+                                            Overall Progress
                                         </h5>
                                     </div>
 
                                     <div class="card-body">
-                                        <!--<canvas id="projectChart"></canvas>-->
-                                        <canvas id="burndownChart"></canvas>
+                                        <canvas id="projectChart"></canvas>
                                     </div>
 
                                 </div>
@@ -530,7 +449,7 @@
                             </div>
 
                             <!-- PROJECT INFO -->
-                            <div class="col-lg-4" id="area-project-information">
+                            <div class="col-lg-4">
 
                                 <div class="card shadow border-0 rounded-4 h-100">
 
@@ -547,8 +466,8 @@
                                                 Project Name
                                             </small>
 
-                                            <div class="fw-bold" id="project-name">Project Name
-
+                                            <div class="fw-bold">
+                                                Website Redesign
                                             </div>
                                         </div>
 
@@ -557,8 +476,8 @@
                                                 PIC
                                             </small>
 
-                                            <div id="project-pic">PIC name
-
+                                            <div>
+                                                Phạm Văn Trung
                                             </div>
                                         </div>
 
@@ -567,8 +486,8 @@
                                                 Start Date
                                             </small>
 
-                                            <div id="project-start-date">
-                                                00/00/0000
+                                            <div>
+                                                01/06/2026
                                             </div>
                                         </div>
 
@@ -577,8 +496,8 @@
                                                 End Date
                                             </small>
 
-                                            <div id="project-end-date">
-                                                00/00/0000
+                                            <div>
+                                                01/08/2026
                                             </div>
                                         </div>
 
@@ -587,8 +506,8 @@
                                                 Status
                                             </small>
 
-                                            <p id="project-status">
-                                                Pending
+                                            <p>
+                                                Processing
                                             </p>
                                         </div>
 
@@ -597,8 +516,8 @@
                                                 Member
                                             </small>
 
-                                            <p id="project-member">
-                                                Member name 1, Member name 2, ...
+                                            <p>
+                                                Vũ Minh Hiếu, Đinh Khắc Tuân, Nguyễn Văn Công, ...
                                             </p>
                                         </div>
 
@@ -614,7 +533,7 @@
 
                 </div>
 
-
+                <!--<div class="container-fluid mt-4">-->
                 <div class="row g-3" style="padding-top: 20px;">
 
                     <!-- Pending -->
@@ -651,66 +570,18 @@
 
                             </div>
 
+
+
                             <div class="card-footer d-flex gap-2">
-
-                                <!-- Nút Add Task -->
-                                <button id="addTaskBtn" class="btn btn-custom-success btn-sm flex-fill">
-                                    <i class="fa fa-plus"></i> Add Task
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
                                 </button>
 
-                                <button class="btn btn-custom-danger btn-sm flex-fill">
-                                    <i class="fa fa-trash"></i> Delete Task
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Overlay & Popup -->
-                        <div id="overlay" class="overlay">
-                            <div class="popup">
-                                <h3>Create New Task</h3>
-                                <form id="taskForm">
-                                    <div class="form-group">
-                                        <label>Task Name</label>
-                                        <input type="text" id="taskContent" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Stage</label>
-                                        <input type="text" id="taskStage" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Project</label>
-                                        <input type="text" id="taskProjectName" readonly>
-                                        <input type="hidden" id="taskProjectId">
-
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Start Date</label>
-                                        <input type="date" id="startDate" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>End Date</label>
-                                        <input type="date" id="endDate" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Status</label>
-                                        <input type="text" id="status" value="Pending" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Handler</label>
-                                        <select id="handler" required>
-                                            <option value="Alice">Alice</option>
-                                            <option value="Bob">Bob</option>
-                                            <option value="Charlie">Charlie</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn-success">Save Task</button>
-                                        <button type="button" id="closePopup" class="btn btn-secondary">Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
                     </div>
 
                     <!-- Processing -->
@@ -720,7 +591,41 @@
                                 <h5 class="mb-0">Processing</h5>
                             </div>
 
+                            <div class="card-body kanban-column">
 
+                                <div class="task-card" style="border-left: 5px solid #fdd90d;">
+                                    <div class="fw-bold">
+                                        API Integration
+                                    </div>
+
+                                    <div class="small text-muted mt-2">
+                                        Created: 01/06/2026
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Due: 08/06/2026
+                                    </div>
+
+                                    <div class="small">
+                                        Assignee: Alice Smith
+                                    </div>
+
+                                    <span class="badge bg-warning">
+                                        Processing
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="card-footer d-flex gap-2">
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
+                                </button>
+
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -731,8 +636,41 @@
                                 <h5 class="mb-0">Done</h5>
                             </div>
 
+                            <div class="card-body kanban-column">
 
+                                <div class="task-card" style="border-left: 5px solid #1af206;">
+                                    <div class="fw-bold">
+                                        Database Setup
+                                    </div>
 
+                                    <div class="small text-muted mt-2">
+                                        Created: 25/05/2026
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Finished: 30/05/2026
+                                    </div>
+
+                                    <div class="small">
+                                        Assignee: David Lee
+                                    </div>
+
+                                    <span class="badge bg-success">
+                                        Done
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="card-footer d-flex gap-2">
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
+                                </button>
+
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -763,26 +701,26 @@
                                     </div>
 
                                     <span class="badge bg-danger">
-                                        Problem
+                                        Blocked
                                     </span>
                                 </div>
 
                             </div>
 
                             <div class="card-footer d-flex gap-2">
-                                <button class="btn btn-custom-success btn-sm flex-fill">
-                                    <i class="fa fa-plus"></i> Add Task
+                                <button class="btn btn-success btn-sm flex-fill">
+                                    Add Task
                                 </button>
 
-                                <button class="btn btn-custom-danger btn-sm flex-fill">
-                                    <i class="fa fa-trash"></i> Delete Task
+                                <button class="btn btn-danger btn-sm flex-fill">
+                                    Delete Task
                                 </button>
                             </div>
                         </div>
                     </div>
 
                 </div>
-
+                <!--</div>-->
 
             </div>
         </div>
@@ -799,12 +737,12 @@
        ===================================================== */
 
     const COLLECTION_PROJECTS = "Projects";
+    const COLLECTION_PROBLEMS = "Problems";
     const COLLECTION_TASKS = "Tasks";
     const POCKETBASE_URL = "http://127.0.0.1:8090";
+    let projectData = {};
 
-    let projectData = [];
-    let allTasks = [];
-    let selectedProject = {};
+    let projectProcess = 0; // (taskDone/totalTask) * 100
 
 
     /* =====================================================
@@ -819,49 +757,11 @@
 
         initChart();
 
-        loadDashboard();
+        getAllProjectData();
 
 
         // Based on the number of projects, render the project-item tags accordingly.
     })
-
-    async function loadDashboard() {
-        try {
-
-            const token = localStorage.getItem("token");
-
-            const headers = {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            };
-
-            const [projectsRes, tasksRes] = await Promise.all([
-                fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, { headers }), // Code get all projects, need change 
-                fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?perPage=500`, { headers }) // Code get all tasks, need change 
-            ]);
-
-            if (!projectsRes.ok || !tasksRes.ok) {
-                throw new Error("Load data failed");
-            }
-
-            const projects = await projectsRes.json();
-            const tasks = await tasksRes.json();
-
-            projectData = projects.items;
-            allTasks = tasks.items;
-
-
-            renderProjectItem();
-
-            if (projectData.length > 0) {
-                selectedProject = projectData[0];
-                selectProject(projectData[0]);
-            }
-
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     /* =====================================================
        SIDEBAR
@@ -888,55 +788,86 @@
        ===================================================== */
 
     function initChart() {
+        const ctx = document.getElementById('projectChart');
 
-        new Chart(document.getElementById("burndownChart"), {
-            type: "line",
+        new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: ["Start", "W1", "W2", "W3", "W4", "W5"],
+                labels: [
+                    'Week 1',
+                    'Week 2',
+                    'Week 3',
+                    'Week 4',
+                    'Week 5'
+                ],
                 datasets: [
                     {
-                        label: "Ideal",
-                        data: [100, 80, 70, 65, , 0],
-                        borderColor: "#0d6efd",
-                        backgroundColor: "#0d6efd",
-                        fill: false,
-                        tension: 0
+                        type: 'line',
+                        label: 'Planned',
+                        data: [20, 40, 60, 80, 100],
+                        borderColor: '#0d6efd',
+                        tension: .4
                     },
                     {
-                        label: "Actual",
-                        data: [100, 75, 55, 30, 25, 15],
-                        borderColor: "#FF0000",
-                        backgroundColor: "#FF0000",
-                        fill: false,
-                        tension: 0.2
+                        type: 'line',
+                        label: 'Actual',
+                        data: [15, 35, 55, 70, 85],
+                        borderColor: '#28a745',
+                        tension: .4
+                    },
+                    {
+                        label: 'Completed Tasks',
+                        data: [5, 10, 15, 20, 25],
+                        backgroundColor: '#cfe2ff'
                     }
                 ]
             },
             options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: "Work Progress" // projetc name will be change follow option that user click on the project list
-                    }
-                },
-                scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: "Remaining Tasks",
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: "Week"
-                        }
-                    }
-                }
+                responsive: true
             }
         });
+    }
 
+
+    /* =====================================================
+       PROJECT APIs
+       ===================================================== */
+
+    /*
+ Fetch all projects from PocketBase.
+
+ After data is loaded:
+ 1. Render project list
+ 2. Auto focus first project
+ 3. Fill KPI cards
+*/
+    async function getAllProjectData() {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            projectData = result;
+
+            // call renderProjectItem
+            renderProjectItem(projectData);
+
+            // call fillAreaOverallProcess
+            fillAreaOverallProcess(projectData.items[0].id);
+
+            fillAreaTotalTasks(projectData.items[0].id);
+
+
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     /* =====================================================
@@ -950,106 +881,35 @@
  - Allows user to switch project
  - Refreshes KPI data
 */
-    function renderProjectItem() {
-
+    function renderProjectItem(projectData) {
         const projectList = document.getElementById("projectList");
         projectList.innerHTML = "";
-
-        projectData.forEach(project => {
-
-            const projectTasks =
-                allTasks.filter(task => task.project === project.id);
-
-            const totalTasks = projectTasks.length;
-
-            const doneTasks =
-                projectTasks.filter(task => task.status === "Done").length;
-
-            const percent =
-                totalTasks === 0
-                    ? 0
-                    : Math.floor((doneTasks / totalTasks) * 100);
+        for (let index = 0; index < projectData.items.length; index++) {
 
             const div = document.createElement("div");
+            div.className = "project-item active";
+            const item = projectData.items[index];
 
-            div.className = "project-item";
-
-            if (percent <= 40) {
-                div.innerHTML = `
-            <div class="fw-bold">
-                ${project.project_name}
-            </div>
-
-            <div class="progress mt-2">
-                <div
-                    class="progress-bar"
-                    style="background-color: red; width:${percent}%;">
+            div.innerHTML = `
+            <div class="fw-bold">${projectData.items[index].project_name}</div>
+            <div class="progress mt-2">        
+                <div class="progress-bar bg-success" style="width:${10}%">
+                                        </div>   
                 </div>
-            </div>`;
-            } else if (percent > 40 && percent < 70) {
-                div.innerHTML = `
-            <div class="fw-bold">
-                ${project.project_name}
             </div>
-
-            <div class="progress mt-2">
-                <div
-                    class="progress-bar"
-                    style="background-color: #ff9400; width:${percent}%">
-                </div>
-            </div>`;
-            } else {
-                div.innerHTML = `
-            <div class="fw-bold">
-                ${project.project_name}
-            </div>
-
-            <div class="progress mt-2">
-                <div
-                    class="progress-bar"
-                    style="background-color: #00ff66; width:${percent}%">
-                </div>
-            </div>`;
-            }
-
-
-            div.addEventListener("click", () => {
-
-                document
-                    .querySelectorAll(".project-item")
-                    .forEach(item => item.classList.remove("active"));
-
-                div.classList.add("active");
-
-                selectProject(project);
-                selectedProject = project;
-            });
+        `;
 
             projectList.appendChild(div);
-        });
 
-        const firstItem = projectList.querySelector(".project-item");
+            // Bind onclick event
+            div.addEventListener("click", function () {
+                div.classList.add("active");
+                fillAreaOverallProcess(item.id);
+                fillAreaTotalTasks(item.id);
 
-        if (firstItem) {
-            firstItem.classList.add("active");
+            });
         }
-    }
 
-    function selectProject(project) {
-
-        fillAreaOverallProcess(project);
-
-        fillAreaTotalTasks(project);
-
-        fillAreaTasksDue(project);
-
-        fillAreaTasksProblem(project);
-
-        fillAreaProjectInformation(project);
-
-        // TODO:
-        // loadTaskBoard(projectID);
-        // loadChart(projectID);
     }
 
     /* =====================================================
@@ -1062,28 +922,43 @@
     Count tasks are done
     Percent = tasks done/total tasks
     */
-    function fillAreaOverallProcess(project) {
+    async function fillAreaOverallProcess(projectID) {
 
-        const projectTasks =
-            allTasks.filter(task => task.project === project.id);
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=project="${projectID}"`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        const totalTasks = projectTasks.length;
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            let countTasksDone = 0;
+            let totalTasks = result.items.length;
 
-        const doneTasks =
-            projectTasks.filter(task => task.status === "Done").length;
+            for (let index = 0; index < result.items.length; index++) {
+                if (result.items[index].status == "Done") {
+                    countTasksDone++;
+                }
+            }
 
-        const percent =
-            totalTasks === 0
-                ? 0
-                : Math.floor((doneTasks / totalTasks) * 100);
+            const percent = Math.floor((countTasksDone / totalTasks) * 100);
+            projectProcess = percent;
+            const h1Element = document.querySelector("#area-overall-process h1");
+            h1Element.textContent = `${percent}%`;
 
-        document.querySelector(
-            "#area-overall-process h1"
-        ).textContent = `${percent}%`;
+            const progressBar = document.querySelector("#area-overall-process .progress-bar");
 
-        document.querySelector(
-            "#area-overall-process .progress-bar"
-        ).style.width = `${percent}%`;
+            // Change the width to 50%
+            progressBar.style.width = `${percent}%`;
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     /*
@@ -1095,151 +970,65 @@
     - Processing tasks
     - Pending tasks
 */
-    function fillAreaTotalTasks(project) {
+    async function fillAreaTotalTasks(projectID) {
 
-        const projectTasks =
-            allTasks.filter(task => task.project === project.id);
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=project="${projectID}"`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        const totalTasks = projectTasks.length;
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            let countTasksDone = 0;
+            let countTasksProcessing = 0;
+            let countTasksPending = 0;
+            let totalTasks = result.items.length;
 
-        const doneTasks =
-            projectTasks.filter(task => task.status === "Done").length;
+            for (let index = 0; index < result.items.length; index++) {
+                if (result.items[index].status == "Done") {
+                    countTasksDone++;
+                } else if (result.items[index].status == "Pending") {
+                    countTasksPending++;
+                } else if (result.items[index].status == "Processing") {
+                    countTasksProcessing++;
+                }
+            }
 
-        const processingTasks =
-            projectTasks.filter(task => task.status === "Processing").length;
+            const h1TotalTasks = document.querySelector("#area-total-tasks h1");
+            h1TotalTasks.textContent = `${totalTasks}`;
+            document.querySelector('.done .status-value').textContent = `${countTasksDone}`;
+            document.querySelector('.processing .status-value').textContent = `${countTasksProcessing}`;
+            document.querySelector('.pending .status-value').textContent = `${countTasksPending}`;
 
-        const pendingTasks =
-            projectTasks.filter(task => task.status === "Pending").length;
+        } catch (error) {
+            console.log(error);
+        }
 
-        const problemTasks =
-            projectTasks.filter(task => task.status === "Problem").length;
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_PROBLEMS}/records?filter=project="${projectID}"`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        document.querySelector(
-            "#area-total-tasks h1"
-        ).textContent = totalTasks;
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            let totalIssues = result.items.length;
 
-        document.querySelector(
-            ".done .status-value"
-        ).textContent = doneTasks;
+            document.querySelector('.issue .status-value').textContent = `${totalIssues}`;
 
-        document.querySelector(
-            ".processing .status-value"
-        ).textContent = processingTasks;
-
-        document.querySelector(
-            ".pending .status-value"
-        ).textContent = pendingTasks;
-
-        document.querySelector(
-            ".issue .status-value"
-        ).textContent = problemTasks;
-    }
-
-    function fillAreaTasksDue(project) {
-
-        const projectTasks = allTasks.filter(
-            task => task.project == project.id
-        );
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const saturday = new Date(today);
-        saturday.setDate(today.getDate() + (6 - today.getDay()));
-        saturday.setHours(23, 59, 59, 999);
-
-        const countTasksDue = projectTasks.filter(task => {
-            const endDate = new Date(task.end_date);
-
-            return (
-                endDate >= today &&
-                endDate <= saturday &&
-                task.status !== "Done"
-            );
-        }).length;
-
-        document.querySelector(
-            "#area-due-this-week h1"
-        ).textContent = countTasksDue;
-    }
-
-    function fillAreaTasksProblem(project) {
-        const projectTasks =
-            allTasks.filter(task => task.project == project.id);
-
-        const countTaskProblem = projectTasks.filter(task => task.status == "Problem"
-        ).length;
-
-        document.querySelector(
-            "#area-issue h1"
-        ).textContent = countTaskProblem;
+        } catch (error) {
+            console.log(error);
+        }
 
 
     }
-
-    function fillAreaProjectInformation(project) {
-        /*const focusedProjectInfo = projectData.find(
-            project => project.id == projectID
-        );*/
-        document.querySelector("#area-project-information #project-name").textContent = project.project_name;
-        document.querySelector("#area-project-information #project-pic").textContent = project.pic;
-        document.querySelector("#area-project-information #project-start-date").textContent = project.start_date;
-        document.querySelector("#area-project-information #project-end-date").textContent = project.end_date;
-        document.querySelector("#area-project-information #project-status").textContent = project.status;
-        document.querySelector("#area-project-information #project-member").textContent = project.members;
-    }
-
-    const addTaskBtn = document.getElementById('addTaskBtn');
-    const overlay = document.getElementById('overlay');
-    const closePopup = document.getElementById('closePopup');
-    const taskForm = document.getElementById('taskForm');
-    const startDate = document.getElementById('startDate');
-
-    // Set today's date as default start date
-    const today = new Date().toISOString().split('T')[0];
-    startDate.value = today;
-
-    // Open popup
-    addTaskBtn.addEventListener('click', () => {
-        overlay.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // lock scroll
-
-        document.getElementById('taskProjectName').value = selectedProject.project_name;
-        document.getElementById('taskProjectId').value = selectedProject.id;
-    });
-
-    // Close popup
-    closePopup.addEventListener('click', () => {
-        overlay.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    });
-
-    // Submit form
-    taskForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        // selectedProject is object {id: 123, project_name: "Project A"}
-
-
-        const newTask = {
-            content: document.getElementById('taskContent').value,
-            stage: document.getElementById('taskStage').value,
-            project: document.getElementById('taskProjectId').value,
-            start_date: startDate.value,
-            end_date: document.getElementById('endDate').value,
-            status: document.getElementById('status').value,
-            handler: document.getElementById('handler').value
-        };
-
-        console.log('New Task:', newTask);
-        alert('Task created! Check console for details.');
-
-        // Reset & close
-        taskForm.reset();
-        startDate.value = today;
-        overlay.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    });
 
     /* =====================================================
    TODO

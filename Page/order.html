@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>Bootstrap 5 Dashboard</title>
+
+     <link href="../CSS/bootstrap.min.css" rel="stylesheet">
+     <link href="../CSS/bootstrap.min.css.map" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+     <!-- Bootstrap 5 -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+     <!-- Bootstrap Icons -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+          crossorigin="anonymous"></script>
+     <script src="../Libs/DataTables/datatables.min.js"></script>
+
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+     <style>
+          body {
+               background: #f4f7fb;
+               font-family: 'Segoe UI', sans-serif;
+          }
+
+          .sidebar {
+               min-height: 100vh;
+               background: linear-gradient(180deg, #0d6efd, #0b5ed7);
+               color: white;
+          }
+
+          .sidebar .nav-link {
+               color: rgba(255, 255, 255, 0.85);
+               padding: 12px 16px;
+               border-radius: 12px;
+               margin-bottom: 8px;
+               transition: 0.3s;
+          }
+
+          .sidebar .nav-link:hover,
+          .sidebar .nav-link.active {
+               background: rgba(255, 255, 255, 0.15);
+               color: #fff;
+          }
+
+          .topbar {
+               background: white;
+               border-radius: 20px;
+               padding: 16px 24px;
+               box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+          }
+
+          .card-stat {
+               border: none;
+               border-radius: 20px;
+               color: white;
+               overflow: hidden;
+               position: relative;
+          }
+
+          .card-stat i {
+               font-size: 3rem;
+               opacity: 0.2;
+               position: absolute;
+               right: 20px;
+               bottom: 10px;
+          }
+
+          .table-card {
+               border: none;
+               border-radius: 20px;
+               box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+          }
+
+          .progress {
+               height: 8px;
+               border-radius: 20px;
+          }
+
+          .avatar {
+               width: 42px;
+               height: 42px;
+               border-radius: 50%;
+               object-fit: cover;
+          }
+
+          .form-scroll-wrapper {
+               width: 100%;
+               overflow-x: auto;
+               overflow-y: hidden;
+               padding-bottom: 10px;
+          }
+
+          /* checkbox ALL to như label */
+          .checkbox-all input[type="checkbox"] {
+               width: 20px;
+               height: 20px;
+               cursor: pointer;
+          }
+
+          label.checkbox-all {
+               margin-bottom: 5px;
+          }
+
+          .checkbox_row {
+               width: 20px;
+               height: 20px;
+               cursor: pointer;
+               margin-bottom: 5px;
+          }
+
+          .checkbox-group {
+               display: flex;
+               flex-direction: column;
+               /* xếp dọc */
+               align-items: center;
+               gap: 10px;
+               min-width: 60px;
+               margin-bottom: 10px;
+          }
+
+          input[type="checkbox"] {
+               accent-color: #00ffd0;
+          }
+
+          .btn {
+
+               border: none;
+               border-radius: 10px;
+               font-weight: 600;
+               padding: 8px 14px;
+               transition: 0.2s;
+               color: white;
+          }
+
+          .btn-add {
+               background: #22c55e;
+          }
+
+          .btn-add:hover {
+               background: #16a34a;
+          }
+
+          .btn-save {
+               background: #3b82f6;
+          }
+
+          .btn-save:hover {
+               background: #2563eb;
+          }
+
+          .btn-delete {
+               background: #ef4444;
+          }
+
+          .btn-delete:hover {
+               background: #dc2626;
+          }
+
+          .btn-reset {
+               background: #334155;
+               color: #e2e8f0;
+          }
+
+          .btn-export {
+               background: #f59e0b;
+               color: white;
+          }
+
+          .btn-export:hover {
+               background: #d97706;
+          }
+
+          .btn-update {
+               background-color: darkorchid;
+          }
+
+          .badge-count {
+               position: absolute;
+               top: -6px;
+               right: -8px;
+               background: red;
+               color: white;
+               font-size: 10px;
+               font-weight: bold;
+               width: 16px;
+               height: 16px;
+               border-radius: 50%;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+          }
+
+          .badge-count {
+               background: #ef4444;
+               color: white;
+               box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+          }
+     </style>
+</head>
+
+<body>
+
+     <div class="container-fluid">
+          <div class="row">
+
+               <!-- Sidebar -->
+               <div class="col-lg-2 p-4 sidebar">
+                    <h3 class="fw-bold mb-5">
+                         <i class="bi bi-grid-1x2-fill"></i> EBT Camp
+                    </h3>
+
+                    <nav class="nav flex-column">
+                         <a class="nav-link" href="http://127.0.0.1:5500/Page/dashboard.html" id="dashboard-link">
+                              <i class="bi bi-house-door me-2"></i> Dashboard
+                         </a>
+
+                         <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
+                              <i class="bi bi-box-seam me-2"></i> Inventory
+                         </a>
+
+                         <a class=" nav-link" href="#" id="order-link">
+                              <i class="bi bi-cart me-2"></i> Order
+                         </a>
+
+                         <a class="nav-link" href="http://127.0.0.1:5500/Page/setting.html" id="setting-link">
+                              <i class="bi bi-gear me-2"></i> Setting
+                         </a>
+
+                         <a class="nav-link" href="http://127.0.0.1:5500/Page/project.html" id="project-link">
+                              <i class="bi bi-tools me-2"></i> Project
+                         </a>
+
+                         <a class="nav-link" href="http://127.0.0.1:5500/Page/user.html" id="user-link">
+                              <i class="bi bi-people me-2"></i> User
+                              <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
+                         </a>
+                    </nav>
+               </div>
+
+               <!-- Main -->
+               <div class="col-lg-10 p-4">
+
+                    <!-- Topbar -->
+                    <div class="topbar d-flex justify-content-between align-items-center mb-4">
+                         <div>
+                              <h3 class="fw-bold mb-0">Orders Page</h3>
+                              <small class="text-muted">Welcome back, User👋</small>
+                         </div>
+
+                         <div class="d-flex align-items-center gap-3">
+                              <button class="btn btn-light rounded-circle">
+                                   <i class="bi bi-bell"></i>
+                              </button>
+
+                              <div class="dropdown">
+                                   <img src="https://i.pravatar.cc/100" class="avatar dropdown-toggle"
+                                        data-bs-toggle="dropdown"
+                                        style="width:40px;height:40px;border-radius:50%;cursor:pointer" />
+
+                                   <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                             <a class="dropdown-item" id="logoutLink" href="#">Logout</a>
+                                        </li>
+                                   </ul>
+                              </div>
+                         </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="row g-4 mb-4">
+
+                         <!--Cai nay la cac o button add, delete, update, export excel-->
+
+                    </div>
+
+                    <!-- Content -->
+                    <div class="row g-4">
+
+                         <div class="card shadow-sm" style="height: 100%;">
+                              <div class="card-header custom-header d-flex justify-content-between align-items-center">
+
+                                   <div class="d-flex gap-2">
+
+                                        <button type="button" id="addItemButton" class="btn btn-add">
+                                             <span><strong>Add</strong></span>
+                                        </button>
+
+                                        <button type="button" id="deleteItemButton" class="btn btn-delete">
+                                             <span><strong>Delete</strong></span>
+                                        </button>
+
+
+                                        <button type="reset" id="resetButton" class="btn btn-reset">
+                                             <span><strong>Reset</strong></span>
+                                        </button>
+
+                                        <button type="button" id="updateButton" class="btn btn-update"
+                                             onclick="handleUpdate()">
+                                             <span><strong>Update</strong></span>
+                                        </button>
+
+                                        <button type="submit" id="saveButton" class="btn btn-save">
+                                             <span><strong>Save</strong></span>
+                                        </button>
+
+                                        <button type="button" id="exportExcelButton" class="btn btn-export">
+                                             <span><strong>Export Excel</strong></span>
+                                        </button>
+
+                                   </div>
+
+                                   <div style="display:flex; gap:20px; padding-right: 10px;">
+
+                                        <!-- Receipt icon -->
+                                        <div style="position:relative; display:inline-block;">
+                                             <span class="material-icons icon-style">
+                                                  receipt
+                                             </span>
+
+                                             <span class="badge-count" id="receiptCount">
+                                                  0
+                                             </span>
+                                        </div>
+
+                                        <!-- Cart icon -->
+                                        <div style="position:relative; display: inline-block;">
+                                             <span class="material-icons icon-style">
+                                                  shopping_cart
+                                             </span>
+
+                                             <span class="badge-count" id="cartCount">
+                                                  0
+                                             </span>
+                                        </div>
+
+                                   </div>
+                              </div>
+
+
+                              <div class="card-body">
+
+                                   <!-- vùng scroll ngang -->
+                                   <div class="form-scroll-wrapper" style="position: relative;">
+
+                                        <!-- form -->
+                                        <form id="orderForm" class="d-flex flex-column gap-3"
+                                             style="position: relative;">
+
+                                             <!-- ROW -->
+                                             <div class="item-row d-flex flex-nowrap gap-3 align-items-end">
+
+                                                  <div class="field-col checkbox-group">
+
+                                                       <!-- Checkbox ALL -->
+                                                       <label class="checkbox-all">
+                                                            <input type="checkbox" id="checkbox_all">
+                                                       </label>
+
+                                                       <!-- Checkbox ROW -->
+
+                                                       <input type="checkbox" class="checkbox_row">
+                                                  </div>
+
+
+                                                  <!-- Requester -->
+                                                  <div class="field-col" style="min-width:220px;">
+                                                       <label class="fw-bold pb-2">Requester</label>
+                                                       <!--<input type="text" class="form-control requester">-->
+                                                       <select class="form-select requester">
+                                                            <option value="Equipment Part">Equipment Part</option>
+                                                            <option value="Vu Manh Cong">Vu Manh Cong</option>
+                                                            <option value="Hoang Dac Huy">Hoang Dac Huy</option>
+                                                            <option value="Nguyen Huy Hoang">Nguyen Huy Hoang</option>
+                                                            <option value="Vu Minh Hieu">Vu Minh Hieu</option>
+                                                            <option value="Pham Van Trung">Pham Van Trung</option>
+
+                                                       </select>
+                                                  </div>
+
+                                                  <!-- Project Name -->
+                                                  <div class="field-col" style="min-width:220px;">
+                                                       <label class="fw-bold pb-2">Project Name</label>
+                                                       <input type="text" class="form-control project_name">
+                                                  </div>
+
+                                                  <!-- Model -->
+                                                  <div class="field-col" style="min-width:180px;">
+                                                       <label class="fw-bold pb-2">Model</label>
+                                                       <input type="text" class="form-control model">
+                                                  </div>
+
+                                                  <!-- Item Name -->
+                                                  <div class="field-col" style="min-width:220px;">
+                                                       <label class="fw-bold pb-2">Item Name</label>
+                                                       <input type="text" class="form-control item_name">
+                                                  </div>
+
+                                                  <!-- XCode -->
+                                                  <div class="field-col" style="min-width:160px;">
+                                                       <label class="fw-bold pb-2">XCode</label>
+                                                       <input type="text" class="form-control x_code">
+                                                  </div>
+
+                                                  <!-- QCode -->
+                                                  <div class="field-col" style="min-width:160px;">
+                                                       <label class="fw-bold pb-2">QCode</label>
+                                                       <input type="text" class="form-control q_code">
+                                                  </div>
+
+                                                  <!-- Description -->
+                                                  <div class="field-col" style="min-width:300px;">
+                                                       <label class="fw-bold pb-2">Description</label>
+                                                       <textarea class="form-control description" rows="1"></textarea>
+                                                  </div>
+
+                                                  <!-- Note -->
+                                                  <div class="field-col" style="min-width:300px;">
+                                                       <label class="fw-bold pb-2">Note</label>
+                                                       <textarea class="form-control note" rows="1"></textarea>
+                                                  </div>
+
+                                                  <!-- Unit Price -->
+                                                  <div class="field-col" style="min-width:150px;">
+                                                       <label class="fw-bold pb-2">Unit Price</label>
+                                                       <input type="number" class="form-control unit_price">
+                                                  </div>
+
+                                                  <!-- Quantity -->
+                                                  <div class="field-col" style="min-width:140px;">
+                                                       <label class="fw-bold pb-2">Quantity</label>
+                                                       <input type="number" class="form-control quantity">
+                                                  </div>
+
+                                                  <!-- Status -->
+                                                  <div class="field-col" style="min-width:220px;">
+                                                       <label class="fw-bold pb-2">Status</label>
+
+                                                       <select class="form-select status">
+                                                            <option value=""></option>
+                                                            <option value="Request Code">Request Code</option>
+                                                            <option value="Wait Pur Process">Wait Pur Process</option>
+                                                            <option value="Request PO">Request PO</option>
+                                                            <option value="Pending Delivery">Pending Delivery</option>
+                                                            <option value="Completed">Completed</option>
+                                                       </select>
+                                                  </div>
+
+                                                  <!-- Progress PO -->
+                                                  <div class="field-col" style="min-width:180px;">
+                                                       <label class="fw-bold pb-2">Progress PO</label>
+                                                       <input type="text" class="form-control progress_po">
+                                                  </div>
+
+                                                  <!-- Requested Date -->
+                                                  <div class="field-col" style="min-width:180px;">
+                                                       <label class="fw-bold pb-2">Requested Date</label>
+                                                       <input type="date" class="form-control requested_date">
+                                                  </div>
+
+                                                  <!-- Order Date -->
+                                                  <div class="field-col" style="min-width:180px;">
+                                                       <label class="fw-bold pb-2">Order Date</label>
+                                                       <input type="date" class="form-control order_date">
+                                                  </div>
+
+                                                  <!-- Receive Date -->
+                                                  <div class="field-col" style="min-width:180px;">
+                                                       <label class="fw-bold pb-2">Receive Date</label>
+                                                       <input type="date" class="form-control receive_date">
+                                                  </div>
+
+                                             </div>
+
+                                        </form>
+
+                                   </div>
+
+                              </div>
+
+
+                         </div>
+                    </div>
+
+               </div>
+          </div>
+     </div>
+
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
+<script>
+
+     const COLLECTION_ITEMS = "Items";
+     const COLLECTION_ORDER_ITEMS = "Order_Items";
+     const COLLECTION_ORDERS = "Orders";
+     const POCKETBASE_URL = "http://127.0.0.1:8090";
+
+
+     let itemTable = null;
+     let currentItemRow = null;
+     let dataExportExcel = [];
+
+     function checkAuthentication() {
+          const token = localStorage.getItem("token");
+          if (!token || token.trim() === "") {
+               Swal.fire({
+                    icon: 'warning',      // icon của popup: 'warning', 'error', 'success', 'info', 'question'
+                    title: 'Access Denied',
+                    text: 'You must log in to access this page',
+                    confirmButtonText: 'Go to Login'
+               }).then(() => {
+                    window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
+               });
+
+               return; // ngăn chặn load tiếp các script
+          }
+     }
+
+     checkAuthentication();
+
+     $(document).ready(function () {
+
+
+          // window.alert(window.innerWidth + " x " + window.innerHeight);
+          // Spec: 1528 * 732;
+
+          const currentPage = window.location.pathname;
+
+          if (currentPage.includes('dashboard')) {
+               document.getElementById('dashboard-link').classList.add('active');
+          } else if (currentPage.includes('order')) {
+               document.getElementById('order-link').classList.add('active');
+          } else if (currentPage.includes('user')) {
+               document.getElementById('user-link').classList.add('active');
+          } else if (currentPage.includes('setting')) {
+               document.getElementById('setting-link').classList.add('active');
+          } else if (currentPage.includes('project')) {
+               document.getElementById('project-link').classList.add('active');
+          }
+     });
+
+     async function getInventoryItemData() {
+          try {
+               const token = localStorage.getItem("token");
+               const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_ITEMS}/records`, {
+                    headers: {
+                         'Authorization': `Bearer ${token}`,
+                         'Content-Type': 'application/json'
+                    }
+               });
+
+               if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+               const result = await response.json();
+
+               console.log('Fetched records:', result);
+
+               const tableData = result.items.map(item => ({
+                    image: item.image ? POCKETBASE_URL + '/api/files/' + COLLECTION_ITEMS + '/' + item.id + '/' + item.image : '',
+                    name: item.name || '',
+                    x_code: item.x_code || '',
+                    q_code: item.q_code || '',
+                    qr_code: item.qr_code || '',
+                    brand: item.brand || '',
+                    specification: item.specification || '',
+                    stock: item.stock || 0,
+                    model: item.model || ''
+               }));
+
+               if (itemTable) {
+
+                    itemTable.clear();
+                    itemTable.rows.add(tableData);
+                    itemTable.draw();
+
+                    return;
+               }
+
+               itemTable = $('#item_data_table').DataTable({
+                    data: tableData,
+                    scrollY: '500px',
+                    paging: true,
+                    sort: false,
+                    select: true,
+                    columnDefs: [
+                         { targets: 0, width: "100px" },
+                         { targets: 1, width: "150px" },
+                         { targets: 2, width: "100px" },
+                         { targets: 3, width: "100px" },
+                         { targets: 4, width: "100px" },
+                         { targets: 5, width: "120px" },
+                         { targets: 6, width: "100px", className: "dt-left" },
+                         { targets: 7, width: "100px" }
+                    ],
+
+                    columns: [
+                         {
+                              title: "Image",
+                              data: "image",
+                              render: function (data) {
+                                   return `<img src="${data}" width="50" >`;
+                              }
+                         },
+                         { title: "Name", data: "name" },
+                         { title: "XCode", data: "x_code" },
+                         { title: "QCode", data: "q_code" },
+                         { title: "QRCode", data: "qr_code" },
+                         { title: "Brand", data: "brand" },
+                         {
+                              title: "Stock",
+                              data: "stock",
+                              render: function (data) {
+                                   if (data <= 0) {
+                                        return `0 <span style="color:red; font-weight:bold;"> &nbsp; Out of stock</span>`;
+                                   } else if (data < 20) {
+                                        return `${data} <span style="color:orange; font-weight:bold; font-size: 14.5px"> &nbsp; Low stock</span>`;
+                                   }
+                                   return data;
+                              }
+                         },
+                         { title: "Model", data: "model" }
+                    ]
+               });
+
+          } catch (error) {
+               console.error('Error fetching data:', error);
+          }
+     }
+
+     $(document).on('click', '.model', function () {
+          currentItemRow = $(this).closest('.item-row');
+          $('#item_inventory_modal').css('display', 'flex');
+          $('body').css('overflow', 'hidden');
+
+          getInventoryItemData();
+     });
+
+     // Function close modal
+     function closeModal() {
+          $('#item_inventory_modal').hide();
+          $('body').css('overflow', 'auto');
+     }
+
+     // Close modal
+     $('#modalClose').on('click', closeModal)
+
+
+     $('#item_data_table').on('click', 'tbody tr', async function () {
+
+          // get row data when user click in
+          const data = itemTable.row(this).data();
+
+          currentItemRow.find('.model').val(data.model);
+          currentItemRow.find('.item_name').val(data.name);
+          currentItemRow.find('.x_code').val(data.x_code);
+          currentItemRow.find('.q_code').val(data.q_code);
+
+          closeModal();
+
+     });
+
+     // Add new empty row
+     $('#addItemButton').on('click', function () {
+
+          // clone first row
+          const newRow = $('.item-row:first').clone();
+
+          newRow.find('label').remove();
+
+          // clear input
+          newRow.find('.checkbox_row').prop('checked', false);
+          newRow.find('.requester').val('Equipment Part');
+          newRow.find('.project_name').val('');
+          newRow.find('.model').val('');
+          newRow.find('.item_name').val('');
+          newRow.find('.x_code').val('');
+          newRow.find('.q_code').val('');
+          newRow.find('.description').val('');
+          newRow.find('.note').val('');
+          newRow.find('.unit_price').val('');
+          newRow.find('.status').val('');
+          newRow.find('.progress_po').val('');
+          newRow.find('.requested_date').val('');
+          newRow.find('.order_date').val('');
+          newRow.find('.order_date').val('');
+          newRow.find('.receive_date').val('');
+
+          // append
+          $('#orderForm').append(newRow);
+
+          const Toast = Swal.mixin({
+               toast: true,
+               position: 'top-end',
+               showConfirmButton: false,
+               timer: 1000,
+               timerProgressBar: true,
+
+               didOpen: (toast) => {
+
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+
+               }
+          });
+
+          Toast.fire({
+               icon: 'success',
+               title: 'Added row successfully'
+          });
+
+
+     });
+
+     // Delete rows with checked = true
+     $('#deleteItemButton').on('click', function () {
+
+          const checkedRows = $('.checkbox_row:checked').closest('.item-row');
+          if (checkedRows.length == 0) {
+               Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select at least one row.'
+               });
+
+               return;
+          }
+
+
+          if ($('.item-row').length == 1) {
+               Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'The table must contain at least one row.'
+               });
+
+               checkedRows.find('.checkbox_row').prop('checked', false);
+
+               return;
+          }
+
+          checkedRows.remove();
+
+          const Toast = Swal.mixin({
+               toast: true,
+               position: 'top-end',
+               showConfirmButton: false,
+               timer: 1500,
+               timerProgressBar: true,
+
+               didOpen: (toast) => {
+
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+
+               }
+          });
+
+          Toast.fire({
+               icon: 'success',
+               title: 'Deleted successfully'
+          });
+
+     });
+
+
+     $('#resetButton').on('click', function () {
+
+          const checkedRows = $('.checkbox_row:checked').closest('.item-row');
+          if (checkedRows.length == 0) {
+               Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select at least one row.'
+               });
+
+               return;
+          }
+
+          checkedRows.each(function () {
+               $(this).find('.checkbox_row').prop('checked', false);
+               $(this).find('.requester').val('');
+               $(this).find('.project_name').val('');
+               $(this).find('.model').val('');
+               $(this).find('.item_name').val('');
+               $(this).find('.x_code').val('');
+               $(this).find('.x_code').val('');
+               $(this).find('.q_code').val('');
+               $(this).find('.description').val('');
+               $(this).find('.note').val('');
+               $(this).find('.unit_price').val('');
+               $(this).find('.note').val('');
+               $(this).find('.quantity').val('');
+               $(this).find('.status').val('');
+               $(this).find('.progress_po').val('');
+               $(this).find('.requested_date').val();
+               $(this).find('.order_date').val('');
+               $(this).find('.receive_date').val('');
+          })
+
+     });
+
+     // Save item_order list 
+     $('#saveButton').on('click', async function () {
+
+          try {
+
+               const token = localStorage.getItem('token');
+
+               const orderItems = [];
+
+               $('.item-row').each(function () {
+
+                    const row = $(this);
+
+                    const item = {
+                         requester: row.find('.requester').val(),
+                         project_name: row.find('.project_name').val(),
+                         model: row.find('.model').val(),
+                         item_name: row.find('.item_name').val(),
+                         x_code: row.find('.x_code').val(),
+                         q_code: row.find('.q_code').val(),
+                         description: row.find('.description').val(),
+                         note: row.find('.note').val(),
+                         unit_price: row.find('.unit_price').val(),
+                         quantity: row.find('.quantity').val(),
+                         status: row.find('.status').val(),
+                         progress_po: row.find('.progress_po').val(),
+                         order_date: row.find('.requested_date').val(),
+                         order_date: row.find('.order_date').val(),
+                         receive_date: row.find('.receive_date').val()
+                    };
+
+                    orderItems.push(item);
+               });
+
+               dataExportExcel = orderItems;
+
+               console.log(orderItems);
+
+
+               const savePromises = orderItems.map(async (item) => {
+
+                    const response = await fetch(
+                         `${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records`,
+                         {
+                              method: 'POST',
+                              headers: {
+                                   'Authorization': `Bearer ${token}`,
+                                   'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify(item)
+                         }
+                    );
+
+                    if (!response.ok) {
+
+                         const errorText = await response.text();
+
+                         throw new Error(
+                              `Save failed: ${response.status} - ${errorText}`
+                         );
+                    }
+
+                    return await response.json();
+               });
+
+               // đợi save hết
+               const results = await Promise.all(savePromises);
+
+               console.log("SAVE SUCCESS:", results);
+
+
+               Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Save order items successfully!',
+                    confirmButtonColor: '#3085d6'
+               });
+
+          } catch (error) {
+               console.error("SAVE ERROR:", error);
+
+
+               Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Save failed!',
+                    confirmButtonColor: '#d33'
+               });
+
+          }
+
+     });
+
+
+
+     $('#exportExcelButton').on('click', function () {
+
+          if (!Array.isArray(dataExportExcel) || dataExportExcel.length === 0) {
+               Swal.fire({
+                    icon: 'warning',
+                    title: 'No data',
+                    text: 'Chưa có dữ liệu để export!'
+               });
+               return;
+          }
+
+          const worksheet = XLSX.utils.json_to_sheet(dataExportExcel);
+
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, "OrderItems");
+
+          XLSX.writeFile(workbook, "order_items.xlsx");
+     });
+
+     $('#resetButton').on('click', function () {
+
+
+     });
+
+
+     async function handleUpdate() {
+
+          try {
+
+               const token = localStorage.getItem('token');
+
+               const checkedRows = $('.checkbox_row:checked')
+                    .closest('.item-row');
+
+               if (checkedRows.length === 0) {
+
+                    Swal.fire({
+                         icon: 'warning',
+                         title: 'Warning',
+                         text: 'Please select at least one row'
+                    });
+
+                    return;
+               }
+
+               const updatePromises = [];
+
+               checkedRows.each(function () {
+
+                    const currentItemRow = $(this);
+
+                    let objectData = {
+                         requester: currentItemRow.find('.requester').val(),
+                         project_name: currentItemRow.find('.project_name').val(),
+                         model: currentItemRow.find('.model').val(),
+                         item_name: currentItemRow.find('.item_name').val(),
+                         x_code: currentItemRow.find('.x_code').val(),
+                         q_code: currentItemRow.find('.q_code').val(),
+                         description: currentItemRow.find('.description').val(),
+                         note: currentItemRow.find('.note').val(),
+                         unit_price: currentItemRow.find('.unit_price').val(),
+                         quantity: currentItemRow.find('.quantity').val(),
+                         status: currentItemRow.find('.status').val(),
+                         progress_po: currentItemRow.find('.progress_po').val(),
+                         requested_date: currentItemRow.find('.requested_date').val(),
+                         order_date: currentItemRow.find('.order_date').val(),
+                         receive_date: currentItemRow.find('.receive_date').val()
+                    };
+
+                    const request = fetch(
+                         `${POCKETBASE_URL}/api/collections/${COLLECTION_ORDER_ITEMS}/records/${currentItemRow.data('id')}`,
+                         {
+                              method: 'PATCH',
+                              headers: {
+                                   'Authorization': `Bearer ${token}`,
+                                   'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify(objectData)
+                         }
+                    );
+
+                    updatePromises.push(request);
+
+               });
+
+               await Promise.all(updatePromises);
+
+               Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Updated selected rows successfully'
+               });
+
+          } catch (error) {
+
+               console.error(error);
+
+               Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Update failed'
+               });
+
+          }
+     }
+
+
+     const checkboxAll = document.getElementById("checkbox_all");
+
+     checkboxAll.addEventListener("change", function () {
+          const checkboxRows = document.querySelectorAll(".checkbox_row");
+          checkboxRows.forEach(function (checkbox) {
+               checkbox.checked = checkboxAll.checked;
+          });
+
+     });
+
+     document.querySelectorAll('.menu-link').forEach(item => {
+          item.addEventListener('click', function () {
+               document.querySelectorAll('.menu-link').forEach(el => {
+                    el.classList.remove('active');
+               });
+
+               this.classList.add('active');
+          });
+     });
+
+     document.getElementById("logoutLink").addEventListener("click", function (e) {
+          e.preventDefault(); // ngăn link reload trang
+          // Xóa storage
+          localStorage.clear();
+          sessionStorage.clear();
+
+          // Redirect về trang login hoặc homepage nếu muốn
+          window.location.href = "http://127.0.0.1:5500/Page/login.html";
+     });
+
+
+</script>
+
+</html>
