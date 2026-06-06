@@ -336,6 +336,10 @@
             bottom: calc(100% + 4px) !important;
             margin-top: 0 !important;
         }
+
+        .container-fluid {
+            display: none;
+        }
     </style>
 </head>
 
@@ -816,11 +820,13 @@
                 window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
             });
 
-            return; // ngăn chặn load tiếp các script
+            return false;
         }
+
+        return true;
     }
 
-    checkAuthentication();
+
 
 
     let projectData = [];
@@ -838,6 +844,9 @@
 
     $(document).ready(async function () {
 
+        if (!checkAuthentication()) return;
+
+        document.querySelector(".container-fluid").style.display = "block";
 
         // process focus option sidebar
 

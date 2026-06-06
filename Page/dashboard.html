@@ -86,6 +86,10 @@
         #low-stock:hover {
             cursor: pointer;
         }
+
+        .container-fluid {
+            display: none;
+        }
     </style>
 </head>
 
@@ -277,15 +281,21 @@
                 window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
             });
 
-            return; // ngăn chặn load tiếp các script
+            return false;
+
+            // ngăn chặn load tiếp các script
         }
+        return true;
     }
 
-    checkAuthentication();
 
     let inventoryData = {};
 
     $(document).ready(function () {
+
+        if (!checkAuthentication()) return;
+
+        document.querySelector(".container-fluid").style.display = "block";
 
         // Init tooltip 
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
