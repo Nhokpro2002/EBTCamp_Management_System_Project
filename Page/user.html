@@ -179,22 +179,19 @@
         const token = localStorage.getItem("token");
         if (!token || token.trim() === "") {
             Swal.fire({
-                icon: 'warning',      // icon của popup: 'warning', 'error', 'success', 'info', 'question'
+                icon: 'warning',      // icon popup: 'warning', 'error', 'success', 'info', 'question'
                 title: 'Access Denied',
                 text: 'You must log in to access this page',
                 confirmButtonText: 'Go to Login'
             }).then(() => {
-                window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
+                window.location.href = "http://127.0.0.1:5500/Page/login.html";
             });
 
             return false;
 
-            // ngăn chặn load tiếp các script
         }
         return true;
     }
-
-
 
 
     $(document).ready(function () {
