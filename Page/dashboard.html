@@ -111,20 +111,20 @@
                         <i class="bi bi-box-seam me-2"></i> Inventory
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/orders.html" id="orders-link">
-                        <i class="bi bi-cart me-2"></i> Orders
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/order.html" id="order-link">
+                        <i class="bi bi-cart me-2"></i> Order
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/settings.html" id="settings-link">
-                        <i class="bi bi-gear me-2"></i> Settings
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/setting.html" id="setting-link">
+                        <i class="bi bi-gear me-2"></i> Setting
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/projects.html" id="projects-link">
-                        <i class="bi bi-tools me-2"></i> Projects
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/project.html" id="project-link">
+                        <i class="bi bi-tools me-2"></i> Project
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/users.html" id="users-link">
-                        <i class="bi bi-people me-2"></i> Users
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/user.html" id="user-link">
+                        <i class="bi bi-people me-2"></i> User
                         <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
                     </a>
 
@@ -146,7 +146,17 @@
                             <i class="bi bi-bell"></i>
                         </button>
 
-                        <img src="https://i.pravatar.cc/100" class="avatar" alt="avatar" />
+                        <div class="dropdown">
+                            <img src="https://i.pravatar.cc/100" class="avatar dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                style="width:40px;height:40px;border-radius:50%;cursor:pointer" />
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" id="logoutLink" href="#">Logout</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
@@ -244,6 +254,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 <script>
@@ -253,6 +264,24 @@
     const COLLECTION_ORDERS = "Orders";
     const COLLECTION_ITEMS = "Items";
     const COLLECTION_EXPORT_ITEM = "Export_Items";
+
+    function checkAuthentication() {
+        const token = localStorage.getItem("token");
+        if (!token || token.trim() === "") {
+            Swal.fire({
+                icon: 'warning',      // icon của popup: 'warning', 'error', 'success', 'info', 'question'
+                title: 'Access Denied',
+                text: 'You must log in to access this page',
+                confirmButtonText: 'Go to Login'
+            }).then(() => {
+                window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
+            });
+
+            return; // ngăn chặn load tiếp các script
+        }
+    }
+
+    checkAuthentication();
 
     let inventoryData = {};
 
@@ -269,14 +298,14 @@
 
         if (currentPage.includes('dashboard')) {
             document.getElementById('dashboard-link').classList.add('active');
-        } else if (currentPage.includes('orders')) {
-            document.getElementById('orders-link').classList.add('active');
-        } else if (currentPage.includes('orders')) {
-            document.getElementById('users-link').classList.add('active');
-        } else if (currentPage.includes('orders')) {
-            document.getElementById('settings-link').classList.add('active');
-        } else if (currentPage.includes('projects')) {
-            document.getElementById('projects-link').classList.add('active');
+        } else if (currentPage.includes('order')) {
+            document.getElementById('order-link').classList.add('active');
+        } else if (currentPage.includes('user')) {
+            document.getElementById('user-link').classList.add('active');
+        } else if (currentPage.includes('setting')) {
+            document.getElementById('setting-link').classList.add('active');
+        } else if (currentPage.includes('project')) {
+            document.getElementById('project-link').classList.add('active');
         }
 
         // process inventory data
@@ -331,6 +360,16 @@
         const iframe = document.getElementById('content-frame');
         iframe.src = `dashboard_inventory_filter.html?type=${type}`;
     }
+
+    document.getElementById("logoutLink").addEventListener("click", function (e) {
+        e.preventDefault(); // ngăn link reload trang
+        // Xóa storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Redirect về trang login hoặc homepage nếu muốn
+        window.location.href = "http://127.0.0.1:5500/Page/login.html";
+    });
 
 </script>
 
