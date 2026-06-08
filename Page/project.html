@@ -446,33 +446,64 @@
             background-color: #ccc;
         }
 
+
         #trashZone {
             position: fixed;
-            right: 30px;
+            right: -120px;
             bottom: 30px;
-
-            width: 80px;
-            height: 80px;
-
-            border-radius: 50%;
-
-            background: #dc3545;
-            color: white;
-
-            display: none;
-
+            width: 72px;
+            height: 72px;
+            display: flex;
             justify-content: center;
             align-items: center;
+            background: #fff;
+            color: #222;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, .08),
+                0 2px 8px rgba(0, 0, 0, .05);
 
-            font-size: 40px;
+            transition:
+                right .3s ease,
+                transform .2s ease,
+                background-color .2s ease,
+                opacity .3s ease;
 
+            opacity: 0;
             z-index: 9999;
+        }
 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, .3);
+        #trashZone.show {
+            right: 30px;
+            opacity: 1;
         }
 
         #trashZone.active {
             transform: scale(1.15);
+            background: #e5e7eb;
+        }
+
+        #trashZone i {
+            font-size: 30px;
+            pointer-events: none;
+        }
+
+        .task-card {
+            cursor: grab;
+            transition:
+                transform .2s ease,
+                opacity .25s ease;
+        }
+
+        .task-card.dragging {
+            opacity: .5;
+            transform: rotate(2deg);
+        }
+
+        .task-card.removing {
+            opacity: 0;
+            transform: scale(.8);
         }
     </style>
 </head>
@@ -964,7 +995,7 @@
         </div>
 
         <div id="trashZone">
-            🗑️
+            <i class="bi bi-trash"></i>
         </div>
     </div>
 
@@ -1122,7 +1153,7 @@
                                 return [
                                     `Start: ${ds.startDates[i]}`,
                                     `End: ${ds.endDates[i]}`,
-                                    `Progress: ${ds.data[i]}%`, // đã là số nguyên
+                                    `Progress: ${ds.data[i]}%`, // interger
                                 ];
                             }
                         }
@@ -1720,153 +1751,138 @@
     This function will be called once user click another project on the left 
     */
 
-    function renderMutipulTask(taskDataList) { // render mutipul task
+    function renderMutipulTask(taskDataList) {
 
-        let cardBodyPendingTask = document.getElementById("card-body-pending-task");
-        let cardBodyProcessingTask = document.getElementById("card-body-processing-task");
-        let cardBodyDoneTask = document.getElementById("card-body-done-task");
-        let cardBodyProblemTask = document.getElementById("card-body-problem-task");
+        const cardBodyPendingTask = document.getElementById("card-body-pending-task");
+        const cardBodyProcessingTask = document.getElementById("card-body-processing-task");
+        const cardBodyDoneTask = document.getElementById("card-body-done-task");
+        const cardBodyProblemTask = document.getElementById("card-body-problem-task");
 
         cardBodyPendingTask.innerHTML = "";
         cardBodyProcessingTask.innerHTML = "";
         cardBodyDoneTask.innerHTML = "";
         cardBodyProblemTask.innerHTML = "";
 
-        taskDataList.forEach(taskData => {
-            if (taskData.status == "Pending") {
-                const div = document.createElement("div");
-                div.className = "task-card";
-                div.draggable = true;
-                div.dataset.id = taskData.id;
-                div.style = "border-left: 5px solid #838383;"
-                div.innerHTML = `<div class="fw-bold">
-                                        ${taskData.content}
-                                    </div>
-                                    <div class="small text-muted mt-2">
-                                        Created: ${taskData.start_date}
-                                    </div>
-                                    <div class="small text-muted">
-                                        Due: ${taskData.end_date}
-                                    </div>
-                                    <div class="small">
-                                        Assignee: ${taskData.handler}
-                                    </div>
-                                    <span class="badge" style="background-color: #838383">
-                                        ${taskData.status}
-                                    </span>`;
+        const trashZone = document.getElementById("trashZone");
 
-                div.addEventListener('dragstart', e => {
+        // Chỉ gắn event 1 lần
+        if (!trashZone.dataset.initialized) {
 
-                    e.dataTransfer.setData(
-                        'taskId',
-                        taskData.id
+            trashZone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                trashZone.classList.add("active");
+            });
+
+            trashZone.addEventListener("dragleave", () => {
+                trashZone.classList.remove("active");
+            });
+
+            trashZone.addEventListener("drop", (e) => {
+                e.preventDefault();
+
+                const taskId = e.dataTransfer.getData("taskId");
+
+                console.log("Drop taskId:", taskId);
+
+                const taskCard = document.querySelector(
+                    `.task-card[data-id="${taskId}"]`
+                );
+
+                if (taskCard) {
+
+                    taskCard.classList.add("removing");
+
+                    setTimeout(() => {
+                        taskCard.remove();
+                    }, 250);
+
+                    const index = taskDataList.findIndex(
+                        task => String(task.id) === String(taskId)
                     );
 
-                    document.getElementById('trashZone')
-                        .style.display = 'flex';
-                });
-                cardBodyPendingTask.appendChild(div);
+                    if (index !== -1) {
+                        taskDataList.splice(index, 1);
+                    }
+                }
 
+                trashZone.classList.remove("show");
+                trashZone.classList.remove("active");
+            });
 
-            } else if (taskData.status == "Processing") {
-                const div = document.createElement("div");
-                div.className = "task-card";
-                div.style = "border-left: 5px solid #FFC107;"
-                div.innerHTML = `<div class="fw-bold">
-                                        ${taskData.content}
-                                    </div>
-                                    <div class="small text-muted mt-2">
-                                        Created: ${taskData.start_date}
-                                    </div>
-                                    <div class="small text-muted">
-                                        Due: ${taskData.end_date}
-                                    </div>
-                                    <div class="small">
-                                        Assignee: ${taskData.handler}
-                                    </div>
-                                    <span class="badge" style="background-color: #FFC107">
-                                        ${taskData.status}
-                                    </span>`;
+            trashZone.dataset.initialized = "true";
+        }
 
-                div.addEventListener('dragstart', e => {
+        function createTaskCard(taskData) {
 
-                    e.dataTransfer.setData(
-                        'taskId',
-                        taskData.id
-                    );
+            const div = document.createElement("div");
 
-                    document.getElementById('trashZone')
-                        .style.display = 'flex';
-                });
-                cardBodyProcessingTask.appendChild(div);
-            } else if (taskData.status == "Done") {
-                const div = document.createElement("div");
-                div.className = "task-card";
-                div.style = "border-left: 5px solid #198754;"
-                div.innerHTML = `<div class="fw-bold">
-                                        ${taskData.content}
-                                    </div>
-                                    <div class="small text-muted mt-2">
-                                        Created: ${taskData.start_date}
-                                    </div>
-                                    <div class="small text-muted">
-                                        Due: ${taskData.end_date}
-                                    </div>
-                                    <div class="small">
-                                        Assignee: ${taskData.handler}
-                                    </div>
-                                    <span class="badge" style="background-color: #198754">
-                                        ${taskData.status}
-                                    </span>`;
+            div.className = "task-card";
+            div.dataset.id = taskData.id;
+            div.draggable = true;
 
-                div.addEventListener('dragstart', e => {
+            const colorMap = {
+                Pending: "#838383",
+                Processing: "#FFC107",
+                Done: "#198754",
+                Problem: "#DC3545"
+            };
 
-                    e.dataTransfer.setData(
-                        'taskId',
-                        taskData.id
-                    );
+            const color = colorMap[taskData.status] || "#DC3545";
 
-                    document.getElementById('trashZone')
-                        .style.display = 'flex';
-                });
-                cardBodyDoneTask.appendChild(div);
-            } else {
-                const div = document.createElement("div");
-                div.className = "task-card";
-                div.style = "border-left: 5px solid #DC3545;"
-                div.innerHTML = `<div class="fw-bold">
-                                        ${taskData.content}
-                                    </div>
-                                    <div class="small text-muted mt-2">
-                                        Created: ${taskData.start_date}
-                                    </div>
-                                    <div class="small text-muted">
-                                        Due: ${taskData.end_date}
-                                    </div>
-                                    <div class="small">
-                                        Assignee: ${taskData.handler}
-                                    </div>
-                                    <span class="badge" style="background-color: #DC3545">
-                                        ${taskData.status}
-                                    </span>`;
+            div.style.borderLeft = `5px solid ${color}`;
 
-                div.addEventListener('dragstart', e => {
+            div.innerHTML = `
+            <div class="fw-bold">${taskData.content}</div>
+            <div class="small text-muted mt-2">
+                Created: ${taskData.start_date}
+            </div>
+            <div class="small text-muted">
+                Due: ${taskData.end_date}
+            </div>
+            <div class="small">
+                Assignee: ${taskData.handler}
+            </div>
+            <span class="badge" style="background-color:${color}">
+                ${taskData.status}
+            </span>
+        `;
 
-                    e.dataTransfer.setData(
-                        'taskId',
-                        taskData.id
-                    );
+            div.addEventListener("dragstart", (e) => {
 
-                    document.getElementById('trashZone')
-                        .style.display = 'flex';
-                });
-                cardBodyProblemTask.appendChild(div);
-            }
-        })
+                e.dataTransfer.setData(
+                    "taskId",
+                    String(taskData.id)
+                );
 
+                div.classList.add("dragging");
 
+                trashZone.classList.add("show");
+            });
+
+            div.addEventListener("dragend", () => {
+
+                div.classList.remove("dragging");
+
+                trashZone.classList.remove("show");
+                trashZone.classList.remove("active");
+            });
+
+            const containerMap = {
+                Pending: cardBodyPendingTask,
+                Processing: cardBodyProcessingTask,
+                Done: cardBodyDoneTask,
+                Problem: cardBodyProblemTask
+            };
+
+            const container =
+                containerMap[taskData.status] ||
+                cardBodyProblemTask;
+
+            container.appendChild(div);
+        }
+
+        taskDataList.forEach(createTaskCard);
     }
-
 
 
     /*
