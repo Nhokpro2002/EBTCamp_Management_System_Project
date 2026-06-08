@@ -13,7 +13,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
     <style>
         /* =====================================================
            GLOBAL
@@ -340,6 +339,141 @@
         .container-fluid {
             display: none;
         }
+
+        .overlay-create-project {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-create-project {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            max-height: 90%;
+            overflow-y: auto;
+            font-family: Arial, sans-serif;
+        }
+
+        .popup-create-project h2,
+        .popup-create-project h3 {
+            margin-top: 0;
+        }
+
+        .form-group-create-project {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group-create-project label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group-create-project input,
+        .form-group-create-project select {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #stage-container {
+            margin-bottom: 10px;
+        }
+
+        .stage-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 40px;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .stage-item input {
+            width: 100%;
+        }
+
+        .remove-stage-btn {
+            background: #dc3545;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 30px;
+        }
+
+        #add-stage-btn {
+            background-color: #0d6efd;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-actions-create-project {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-actions-create-project button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #submitCreateProject {
+            background-color: #00ff66;
+        }
+
+        #closeCreateProject {
+            background-color: #ccc;
+        }
+
+        #trashZone {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+
+            width: 80px;
+            height: 80px;
+
+            border-radius: 50%;
+
+            background: #dc3545;
+            color: white;
+
+            display: none;
+
+            justify-content: center;
+            align-items: center;
+
+            font-size: 40px;
+
+            z-index: 9999;
+
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .3);
+        }
+
+        #trashZone.active {
+            transform: scale(1.15);
+        }
     </style>
 </head>
 
@@ -428,11 +562,32 @@
                                 <h5 class="fw-bold mb-0">Projects</h5>
                             </div>
 
-                            <div id="projectList" class="card-body"
-                                style="height: 792px; position: sticky; overflow-y: auto;">
+                            <div id="projectList" class="card-body" style="position: sticky; overflow-y: auto;">
 
                                 <!--Searching box-->
                                 <input class="form-control mb-3" placeholder="Search project...">
+
+                                <button style="
+        width: 100%;
+        max-width: 260px;
+        height: 42px;
+        background: linear-gradient(135deg, #00ff66, #00c853);
+        border: 2px solid #9e9e9e;
+        border-radius: 10px;
+        color: #0b1f14;
+        font-size: 20px;
+        font-weight: 600;
+        font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+        margin-bottom: 10px;
+    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(0,0,0,0.2)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(0,0,0,0.15)'"
+                                    id="openCreateProjectBtn">
+                                    Create Project
+                                </button>
 
                                 <!--Card name project-->
 
@@ -634,6 +789,7 @@
 
                 </div>
 
+                <canvas id="myChart" style="margin-top: 30px;"></canvas>
 
                 <div class="row g-3" style="padding-top: 20px;">
 
@@ -708,6 +864,48 @@
                             </div>
                         </div>
 
+                        <div id="overlay-create-project" class="overlay-create-project">
+                            <div class="popup-create-project">
+                                <h2>Create New Project</h2>
+
+                                <div class="form-group-create-project">
+                                    <label>Project Name</label>
+                                    <input type="text" id="project_name" placeholder="Enter project name" required>
+                                </div>
+
+                                <div class="form-group-create-project">
+                                    <label>Start Date</label>
+                                    <input type="date" id="start_date" required>
+                                </div>
+
+                                <div class="form-group-create-project">
+                                    <label>End Date</label>
+                                    <input type="date" id="end_date" required>
+                                </div>
+
+                                <div class="form-group-create-project">
+                                    <label>PIC</label>
+                                    <select id="pic" required></select>
+                                </div>
+
+                                <div class="form-group-create-project">
+                                    <label>Members</label>
+                                    <select id="members" multiple required></select>
+                                </div>
+
+                                <hr>
+
+                                <h3>Stages</h3>
+                                <div id="stage-container"></div>
+                                <button type="button" id="add-stage-btn">+ Add Stage</button>
+
+                                <div class="form-actions-create-project">
+                                    <button id="submitCreateProject">Create Project</button>
+                                    <button id="closeCreateProject">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Processing -->
@@ -745,28 +943,6 @@
 
                             <div class="card-body kanban-column" id="card-body-problem-task">
 
-                                <!--<div class="task-card" style="border-left: 5px solid #f50e06;">
-                                    <div class="fw-bold">
-                                        Payment Gateway Error
-                                    </div>
-
-                                    <div class="small text-muted mt-2">
-                                        Created: 02/06/2026
-                                    </div>
-
-                                    <div class="small text-muted">
-                                        Due: 05/06/2026
-                                    </div>
-
-                                    <div class="small">
-                                        Assignee: Michael Brown
-                                    </div>
-
-                                    <span class="badge bg-danger">
-                                        Problem
-                                    </span>
-                                </div>-->
-
                             </div>
 
                             <div class="card-footer d-flex gap-2">
@@ -785,6 +961,10 @@
 
 
             </div>
+        </div>
+
+        <div id="trashZone">
+            🗑️
         </div>
     </div>
 
@@ -827,16 +1007,15 @@
     }
 
 
-
-
     let projectData = [];
     let allTasks = [];
     let taskByProjectId = null;
     let selectedProject = {};
-    let handlerSelect = null;
+    //let membersSelect = null;
     let users = null;
     let stages = null;
     let selectStages = null;
+    let timelineChart = null;
 
     /* =====================================================
        PAGE INITIALIZATION
@@ -858,9 +1037,100 @@
 
         await loadDashboard();
 
-
         // Based on the number of projects, render the project-item tags accordingly.
     })
+
+    function drawnTimeline(taskByProjectId) {
+        let stageContentData = []; // array of stage content
+        let startDatesData = [] // string array of start dates stages
+        let endDatesData = [] // string array of end dates stages
+        let processPercent = [] // number array 
+        let pointBackgroundColorData = [] // color array
+
+        stages.items.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+
+        stages.items.forEach(stage => {
+            stageContentData.push(String(stage.content));
+
+            // Chỉ giữ ngày/tháng/năm
+            const startDate = new Date(stage.start_date);
+            const endDate = new Date(stage.end_date);
+
+            startDatesData.push(`${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}`);
+            endDatesData.push(`${endDate.getFullYear()}-${(endDate.getMonth() + 1).toString().padStart(2, '0')}-${endDate.getDate().toString().padStart(2, '0')}`);
+
+            const tasksInStage = taskByProjectId.filter(task => task.stage == stage.id);
+            const totalTasks = tasksInStage.length;
+            const doneTasks = tasksInStage.filter(task => task.status === "Done").length;
+
+            // Percent làm tròn đến hàng đơn vị
+            const percent = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
+
+            if (percent === 100) {
+                pointBackgroundColorData.push("green");
+            } else if (percent === 0) {
+                pointBackgroundColorData.push("gray");
+            } else {
+                pointBackgroundColorData.push("orange");
+            }
+
+            processPercent.push(percent);
+        });
+
+        if (!taskByProjectId || taskByProjectId.length === 0 || !stages?.items?.length) {
+            document.getElementById("myChart").style.display = "none";
+            return;
+        } else {
+            document.getElementById("myChart").style.display = "block";
+        }
+
+        const data = {
+            labels: stageContentData,
+            datasets: [{
+                label: "Progress",
+                data: processPercent,
+                startDates: startDatesData,
+                endDates: endDatesData,
+                borderColor: "blue",
+                fill: false,
+                pointBackgroundColor: pointBackgroundColorData,
+                pointRadius: 15,
+                pointHoverRadius: 25
+            }]
+        };
+
+        if (timelineChart) {
+            timelineChart.destroy();
+        }
+
+        timelineChart = new Chart(document.getElementById("myChart"), {
+            type: "line",
+            data: data,
+            options: {
+                scales: {
+                    y: { display: false }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: (ctx) => ctx[0].label,
+                            label: (ctx) => {
+                                const i = ctx.dataIndex;
+                                const ds = ctx.dataset;
+
+                                return [
+                                    `Start: ${ds.startDates[i]}`,
+                                    `End: ${ds.endDates[i]}`,
+                                    `Progress: ${ds.data[i]}%`, // đã là số nguyên
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     async function getUsersData() {
         try {
@@ -1036,12 +1306,11 @@
     function renderProjectItem() {
 
         const projectList = document.getElementById("projectList");
-        projectList.innerHTML = "";
 
         projectData.forEach(project => {
 
             const projectTasks =
-                allTasks.filter(task => task.project === project.id);
+                allTasks.filter(task => task.project == project.id);
 
             const totalTasks = projectTasks.length;
 
@@ -1049,7 +1318,7 @@
                 projectTasks.filter(task => task.status === "Done").length;
 
             const percent =
-                totalTasks === 0
+                totalTasks == 0
                     ? 0
                     : Math.floor((doneTasks / totalTasks) * 100);
 
@@ -1132,15 +1401,14 @@
 
         await getStagesData(project);
 
-        const taskByProjectId = await getTasks(project);
+        taskByProjectId = await getTasks(project);
 
         renderMutipulTask(taskByProjectId);
 
 
+        // Drawn Timeline
+        drawnTimeline(taskByProjectId);
 
-        // TODO:
-        // loadTaskBoard(projectID);
-        // loadChart(projectID);
     }
 
     async function getTasks(project) {
@@ -1316,14 +1584,20 @@
         document.getElementById('taskProjectName').value = selectedProject.project_name;
         document.getElementById('taskProjectId').value = selectedProject.id;
 
-        renderHandlerSelect();
+        renderMembersSelect("handler");
         renderStageSelect();
     }
 
-    function renderHandlerSelect() {
-        const select = document.getElementById("handler");
+    window.tomSelectInstances = window.tomSelectInstances || {};
+
+    function renderMembersSelect(type) {  // type: "pic", "members", "handler"
+        const select = document.getElementById(type);
+        if (!select) return;
+
+        // Xoá option cũ
         select.innerHTML = "";
 
+        // Thêm option từ users.items
         users.items.forEach(user => {
             const option = document.createElement("option");
             option.value = user.id;
@@ -1331,15 +1605,26 @@
             select.appendChild(option);
         });
 
-        if (!window.handlerSelect) {
-            window.handlerSelect = new TomSelect("#handler", {
+        // Nếu chưa có instance TomSelect cho select này thì tạo mới
+        if (!window.tomSelectInstances[type]) {
+            window.tomSelectInstances[type] = new TomSelect(`#${type}`, {
                 plugins: ['remove_button'],
                 hideSelected: true,
                 create: false,
-                placeholder: "Select Stage",
+                placeholder: type === "pic" ? "Select PIC" :
+                    type === "members" ? "Select Members" :
+                        "Select Handler",
             });
         } else {
-            window.handlerSelect.refreshOptions(false);
+            // Nếu đã có instance thì refresh options
+            window.tomSelectInstances[type].clearOptions();
+            users.items.forEach(user => {
+                window.tomSelectInstances[type].addOption({
+                    value: user.id,
+                    text: user.employee_id
+                });
+            });
+            window.tomSelectInstances[type].refreshOptions(false);
         }
     }
 
@@ -1359,7 +1644,7 @@
                 plugins: ['remove_button'],
                 hideSelected: true,
                 create: false,
-                placeholder: "Select handlers",
+                placeholder: "Select Stages",
             });
         } else {
             window.selectStages.refreshOptions(false);
@@ -1371,71 +1656,65 @@
         document.body.style.overflow = 'auto';
     });
 
-    // Open popup
     addTaskBtn.addEventListener('click', () => {
-
         openTaskPopup();
+    });
 
-        // Submit form
-        taskForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    // 2. Submit form (chỉ gọi 1 lần duy nhất)
+    taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            try {
-                const newTask = {
-                    content: document.getElementById('taskContent').value,
-                    stage: document.getElementById('stage').value,
-                    project: document.getElementById('taskProjectId').value,
-                    start_date: document.getElementById('startDate').value,
-                    end_date: document.getElementById('endDate').value,
-                    status: document.getElementById('status').value,
-                    handler: window.handlerSelect.getValue()
-                };
+        try {
+            const newTask = {
+                content: document.getElementById('taskContent').value,
+                stage: document.getElementById('stage').value,
+                project: document.getElementById('taskProjectId').value,
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                status: document.getElementById('status').value,
+                handler: window.tomSelectInstances["handler"].getValue()
+            };
 
-                const response = await fetch(
-                    `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records`,
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(newTask)
-                    }
-                );
-
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-
-                if (!response.ok) {
-                    Toast.fire({ icon: 'error', title: 'Create new task failed' });
-                    return;
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newTask)
                 }
+            );
 
-                Toast.fire({ icon: 'success', title: 'Create new task successfully' });
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
 
-                document.getElementById('taskContent').value = '';
-                document.getElementById('startDate').value = '';
-                document.getElementById('endDate').value = '';
-
-                // Reset stage (TomSelect)
-                window.selectStages.clear();
-
-                // Reset handler (TomSelect)
-                window.handlerSelect.clear();
-
-                //overlay.style.display = 'none';
-                document.body.style.overflow = 'auto';
-
-                addTaskDiv(newTask);
-
-            } catch (err) {
-                console.log(err);
+            if (!response.ok) {
+                Toast.fire({ icon: 'error', title: 'Create new task failed' });
+                return;
             }
 
+            Toast.fire({ icon: 'success', title: 'Create new task successfully' });
 
-        });
-    })
+            // Reset form
+            document.getElementById('taskContent').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+
+            // Reset TomSelect
+            window.selectStages.clear();
+            window.tomSelectInstances["handler"].clear();
+
+            document.body.style.overflow = 'auto';
+
+            addTaskDiv(newTask);
+
+        } catch (err) {
+            console.log(err);
+        }
+    });
 
     /*
     This function will be called once user click another project on the left 
@@ -1457,6 +1736,8 @@
             if (taskData.status == "Pending") {
                 const div = document.createElement("div");
                 div.className = "task-card";
+                div.draggable = true;
+                div.dataset.id = taskData.id;
                 div.style = "border-left: 5px solid #838383;"
                 div.innerHTML = `<div class="fw-bold">
                                         ${taskData.content}
@@ -1537,8 +1818,21 @@
             }
         })
 
+        div.addEventListener('dragstart', e => {
+
+            e.dataTransfer.setData(
+                'taskId',
+                taskData.id
+            );
+
+            document.getElementById('trashZone')
+                .style.display = 'flex';
+        });
+
 
     }
+
+
 
     /*
     This function will be call once user click add new pending task
@@ -1577,25 +1871,165 @@
         window.location.href = "http://127.0.0.1:5500/Page/login.html";
     });
 
+    // ======================
+    // SELECTORS
+    // ======================
+    const overlayCreateProject = document.getElementById("overlay-create-project");
+    const addStageBtn = document.getElementById("add-stage-btn");
+    const stageContainer = document.getElementById("stage-container");
+    const closeCreateProject = document.getElementById("closeCreateProject");
+    const submitCreateProject = document.getElementById("submitCreateProject");
+
+    // ======================
+    // OPEN / CLOSE POPUP
+    // ======================
+    function openCreateProjectPopup() {
+        overlayCreateProject.style.display = "flex";
+        document.body.style.overflow = "hidden";
+
+        // Render PIC & Members
+        renderMembersSelect("pic");
+        renderMembersSelect("members");
+
+        // Clear previous stages
+        stageContainer.innerHTML = "";
+        addStage(); // add 1 stage by default
+    }
+
+    function closeCreateProjectPopup() {
+        overlayCreateProject.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+
+    closeCreateProject.addEventListener("click", closeCreateProjectPopup);
+
+    // ======================
+    // ADD / REMOVE STAGE
+    // ======================
+    function addStage() {
+        const div = document.createElement("div");
+        div.className = "stage-item-create";
+        div.style.display = "grid";
+        div.style.gridTemplateColumns = "2fr 1fr 1fr 40px";
+        div.style.gap = "10px";
+        div.style.marginBottom = "8px";
+        div.style.alignItems = "center";
+
+        div.innerHTML = `
+        <input type="text" class="stage-name" placeholder="Stage name">
+        <input type="date" class="stage-start">
+        <input type="date" class="stage-end">
+        <button type="button" class="remove-stage-btn">X</button>
+    `;
+
+        div.querySelector(".remove-stage-btn").addEventListener("click", () => {
+            stageContainer.removeChild(div);
+        });
+
+        stageContainer.appendChild(div);
+    }
+
+    addStageBtn.addEventListener("click", addStage);
+
+    // ======================
+    // SUBMIT PROJECT
+    // ======================
+    submitCreateProject.addEventListener("click", async () => {
+        const projectName = document.getElementById("project_name").value.trim();
+        const startDate = document.getElementById("start_date").value;
+        const endDate = document.getElementById("end_date").value;
+        const pic = document.getElementById("pic").value;
+        const members = Array.from(document.getElementById("members").selectedOptions).map(o => o.value);
+        const status = "Pending";
+
+        if (!projectName || !startDate || !endDate) {
+            alert("Please fill project name, start date, and end date");
+            return;
+        }
+
+        // Get stages
+        const stages = Array.from(stageContainer.querySelectorAll(".stage-item-create")).map(stageDiv => {
+            return {
+                content: stageDiv.querySelector(".stage-name").value.trim(),
+                start_date: stageDiv.querySelector(".stage-start").value,
+                end_date: stageDiv.querySelector(".stage-end").value
+            };
+        }).filter(s => s.content && s.start_date && s.end_date); // loại stage chưa điền đầy đủ
+
+        if (stages.length === 0) {
+            alert("Please add at least 1 stage with all fields filled");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+
+            // Create project
+            const projectRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    project_name: projectName,
+                    start_date: startDate,
+                    end_date: endDate,
+                    pic: pic,
+                    members: members,
+                    status: status
+                })
+            });
+
+            if (!projectRes.ok) throw new Error("Failed to create project");
+
+            const projectData = await projectRes.json();
+            const projectId = projectData.id;
+
+            //  Tạo từng stage
+            for (const s of stages) {
+                await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        project: projectId,
+                        content: s.content,
+                        start_date: s.start_date,
+                        end_date: s.end_date
+                    })
+                });
+            }
+
+            //alert("Project and stages created successfully!");
+
+            closeCreateProjectPopup();
+            // Có thể reload dashboard hoặc append project mới vào list
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to create project");
+        }
+    });
+
+    // Nút mở popup
+    const openCreateProjectBtn = document.getElementById("openCreateProjectBtn");
+
+    // Bind sự kiện mở popup
+    openCreateProjectBtn.addEventListener("click", () => {
+        openCreateProjectPopup();
+    });
 
 
     /* =====================================================
-   TODO
-
-   1. Verify user authentication.
-      - If token is missing:
-          + Show access denied page
-          + Redirect to login page
-
-   2. On page load:
-      - Fetch project list
-      - Auto focus first project
-
-   3. When project changes:
-      - Reload KPI data
-      - Reload task board
-      - Reload chart data
-===================================================== */
+    
+    Bug:
+    1. nếu ấn button để mở tính năng thêm công việc (new task), nếu người dùng click cái gợi ý điền field mà các thông tin là của task vừa tạo trước
+    => system sẽ gây bug không cho người dùng thay đổi các field theo ý người dùng
+    
+    ===================================================== */
 
 
 </script>

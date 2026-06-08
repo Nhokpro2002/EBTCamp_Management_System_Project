@@ -1,0 +1,43 @@
+1. Dynamic Table + Inline Editing
+Thay vì chỉ thêm row mới, cho phép chỉnh sửa trực tiếp trên table.
+Có thể drag & drop để sắp xếp thứ tự sản phẩm trong đơn.
+Thêm tính năng auto-complete khi nhập sản phẩm (lấy từ master data sản phẩm).
+
+Lợi ích:
+
+Giống Excel nhưng người dùng không phải xóa/copy/paste thủ công.
+Nhập liệu nhanh, lỗi ít hơn.
+2. Validation & Calculation tự động
+Tự tính tổng tiền, thuế, chiết khấu, số lượng còn kho khi thêm sản phẩm.
+Thông báo ngay khi nhập số lượng vượt kho, giá không hợp lệ…
+Dùng màu, icon highlight khi có lỗi hoặc cảnh báo.
+
+Ví dụ:
+
+Nếu số lượng > tồn kho → cell đỏ.
+Nếu giá nhập < giá vốn → warning icon.
+3. History & Versioning
+Khi chỉnh sửa đơn đã tạo → lưu lịch sử thay đổi.
+Giúp audit, không sợ mất dữ liệu cũ.
+
+Cách làm:
+
+Lưu order_items_history table trong DB.
+Web hiển thị version mới nhất, có thể restore phiên bản trước.
+4. Template / Reuse
+Cho phép lưu mẫu đơn hàng (template) cho khách hàng thường xuyên hoặc combo sản phẩm hay dùng.
+Khi tạo đơn → chọn template → auto điền các item + số lượng + giá.
+5. QR Code / Barcode
+Sinh QR code cho mỗi đơn → in kèm đơn, khi quét sẽ mở nhanh thông tin đơn trên web.
+Sinh barcode cho sản phẩm → quét khi xuất kho / nhập kho.
+6. Filter / Search / Live Update
+Có filter theo trạng thái (pending, shipped, completed).
+Có search live trên table (khách hàng, mã đơn, sản phẩm).
+Giúp quản lý đơn hàng dễ hơn Excel, đặc biệt với hàng trăm đơn.
+7. Excel / CSV Export & Import nâng cao
+Export → giữ cấu trúc đẹp, tự động tính tổng.
+Import → cho phép nhập từ Excel/CSV, validate ngay trên web trước khi lưu DB.
+8. Workflow & Automation
+Khi tạo đơn → auto generate task cho kho/shipper.
+Khi chỉnh sửa → gửi email thông báo khách hàng/đội ngũ liên quan.
+Có thể tích hợp tính năng báo cáo, alert: ví dụ đơn tồn > 7 ngày chưa xử lý.
