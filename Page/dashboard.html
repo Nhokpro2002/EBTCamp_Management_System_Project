@@ -267,6 +267,7 @@
     const COLLECTION_ORDER_ITEMS = "Order_Items";
     const COLLECTION_ORDERS = "Orders";
     const COLLECTION_ITEMS = "Items";
+    const COLLECTION_USERS = "Users";
     const COLLECTION_EXPORT_ITEM = "Export_Items";
 
     function checkAuthentication() {
@@ -360,6 +361,10 @@
 
         getInventoryData();
 
+        changeIconAvatar();
+
+        changeTopbarText();
+
 
     })
 
@@ -380,6 +385,25 @@
         // Redirect về trang login hoặc homepage nếu muốn
         window.location.href = "http://127.0.0.1:5500/Page/login.html";
     });
+
+    function changeIconAvatar() {
+        const dropdownAvatar = document.querySelector('.dropdown img');
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        if (!dropdownAvatar || !userData) return;
+
+        dropdownAvatar.src =
+            `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
+    }
+
+    function changeTopbarText() {
+        const topbarText = document.querySelector('.topbar .text-muted');
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        if (!topbarText || !userData) return;
+
+        topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
+    }
 
 </script>
 
