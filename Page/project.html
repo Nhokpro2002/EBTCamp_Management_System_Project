@@ -727,7 +727,6 @@
                                     </div>
 
                                     <div class="card-body">
-                                        <!--<canvas id="projectChart"></canvas>-->
                                         <canvas id="burndownChart"></canvas>
                                     </div>
 
@@ -802,10 +801,8 @@
                                             <small class="text-muted">
                                                 Member
                                             </small>
+                                            <div id="project-member"></div>
 
-                                            <p id="project-member">
-                                                Member name 1, Member name 2, ...
-                                            </p>
                                         </div>
 
                                     </div>
@@ -832,8 +829,6 @@
                             </div>
 
                             <div class="card-body kanban-column" id="card-body-pending-task">
-
-
                             </div>
 
                             <div class="card-footer d-flex gap-2">
@@ -843,9 +838,6 @@
                                     <i class="fa fa-plus"></i> Add Task
                                 </button>
 
-                                <button class="btn btn-custom-danger btn-sm flex-fill">
-                                    <i class="fa fa-trash"></i> Delete Task
-                                </button>
                             </div>
                         </div>
 
@@ -948,7 +940,6 @@
 
                             <div class="card-body kanban-column" id="card-body-processing-task">
                             </div>
-
                         </div>
                     </div>
 
@@ -961,7 +952,6 @@
 
                             <div class="card-body kanban-column" id="card-body-done-task">
                             </div>
-
                         </div>
                     </div>
 
@@ -971,19 +961,8 @@
                             <div class="card-header bg-danger text-white">
                                 <h5 class="mb-0">Problem</h5>
                             </div>
-
                             <div class="card-body kanban-column" id="card-body-problem-task">
 
-                            </div>
-
-                            <div class="card-footer d-flex gap-2">
-                                <button class="btn btn-custom-success btn-sm flex-fill">
-                                    <i class="fa fa-plus"></i> Add Task
-                                </button>
-
-                                <button class="btn btn-custom-danger btn-sm flex-fill">
-                                    <i class="fa fa-trash"></i> Delete Task
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1042,9 +1021,10 @@
     let allTasks = [];
     let taskByProjectId = null;
     let selectedProject = {};
-    //let membersSelect = null;
     let users = null;
+    let userMap = {};
     let stages = null;
+    let stageMap = {};
     let selectStages = null;
     let timelineChart = null;
 
@@ -1067,6 +1047,10 @@
         await getUsersData();
 
         await loadDashboard();
+
+        changeIconAvatar();
+
+        changeTopbarText();
 
         // Based on the number of projects, render the project-item tags accordingly.
     })
@@ -1177,6 +1161,9 @@
 
             const result = await response.json();
             users = result;
+            users.items.forEach(user => {
+                userMap[user.id] = user;
+            });
 
         } catch (error) {
 
@@ -1199,6 +1186,9 @@
 
             const result = await response.json();
             stages = result;
+            stages.items.forEach(stage => {
+                stageMap[stage.id] = stage;
+            });
 
         } catch (error) {
 
@@ -1273,14 +1263,34 @@
 
     function initChart() {
 
+        //let projectName = document.querySelector('.col-lg-8 h5');
+        //projectName.textContent = selectedProject.project_name;
+
+        // lấy start_date và end_date của dự án và tính số tuần (làm tròn)
+        // lấy tổng số tasks và chia số tuần thì ra trung bình mỗi tuần cần làm bao nhiêu task => đường tuyến tính 
+        // mỗi tuần sẽ tính số task làm được và thêm vào mảng data (dữ liệu thực sự) -> red line
+        const projectStartDate = selectProject.start_date;
+        const projectEndDate = selectProject.end_date;
+
+        const diffTime = projectEndDate - projectStartDate; // milliseconds
+        const diffDays = diffTime / (1000 * 60 * 60 * 24); // chuyển sang ngày
+
+        // Tính số tuần
+        const diffWeeks = Math.ceil(diffDays / 7);
+        let weekLabel = [];
+        for (let index = 1; index <= diffWeeks; index++) {
+            weekLabel.push(`Week ${index}`);
+        }
+
+
         new Chart(document.getElementById("burndownChart"), {
             type: "line",
             data: {
-                labels: ["Start", "W1", "W2", "W3", "W4", "W5"],
+                labels: weekLabel,
                 datasets: [
                     {
                         label: "Ideal",
-                        data: [100, 80, 70, 65, , 0],
+                        data: [100, 80, 70, 65, 0],
                         borderColor: "#0d6efd",
                         backgroundColor: "#0d6efd",
                         fill: false,
@@ -1288,7 +1298,7 @@
                     },
                     {
                         label: "Actual",
-                        data: [100, 75, 55, 30, 25, 15],
+                        data: [100, 75, 55, 30, 25, 15], // data[0] tổng số task
                         borderColor: "#FF0000",
                         backgroundColor: "#FF0000",
                         fill: false,
@@ -1499,15 +1509,7 @@
         ).style.width = `${percent}%`;
     }
 
-    /*
-    Count task status for selected project.
 
-    Display:
-    - Total tasks
-    - Done tasks
-    - Processing tasks
-    - Pending tasks
-*/
     function fillAreaTotalTasks(project) {
 
         const projectTasks =
@@ -1600,12 +1602,44 @@
             .map(u => u.employee_id)
             .join(", ");
 
+
+        const pic = userMap[picUser.id];
+
+        const avatarPIC = pic ? `${POCKETBASE_URL}/api/files/Users/${pic.id}/${pic.avatar}` : "https://i.pravatar.cc/40";
+
+        const avatarsHtml = memberIds.map(memberId => {
+
+            const user = userMap[memberId];
+
+            const avatarUrl = user?.avatar
+                ? `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${user.id}/${user.avatar}`
+                : "https://i.pravatar.cc/40";
+
+            return `
+        <img
+            src="${avatarUrl}"
+            title="${user?.employee_id || ''}"
+            style="
+                width:30px;
+                height:30px;
+                border-radius:50%;
+                object-fit:cover;
+                border:2px solid white;
+                margin-left:-8px;
+            "
+        />
+    `;
+        }).join('');
+
+        const startDate = project.start_date?.split(" ")[0]?.split("T")[0];
+        const endDate = project.end_date?.split(" ")[0]?.split("T")[0];
+
         document.querySelector("#area-project-information #project-name").textContent = project.project_name;
-        document.querySelector("#area-project-information #project-pic").textContent = picUser ? picUser.employee_id : ""; // cái này có thể cần sửa, để nó hiện avatar của pic thay vì tên
-        document.querySelector("#area-project-information #project-start-date").textContent = project.start_date;
-        document.querySelector("#area-project-information #project-end-date").textContent = project.end_date;
+        document.querySelector("#area-project-information #project-pic").textContent = picUser ? picUser.employee_id : "";
+        document.querySelector("#area-project-information #project-start-date").textContent = startDate;
+        document.querySelector("#area-project-information #project-end-date").textContent = endDate;
         document.querySelector("#area-project-information #project-status").textContent = project.status;
-        document.querySelector("#area-project-information #project-member").textContent = memberEmployeeIds; // cái này nao phải sửa, để nó hiện avatar của mỗi người
+        document.querySelector("#area-project-information #project-member").innerHTML = avatarsHtml;
     }
 
     function openTaskPopup() {
@@ -1752,136 +1786,290 @@
     */
 
     function renderMutipulTask(taskDataList) {
+        clearColumns();
+        initTrashZone(taskDataList);
+        initStatusDropZones(taskDataList);
+        taskDataList.forEach(task => {
+            const card = createTaskCard(task);
+            appendToColumn(card, task.status);
+        });
+    }
 
-        const cardBodyPendingTask = document.getElementById("card-body-pending-task");
-        const cardBodyProcessingTask = document.getElementById("card-body-processing-task");
-        const cardBodyDoneTask = document.getElementById("card-body-done-task");
-        const cardBodyProblemTask = document.getElementById("card-body-problem-task");
+    function clearColumns() {
+        document.getElementById("card-body-pending-task").innerHTML = "";
+        document.getElementById("card-body-processing-task").innerHTML = "";
+        document.getElementById("card-body-done-task").innerHTML = "";
+        document.getElementById("card-body-problem-task").innerHTML = "";
+    }
 
-        cardBodyPendingTask.innerHTML = "";
-        cardBodyProcessingTask.innerHTML = "";
-        cardBodyDoneTask.innerHTML = "";
-        cardBodyProblemTask.innerHTML = "";
+    function createTaskCard(taskData) {
+
+        const div = document.createElement("div");
+
+        div.className = "task-card";
+        div.dataset.id = taskData.id;
+        div.draggable = true;
+
+        const colorMap = {
+            Pending: "#838383",
+            Processing: "#FFC107",
+            Done: "#198754",
+            Problem: "#DC3545"
+        };
+
+        const color = colorMap[taskData.status] || "#DC3545";
+        const handlers = taskData.handler || [];
+
+        const avatarsHtml = handlers.map(handlerId => {
+
+            const user = userMap[handlerId];
+
+            const avatarUrl = user?.avatar
+                ? `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${user.id}/${user.avatar}`
+                : "https://i.pravatar.cc/40";
+
+            return `
+        <img
+            src="${avatarUrl}"
+            title="${user?.employee_id || ''}"
+            style="
+                width:28px;
+                height:28px;
+                border-radius:50%;
+                object-fit:cover;
+                border:2px solid white;
+                margin-left:-8px;
+            "
+        />
+    `;
+        }).join('');
+
+        div.style.borderLeft = `5px solid ${color}`;
+
+        const startDate = taskData.start_date?.split(" ")[0]?.split("T")[0];
+        const endDate = taskData.end_date?.split(" ")[0]?.split("T")[0];
+        const stage = stageMap[taskData.stage];
+
+        div.innerHTML = `
+        <div class="fw-bold">${taskData.content}</div>
+        <div class="small text-muted mt-2">
+            Created: ${startDate}
+        </div>
+        <div class="small text-muted">
+            Due: ${endDate}
+        </div><div class="small text-muted">
+            Stage: ${stage.content}
+        </div>
+        <div class="d-flex align-items-center mt-2">
+          ${avatarsHtml}
+        </div>
+        <span class="badge" style="background-color:${color}">
+            ${taskData.status}
+        </span>
+    `;
+
+        addDragEvents(div, taskData);
+
+        return div;
+    }
+
+    function appendToColumn(card, status) {
+
+        const map = {
+            Pending: document.getElementById("card-body-pending-task"),
+            Processing: document.getElementById("card-body-processing-task"),
+            Done: document.getElementById("card-body-done-task"),
+            Problem: document.getElementById("card-body-problem-task")
+        };
+
+        (map[status] || map.Problem).appendChild(card);
+    }
+
+    function addDragEvents(div, taskData) {
 
         const trashZone = document.getElementById("trashZone");
 
-        // Chỉ gắn event 1 lần
-        if (!trashZone.dataset.initialized) {
+        div.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("taskId", String(taskData.id));
+            div.classList.add("dragging");
+            trashZone.classList.add("show");
+        });
 
-            trashZone.addEventListener("dragover", (e) => {
+        div.addEventListener("dragend", () => {
+            div.classList.remove("dragging");
+            trashZone.classList.remove("show");
+            trashZone.classList.remove("active");
+        });
+    }
+
+    function initTrashZone(taskDataList) {
+
+        const trashZone = document.getElementById("trashZone");
+
+        if (trashZone.dataset.initialized) return;
+
+        trashZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            trashZone.classList.add("active");
+        });
+
+        trashZone.addEventListener("dragleave", () => {
+            trashZone.classList.remove("active");
+        });
+
+        trashZone.addEventListener("drop", async (e) => {
+
+            e.preventDefault();
+
+            const taskId = e.dataTransfer.getData("taskId");
+
+            const taskCard = document.querySelector(
+                `.task-card[data-id="${taskId}"]`
+            );
+
+            if (!taskCard) return;
+
+            taskCard.classList.add("removing");
+
+            await new Promise(r => setTimeout(r, 250));
+
+            const deleted = await deleteTask(taskId);
+
+            if (deleted) {
+                taskCard.remove();
+
+                const index = taskDataList.findIndex(
+                    t => String(t.id) === String(taskId)
+                );
+
+                if (index !== -1) taskDataList.splice(index, 1);
+            }
+        });
+
+        trashZone.dataset.initialized = "true";
+    }
+
+    async function handleStatusDrop(taskId, newStatus, taskDataList) {
+
+        const task = taskDataList.find(t => String(t.id) === String(taskId));
+
+        if (!task || task.status === newStatus) return;
+
+        const success = await changeTaskStatus(taskId, newStatus);
+
+        if (!success) return;
+
+        task.status = newStatus;
+
+        renderMutipulTask(taskDataList); // note: mỗi lần drop thì lại render lại danh sách, cái này nên sửa
+    }
+
+    function initStatusDropZones(taskDataList) {
+
+        const processingZone = document.getElementById("card-body-processing-task");
+        const doneZone = document.getElementById("card-body-done-task");
+        const pendingZone = document.getElementById("card-body-pending-task");
+        const problemZone = document.getElementById("card-body-problem-task");
+
+        const zones = [
+            { el: processingZone, status: "Processing" },
+            { el: doneZone, status: "Done" },
+            { el: pendingZone, status: "Pending" },
+            { el: problemZone, status: "Problem" }
+        ];
+
+        zones.forEach(zone => {
+
+            if (zone.el.dataset.initialized) return;
+
+            // cho phép drop
+            zone.el.addEventListener("dragover", (e) => {
                 e.preventDefault();
-                trashZone.classList.add("active");
             });
 
-            trashZone.addEventListener("dragleave", () => {
-                trashZone.classList.remove("active");
-            });
-
-            trashZone.addEventListener("drop", (e) => {
+            // xử lý drop
+            zone.el.addEventListener("drop", async (e) => {
                 e.preventDefault();
 
                 const taskId = e.dataTransfer.getData("taskId");
 
-                console.log("Drop taskId:", taskId);
-
-                const taskCard = document.querySelector(
-                    `.task-card[data-id="${taskId}"]`
-                );
-
-                if (taskCard) {
-
-                    taskCard.classList.add("removing");
-
-                    setTimeout(() => {
-                        taskCard.remove();
-                    }, 250);
-
-                    const index = taskDataList.findIndex(
-                        task => String(task.id) === String(taskId)
-                    );
-
-                    if (index !== -1) {
-                        taskDataList.splice(index, 1);
-                    }
-                }
-
-                trashZone.classList.remove("show");
-                trashZone.classList.remove("active");
+                await handleStatusDrop(taskId, zone.status, taskDataList);
             });
 
-            trashZone.dataset.initialized = "true";
+            zone.el.dataset.initialized = "true";
+        });
+    }
+
+
+
+
+    // Delete task when user drag task card in trash
+    async function deleteTask(taskID) {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
+
+            if (!res.ok) {
+                Toast.fire({ icon: 'error', title: 'Delete task failed' });
+                return false;
+            }
+
+            Toast.fire({ icon: 'success', title: 'Delete task successfully' });
+
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
         }
+    }
 
-        function createTaskCard(taskData) {
+    // chanege task status when user dra task card into are processing or done
+    async function changeTaskStatus(taskID, newStatus) {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }, body: JSON.stringify({
+                    status: newStatus
+                })
 
-            const div = document.createElement("div");
-
-            div.className = "task-card";
-            div.dataset.id = taskData.id;
-            div.draggable = true;
-
-            const colorMap = {
-                Pending: "#838383",
-                Processing: "#FFC107",
-                Done: "#198754",
-                Problem: "#DC3545"
-            };
-
-            const color = colorMap[taskData.status] || "#DC3545";
-
-            div.style.borderLeft = `5px solid ${color}`;
-
-            div.innerHTML = `
-            <div class="fw-bold">${taskData.content}</div>
-            <div class="small text-muted mt-2">
-                Created: ${taskData.start_date}
-            </div>
-            <div class="small text-muted">
-                Due: ${taskData.end_date}
-            </div>
-            <div class="small">
-                Assignee: ${taskData.handler}
-            </div>
-            <span class="badge" style="background-color:${color}">
-                ${taskData.status}
-            </span>
-        `;
-
-            div.addEventListener("dragstart", (e) => {
-
-                e.dataTransfer.setData(
-                    "taskId",
-                    String(taskData.id)
-                );
-
-                div.classList.add("dragging");
-
-                trashZone.classList.add("show");
             });
 
-            div.addEventListener("dragend", () => {
-
-                div.classList.remove("dragging");
-
-                trashZone.classList.remove("show");
-                trashZone.classList.remove("active");
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
             });
 
-            const containerMap = {
-                Pending: cardBodyPendingTask,
-                Processing: cardBodyProcessingTask,
-                Done: cardBodyDoneTask,
-                Problem: cardBodyProblemTask
-            };
+            if (!res.ok) {
+                Toast.fire({ icon: 'error', title: 'Update task status failed' });
+                return false;
+            }
 
-            const container =
-                containerMap[taskData.status] ||
-                cardBodyProblemTask;
+            Toast.fire({ icon: 'success', title: 'Update task status successfully' });
 
-            container.appendChild(div);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
         }
-
-        taskDataList.forEach(createTaskCard);
     }
 
 
@@ -1909,7 +2097,6 @@
                                         ${taskData.status}
                                     </span>`;
         cardBodyPendingTask.appendChild(div);
-
     }
 
     document.getElementById("logoutLink").addEventListener("click", function (e) {
@@ -1947,12 +2134,13 @@
         addStage(); // add 1 stage by default
     }
 
+    closeCreateProject.addEventListener("click", closeCreateProjectPopup);
     function closeCreateProjectPopup() {
         overlayCreateProject.style.display = "none";
         document.body.style.overflow = "auto";
     }
 
-    closeCreateProject.addEventListener("click", closeCreateProjectPopup);
+
 
     // ======================
     // ADD / REMOVE STAGE
@@ -1980,87 +2168,112 @@
         stageContainer.appendChild(div);
     }
 
-    addStageBtn.addEventListener("click", addStage);
-
     // ======================
     // SUBMIT PROJECT
     // ======================
+    addStageBtn.addEventListener("click", addStage);
     submitCreateProject.addEventListener("click", async () => {
+
+        // ===== 1. Get input values from form =====
         const projectName = document.getElementById("project_name").value.trim();
         const startDate = document.getElementById("start_date").value;
         const endDate = document.getElementById("end_date").value;
         const pic = document.getElementById("pic").value;
-        const members = Array.from(document.getElementById("members").selectedOptions).map(o => o.value);
+
+        // Multiple select -> convert to array
+        const members = Array.from(
+            document.getElementById("members").selectedOptions
+        ).map(o => o.value);
+
         const status = "Pending";
 
+        // ===== 2. Basic validation =====
         if (!projectName || !startDate || !endDate) {
             alert("Please fill project name, start date, and end date");
             return;
         }
 
-        // Get stages
-        const stages = Array.from(stageContainer.querySelectorAll(".stage-item-create")).map(stageDiv => {
+        // ===== 3. Collect stages from UI =====
+        const stages = Array.from(
+            stageContainer.querySelectorAll(".stage-item-create")
+        ).map(stageDiv => {
+
             return {
                 content: stageDiv.querySelector(".stage-name").value.trim(),
                 start_date: stageDiv.querySelector(".stage-start").value,
                 end_date: stageDiv.querySelector(".stage-end").value
             };
-        }).filter(s => s.content && s.start_date && s.end_date); // loại stage chưa điền đầy đủ
+        })
+            // Remove incomplete stages
+            .filter(s => s.content && s.start_date && s.end_date);
 
         if (stages.length === 0) {
-            alert("Please add at least 1 stage with all fields filled");
+            alert("Please add at least 1 complete stage");
             return;
         }
 
         try {
             const token = localStorage.getItem("token");
 
-            // Create project
-            const projectRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    project_name: projectName,
-                    start_date: startDate,
-                    end_date: endDate,
-                    pic: pic,
-                    members: members,
-                    status: status
-                })
-            });
-
-            if (!projectRes.ok) throw new Error("Failed to create project");
-
-            const projectData = await projectRes.json();
-            const projectId = projectData.id;
-
-            //  Tạo từng stage
-            for (const s of stages) {
-                await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records`, {
+            // ===== 4. Create project first =====
+            const projectRes = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`,
+                {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        project: projectId,
-                        content: s.content,
-                        start_date: s.start_date,
-                        end_date: s.end_date
+                        project_name: projectName,
+                        start_date: startDate,
+                        end_date: endDate,
+                        pic: pic,
+                        members: members,
+                        status: status
                     })
-                });
+                }
+            );
+
+            // Check API response
+            if (!projectRes.ok) {
+                throw new Error("Failed to create project");
             }
 
-            //alert("Project and stages created successfully!");
+            const projectData = await projectRes.json();
+            const projectId = projectData.id;
 
+            // ===== 5. Create stages linked to project =====
+            for (const stage of stages) {
+
+                const stageRes = await fetch(
+                    `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            project: projectId,
+                            content: stage.content,
+                            start_date: stage.start_date,
+                            end_date: stage.end_date
+                        })
+                    }
+                );
+
+                // Optional: debug if stage fails
+                if (!stageRes.ok) {
+                    console.error("Failed stage:", stage);
+                }
+            }
+
+            // ===== 6. Close popup after success =====
             closeCreateProjectPopup();
-            // Có thể reload dashboard hoặc append project mới vào list
 
         } catch (err) {
-            console.error(err);
+            console.error("Create project error:", err);
             alert("Failed to create project");
         }
     });
@@ -2072,6 +2285,36 @@
     openCreateProjectBtn.addEventListener("click", () => {
         openCreateProjectPopup();
     });
+
+    function changeIconAvatar() {
+        // Get the avatar image inside the dropdown (topbar user icon)
+        const dropdownAvatar = document.querySelector('.dropdown img');
+
+        // Parse user data stored in localStorage
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        // Safety check: stop if element or user data is missing
+        if (!dropdownAvatar || !userData) return;
+
+        // Update avatar image source from PocketBase
+        // Add timestamp to prevent browser caching old image
+        dropdownAvatar.src =
+            `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
+    }
+
+    function changeTopbarText() {
+        // Get the element that displays the topbar subtitle text
+        const topbarText = document.querySelector('.topbar .text-muted');
+
+        // Get user data from localStorage and convert it from string to object
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        // Safety check: if element or user data doesn't exist, stop execution
+        if (!topbarText || !userData) return;
+
+        // Update the topbar text with the user's employee ID
+        topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
+    }
 
 
     /* =====================================================
