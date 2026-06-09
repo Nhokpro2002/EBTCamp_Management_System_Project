@@ -203,7 +203,11 @@
 
         document.querySelector(".container-fluid").style.display = "block";
 
-        initSidebar()
+        initSidebar();
+
+        changeIconAvatar();
+
+        changeTopbarText();
     })
 
     function initSidebar() {
@@ -215,8 +219,8 @@
             document.getElementById('order-link').classList.add('active');
         } else if (currentPage.includes('user')) {
             document.getElementById('user-link').classList.add('active');
-        } else if (currentPage.includes('order')) {
-            document.getElementById('order-link').classList.add('active');
+        } else if (currentPage.includes('inventory')) {
+            document.getElementById('inventory-link').classList.add('active');
         } else if (currentPage.includes('project')) {
             document.getElementById('project-link').classList.add('active');
         }
@@ -231,8 +235,7 @@
         document.getElementById("user-employee-id").textContent = userData.employee_id;
         document.getElementById("user-vh-code").textContent = userData.vh_code;
         document.getElementById("user-department").textContent = userData.department;
-        document.getElementById("user-avatar").src = userData.avatar;
-
+        document.getElementById("user-avatar").src = POCKETBASE_URL + '/api/files/' + COLLECTION_USERS + '/' + userData.id + '/' + userData.avatar;
         const avatarInput = document.getElementById("avatar-input");
         const avatarImg = document.getElementById("user-avatar");
         let selectedFile = null;
@@ -282,11 +285,17 @@
 
                 const dataResponse = await res.json();
 
-                console.log(await res.json());
+                console.log(dataResponse);
 
                 Swal.fire({ icon: 'success', title: 'Avatar updated!', timer: 1500, showConfirmButton: true });
 
-                document.getElementById("user-avatar").src = POCKETBASE_URL + '/api/files/' + COLLECTION_USERS + '/' + id + '/' + dataResponse.avatar;
+                document.getElementById("user-avatar").src = `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${id}/${dataResponse.avatar}`;
+
+                const user = JSON.parse(localStorage.getItem("user"));
+                user.avatar = dataResponse.avatar;
+                localStorage.setItem("user", JSON.stringify(user));
+
+                changeIconAvatar();
                 selectedFile = null;
 
             } catch (err) {
@@ -306,6 +315,18 @@
         // Redirect về trang login hoặc homepage nếu muốn
         window.location.href = "http://127.0.0.1:5500/Page/login.html";
     });
+
+    function changeIconAvatar() {
+        const dropdownAvatar = document.querySelector('.dropdown img');
+        let userData = JSON.parse(localStorage.getItem("user"));
+        dropdownAvatar.src = `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}`;
+    }
+
+    function changeTopbarText() {
+        let topbarText = document.querySelector('.text-muted');
+        let userData = JSON.parse(localStorage.getItem("user"));
+        topbarText.textContent = `Welcome back, ${userData.employee_id}`;
+    }
 
 </script>
 
