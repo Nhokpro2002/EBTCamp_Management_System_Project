@@ -638,7 +638,7 @@
                                 <div class="card card-stat p-3 shadow"
                                     style="height:160px;background:linear-gradient(135deg,#667eea,#764ba2)">
                                     <h6>OVERALL PROCESS</h6>
-                                    <h1 class="fw-bold">0%</h1>
+                                    <h1 style="font-size: 3.5rem !important; font-weight: 800;">0%</h1>
 
                                     <div class="progress mt-3">
                                         <div class="progress-bar" style="background-color: rgb(17 23 194); width: 0%">
@@ -696,7 +696,7 @@
                                 <div class="card card-stat p-3 shadow"
                                     style="height:160px;background:linear-gradient(135deg,#ffb347,#ff8c42)">
                                     <h6>DUE THIS WEEK</h6>
-                                    <h1>0</h1>
+                                    <h1 style="font-size: 3.5rem; font-weight: 800;">0</h1>
                                     <p>Tasks Due</p>
                                 </div>
                             </div>
@@ -705,7 +705,7 @@
                                 <div class="card card-stat p-3 shadow"
                                     style="height:160px;background:linear-gradient(135deg,#ff4d4f,#d32f2f)">
                                     <h6>ISSUE</h6>
-                                    <h1>5</h1>
+                                    <h1 style="font-size: 3.5rem; font-weight: 800;">5</h1>
                                     <p>Problems</p>
                                 </div>
                             </div>
@@ -726,9 +726,7 @@
                                         </h5>
                                     </div>
 
-                                    <div class="card-body">
-                                        <canvas id="burndownChart"></canvas>
-                                    </div>
+                                    <canvas id="progressChart"></canvas>
 
                                 </div>
 
@@ -817,7 +815,7 @@
 
                 </div>
 
-                <canvas id="myChart" style="margin-top: 30px;"></canvas>
+                <!--<canvas id="myChart" style="margin-top: 30px;"></canvas>-->
 
                 <div class="row g-3" style="padding-top: 20px;">
 
@@ -1042,8 +1040,6 @@
 
         initSidebar();
 
-        initChart();
-
         await getUsersData();
 
         await loadDashboard();
@@ -1052,10 +1048,81 @@
 
         changeTopbarText();
 
+        initChart();
+
         // Based on the number of projects, render the project-item tags accordingly.
     })
 
-    function drawnTimeline(taskByProjectId) {
+    let progressChart = null;
+
+    function initChart() {
+
+        if (!stages?.items || !taskByProjectId?.length) return;
+
+        const completedTask = [];
+
+        stages.items.forEach(stage => {
+
+            const tasksInStage = taskByProjectId.filter(
+                task => task.stage === stage.id
+            );
+
+            const doneCount = tasksInStage.filter(
+                task => task.status === "Done"
+            ).length;
+
+            completedTask.push(
+                tasksInStage.length > 0
+                    ? Math.round((doneCount / tasksInStage.length) * 100)
+                    : 0
+            );
+        });
+
+        const remaining = completedTask.map(v => 100 - v);
+
+        const stageLabelArray = stages.items.map(
+            stage => stage.content
+        );
+
+        if (progressChart) {
+            progressChart.destroy();
+        }
+
+        progressChart = new Chart(
+            document.getElementById('progressChart'),
+            {
+                type: 'bar',
+                data: {
+                    labels: stageLabelArray,
+                    datasets: [
+                        {
+                            label: 'Done',
+                            data: completedTask,
+                            backgroundColor: '#4CAF50'
+                        },
+                        {
+                            label: 'In Process',
+                            data: remaining,
+                            backgroundColor: '#E0E0E0'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { stacked: true },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            }
+        );
+    }
+
+    /*function drawnTimeline(taskByProjectId) {
         let stageContentData = []; // array of stage content
         let startDatesData = [] // string array of start dates stages
         let endDatesData = [] // string array of end dates stages
@@ -1145,7 +1212,7 @@
                 }
             }
         });
-    }
+    }*/
 
     async function getUsersData() {
         try {
@@ -1261,77 +1328,7 @@
        CHART
        ===================================================== */
 
-    function initChart() {
 
-        //let projectName = document.querySelector('.col-lg-8 h5');
-        //projectName.textContent = selectedProject.project_name;
-
-        // lấy start_date và end_date của dự án và tính số tuần (làm tròn)
-        // lấy tổng số tasks và chia số tuần thì ra trung bình mỗi tuần cần làm bao nhiêu task => đường tuyến tính 
-        // mỗi tuần sẽ tính số task làm được và thêm vào mảng data (dữ liệu thực sự) -> red line
-        const projectStartDate = selectProject.start_date;
-        const projectEndDate = selectProject.end_date;
-
-        const diffTime = projectEndDate - projectStartDate; // milliseconds
-        const diffDays = diffTime / (1000 * 60 * 60 * 24); // chuyển sang ngày
-
-        // Tính số tuần
-        const diffWeeks = Math.ceil(diffDays / 7);
-        let weekLabel = [];
-        for (let index = 1; index <= diffWeeks; index++) {
-            weekLabel.push(`Week ${index}`);
-        }
-
-
-        new Chart(document.getElementById("burndownChart"), {
-            type: "line",
-            data: {
-                labels: weekLabel,
-                datasets: [
-                    {
-                        label: "Ideal",
-                        data: [100, 80, 70, 65, 0],
-                        borderColor: "#0d6efd",
-                        backgroundColor: "#0d6efd",
-                        fill: false,
-                        tension: 0
-                    },
-                    {
-                        label: "Actual",
-                        data: [100, 75, 55, 30, 25, 15], // data[0] tổng số task
-                        borderColor: "#FF0000",
-                        backgroundColor: "#FF0000",
-                        fill: false,
-                        tension: 0.2
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: "Work Progress" // projetc name will be change follow option that user click on the project list
-                    }
-                },
-                scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: "Remaining Tasks",
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: "Week"
-                        }
-                    }
-                }
-            }
-        });
-
-    }
 
     /* =====================================================
        PROJECT UI RENDER
@@ -1446,9 +1443,11 @@
 
         renderMutipulTask(taskByProjectId);
 
+        initChart();
+
 
         // Drawn Timeline
-        drawnTimeline(taskByProjectId);
+        //drawnTimeline(taskByProjectId);
 
     }
 
@@ -1643,14 +1642,29 @@
     }
 
     function openTaskPopup() {
+
+        taskForm.reset();
+
         overlay.style.display = 'flex';
+
         document.body.style.overflow = 'hidden';
 
-        document.getElementById('taskProjectName').value = selectedProject.project_name;
-        document.getElementById('taskProjectId').value = selectedProject.id;
+        document.getElementById('taskProjectName').value =
+            selectedProject.project_name;
+
+        document.getElementById('taskProjectId').value =
+            selectedProject.id;
 
         renderMembersSelect("handler");
         renderStageSelect();
+
+        if (window.selectStages) {
+            window.selectStages.clear();
+        }
+
+        if (window.tomSelectInstances["handler"]) {
+            window.tomSelectInstances["handler"].clear();
+        }
     }
 
     window.tomSelectInstances = window.tomSelectInstances || {};
