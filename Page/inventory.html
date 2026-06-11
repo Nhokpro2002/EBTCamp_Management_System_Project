@@ -123,6 +123,91 @@
         .container-fluid {
             display: none;
         }
+
+        .name-cell,
+        .model-cell,
+        .description-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-description {
+            display: inline-block;
+            max-width: 400px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: bottom;
+        }
+
+        #my_table td,
+        #my_table th {
+            padding-right: 25px;
+            padding-bottom: 10px;
+        }
+
+        .item-detail-container {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 5px;
+        }
+
+        .item-image-panel {
+            width: 245px;
+            flex-shrink: 0;
+        }
+
+        .item-image-panel img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            object-fit: cover;
+        }
+
+        .item-info-panel {
+            flex: 1;
+        }
+
+        .item-title {
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 5px 8px;
+            border-radius: 6px;
+            line-height: 1.2;
+        }
+
+        .info-item .label {
+            display: block;
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 2px;
+        }
+
+        .info-item span:last-child {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .description-value {
+            display: inline-block;
+            max-width: 450px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: bottom;
+        }
     </style>
 </head>
 
@@ -195,7 +280,7 @@
                 </div>
                 <!-- Content -->
                 <div class="row g-4">
-                    <table id="my_table">
+                    <table id="my_table" class="tabletable table-bordered table-sm">
                         <thead>
                             <tr>
                                 <th>Image</th>
@@ -203,8 +288,13 @@
                                 <th>XCode/QCode</th>
                                 <th>QRCode</th>
                                 <th>Brand</th>
+                                <th>Description</th>
                                 <th>Remain</th>
                                 <th>Model</th>
+                                <th>Total Export</th>
+                                <th>Order</th>
+                                <th>Reuse</th>
+                                <th>Type</th>
                             </tr>
                         </thead>
                     </table>
@@ -225,20 +315,51 @@
                     style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-weight: bold;">
                     close
                 </span>
-                <div style="display: flex; gap: 10px; height: 250px;">
-                    <div style="flex: 1; max-height: 200px; max-width: 200px;">
-                        <img id="modalImage" src="" style="width: 100%; height: auto; border-radius: 8px;">
+                <div class="item-detail-container">
+
+                    <div class="item-image-panel">
+                        <img id="modalImage" src="">
                     </div>
-                    <div style="flex: 2; min-height: 100px;">
-                        <p style="margin-bottom: 0;"><strong>Name:</strong> <span id="modalName"></span></p>
-                        <p style="margin-bottom: 0;"><strong>XCode/QCode:</strong> <span id="modalCode"></span></p>
-                        <p style="margin-bottom: 0;"><strong>QRCode:</strong> <span id="modalQRCode"></span></p>
-                        <p style="margin-bottom: 0;"><strong>Brand:</strong> <span id="modalBrand"></span></p>
-                        <p style="margin-bottom: 0;"><strong>Description:</strong> <span id="modalDescription"></span>
-                        </p>
-                        <p style="margin-bottom: 0;"><strong>Remain:</strong> <span id="modalRemain"></span></p>
-                        <p style="margin-bottom: 0;"><strong>Model:</strong> <span id="modalModel"></span></p>
+
+                    <div class="item-info-panel">
+                        <h4 id="modalName" class="item-title"></h4>
+                        <div class="item-grid">
+                            <div class="info-item">
+                                <span class="label">XCode/QCode</span>
+                                <span id="modalCode"></span>
+                            </div>
+                            <div class="info-item">
+                                <div class="label">Description</div>
+                                <span id="modalDescription" class="description-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Brand</span>
+                                <span id="modalBrand"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Model</span>
+                                <span id="modalModel"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Remain</span>
+                                <span id="modalRemain"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Total Import</span>
+                                <span id="modalTotalImport"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Order</span>
+                                <span id="modalOrder"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Reuse</span>
+                                <span id="modalReuse"></span>
+                            </div>
+                        </div>
+
                     </div>
+
                 </div>
 
                 <div style="min-height: 100px; border-top: 2px solid #ccc; ">
@@ -350,23 +471,34 @@
                     brand: item.brand || '',
                     description: item.description || '',
                     remain: item.remain || 0,
-                    model: item.model || ''
+                    model: item.model || '',
+                    total_import: item.total_import || '',
+                    order: item.order || '',
+                    reuse: item.reuse || '',
+                    type: item.type || ''
                 }));
 
                 $('#my_table').DataTable({
                     data: tableData,
                     scrollY: '500px',
+                    scrollX: true,
                     paging: true,
                     sort: false,
                     select: true,
+                    scrollCollapse: true,
                     columnDefs: [
                         { targets: 0, width: "100px" },
-                        { targets: 1, width: "150px" },
-                        { targets: 2, width: "100px" },
+                        { targets: 1, width: "100px" },
+                        { targets: 2, width: "150px" },
                         { targets: 3, width: "100px" },
                         { targets: 4, width: "100px" },
                         { targets: 5, width: "120px" },
-                        { targets: 6, width: "100px", className: "dt-left" },
+                        { targets: 6, width: "150px", className: "dt-left" },
+                        { targets: 7, width: "150px" },
+                        { targets: 8, width: "150px", className: "dt-left" },
+                        { targets: 9, width: "100px", className: "dt-left" },
+                        { targets: 10, width: "100px", className: "dt-left" },
+                        { targets: 11, width: "100px" },
                     ],
 
                     columns: [
@@ -378,23 +510,40 @@
 
                             }
                         },
-                        { title: "Name", data: "name" },
+                        {
+                            title: "Name", data: "name", render: function (data) {
+                                return `<div class="name-cell" title="${data}">${data}</div>`;
+                            }
+                        },
                         { title: "XCode/QCode", data: "code" },
                         { title: "QRCode", data: "qr_code" },
                         { title: "Brand", data: "brand" },
+                        {
+                            title: "Description", data: "description", render: function (data) {
+                                return ` <div class="description-cell" title="${data}">${data} </div> `;
+                            }
+                        },
                         {
                             title: "Remain",
                             data: "remain",
                             render: function (data) {
                                 if (data <= 0) {
-                                    return `0 <span style="color:red; font-weight:bold;"> &nbsp; Out of stock</span>`;
+                                    return `0 <span style="color:red; font-weight:bold; font-size: 14.5px"> &nbsp; Out of stock</span>`;
                                 } else if (data < 20) {
                                     return `${data} <span style="color:orange; font-weight:bold; font-size: 14.5px"> &nbsp; Low stock</span>`;
                                 }
                                 return data;
                             }
                         },
-                        { title: "Model", data: "model" }
+                        {
+                            title: "Model", data: "model", render: function (data) {
+                                return `<div class="model-cell" title="${data}">${data} </div>`;
+                            }
+                        },
+                        { title: "Total Import", data: "total_import" },
+                        { title: "Order", data: "order" },
+                        { title: "Reuse", data: "reuse" },
+                        { title: "Type", data: "type" }
                     ]
                 });
 
@@ -434,7 +583,6 @@
             console.log('Fetched records:', result);
 
             const itemOrderHistoryData = result.items.map(item => ({
-
                 status: item.status || '',
                 code: item.code || '',
                 unit_price: item.unit_price ? "$" + item.unit_price : "$0",
@@ -522,9 +670,33 @@
                     { title: "Unit Price", data: "unit_price" },
                     { title: "Quantity", data: "quantity" },
                     { title: "Total Price", data: "total_price" },
-                    { title: "Order Date", data: "order_date" },
-                    { title: "Requested Date", data: "requested_date" },
-                    { title: "Receive Date", data: "receive_date" }
+                    {
+                        title: "Order Date",
+                        data: "order_date",
+                        render: function (data) {
+                            if (!data) return '';
+                            const d = new Date(data);
+                            return d.toLocaleDateString('vi-VN');
+                        }
+                    },
+                    {
+                        title: "Requested Date",
+                        data: "requested_date",
+                        render: function (data) {
+                            if (!data) return '';
+                            const d = new Date(data);
+                            return d.toLocaleDateString('vi-VN');
+                        }
+                    },
+                    {
+                        title: "Receive Date",
+                        data: "receive_date",
+                        render: function (data) {
+                            if (!data) return '';
+                            const d = new Date(data);
+                            return d.toLocaleDateString('vi-VN');
+                        }
+                    }
                 ]
             });
 
@@ -550,9 +722,14 @@
         $('#modalCode').text(data.code);
         $('#modalQRCode').text(data.qr_code);
         $('#modalBrand').text(data.brand);
-        $('#modalDescription').text(data.description);
+        $('#modalDescription')
+            .text(data.description)
+            .attr('title', data.description);
         $('#modalRemain').text(data.remain);
         $('#modalModel').text(data.model);
+        $('#modalTotalImport').text(data.total_import);
+        $('#modalOrder').text(data.order);
+        $('#modalReuse').text(data.reuse);
 
         $('#itemModal').css('display', 'flex');
         $('body').css('overflow', 'hidden');

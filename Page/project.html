@@ -1025,6 +1025,7 @@
     let stageMap = {};
     let selectStages = null;
     let timelineChart = null;
+    let progressChart = null;
 
     /* =====================================================
        PAGE INITIALIZATION
@@ -1053,9 +1054,9 @@
         // Based on the number of projects, render the project-item tags accordingly.
     })
 
-    let progressChart = null;
 
     function initChart() {
+        document.querySelector(".col-lg-8 .card-header h5").textContent = selectedProject.project_name;
 
         if (!stages?.items || !taskByProjectId?.length) return;
 
@@ -1109,6 +1110,18 @@
                 },
                 options: {
                     responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+
+                                    const value = context.raw;
+
+                                    return `${context.dataset.label}: ${value}%`;
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         x: { stacked: true },
                         y: {
