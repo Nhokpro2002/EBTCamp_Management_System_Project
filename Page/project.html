@@ -6,48 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bootstrap 5 Dashboard</title>
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../CSS/bootstrap.min.css" rel="stylesheet">
+    <link href="../CSS/bootstrap.min.css.map" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="../Libs/DataTables/datatables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* =====================================================
-           GLOBAL
-           =====================================================  
-        }*/
-
         body {
             background: #f4f7fb;
             font-family: 'Segoe UI', sans-serif;
-
-
-
         }
 
-        /* =====================================================
-           LAYOUT
-           ===================================================== */
         .sidebar {
             min-height: 100vh;
             background: linear-gradient(180deg, #0d6efd, #0b5ed7);
             color: white;
-            z-index: 1000;
-            position: fixed;
         }
-
-        .topbar {
-            background: white;
-            border-radius: 20px;
-            padding: 16px 24px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        /* =====================================================
-           SIDEBAR
-           ===================================================== */
 
         .sidebar .nav-link {
             color: rgba(255, 255, 255, 0.85);
@@ -63,160 +50,11 @@
             color: #fff;
         }
 
-
-        /* =====================================================
-           CARDS
-           ===================================================== */
-
-        .card-stat {
-            border: none;
+        .topbar {
+            background: white;
             border-radius: 20px;
-            color: white;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .card-stat i {
-            font-size: 3rem;
-            opacity: 0.2;
-            position: absolute;
-            right: 20px;
-            bottom: 10px;
-        }
-
-        .card-stat:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .table-card {
-            border: none;
-            border-radius: 20px;
+            padding: 16px 24px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        /* =====================================================
-           PROJECT LIST
-           ===================================================== */
-
-
-        .project-item {
-            padding: 15px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: .3s;
-            margin-bottom: 10px;
-        }
-
-        .project-item:hover {
-            background: #f8fafc;
-        }
-
-        .project-item.active {
-            border: 2px solid #0d6efd;
-        }
-
-        /* =====================================================
-           KANBAN
-           ===================================================== */
-
-        .kanban-column {
-            height: 70vh;
-            overflow-y: auto;
-            background: #f8f9fa;
-        }
-
-        .task-card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
-            /*border-left: 5px solid #0d6efd;*/
-            box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .task-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
-        }
-
-        /* =====================================================
-           TASK SUMMARY
-           ===================================================== */
-
-        /* Tổng task */
-        .total-tasks {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, .3);
-            margin: 0;
-        }
-
-        /* Label */
-        .done .status-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, .9);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #00ff66;
-        }
-
-        .processing .status-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, .9);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #ffd700;
-        }
-
-        .pending .status-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, .9);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #e0e0e0;
-        }
-
-        .issue .status-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, .9);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #ff4d4f;
-        }
-
-        /* Màu số */
-        .done .status-value {
-            color: #00ff66;
-        }
-
-        .processing .status-value {
-            color: #ffd700;
-        }
-
-        .pending .status-value {
-            color: #e0e0e0;
-        }
-
-        .issue .status-value {
-            color: #ff4d4f;
-        }
-
-        /* =====================================================
-           UTILITIES
-           ===================================================== */
-
-        .progress {
-            height: 8px;
-            border-radius: 20px;
         }
 
         .avatar {
@@ -226,285 +64,58 @@
             object-fit: cover;
         }
 
-
-        /* base style */
-        #out-of-stock,
-        #low-stock:hover {
-            cursor: pointer;
-        }
-
-        .card {
-            height: 85vh;
-        }
-
-        .card-footer {
-            background: #fff;
-            position: sticky;
-            bottom: 0;
-        }
-
-        /* Số liệu */
-        .status-value {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .btn-custom-success {
-            background: linear-gradient(135deg, #28a745, #218838);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-custom-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-custom-danger {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-custom-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Thêm icon đẹp nếu dùng Font Awesome */
-        .btn i {
-            margin-right: 6px;
-        }
-
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
+        .project-switcher {
+            display: flex;
             align-items: center;
-            z-index: 1000;
+            gap: 16px;
+            margin-bottom: 20px;
+            width: fit-content;
         }
 
-        /* Popup */
-        .popup {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            width: 400px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-        .form-actions {
+        .project-selector {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .ts-wrapper.dropdown-active .ts-dropdown {
-            top: auto !important;
-            bottom: calc(100% + 4px) !important;
-            margin-top: 0 !important;
-        }
-
-        .container-fluid {
-            display: none;
-        }
-
-        .overlay-create-project {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .popup-create-project {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            max-height: 90%;
-            overflow-y: auto;
-            font-family: Arial, sans-serif;
-        }
-
-        .popup-create-project h2,
-        .popup-create-project h3 {
-            margin-top: 0;
-        }
-
-        .form-group-create-project {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group-create-project label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group-create-project input,
-        .form-group-create-project select {
-            padding: 8px 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        #stage-container {
-            margin-bottom: 10px;
-        }
-
-        .stage-item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 5px;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 40px;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .stage-item input {
-            width: 100%;
-        }
-
-        .remove-stage-btn {
-            background: #dc3545;
-            border: none;
-            color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            height: 30px;
-        }
-
-        #add-stage-btn {
-            background-color: #0d6efd;
-            color: #fff;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .form-actions-create-project {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .form-actions-create-project button {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
-
-        #submitCreateProject {
-            background-color: #00ff66;
-        }
-
-        #closeCreateProject {
-            background-color: #ccc;
-        }
-
-
-        #trashZone {
-            position: fixed;
-            right: -120px;
-            bottom: 30px;
-            width: 72px;
-            height: 72px;
-            display: flex;
-            justify-content: center;
             align-items: center;
             background: #fff;
-            color: #222;
             border: 1px solid #e5e7eb;
-            border-radius: 20px;
+            border-radius: 12px;
+            padding: 0 12px;
+            min-width: 420px;
+            height: 52px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+        }
+
+        .project-selector i {
+            color: #2563eb;
+            font-size: 22px;
+            margin-right: 10px;
+        }
+
+        .project-select {
+            width: 320px;
+            border: none !important;
+            border-radius: 12px;
+            background: #fff;
             box-shadow:
-                0 10px 25px rgba(0, 0, 0, .08),
-                0 2px 8px rgba(0, 0, 0, .05);
+                0 1px 2px rgba(0, 0, 0, .05),
+                0 4px 12px rgba(0, 0, 0, .06);
 
-            transition:
-                right .3s ease,
-                transform .2s ease,
-                background-color .2s ease,
-                opacity .3s ease;
-
-            opacity: 0;
-            z-index: 9999;
+            font-weight: 600;
+            padding: 12px 16px;
+            transition: all .2s ease;
         }
 
-        #trashZone.show {
-            right: 30px;
-            opacity: 1;
+        .project-select:focus {
+            border: none !important;
+            outline: none !important;
+            box-shadow:
+                0 1px 2px rgba(0, 0, 0, .05),
+                0 8px 24px rgba(37, 99, 235, .12);
+            background: #fff;
         }
 
-        #trashZone.active {
-            transform: scale(1.15);
-            background: #e5e7eb;
-        }
-
-        #trashZone i {
-            font-size: 30px;
-            pointer-events: none;
-        }
-
-        .task-card {
-            cursor: grab;
-            transition:
-                transform .2s ease,
-                opacity .25s ease;
-        }
-
-        .task-card.dragging {
-            opacity: .5;
-            transform: rotate(2deg);
-        }
-
-        .task-card.removing {
-            opacity: 0;
-            transform: scale(.8);
-        }
+        /*.container-fluid {
+               display: none;
+          }*/
     </style>
 </head>
 
@@ -522,15 +133,13 @@
                 <nav class="nav flex-column">
                     <a class="nav-link" href="http://127.0.0.1:5500/Page/dashboard.html" id="dashboard-link">
                         <i class="bi bi-house-door me-2"></i> Dashboard
-                        <!--Admin thì xem được các vấn đề liên quan toàn hệ thống 
-                        nhưng eng thông thường sẽ chỉ xem được các vấn đề, ... mà họ đang chịu trách nhiệm-->
                     </a>
 
                     <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
                         <i class="bi bi-box-seam me-2"></i> Inventory
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/order.html" id="order-link">
+                    <a class=" nav-link" href="#" id="order-link">
                         <i class="bi bi-cart me-2"></i> Order
                     </a>
 
@@ -538,26 +147,25 @@
                         <i class="bi bi-gear me-2"></i> Setting
                     </a>
 
-                    <a class="nav-link" href="#" id="project-link">
-                        <i class="bi bi-tools"></i> Project
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/project.html" id="project-link">
+                        <i class="bi bi-tools me-2"></i> Project
                     </a>
 
                     <a class="nav-link" href="http://127.0.0.1:5500/Page/user.html" id="user-link">
                         <i class="bi bi-people me-2"></i> User
                         <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
                     </a>
-
                 </nav>
             </div>
 
             <!-- Main -->
-            <div class="col-lg-10 p-4" style="margin-left: 16.666667%;">
+            <div class="col-lg-10 p-4">
 
                 <!-- Topbar -->
-                <div class="topbar d-flex justify-content-between align-items-center mb-4">
+                <div class="topbar d-flex justify-content-between align-items-center mb-2">
                     <div>
-                        <h3 class="fw-bold mb-0">Projects Page</h3>
-                        <small class="text-muted">Welcome back, User 👋</small>
+                        <h3 class="fw-bold mb-0">Orders Page</h3>
+                        <small class="text-muted">Welcome back, User👋</small>
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
@@ -579,422 +187,78 @@
                     </div>
                 </div>
 
-
-
                 <!-- Content -->
-                <div class="row g-4">
+                <div class="container-fluid" style="padding-left: 0px !important;">
 
-                    <!-- PROJECT LIST -->
-                    <div class="col-lg-3">
-
-                        <div class="card shadow border-0 rounded-4 h-100">
-
-                            <div class="card-header bg-white border-0">
-                                <h5 class="fw-bold mb-0">Projects</h5>
-                            </div>
-
-                            <div id="projectList" class="card-body" style="position: sticky; overflow-y: auto;">
-
-                                <!--Searching box-->
-                                <input class="form-control mb-3" placeholder="Search project...">
-
-                                <button style="
-        width: 100%;
-        max-width: 260px;
-        height: 42px;
-        background: linear-gradient(135deg, #00ff66, #00c853);
-        border: 2px solid #9e9e9e;
-        border-radius: 10px;
-        color: #0b1f14;
-        font-size: 20px;
-        font-weight: 600;
-        font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-        letter-spacing: 0.3px;
-        cursor: pointer;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-        transition: all 0.2s ease;
-        margin-bottom: 10px;
-    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(0,0,0,0.2)'"
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(0,0,0,0.15)'"
-                                    id="openCreateProjectBtn">
-                                    Create Project
-                                </button>
-
-                                <!--Card name project-->
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- RIGHT AREA -->
-                    <div class="col-lg-9">
-
-                        <!-- KPI -->
-                        <div class="row g-3">
-
-                            <div class="col-md-6" id="area-overall-process">
-                                <div class="card card-stat p-3 shadow"
-                                    style="height:160px;background:linear-gradient(135deg,#667eea,#764ba2)">
-                                    <h6>OVERALL PROCESS</h6>
-                                    <h1 style="font-size: 3.5rem !important; font-weight: 800;">0%</h1>
-
-                                    <div class="progress mt-3">
-                                        <div class="progress-bar" style="background-color: rgb(17 23 194); width: 0%">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6" id="area-total-tasks">
-                                <div class="card card-stat p-3 shadow"
-                                    style="height:160px;background:linear-gradient(135deg,#42a5f5,#478ed1)">
-                                    <h6>TASKS</h6>
-
-                                    <div class="row align-items-center">
-                                        <div class="col-3">
-                                            <h1 class="total-tasks" style="padding-bottom: 30px;">0</h1>
-                                        </div>
-
-                                        <div class="col-9">
-                                            <div class="row text-center g-2">
-                                                <div class="col-6">
-                                                    <div class="status done">
-                                                        <div class="status-value">0</div>
-                                                        <div class="status-label">Done</div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-6">
-                                                    <div class="status processing">
-                                                        <div class="status-value">0</div>
-                                                        <div class="status-label">Processing</div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-6">
-                                                    <div class="status pending">
-                                                        <div class="status-value">0</div>
-                                                        <div class="status-label">Pending</div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-6">
-                                                    <div class="status issue">
-                                                        <div class="status-value">0</div>
-                                                        <div class="status-label">Issue</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6" id="area-due-this-week">
-                                <div class="card card-stat p-3 shadow"
-                                    style="height:160px;background:linear-gradient(135deg,#ffb347,#ff8c42)">
-                                    <h6>DUE THIS WEEK</h6>
-                                    <h1 style="font-size: 3.5rem; font-weight: 800;">0</h1>
-                                    <p>Tasks Due</p>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6" id="area-issue">
-                                <div class="card card-stat p-3 shadow"
-                                    style="height:160px;background:linear-gradient(135deg,#ff4d4f,#d32f2f)">
-                                    <h6>ISSUE</h6>
-                                    <h1 style="font-size: 3.5rem; font-weight: 800;">5</h1>
-                                    <p>Problems</p>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- CHART + INFO -->
-                        <div class="row mt-4 g-3">
-
-                            <!-- CHART -->
-                            <div class="col-lg-8">
-
-                                <div class="card shadow border-0 rounded-4 h-100">
-
-                                    <div class="card-header bg-white border-0">
-                                        <h5 class="fw-bold">
-                                            Project Name
-                                        </h5>
-                                    </div>
-
-                                    <canvas id="progressChart"></canvas>
-
-                                </div>
-
-                            </div>
-
-                            <!-- PROJECT INFO -->
-                            <div class="col-lg-4" id="area-project-information">
-
-                                <div class="card shadow border-0 rounded-4 h-100">
-
-                                    <div class="card-header bg-white border-0">
-                                        <h5 class="fw-bold">
-                                            Project Information
-                                        </h5>
-                                    </div>
-
-                                    <div class="card-body">
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                Project Name
-                                            </small>
-
-                                            <div class="fw-bold" id="project-name">Project Name
-
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                PIC
-                                            </small>
-
-                                            <div id="project-pic">PIC name
-
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                Start Date
-                                            </small>
-
-                                            <div id="project-start-date">
-                                                00/00/0000
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                End Date
-                                            </small>
-
-                                            <div id="project-end-date">
-                                                00/00/0000
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <small class="text-muted">
-                                                Status
-                                            </small>
-
-                                            <p id="project-status">
-                                                Pending
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <small class="text-muted">
-                                                Member
-                                            </small>
-                                            <div id="project-member"></div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
+                    <div class="project-switcher">
+                        <select class="form-select" style="width: 200px;">
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                        <span class="badge bg-success">
+                            Đang thực hiện
+                        </span>
                     </div>
 
                 </div>
-
-                <!--<canvas id="myChart" style="margin-top: 30px;"></canvas>-->
-
-                <div class="row g-3" style="padding-top: 20px;">
-
-                    <!-- Pending -->
-                    <div class="col-lg-3">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-header bg-secondary text-white">
-                                <h5 class="mb-0">Pending</h5>
-                            </div>
-
-                            <div class="card-body kanban-column" id="card-body-pending-task">
-                            </div>
-
-                            <div class="card-footer d-flex gap-2">
-
-                                <!-- Nút Add Task -->
-                                <button id="addTaskBtn" class="btn btn-custom-success btn-sm flex-fill">
-                                    <i class="fa fa-plus"></i> Add Task
-                                </button>
-
-                            </div>
-                        </div>
-
-                        <!-- Overlay & Popup -->
-                        <div id="overlay" class="overlay">
-                            <div class="popup">
-                                <h3>Create New Task</h3>
-                                <form id="taskForm">
-                                    <div class="form-group">
-                                        <label>Task Name</label>
-                                        <input type="text" id="taskContent" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Stage</label>
-                                        <select id="stage" required>
-
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Project</label>
-                                        <input type="text" id="taskProjectName" readonly>
-                                        <input type="hidden" id="taskProjectId">
-
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Start Date</label>
-                                        <input type="date" id="startDate">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>End Date</label>
-                                        <input type="date" id="endDate" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Status</label>
-                                        <input type="text" id="status" value="Pending" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Handler</label>
-                                        <select id="handler" multiple required>
-                                        </select>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn-success">Save Task</button>
-                                        <button type="button" id="closePopup" class="btn btn-secondary">Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div id="overlay-create-project" class="overlay-create-project">
-                            <div class="popup-create-project">
-                                <h2>Create New Project</h2>
-
-                                <div class="form-group-create-project">
-                                    <label>Project Name</label>
-                                    <input type="text" id="project_name" placeholder="Enter project name" required>
-                                </div>
-
-                                <div class="form-group-create-project">
-                                    <label>Start Date</label>
-                                    <input type="date" id="start_date" required>
-                                </div>
-
-                                <div class="form-group-create-project">
-                                    <label>End Date</label>
-                                    <input type="date" id="end_date" required>
-                                </div>
-
-                                <div class="form-group-create-project">
-                                    <label>PIC</label>
-                                    <select id="pic" required></select>
-                                </div>
-
-                                <div class="form-group-create-project">
-                                    <label>Members</label>
-                                    <select id="members" multiple required></select>
-                                </div>
-
-                                <hr>
-
-                                <h3>Stages</h3>
-                                <div id="stage-container"></div>
-                                <button type="button" id="add-stage-btn">+ Add Stage</button>
-
-                                <div class="form-actions-create-project">
-                                    <button id="submitCreateProject">Create Project</button>
-                                    <button id="closeCreateProject">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Processing -->
-                    <div class="col-lg-3">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-header bg-warning text-white">
-                                <h5 class="mb-0">Processing</h5>
-                            </div>
-
-                            <div class="card-body kanban-column" id="card-body-processing-task">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Done -->
-                    <div class="col-lg-3">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0">Done</h5>
-                            </div>
-
-                            <div class="card-body kanban-column" id="card-body-done-task">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Problem -->
-                    <div class="col-lg-3">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-header bg-danger text-white">
-                                <h5 class="mb-0">Problem</h5>
-                            </div>
-                            <div class="card-body kanban-column" id="card-body-problem-task">
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-
             </div>
-        </div>
-
-        <div id="trashZone">
-            <i class="bi bi-trash"></i>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-
 
 </body>
+
 <script>
 
-    /* =====================================================
-       CONSTANTS
-       ===================================================== */
+    $(document).ready(function () {
 
-    const COLLECTION_PROJECTS = "Projects";
-    const COLLECTION_TASKS = "Tasks";
-    const COLLECTION_USERS = "Users";
-    const COLLECTION_STAGES = "Stages";
-    const POCKETBASE_URL = "http://127.0.0.1:8090";
+        if (!checkAuthentication()) return;
+
+        document.querySelector(".container-fluid").style.display = "block";
+
+        // window.alert(window.innerWidth + " x " + window.innerHeight);
+        // Spec: 1528 * 732;
+
+        const currentPage = window.location.pathname;
+
+        if (currentPage.includes('dashboard')) {
+            document.getElementById('dashboard-link').classList.add('active');
+        } else if (currentPage.includes('order')) {
+            document.getElementById('order-link').classList.add('active');
+        } else if (currentPage.includes('user')) {
+            document.getElementById('user-link').classList.add('active');
+        } else if (currentPage.includes('setting')) {
+            document.getElementById('setting-link').classList.add('active');
+        } else if (currentPage.includes('project')) {
+            document.getElementById('project-link').classList.add('active');
+        }
+
+        changeIconAvatar();
+
+        changeTopbarText();
+
+    });
+
+    document.querySelectorAll('.menu-link').forEach(item => {
+        item.addEventListener('click', function () {
+            document.querySelectorAll('.menu-link').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            this.classList.add('active');
+        });
+    });
+
+    document.getElementById("logoutLink").addEventListener("click", function (e) {
+        e.preventDefault(); // ngăn link reload trang
+        // Xóa storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Redirect về trang login hoặc homepage nếu muốn
+        window.location.href = "http://127.0.0.1:5500/Page/login.html";
+    });
 
     function checkAuthentication() {
         const token = localStorage.getItem("token");
@@ -1014,1343 +278,24 @@
         return true;
     }
 
-
-    let projectData = [];
-    let allTasks = [];
-    let taskByProjectId = null;
-    let selectedProject = {};
-    let users = null;
-    let userMap = {};
-    let stages = null;
-    let stageMap = {};
-    let selectStages = null;
-    let timelineChart = null;
-    let progressChart = null;
-
-    /* =====================================================
-       PAGE INITIALIZATION
-       ===================================================== */
-
-    $(document).ready(async function () {
-
-        if (!checkAuthentication()) return;
-
-        document.querySelector(".container-fluid").style.display = "block";
-
-        // process focus option sidebar
-
-        initSidebar();
-
-        await getUsersData();
-
-        await loadDashboard();
-
-        changeIconAvatar();
-
-        changeTopbarText();
-
-        initChart();
-
-        // Based on the number of projects, render the project-item tags accordingly.
-    })
-
-
-    function initChart() {
-        document.querySelector(".col-lg-8 .card-header h5").textContent = selectedProject.project_name;
-
-        if (!stages?.items || !taskByProjectId?.length) return;
-
-        const completedTask = [];
-
-        stages.items.forEach(stage => {
-
-            const tasksInStage = taskByProjectId.filter(
-                task => task.stage === stage.id
-            );
-
-            const doneCount = tasksInStage.filter(
-                task => task.status === "Done"
-            ).length;
-
-            completedTask.push(
-                tasksInStage.length > 0
-                    ? Math.round((doneCount / tasksInStage.length) * 100)
-                    : 0
-            );
-        });
-
-        const remaining = completedTask.map(v => 100 - v);
-
-        const stageLabelArray = stages.items.map(
-            stage => stage.content
-        );
-
-        if (progressChart) {
-            progressChart.destroy();
-        }
-
-        progressChart = new Chart(
-            document.getElementById('progressChart'),
-            {
-                type: 'bar',
-                data: {
-                    labels: stageLabelArray,
-                    datasets: [
-                        {
-                            label: 'Done',
-                            data: completedTask,
-                            backgroundColor: '#4CAF50'
-                        },
-                        {
-                            label: 'In Process',
-                            data: remaining,
-                            backgroundColor: '#E0E0E0'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-
-                                    const value = context.raw;
-
-                                    return `${context.dataset.label}: ${value}%`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { stacked: true },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
-                }
-            }
-        );
-    }
-
-    /*function drawnTimeline(taskByProjectId) {
-        let stageContentData = []; // array of stage content
-        let startDatesData = [] // string array of start dates stages
-        let endDatesData = [] // string array of end dates stages
-        let processPercent = [] // number array 
-        let pointBackgroundColorData = [] // color array
-
-        stages.items.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
-
-        stages.items.forEach(stage => {
-            stageContentData.push(String(stage.content));
-
-            // Chỉ giữ ngày/tháng/năm
-            const startDate = new Date(stage.start_date);
-            const endDate = new Date(stage.end_date);
-
-            startDatesData.push(`${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}`);
-            endDatesData.push(`${endDate.getFullYear()}-${(endDate.getMonth() + 1).toString().padStart(2, '0')}-${endDate.getDate().toString().padStart(2, '0')}`);
-
-            const tasksInStage = taskByProjectId.filter(task => task.stage == stage.id);
-            const totalTasks = tasksInStage.length;
-            const doneTasks = tasksInStage.filter(task => task.status === "Done").length;
-
-            // Percent làm tròn đến hàng đơn vị
-            const percent = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
-
-            if (percent === 100) {
-                pointBackgroundColorData.push("green");
-            } else if (percent === 0) {
-                pointBackgroundColorData.push("gray");
-            } else {
-                pointBackgroundColorData.push("orange");
-            }
-
-            processPercent.push(percent);
-        });
-
-        if (!taskByProjectId || taskByProjectId.length === 0 || !stages?.items?.length) {
-            document.getElementById("myChart").style.display = "none";
-            return;
-        } else {
-            document.getElementById("myChart").style.display = "block";
-        }
-
-        const data = {
-            labels: stageContentData,
-            datasets: [{
-                label: "Progress",
-                data: processPercent,
-                startDates: startDatesData,
-                endDates: endDatesData,
-                borderColor: "blue",
-                fill: false,
-                pointBackgroundColor: pointBackgroundColorData,
-                pointRadius: 15,
-                pointHoverRadius: 25
-            }]
-        };
-
-        if (timelineChart) {
-            timelineChart.destroy();
-        }
-
-        timelineChart = new Chart(document.getElementById("myChart"), {
-            type: "line",
-            data: data,
-            options: {
-                scales: {
-                    y: { display: false }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            title: (ctx) => ctx[0].label,
-                            label: (ctx) => {
-                                const i = ctx.dataIndex;
-                                const ds = ctx.dataset;
-
-                                return [
-                                    `Start: ${ds.startDates[i]}`,
-                                    `End: ${ds.endDates[i]}`,
-                                    `Progress: ${ds.data[i]}%`, // interger
-                                ];
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }*/
-
-    async function getUsersData() {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_USERS}/records`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-            const result = await response.json();
-            users = result;
-            users.items.forEach(user => {
-                userMap[user.id] = user;
-            });
-
-        } catch (error) {
-
-            console.log(error);
-        }
-    }
-
-    async function getStagesData(project) {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(
-                `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records?filter=(project="${project.id}")`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-            const result = await response.json();
-            stages = result;
-            stages.items.forEach(stage => {
-                stageMap[stage.id] = stage;
-            });
-
-        } catch (error) {
-
-            console.log(error);
-        }
-    }
-
-    async function loadDashboard() {
-        try {
-
-            const token = localStorage.getItem("token");
-
-            const headers = {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            };
-
-            const projectsRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, { headers });// Code get all projects, need change ;      
-
-            if (!projectsRes.ok) {
-                throw new Error("Load data failed");
-            }
-
-            const projects = await projectsRes.json();
-
-            projectData = projects.items;
-
-            const tasksRes = await fetch(
-                `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records`,
-                { headers }
-            );
-
-            const tasks = await tasksRes.json();
-            allTasks = tasks.items;
-
-            renderProjectItem();
-
-            if (projectData.length > 0) {
-                selectedProject = projectData[0];
-                await selectProject(projectData[0]);
-
-            }
-
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    /* =====================================================
-       SIDEBAR
-       ===================================================== */
-
-    function initSidebar() {
-        const currentPage = window.location.pathname;
-
-        if (currentPage.includes('dashboard')) {
-            document.getElementById('dashboard-link').classList.add('active');
-        } else if (currentPage.includes('order')) {
-            document.getElementById('order-link').classList.add('active');
-        } else if (currentPage.includes('user')) {
-            document.getElementById('user-link').classList.add('active');
-        } else if (currentPage.includes('setting')) {
-            document.getElementById('setting-link').classList.add('active');
-        } else if (currentPage.includes('project')) {
-            document.getElementById('project-link').classList.add('active');
-        }
-    }
-
-    /* =====================================================
-       CHART
-       ===================================================== */
-
-
-
-    /* =====================================================
-       PROJECT UI RENDER
-       ===================================================== */
-    /*
- Render project cards on left panel.
-
- Each card:
- - Displays project name
- - Allows user to switch project
- - Refreshes KPI data
-*/
-    function renderProjectItem() {
-
-        const projectList = document.getElementById("projectList");
-
-        projectData.forEach(project => {
-
-            const projectTasks =
-                allTasks.filter(task => task.project == project.id);
-
-            const totalTasks = projectTasks.length;
-
-            const doneTasks =
-                projectTasks.filter(task => task.status === "Done").length;
-
-            const percent =
-                totalTasks == 0
-                    ? 0
-                    : Math.floor((doneTasks / totalTasks) * 100);
-
-            const div = document.createElement("div");
-
-            div.className = "project-item";
-
-            if (percent <= 40) {
-                div.innerHTML = `
-            <div class="fw-bold">
-                ${project.project_name}
-            </div>
-
-            <div class="progress mt-2">
-                <div
-                    class="progress-bar"
-                    style="background-color: red; width:${percent}%;">
-                </div>
-            </div>`;
-            } else if (percent > 40 && percent < 70) {
-                div.innerHTML = `
-            <div class="fw-bold">
-                ${project.project_name}
-            </div>
-
-            <div class="progress mt-2">
-                <div
-                    class="progress-bar"
-                    style="background-color: #ff9400; width:${percent}%">
-                </div>
-            </div>`;
-            } else {
-                div.innerHTML = `
-            <div class="fw-bold">
-                ${project.project_name}
-            </div>
-
-            <div class="progress mt-2">
-                <div
-                    class="progress-bar"
-                    style="background-color: #00ff66; width:${percent}%">
-                </div>
-            </div>`;
-            }
-
-
-            div.addEventListener("click", async () => {
-
-                document
-                    .querySelectorAll(".project-item")
-                    .forEach(item => item.classList.remove("active"));
-
-                div.classList.add("active");
-
-                await selectProject(project);
-                selectedProject = project;
-            });
-
-            projectList.appendChild(div);
-        });
-
-        const firstItem = projectList.querySelector(".project-item");
-
-        if (firstItem) {
-            firstItem.classList.add("active");
-        }
-    }
-
-    async function selectProject(project) {
-
-        fillAreaOverallProcess(project);
-
-        fillAreaTotalTasks(project);
-
-        fillAreaTasksDue(project);
-
-        fillAreaTasksProblem(project);
-
-        fillAreaProjectInformation(project);
-
-        await getStagesData(project);
-
-        taskByProjectId = await getTasks(project);
-
-        renderMutipulTask(taskByProjectId);
-
-        initChart();
-
-
-        // Drawn Timeline
-        //drawnTimeline(taskByProjectId);
-
-    }
-
-    async function getTasks(project) {
-        try {
-            const token = localStorage.getItem("token");
-
-            const headers = {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            };
-
-            const tasksRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=(project="${project.id}")`, { headers });
-            if (!tasksRes.ok) {
-                throw new Error("Load data failed");
-            }
-
-            const tasks = await tasksRes.json();
-
-            return tasks.items;
-        } catch (error) {
-            console.log(error);
-        }
-
-    }
-
-    /* =====================================================
-       KPI AREA
-       ===================================================== */
-
-    /*
-    projectID: ID of project that is being focused on
-    Fill percent process project (%)
-    Count tasks are done
-    Percent = tasks done/total tasks
-    */
-    function fillAreaOverallProcess(project) {
-
-        const projectTasks =
-            allTasks.filter(task => task.project === project.id);
-
-        const totalTasks = projectTasks.length;
-
-        const doneTasks =
-            projectTasks.filter(task => task.status === "Done").length;
-
-        const percent =
-            totalTasks === 0
-                ? 0
-                : Math.floor((doneTasks / totalTasks) * 100);
-
-        document.querySelector(
-            "#area-overall-process h1"
-        ).textContent = `${percent}%`;
-
-        document.querySelector(
-            "#area-overall-process .progress-bar"
-        ).style.width = `${percent}%`;
-    }
-
-
-    function fillAreaTotalTasks(project) {
-
-        const projectTasks =
-            allTasks.filter(task => task.project === project.id);
-
-        const totalTasks = projectTasks.length;
-
-        const doneTasks =
-            projectTasks.filter(task => task.status === "Done").length;
-
-        const processingTasks =
-            projectTasks.filter(task => task.status === "Processing").length;
-
-        const pendingTasks =
-            projectTasks.filter(task => task.status === "Pending").length;
-
-        const problemTasks =
-            projectTasks.filter(task => task.status === "Problem").length;
-
-        document.querySelector(
-            "#area-total-tasks h1"
-        ).textContent = totalTasks;
-
-        document.querySelector(
-            ".done .status-value"
-        ).textContent = doneTasks;
-
-        document.querySelector(
-            ".processing .status-value"
-        ).textContent = processingTasks;
-
-        document.querySelector(
-            ".pending .status-value"
-        ).textContent = pendingTasks;
-
-        document.querySelector(
-            ".issue .status-value"
-        ).textContent = problemTasks;
-    }
-
-    function fillAreaTasksDue(project) {
-
-        const projectTasks = allTasks.filter(
-            task => task.project == project.id
-        );
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const saturday = new Date(today);
-        saturday.setDate(today.getDate() + (6 - today.getDay()));
-        saturday.setHours(23, 59, 59, 999);
-
-        const countTasksDue = projectTasks.filter(task => {
-            const endDate = new Date(task.end_date);
-
-            return (
-                endDate >= today &&
-                endDate <= saturday &&
-                task.status !== "Done"
-            );
-        }).length;
-
-        document.querySelector(
-            "#area-due-this-week h1"
-        ).textContent = countTasksDue;
-    }
-
-    function fillAreaTasksProblem(project) {
-        const projectTasks =
-            allTasks.filter(task => task.project == project.id);
-
-        const countTaskProblem = projectTasks.filter(task => task.status == "Problem"
-        ).length;
-
-        document.querySelector(
-            "#area-issue h1"
-        ).textContent = countTaskProblem;
-
-
-    }
-
-    function fillAreaProjectInformation(project) {
-        const picUser = users.items.find(u => u.id === project.pic);
-
-        const memberIds = project.members || [];
-        const memberEmployeeIds = memberIds
-            .map(id => users.items.find(u => u.id === id))
-            .filter(Boolean)
-            .map(u => u.employee_id)
-            .join(", ");
-
-
-        const pic = userMap[picUser.id];
-
-        const avatarPIC = pic ? `${POCKETBASE_URL}/api/files/Users/${pic.id}/${pic.avatar}` : "https://i.pravatar.cc/40";
-
-        const avatarsHtml = memberIds.map(memberId => {
-
-            const user = userMap[memberId];
-
-            const avatarUrl = user?.avatar
-                ? `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${user.id}/${user.avatar}`
-                : "https://i.pravatar.cc/40";
-
-            return `
-        <img
-            src="${avatarUrl}"
-            title="${user?.employee_id || ''}"
-            style="
-                width:30px;
-                height:30px;
-                border-radius:50%;
-                object-fit:cover;
-                border:2px solid white;
-                margin-left:-8px;
-            "
-        />
-    `;
-        }).join('');
-
-        const startDate = project.start_date?.split(" ")[0]?.split("T")[0];
-        const endDate = project.end_date?.split(" ")[0]?.split("T")[0];
-
-        document.querySelector("#area-project-information #project-name").textContent = project.project_name;
-        document.querySelector("#area-project-information #project-pic").textContent = picUser ? picUser.employee_id : "";
-        document.querySelector("#area-project-information #project-start-date").textContent = startDate;
-        document.querySelector("#area-project-information #project-end-date").textContent = endDate;
-        document.querySelector("#area-project-information #project-status").textContent = project.status;
-        document.querySelector("#area-project-information #project-member").innerHTML = avatarsHtml;
-    }
-
-    function openTaskPopup() {
-
-        taskForm.reset();
-
-        overlay.style.display = 'flex';
-
-        document.body.style.overflow = 'hidden';
-
-        document.getElementById('taskProjectName').value =
-            selectedProject.project_name;
-
-        document.getElementById('taskProjectId').value =
-            selectedProject.id;
-
-        renderMembersSelect("handler");
-        renderStageSelect();
-
-        if (window.selectStages) {
-            window.selectStages.clear();
-        }
-
-        if (window.tomSelectInstances["handler"]) {
-            window.tomSelectInstances["handler"].clear();
-        }
-    }
-
-    window.tomSelectInstances = window.tomSelectInstances || {};
-
-    function renderMembersSelect(type) {  // type: "pic", "members", "handler"
-        const select = document.getElementById(type);
-        if (!select) return;
-
-        // Xoá option cũ
-        select.innerHTML = "";
-
-        // Thêm option từ users.items
-        users.items.forEach(user => {
-            const option = document.createElement("option");
-            option.value = user.id;
-            option.textContent = user.employee_id;
-            select.appendChild(option);
-        });
-
-        // Nếu chưa có instance TomSelect cho select này thì tạo mới
-        if (!window.tomSelectInstances[type]) {
-            window.tomSelectInstances[type] = new TomSelect(`#${type}`, {
-                plugins: ['remove_button'],
-                hideSelected: true,
-                create: false,
-                placeholder: type === "pic" ? "Select PIC" :
-                    type === "members" ? "Select Members" :
-                        "Select Handler",
-            });
-        } else {
-            // Nếu đã có instance thì refresh options
-            window.tomSelectInstances[type].clearOptions();
-            users.items.forEach(user => {
-                window.tomSelectInstances[type].addOption({
-                    value: user.id,
-                    text: user.employee_id
-                });
-            });
-            window.tomSelectInstances[type].refreshOptions(false);
-        }
-    }
-
-    function renderStageSelect() {
-        const select = document.getElementById("stage");
-        select.innerHTML = "";
-
-        stages.items.forEach(stage => {
-            const option = document.createElement("option");
-            option.value = stage.id;
-            option.textContent = stage.content;
-            select.appendChild(option);
-        });
-
-        if (!window.selectStages) {
-            window.selectStages = new TomSelect("#stage", {
-                plugins: ['remove_button'],
-                hideSelected: true,
-                create: false,
-                placeholder: "Select Stages",
-            });
-        } else {
-            window.selectStages.refreshOptions(false);
-        }
-    }
-
-    closePopup.addEventListener('click', () => {
-        overlay.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    });
-
-    addTaskBtn.addEventListener('click', () => {
-        openTaskPopup();
-    });
-
-    // 2. Submit form (chỉ gọi 1 lần duy nhất)
-    taskForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        try {
-            const newTask = {
-                content: document.getElementById('taskContent').value,
-                stage: document.getElementById('stage').value,
-                project: document.getElementById('taskProjectId').value,
-                start_date: document.getElementById('startDate').value,
-                end_date: document.getElementById('endDate').value,
-                status: document.getElementById('status').value,
-                handler: window.tomSelectInstances["handler"].getValue()
-            };
-
-            const response = await fetch(
-                `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newTask)
-                }
-            );
-
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000
-            });
-
-            if (!response.ok) {
-                Toast.fire({ icon: 'error', title: 'Create new task failed' });
-                return;
-            }
-
-            Toast.fire({ icon: 'success', title: 'Create new task successfully' });
-
-            // Reset form
-            document.getElementById('taskContent').value = '';
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-
-            // Reset TomSelect
-            window.selectStages.clear();
-            window.tomSelectInstances["handler"].clear();
-
-            document.body.style.overflow = 'auto';
-
-            addTaskDiv(newTask);
-
-        } catch (err) {
-            console.log(err);
-        }
-    });
-
-    /*
-    This function will be called once user click another project on the left 
-    */
-
-    function renderMutipulTask(taskDataList) {
-        clearColumns();
-        initTrashZone(taskDataList);
-        initStatusDropZones(taskDataList);
-        taskDataList.forEach(task => {
-            const card = createTaskCard(task);
-            appendToColumn(card, task.status);
-        });
-    }
-
-    function clearColumns() {
-        document.getElementById("card-body-pending-task").innerHTML = "";
-        document.getElementById("card-body-processing-task").innerHTML = "";
-        document.getElementById("card-body-done-task").innerHTML = "";
-        document.getElementById("card-body-problem-task").innerHTML = "";
-    }
-
-    function createTaskCard(taskData) {
-
-        const div = document.createElement("div");
-
-        div.className = "task-card";
-        div.dataset.id = taskData.id;
-        div.draggable = true;
-
-        const colorMap = {
-            Pending: "#838383",
-            Processing: "#FFC107",
-            Done: "#198754",
-            Problem: "#DC3545"
-        };
-
-        const color = colorMap[taskData.status] || "#DC3545";
-        const handlers = taskData.handler || [];
-
-        const avatarsHtml = handlers.map(handlerId => {
-
-            const user = userMap[handlerId];
-
-            const avatarUrl = user?.avatar
-                ? `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${user.id}/${user.avatar}`
-                : "https://i.pravatar.cc/40";
-
-            return `
-        <img
-            src="${avatarUrl}"
-            title="${user?.employee_id || ''}"
-            style="
-                width:28px;
-                height:28px;
-                border-radius:50%;
-                object-fit:cover;
-                border:2px solid white;
-                margin-left:-8px;
-            "
-        />
-    `;
-        }).join('');
-
-        div.style.borderLeft = `5px solid ${color}`;
-
-        const startDate = taskData.start_date?.split(" ")[0]?.split("T")[0];
-        const endDate = taskData.end_date?.split(" ")[0]?.split("T")[0];
-        const stage = stageMap[taskData.stage];
-
-        div.innerHTML = `
-        <div class="fw-bold">${taskData.content}</div>
-        <div class="small text-muted mt-2">
-            Created: ${startDate}
-        </div>
-        <div class="small text-muted">
-            Due: ${endDate}
-        </div><div class="small text-muted">
-            Stage: ${stage.content}
-        </div>
-        <div class="d-flex align-items-center mt-2">
-          ${avatarsHtml}
-        </div>
-        <span class="badge" style="background-color:${color}">
-            ${taskData.status}
-        </span>
-    `;
-
-        addDragEvents(div, taskData);
-
-        return div;
-    }
-
-    function appendToColumn(card, status) {
-
-        const map = {
-            Pending: document.getElementById("card-body-pending-task"),
-            Processing: document.getElementById("card-body-processing-task"),
-            Done: document.getElementById("card-body-done-task"),
-            Problem: document.getElementById("card-body-problem-task")
-        };
-
-        (map[status] || map.Problem).appendChild(card);
-    }
-
-    function addDragEvents(div, taskData) {
-
-        const trashZone = document.getElementById("trashZone");
-
-        div.addEventListener("dragstart", (e) => {
-            e.dataTransfer.setData("taskId", String(taskData.id));
-            div.classList.add("dragging");
-            trashZone.classList.add("show");
-        });
-
-        div.addEventListener("dragend", () => {
-            div.classList.remove("dragging");
-            trashZone.classList.remove("show");
-            trashZone.classList.remove("active");
-        });
-    }
-
-    function initTrashZone(taskDataList) {
-
-        const trashZone = document.getElementById("trashZone");
-
-        if (trashZone.dataset.initialized) return;
-
-        trashZone.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            trashZone.classList.add("active");
-        });
-
-        trashZone.addEventListener("dragleave", () => {
-            trashZone.classList.remove("active");
-        });
-
-        trashZone.addEventListener("drop", async (e) => {
-
-            e.preventDefault();
-
-            const taskId = e.dataTransfer.getData("taskId");
-
-            const taskCard = document.querySelector(
-                `.task-card[data-id="${taskId}"]`
-            );
-
-            if (!taskCard) return;
-
-            taskCard.classList.add("removing");
-
-            await new Promise(r => setTimeout(r, 250));
-
-            const deleted = await deleteTask(taskId);
-
-            if (deleted) {
-                taskCard.remove();
-
-                const index = taskDataList.findIndex(
-                    t => String(t.id) === String(taskId)
-                );
-
-                if (index !== -1) taskDataList.splice(index, 1);
-            }
-        });
-
-        trashZone.dataset.initialized = "true";
-    }
-
-    async function handleStatusDrop(taskId, newStatus, taskDataList) {
-
-        const task = taskDataList.find(t => String(t.id) === String(taskId));
-
-        if (!task || task.status === newStatus) return;
-
-        const success = await changeTaskStatus(taskId, newStatus);
-
-        if (!success) return;
-
-        task.status = newStatus;
-
-        renderMutipulTask(taskDataList); // note: mỗi lần drop thì lại render lại danh sách, cái này nên sửa
-    }
-
-    function initStatusDropZones(taskDataList) {
-
-        const processingZone = document.getElementById("card-body-processing-task");
-        const doneZone = document.getElementById("card-body-done-task");
-        const pendingZone = document.getElementById("card-body-pending-task");
-        const problemZone = document.getElementById("card-body-problem-task");
-
-        const zones = [
-            { el: processingZone, status: "Processing" },
-            { el: doneZone, status: "Done" },
-            { el: pendingZone, status: "Pending" },
-            { el: problemZone, status: "Problem" }
-        ];
-
-        zones.forEach(zone => {
-
-            if (zone.el.dataset.initialized) return;
-
-            // cho phép drop
-            zone.el.addEventListener("dragover", (e) => {
-                e.preventDefault();
-            });
-
-            // xử lý drop
-            zone.el.addEventListener("drop", async (e) => {
-                e.preventDefault();
-
-                const taskId = e.dataTransfer.getData("taskId");
-
-                await handleStatusDrop(taskId, zone.status, taskDataList);
-            });
-
-            zone.el.dataset.initialized = "true";
-        });
-    }
-
-
-
-
-    // Delete task when user drag task card in trash
-    async function deleteTask(taskID) {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-            });
-
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000
-            });
-
-            if (!res.ok) {
-                Toast.fire({ icon: 'error', title: 'Delete task failed' });
-                return false;
-            }
-
-            Toast.fire({ icon: 'success', title: 'Delete task successfully' });
-
-            return true;
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    }
-
-    // chanege task status when user dra task card into are processing or done
-    async function changeTaskStatus(taskID, newStatus) {
-        try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }, body: JSON.stringify({
-                    status: newStatus
-                })
-
-            });
-
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000
-            });
-
-            if (!res.ok) {
-                Toast.fire({ icon: 'error', title: 'Update task status failed' });
-                return false;
-            }
-
-            Toast.fire({ icon: 'success', title: 'Update task status successfully' });
-
-            return true;
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    }
-
-
-    /*
-    This function will be call once user click add new pending task
-    */
-    function addTaskDiv(taskData) {
-        let cardBodyPendingTask = document.getElementById("card-body-pending-task");
-        const div = document.createElement("div");
-        div.className = "task-card";
-        div.style = "border-left: 5px solid #838383;"
-        div.innerHTML = `<div class="fw-bold">
-                                        ${taskData.content}
-                                    </div>
-                                    <div class="small text-muted mt-2">
-                                        Created: ${taskData.start_date}
-                                    </div>
-                                    <div class="small text-muted">
-                                        Due: ${taskData.end_date}
-                                    </div>
-                                    <div class="small">
-                                        Assignee: ${taskData.handler}
-                                    </div>
-                                    <span class="badge" style="background-color: #838383">
-                                        ${taskData.status}
-                                    </span>`;
-        cardBodyPendingTask.appendChild(div);
-    }
-
-    document.getElementById("logoutLink").addEventListener("click", function (e) {
-        e.preventDefault(); // ngăn link reload trang
-        // Xóa storage
-        localStorage.clear();
-        sessionStorage.clear();
-
-        // Redirect về trang login hoặc homepage nếu muốn
-        window.location.href = "http://127.0.0.1:5500/Page/login.html";
-    });
-
-    // ======================
-    // SELECTORS
-    // ======================
-    const overlayCreateProject = document.getElementById("overlay-create-project");
-    const addStageBtn = document.getElementById("add-stage-btn");
-    const stageContainer = document.getElementById("stage-container");
-    const closeCreateProject = document.getElementById("closeCreateProject");
-    const submitCreateProject = document.getElementById("submitCreateProject");
-
-    // ======================
-    // OPEN / CLOSE POPUP
-    // ======================
-    function openCreateProjectPopup() {
-        overlayCreateProject.style.display = "flex";
-        document.body.style.overflow = "hidden";
-
-        // Render PIC & Members
-        renderMembersSelect("pic");
-        renderMembersSelect("members");
-
-        // Clear previous stages
-        stageContainer.innerHTML = "";
-        addStage(); // add 1 stage by default
-    }
-
-    closeCreateProject.addEventListener("click", closeCreateProjectPopup);
-    function closeCreateProjectPopup() {
-        overlayCreateProject.style.display = "none";
-        document.body.style.overflow = "auto";
-    }
-
-
-
-    // ======================
-    // ADD / REMOVE STAGE
-    // ======================
-    function addStage() {
-        const div = document.createElement("div");
-        div.className = "stage-item-create";
-        div.style.display = "grid";
-        div.style.gridTemplateColumns = "2fr 1fr 1fr 40px";
-        div.style.gap = "10px";
-        div.style.marginBottom = "8px";
-        div.style.alignItems = "center";
-
-        div.innerHTML = `
-        <input type="text" class="stage-name" placeholder="Stage name">
-        <input type="date" class="stage-start">
-        <input type="date" class="stage-end">
-        <button type="button" class="remove-stage-btn">X</button>
-    `;
-
-        div.querySelector(".remove-stage-btn").addEventListener("click", () => {
-            stageContainer.removeChild(div);
-        });
-
-        stageContainer.appendChild(div);
-    }
-
-    // ======================
-    // SUBMIT PROJECT
-    // ======================
-    addStageBtn.addEventListener("click", addStage);
-    submitCreateProject.addEventListener("click", async () => {
-
-        // ===== 1. Get input values from form =====
-        const projectName = document.getElementById("project_name").value.trim();
-        const startDate = document.getElementById("start_date").value;
-        const endDate = document.getElementById("end_date").value;
-        const pic = document.getElementById("pic").value;
-
-        // Multiple select -> convert to array
-        const members = Array.from(
-            document.getElementById("members").selectedOptions
-        ).map(o => o.value);
-
-        const status = "Pending";
-
-        // ===== 2. Basic validation =====
-        if (!projectName || !startDate || !endDate) {
-            alert("Please fill project name, start date, and end date");
-            return;
-        }
-
-        // ===== 3. Collect stages from UI =====
-        const stages = Array.from(
-            stageContainer.querySelectorAll(".stage-item-create")
-        ).map(stageDiv => {
-
-            return {
-                content: stageDiv.querySelector(".stage-name").value.trim(),
-                start_date: stageDiv.querySelector(".stage-start").value,
-                end_date: stageDiv.querySelector(".stage-end").value
-            };
-        })
-            // Remove incomplete stages
-            .filter(s => s.content && s.start_date && s.end_date);
-
-        if (stages.length === 0) {
-            alert("Please add at least 1 complete stage");
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem("token");
-
-            // ===== 4. Create project first =====
-            const projectRes = await fetch(
-                `${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        project_name: projectName,
-                        start_date: startDate,
-                        end_date: endDate,
-                        pic: pic,
-                        members: members,
-                        status: status
-                    })
-                }
-            );
-
-            // Check API response
-            if (!projectRes.ok) {
-                throw new Error("Failed to create project");
-            }
-
-            const projectData = await projectRes.json();
-            const projectId = projectData.id;
-
-            // ===== 5. Create stages linked to project =====
-            for (const stage of stages) {
-
-                const stageRes = await fetch(
-                    `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            project: projectId,
-                            content: stage.content,
-                            start_date: stage.start_date,
-                            end_date: stage.end_date
-                        })
-                    }
-                );
-
-                // Optional: debug if stage fails
-                if (!stageRes.ok) {
-                    console.error("Failed stage:", stage);
-                }
-            }
-
-            // ===== 6. Close popup after success =====
-            closeCreateProjectPopup();
-
-        } catch (err) {
-            console.error("Create project error:", err);
-            alert("Failed to create project");
-        }
-    });
-
-    // Nút mở popup
-    const openCreateProjectBtn = document.getElementById("openCreateProjectBtn");
-
-    // Bind sự kiện mở popup
-    openCreateProjectBtn.addEventListener("click", () => {
-        openCreateProjectPopup();
-    });
-
     function changeIconAvatar() {
-        // Get the avatar image inside the dropdown (topbar user icon)
         const dropdownAvatar = document.querySelector('.dropdown img');
-
-        // Parse user data stored in localStorage
         const userData = JSON.parse(localStorage.getItem("user"));
 
-        // Safety check: stop if element or user data is missing
         if (!dropdownAvatar || !userData) return;
 
-        // Update avatar image source from PocketBase
-        // Add timestamp to prevent browser caching old image
         dropdownAvatar.src =
             `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
     }
 
     function changeTopbarText() {
-        // Get the element that displays the topbar subtitle text
         const topbarText = document.querySelector('.topbar .text-muted');
-
-        // Get user data from localStorage and convert it from string to object
         const userData = JSON.parse(localStorage.getItem("user"));
 
-        // Safety check: if element or user data doesn't exist, stop execution
         if (!topbarText || !userData) return;
 
-        // Update the topbar text with the user's employee ID
         topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
     }
-
-
-    /* =====================================================
-    
-    Bug:
-    1. nếu ấn button để mở tính năng thêm công việc (new task), nếu người dùng click cái gợi ý điền field mà các thông tin là của task vừa tạo trước
-    => system sẽ gây bug không cho người dùng thay đổi các field theo ý người dùng
-    
-    ===================================================== */
 
 
 </script>
