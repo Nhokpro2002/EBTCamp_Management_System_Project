@@ -255,3 +255,174 @@ Reset form
 Payment success
 Session expired
 Permission denied
+
+/*
+    container: vùng render (div cha)
+    dragOptions: cấu hình kéo thả (snap, grid, filter…)
+    connectionOverlays: overlay mặc định cho tất cả connection
+    connector: kiểu đường nối mặc định (Bezier, Flowchart, Straight)
+    endpoint: kiểu điểm nối mặc định
+    paintStyle: style mặc định của đường nối
+    hoverPaintStyle: style khi hover
+    maxConnections: số connection tối đa mỗi node*/
+
+    jsPlumb.getInstance({
+  Connector: ["Flowchart"],
+  Endpoint: "Dot",
+  PaintStyle: { stroke: "blue", strokeWidth: 2 },
+  HoverPaintStyle: { stroke: "red" },
+  ConnectionOverlays: [
+    ["Arrow", { location: 1 }]
+  ]
+});
+
+2. Endpoint (điểm nối)
+Bạn có thể custom:
+type: Dot, Rectangle, Blank
+radius
+fill, stroke
+hoverStyle
+isSource, isTarget
+anchor: vị trí neo (Top, Bottom, Continuous, Perimeter…)
+
+3. Connector (đường nối)
+Các thuộc tính thường dùng:
+type:
+"Straight"
+"Bezier"
+"Flowchart"
+"StateMachine"
+curviness (Bezier)
+gap, cornerRadius (Flowchart)
+cssClass
+strokeWidth, strokeColor
+
+4. Overlay (thành phần trên đường nối)
+Bạn có thể thêm:
+Arrow (mũi tên)
+Label (text)
+Custom HTML overlay
+overlays: [
+  ["Label", { label: "A → B", location: 0.5 }],
+  ["Arrow", { location: 1, width: 10, length: 10 }]
+]
+
+5. Connection-level customization (quan trọng nhất)
+Khi tạo connection, bạn có thể override toàn bộ:
+paintStyle
+hoverPaintStyle
+detachable
+reattach
+editable
+type
+overlays
+parameters (custom data của bạn)
+
+jsPlumb.connect({
+  source: "A",
+  target: "B",
+  paintStyle: { stroke: "green", strokeWidth: 3 },
+  detachable: true,
+  parameters: {
+    id: "conn-1",
+    status: "active"
+  }
+});
+
+6. Custom data (parameters)
+Một điểm rất hay:
+Bạn có thể gắn bất kỳ dữ liệu nào:
+parameters: {
+  userId: 123,
+  rule: "approve",
+  weight: 0.8
+}
+
+Sau đó lấy lại khi xử lý event:
+instance.bind("connection", function(info) {
+  console.log(info.connection.getParameters());
+});
+
+
+1. Nhóm tạo & quản lý connection
+connect()
+Tạo đường nối giữa 2 node:
+instance.connect({
+  source: "A",
+  target: "B"
+});
+
+deleteConnection()
+Xóa 1 connection cụ thể:
+instance.deleteConnection(conn);
+
+detach()
+Tách connection giữa 2 điểm:
+instance.detach(conn);
+
+2. Nhóm quản lý node (element)
+remove()
+Xóa node khỏi canvas:
+instance.remove("nodeId");
+
+repaint()
+Vẽ lại toàn bộ layout:
+instance.repaintEverything();
+
+revalidate()
+Cập nhật vị trí connection khi node thay đổi:
+instance.revalidate("nodeId");
+
+3. Nhóm cấu hình source/target
+makeSource()
+Biến node thành điểm bắt đầu nối:
+instance.makeSource(el, options);
+
+makeTarget()
+Biến node thành điểm nhận nối:
+instance.makeTarget(el, options);
+
+
+unmakeSource() / unmakeTarget()
+Gỡ khả năng nối:
+instance.unmakeSource(el);
+instance.unmakeTarget(el);
+
+4. Nhóm event (rất quan trọng)
+bind()
+Lắng nghe sự kiện:
+instance.bind("connection", function(info) {
+  console.log(info.sourceId, info.targetId);
+});
+
+Các event phổ biến:
+connection
+connectionDetached
+connectionMoved
+beforeDrop
+
+5. Nhóm lấy dữ liệu graph
+getAllConnections()
+Lấy toàn bộ connection:
+instance.getAllConnections();
+
+getConnections()
+Lấy connection của 1 node:
+instance.getConnections("A");
+
+6. Nhóm drag & layout
+draggable()
+Bật kéo thả node:
+instance.draggable("nodeId");
+
+setContainer()
+Đổi container:
+instance.setContainer("canvas");
+
+7. Nhóm nâng cao (parameters & metadata)
+setParameter() / getParameter()
+instance.setParameter("mode", "edit");
+
+Connection parameters:
+conn.getParameters();
+

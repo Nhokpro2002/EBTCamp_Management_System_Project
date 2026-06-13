@@ -4,118 +4,109 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bootstrap 5 Dashboard</title>
+    <title>Project Page</title>
 
-    <link href="../CSS/bootstrap.min.css" rel="stylesheet">
-    <link href="../CSS/bootstrap.min.css.map" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- DataTables-->
     <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
     <script src="../Libs/DataTables/datatables.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Bootstrap Icons -->
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- JQuery 4.0.0-->
+    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
+
+    <!-- Sweet Alert-->
+    <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
+    <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="../Libs/Bootstrap/css/bootstrap.min.css">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JsPlumb -->
+    <link href="../Libs/JsPlumb/jsplumb.css">
+    <script src="../Libs/JsPlumb/jsplumb.min.js"></script>
+
+    <!-- Project Css-->
+    <link href="../CSS/project.css" rel="stylesheet">
+
 
     <style>
-        body {
-            background: #f4f7fb;
-            font-family: 'Segoe UI', sans-serif;
+        #canvas {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #ddd;
+            position: relative;
+            background: #fafafa;
+            overflow: auto;
         }
 
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(180deg, #0d6efd, #0b5ed7);
-            color: white;
+        .controls {
+            margin-bottom: 10px;
         }
 
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.85);
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: 0.3s;
-        }
-
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-
-        .topbar {
-            background: white;
-            border-radius: 20px;
-            padding: 16px 24px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .project-switcher {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-            width: fit-content;
-        }
-
-        .project-selector {
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 0 12px;
-            min-width: 420px;
-            height: 52px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
-        }
-
-        .project-selector i {
-            color: #2563eb;
-            font-size: 22px;
+        button {
+            padding: 8px 12px;
             margin-right: 10px;
         }
 
-        .project-select {
-            width: 320px;
-            border: none !important;
-            border-radius: 12px;
-            background: #fff;
-            box-shadow:
-                0 1px 2px rgba(0, 0, 0, .05),
-                0 4px 12px rgba(0, 0, 0, .06);
+        .project-card {
+            width: 185px !important;
+            border-width: 2px !important;
+            border-radius: 15px;
+        }
 
+        .card {
+            --bs-card-spacer-y: 0.5rem !important;
+            --bs-card-spacer-x: 0.5rem !important;
+        }
+
+        .step-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+
+        }
+
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
             font-weight: 600;
-            padding: 12px 16px;
-            transition: all .2s ease;
         }
 
-        .project-select:focus {
-            border: none !important;
-            outline: none !important;
-            box-shadow:
-                0 1px 2px rgba(0, 0, 0, .05),
-                0 8px 24px rgba(37, 99, 235, .12);
-            background: #fff;
+        /*.project-card .project-details {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }*/
+
+        .node {
+            position: absolute;
         }
 
-        /*.container-fluid {
-               display: none;
-          }*/
+        .project-card.expanded .project-details {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .project-card .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .project-card.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 
@@ -191,17 +182,23 @@
                 <div class="container-fluid" style="padding-left: 0px !important;">
 
                     <div class="project-switcher">
-                        <select class="form-select" style="width: 200px;">
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                        <select id="projectSelect" class="form-select" style="width: 200px;">
+
                         </select>
-                        <span class="badge bg-success">
-                            Đang thực hiện
+                        <span id="project-status">
+
                         </span>
                     </div>
 
                 </div>
+
+                <div class="controls">
+                    <button onclick="addStage()">Thêm stage</button>
+                </div>
+
+                <div id="canvas"></div>
+
+
             </div>
         </div>
     </div>
@@ -210,6 +207,29 @@
 </body>
 
 <script>
+
+    /* =====================================================
+       CONSTANTS
+       ===================================================== */
+    const COLLECTION_PROJECTS = "Projects";
+    const COLLECTION_TASKS = "Tasks";
+    const COLLECTION_USERS = "Users";
+    const COLLECTION_STAGES = "Stages";
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+
+    /* =====================================================
+      Variables
+      ===================================================== */
+
+    // projectData
+    let projectList = [];
+
+    // task data
+    let taskListByStage = [];
+
+    // stage data
+    let stageListByProject = [];
+
 
     $(document).ready(function () {
 
@@ -238,6 +258,11 @@
 
         changeTopbarText();
 
+        getProjectsData().then(() => {
+            renderProjectOptionList();
+            initDefaultProject();
+        })
+
     });
 
     document.querySelectorAll('.menu-link').forEach(item => {
@@ -251,12 +276,9 @@
     });
 
     document.getElementById("logoutLink").addEventListener("click", function (e) {
-        e.preventDefault(); // ngăn link reload trang
-        // Xóa storage
+        e.preventDefault();
         localStorage.clear();
         sessionStorage.clear();
-
-        // Redirect về trang login hoặc homepage nếu muốn
         window.location.href = "http://127.0.0.1:5500/Page/login.html";
     });
 
@@ -296,6 +318,252 @@
 
         topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
     }
+
+    function renderProjectOptionList() {
+
+        const select = document.getElementById("projectSelect");
+        select.innerHTML = "";
+
+        // add option mới từ API
+        projectList.forEach(project => {
+            const option = document.createElement("option");
+            option.value = project.id;
+            option.textContent = project.name;
+            select.appendChild(option);
+        });
+
+    }
+
+    function changeProjectStatusUI(status) {
+        const el = document.getElementById("project-status");
+
+        const map = {
+            Done: {
+                text: "Done",
+                class: "bg-success"
+            },
+            Processing: {
+                text: "Processing",
+                class: "bg-warning text-dark"
+            },
+            Pending: {
+                text: "Pending",
+                class: "bg-secondary"
+            }
+        };
+
+        const s = map[status] || map.pending;
+
+        el.innerHTML = `
+        <span class="badge ${s.class}">
+            ${s.text}
+        </span>
+    `;
+    }
+
+    document.addEventListener("click", function (e) {
+        const header = e.target.closest(".header-click");
+        if (!header) return;
+
+        const card = header.closest(".project-card");
+        card.classList.toggle("expanded");
+    });
+
+    document.getElementById("projectSelect").addEventListener("change", function (e) {
+        const selectedId = e.target.value;
+
+        const project = projectList.find(p => p.id == selectedId);
+
+        if (project) {
+            console.log(selectedId);
+            changeProjectStatusUI(project.status);
+        }
+    });
+
+    function initDefaultProject() {
+        const first = projectList[0];
+
+        if (!first) return;
+
+        document.getElementById("projectSelect").value = first.id;
+        changeProjectStatusUI(first.status);
+    }
+
+
+    // API
+    async function getProjectsData() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            projectList = result.items || [];
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // API
+    async function getStagesData(projectID) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records?filter=(project="${projectID}")`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            stageListByProject = result.items || [];
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // API
+    async function getTasks(stageID) {
+        try {
+            const token = localStorage.getItem("token");
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            };
+
+            const tasksRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=(stage="${stageID}")`, { headers });
+            if (!tasksRes.ok) {
+                throw new Error("Load data failed");
+            }
+
+            const tasks = await tasksRes.json();
+            taskListByStage = tasks.items || [];
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
+
+
+
+
+    let instance; // object jsPlumb instance
+
+    function initDiagram() {
+
+        instance = jsPlumb.getInstance({
+            Connector: ["Flowchart", {
+                cornerRadius: 10,
+                stub: 20,          // 🔥 tránh đâm thẳng vào card
+                gap: 8             // 🔥 né node
+            }],
+
+            PaintStyle: {
+                stroke: "#2563eb",
+                strokeWidth: 2
+            },
+
+            Endpoint: "Blank",
+            Anchors: ["Right", "Left"],
+            Container: "canvas"
+        });
+
+        const stages = [
+            "stage1",
+            "stage2",
+            "stage3"
+        ];
+
+        createStage("stage1", "Stage 1", 50, 200);
+        createStage("stage2", "Stage 2", 350, 200);
+        createStage("stage3", "Stage 3", 650, 200);
+
+        setTimeout(() => {
+            connectStages(stages);
+            instance.repaintEverything();
+        }, 100);
+    }
+
+    /* function này sẽ render card stage lên UI diagram mỗi lần người dùng nhấn click add button
+    khi render card, card này được lưu vào data nhưng chỉ có id, 
+    + dùng jQuery để kéo dãn chiều dài của card để người dùng nhập thông tin về giai đoạn dự án
+    + sau đó người dùng có thể lưu => save vào db */
+    function createStage(id, label, x, y) {
+        const el = document.createElement("div");
+
+        el.id = id;
+        el.className = "node";
+
+        el.innerHTML = `
+        <div class="card border-success shadow-sm project-card collapsed">
+            <div class="card-body">
+                <div class="d-flex align-items-center header-click">
+                    <div class="step-circle bg-success text-white fw-bold">1</div>
+                    <h5 class="ms-3 mb-0 flex-grow-1 fw-semibold">${label}</h5>
+                    <i class="bi bi-chevron-down toggle-icon"></i>
+                </div>
+
+                <div class="project-details mt-3">
+                    <div class="fs-1 fw-bold text-success">100%</div>
+                    <div class="text-muted mb-2">Hoàn thành</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        document.getElementById("canvas").appendChild(el);
+
+        el.style.position = "absolute";
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+
+        instance.draggable(el, {
+            stop: function () {
+                instance.repaintEverything();
+            }
+        });
+
+        instance.makeSource(el, {
+            maxConnections: -1,
+            endpoint: "Blank",
+            anchor: "Right"
+        });
+
+        instance.makeTarget(el, {
+            maxConnections: -1,
+            endpoint: "Blank",
+            anchor: "Left"
+        });
+    }
+
+    function connectStages(list) {
+        for (let i = 0; i < list.length - 1; i++) {
+            instance.connect({
+                source: list[i],
+                target: list[i + 1],
+                anchors: ["Right", "Left"]
+            });
+        }
+    }
+
+    window.onload = initDiagram;
+
+
 
 
 </script>

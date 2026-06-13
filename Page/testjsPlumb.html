@@ -1,263 +1,169 @@
 <!DOCTYPE html>
 
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.15.6/js/jsplumb.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="../Libs/Bootstrap/css/bootstrap.min.css">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JsPlumb -->
+    <link href="../Libs/JsPlumb/jsplumb.css">
+    <script src="../Libs/JsPlumb/jsplumb.min.js"></script>
 
     <style>
-        #workflow-container {
-            width: 3000px;
-            height: 1500px;
+        #canvas {
             position: relative;
-            transform-origin: top left;
-            background: #f7f8fa;
+            width: 100%;
+            height: 700px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            background: #f8f9fa;
         }
 
-        .stage-node {
-
+        .node {
             position: absolute;
+            width: 160px;
+            height: 80px;
 
-            width: 220px;
-            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-            border-radius: 20px;
-            background: white;
-
-            box-shadow: 0 5px 15px rgba(0, 0, 0, .15);
-
-            padding: 15px;
-
-            cursor: move;
-
-            transition: .2s;
-        }
-
-        .stage-node:hover {
-            transform: scale(1.05);
-        }
-
-        .pending {
-            border-left: 6px solid #6c757d;
-        }
-
-        .processing {
-            border-left: 6px solid #ffc107;
-        }
-
-        .done {
-            border-left: 6px solid #198754;
-        }
-
-        .stage-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .tooltip-panel {
-
-            display: none;
-
-            position: absolute;
-
-            top: 0;
-            left: 240px;
-
-            width: 300px;
-
-            background: #1f2937;
-
-            color: white;
-
+            border: 2px solid #198754;
             border-radius: 10px;
 
-            padding: 15px;
-
-            z-index: 9999;
-        }
-
-        .stage-node:hover .tooltip-panel {
-            display: block;
+            background: white;
+            cursor: move;
         }
     </style>
 </head>
 
 <body>
-    <div class="toolbar">
-        <button id="zoomIn" class="btn btn-sm btn-primary">+</button>
-        <button id="zoomOut" class="btn btn-sm btn-secondary">-</button>
-    </div>
 
-    <div id="workflow-container">
-        <div class="stage-node pending" id="node1" data-stage="RFQ">
-            <div class="stage-title">RFQ</div>
-            <span class="badge bg-secondary">Pending</span>
-            <div class="tooltip-panel">
-                <h6>RFQ</h6>
-                <ul>
-                    <li>PLC Mitsubishi</li>
-                    <li>Servo Driver</li>
-                    <li>HMI Delta</li>
-                </ul>
-            </div>
-        </div>
+    <div class="container mt-3">
 
-        <div class="stage-node processing" id="node2" data-stage="Quotation">
+        <button class="btn btn-success me-2" onclick="addNode()">
+            Add Node
+        </button>
 
-            <div class="stage-title">Quotation</div>
-            <span class="badge bg-warning">Processing</span>
-            <div class="tooltip-panel">
-                <h6>Quotation</h6>
-                <ul>
-                    <li>Task A</li>
-                    <li>Task B</li>
-                </ul>
-            </div>
-        </div>
+        <button class="btn btn-danger" onclick="removeNode()">
+            Delete Last Node
+        </button>
 
-        <div class="stage-node done" id="node3">
-            <div class="stage-title">Purchase</div>
-            <span class="badge bg-success">Done</span>
-            <div class="tooltip-panel">
-                <h6>Purchase</h6>
-                <ul>
-                    <li>Order Created</li>
-                    <li>Approved</li>
-                </ul>
-            </div>
-        </div>
+        <hr>
+
+        <div id="canvas"></div>
+
     </div>
 
 </body>
-
 <script>
+    let instance;
+    let nodeCount = 0;
+    let nodeIds = [];
 
-    const positions = [
-        [100, 100],
-        [450, 100],
-        [800, 100],
-        [1150, 100],
-        [1500, 100],
+    function init() {
 
-        [100, 400],
-        [450, 400],
-        [800, 400],
-        [1150, 400],
-        [1500, 400],
+        instance = jsPlumb.getInstance({
+            Container: "canvas",
+            Connector: "Flowchart",
+            PaintStyle: {
+                stroke: "#2563eb",
+                strokeWidth: 2
+            },
+            Endpoint: "Dot",
+            EndpointStyle: {
+                fill: "#2563eb",
+                radius: 5
+            }
+        });
 
-        [100, 700],
-        [450, 700],
-        [800, 700],
-        [1150, 700],
-        [1500, 700]
-    ];
+        createNode(100, 200);
+        createNode(350, 200);
+        createNode(600, 200);
 
-    const workflowContainer =
-        document.getElementById("workflow-container");
-
-    for (let i = 1; i <= 15; i++) {
-
-        const div = document.createElement("div");
-
-        div.className = "stage-node pending";
-
-        div.id = `node${i}`;
-
-        div.style.left = positions[i - 1][0] + "px";
-        div.style.top = positions[i - 1][1] + "px";
-
-        div.innerHTML = `
-        <div class="stage-title">
-            Stage ${i}
-        </div>
-
-        <span class="badge bg-secondary">
-            Pending
-        </span>
-
-        <div class="tooltip-panel">
-            <h6>Stage ${i}</h6>
-
-            <ul>
-                <li>Task 1</li>
-                <li>Task 2</li>
-                <li>Task 3</li>
-            </ul>
-        </div>
-    `;
-
-        workflowContainer.appendChild(div);
+        connectSequential();
     }
 
+    function createNode(x, y) {
 
-    jsPlumb.ready(function () {
+        nodeCount++;
 
-        for (let i = 1; i <= 15; i++) {
-            jsPlumb.draggable(`node${i}`);
-        }
+        const id = "node" + nodeCount;
 
-        for (let i = 1; i < 15; i++) {
+        const el = document.createElement("div");
 
-            jsPlumb.connect({
-                source: `node${i}`,
-                target: `node${i + 1}`,
+        el.id = id;
+        el.className = "node";
+        el.innerHTML = "Node " + nodeCount;
 
-                anchors: ["Right", "Left"],
+        el.style.left = x + "px";
+        el.style.top = y + "px";
 
-                endpoint: "Blank",
+        document
+            .getElementById("canvas")
+            .appendChild(el);
 
-                connector: [
-                    "Flowchart",
-                    {
-                        cornerRadius: 10
-                    }
-                ],
+        instance.draggable(el);
 
-                paintStyle: {
-                    stroke: "#4b5563",
-                    strokeWidth: 3
-                },
+        instance.makeSource(el, {
+            anchor: "Right",
+            maxConnections: -1
+        });
 
-                overlays: [
-                    [
-                        "Arrow",
-                        {
-                            width: 12,
-                            length: 12,
-                            location: 1
-                        }
-                    ]
-                ]
+        instance.makeTarget(el, {
+            anchor: "Left",
+            maxConnections: -1
+        });
+
+        nodeIds.push(id);
+
+        return id;
+    }
+
+    function connectSequential() {
+
+        instance.deleteEveryConnection();
+
+        for (let i = 0; i < nodeIds.length - 1; i++) {
+
+            instance.connect({
+                source: nodeIds[i],
+                target: nodeIds[i + 1]
             });
 
         }
+    }
 
-    });
+    function addNode() {
 
-    let scale = 1;
+        const lastIndex = nodeIds.length;
 
-    $("#zoomIn").click(function () {
-
-        scale += 0.1;
-
-        $("#workflow-container").css(
-            "transform",
-            `scale(${scale})`
+        createNode(
+            100 + lastIndex * 250,
+            200
         );
 
-    });
+        connectSequential();
+    }
 
-    $("#zoomOut").click(function () {
+    function removeNode() {
 
-        scale -= 0.1;
+        if (nodeIds.length === 0) {
+            return;
+        }
 
-        $("#workflow-container").css(
-            "transform",
-            `scale(${scale})`
-        );
+        const lastId = nodeIds.pop();
 
-    });
+        const el = document.getElementById(lastId);
 
+        instance.remove(el);
+
+        connectSequential();
+    }
+
+    window.onload = init;
 </script>
 
 </html>

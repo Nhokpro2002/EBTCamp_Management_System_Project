@@ -1,37 +1,13 @@
-/* =====================================================
-           GLOBAL
-           =====================================================  
-        }*/
-
 body {
     background: #f4f7fb;
     font-family: 'Segoe UI', sans-serif;
-
-
-
 }
 
-/* =====================================================
-           LAYOUT
-           ===================================================== */
 .sidebar {
     min-height: 100vh;
     background: linear-gradient(180deg, #0d6efd, #0b5ed7);
     color: white;
-    z-index: 1000;
-    position: fixed;
 }
-
-.topbar {
-    background: white;
-    border-radius: 20px;
-    padding: 16px 24px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-}
-
-/* =====================================================
-           SIDEBAR
-           ===================================================== */
 
 .sidebar .nav-link {
     color: rgba(255, 255, 255, 0.85);
@@ -47,160 +23,11 @@ body {
     color: #fff;
 }
 
-
-/* =====================================================
-           CARDS
-           ===================================================== */
-
-.card-stat {
-    border: none;
+.topbar {
+    background: white;
     border-radius: 20px;
-    color: white;
-    overflow: hidden;
-    position: relative;
-}
-
-.card-stat i {
-    font-size: 3rem;
-    opacity: 0.2;
-    position: absolute;
-    right: 20px;
-    bottom: 10px;
-}
-
-.card-stat:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-}
-
-.table-card {
-    border: none;
-    border-radius: 20px;
+    padding: 16px 24px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-}
-
-/* =====================================================
-           PROJECT LIST
-           ===================================================== */
-
-
-.project-item {
-    padding: 15px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: .3s;
-    margin-bottom: 10px;
-}
-
-.project-item:hover {
-    background: #f8fafc;
-}
-
-.project-item.active {
-    border: 2px solid #0d6efd;
-}
-
-/* =====================================================
-           KANBAN
-           ===================================================== */
-
-.kanban-column {
-    height: 70vh;
-    overflow-y: auto;
-    background: #f8f9fa;
-}
-
-.task-card {
-    background: #fff;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-    /*border-left: 5px solid #0d6efd;*/
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
-    cursor: pointer;
-    transition: .2s;
-}
-
-.task-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
-}
-
-/* =====================================================
-           TASK SUMMARY
-           ===================================================== */
-
-/* Tổng task */
-.total-tasks {
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #fff;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, .3);
-    margin: 0;
-}
-
-/* Label */
-.done .status-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, .9);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #00ff66;
-}
-
-.processing .status-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, .9);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #ffd700;
-}
-
-.pending .status-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, .9);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #e0e0e0;
-}
-
-.issue .status-label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, .9);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #ff4d4f;
-}
-
-/* Màu số */
-.done .status-value {
-    color: #00ff66;
-}
-
-.processing .status-value {
-    color: #ffd700;
-}
-
-.pending .status-value {
-    color: #e0e0e0;
-}
-
-.issue .status-value {
-    color: #ff4d4f;
-}
-
-/* =====================================================
-           UTILITIES
-           ===================================================== */
-
-.progress {
-    height: 8px;
-    border-radius: 20px;
 }
 
 .avatar {
@@ -210,314 +37,51 @@ body {
     object-fit: cover;
 }
 
-
-/* base style */
-#out-of-stock,
-#low-stock:hover {
-    cursor: pointer;
-}
-
-.card {
-    height: 85vh;
-}
-
-.card-footer {
-    background: #fff;
-    position: sticky;
-    bottom: 0;
-}
-
-/* Số liệu */
-.status-value {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1;
-}
-
-.btn-custom-success {
-    background: linear-gradient(135deg, #28a745, #218838);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-custom-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.btn-custom-danger {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-custom-danger:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Thêm icon đẹp nếu dùng Font Awesome */
-.btn i {
-    margin-right: 6px;
-}
-
-/* Overlay */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
+.project-switcher {
+    display: flex;
     align-items: center;
-    z-index: 1000;
+    gap: 16px;
+    margin-bottom: 20px;
+    width: fit-content;
 }
 
-/* Popup */
-.popup {
-    background: white;
-    padding: 20px 30px;
-    border-radius: 10px;
-    width: 400px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 5px;
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.form-actions {
+.project-selector {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.ts-wrapper.dropdown-active .ts-dropdown {
-    top: auto !important;
-    bottom: calc(100% + 4px) !important;
-    margin-top: 0 !important;
-}
-
-.container-fluid {
-    display: none;
-}
-
-.overlay-create-project {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.popup-create-project {
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    width: 600px;
-    max-height: 90%;
-    overflow-y: auto;
-    font-family: Arial, sans-serif;
-}
-
-.popup-create-project h2,
-.popup-create-project h3 {
-    margin-top: 0;
-}
-
-.form-group-create-project {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group-create-project label {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group-create-project input,
-.form-group-create-project select {
-    padding: 8px 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-#stage-container {
-    margin-bottom: 10px;
-}
-
-.stage-item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 5px;
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 40px;
-    gap: 10px;
-    align-items: center;
-}
-
-.stage-item input {
-    width: 100%;
-}
-
-.remove-stage-btn {
-    background: #dc3545;
-    border: none;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    height: 30px;
-}
-
-#add-stage-btn {
-    background-color: #0d6efd;
-    color: #fff;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.form-actions-create-project {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.form-actions-create-project button {
-    padding: 8px 15px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-}
-
-#submitCreateProject {
-    background-color: #00ff66;
-}
-
-#closeCreateProject {
-    background-color: #ccc;
-}
-
-
-#trashZone {
-    position: fixed;
-    right: -120px;
-    bottom: 30px;
-    width: 72px;
-    height: 72px;
-    display: flex;
-    justify-content: center;
     align-items: center;
     background: #fff;
-    color: #222;
     border: 1px solid #e5e7eb;
-    border-radius: 20px;
+    border-radius: 12px;
+    padding: 0 12px;
+    min-width: 420px;
+    height: 52px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+}
+
+.project-selector i {
+    color: #2563eb;
+    font-size: 22px;
+    margin-right: 10px;
+}
+
+.project-select {
+    width: 320px;
+    border: none !important;
+    border-radius: 12px;
+    background: #fff;
     box-shadow:
-        0 10px 25px rgba(0, 0, 0, .08),
-        0 2px 8px rgba(0, 0, 0, .05);
+        0 1px 2px rgba(0, 0, 0, .05),
+        0 4px 12px rgba(0, 0, 0, .06);
 
-    transition:
-        right .3s ease,
-        transform .2s ease,
-        background-color .2s ease,
-        opacity .3s ease;
-
-    opacity: 0;
-    z-index: 9999;
+    font-weight: 600;
+    padding: 12px 16px;
+    transition: all .2s ease;
 }
 
-#trashZone.show {
-    right: 30px;
-    opacity: 1;
-}
-
-#trashZone.active {
-    transform: scale(1.15);
-    background: #e5e7eb;
-}
-
-#trashZone i {
-    font-size: 30px;
-    pointer-events: none;
-}
-
-.task-card {
-    cursor: grab;
-    transition:
-        transform .2s ease,
-        opacity .25s ease;
-}
-
-.task-card.dragging {
-    opacity: .5;
-    transform: rotate(2deg);
-}
-
-.task-card.removing {
-    opacity: 0;
-    transform: scale(.8);
-}
-
-#workflow {
-    position: relative;
-    height: 700px;
-    border: 1px solid #ddd;
-    background: white;
-    overflow: auto;
-}
-
-.node {
-    position: absolute;
-    width: 180px;
-    height: 80px;
-
-    background: white;
-
-    border-radius: 15px;
-    border-left: 6px solid #0d6efd;
-
-    box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: move;
-    font-weight: bold;
-}
-
-.selected-node {
-    border: 3px solid #dc3545;
+.project-select:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, .05),
+        0 8px 24px rgba(37, 99, 235, .12);
+    background: #fff;
 }
