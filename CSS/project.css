@@ -4,7 +4,7 @@ body {
 }
 
 .sidebar {
-    min-height: 100vh;
+    height: 100vh;
     background: linear-gradient(180deg, #0d6efd, #0b5ed7);
     color: white;
 }
@@ -84,4 +84,61 @@ body {
         0 1px 2px rgba(0, 0, 0, .05),
         0 8px 24px rgba(37, 99, 235, .12);
     background: #fff;
+}
+
+#canvas {
+    width: 100%;
+    height: 700px;
+    border: 1px solid #ddd;
+    position: relative;
+    background: #fafafa;
+    overflow: auto;
+}
+
+.controls {
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 8px 12px;
+    margin-right: 10px;
+}
+
+.project-card {
+    width: 185px !important;
+    border-width: 2px !important;
+    border-radius: 15px;
+}
+
+.card {
+    --bs-card-spacer-y: 0.5rem !important;
+    --bs-card-spacer-x: 0.5rem !important;
+}
+
+.step-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+
+}
+
+.avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.kanban-column {
+    height: 70vh;
+    overflow-y: auto;
+    background: #f8f9fa;
 }
