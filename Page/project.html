@@ -28,10 +28,6 @@
     <link href="../Libs/JsPlumb/jsplumb.css">
     <script src="../Libs/JsPlumb/jsplumb.min.js"></script>
 
-    <!-- Vis-network-->
-    <link href="../Libs/Vis-Network/vis-network.min.css" rel="stylesheet">
-    <script src="../Libs/Vis-Network/vis-network.min.js"></script>
-
     <!-- Tom Select-->
     <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
     <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
@@ -42,6 +38,10 @@
 
 
     <style>
+        .project-switcher {
+            margin-top: 20px;
+        }
+
         .stage-card {
             border: none;
             border-radius: 16px;
@@ -74,6 +74,187 @@
             background-color: #0d6efd !important;
             color: white !important;
             border-color: #0d6efd !important;
+        }
+
+        .overlay-create-project {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-create-project {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 600px;
+            max-height: 90%;
+            overflow-y: auto;
+            font-family: Arial, sans-serif;
+        }
+
+        .popup-create-project h2,
+        .popup-create-project h3 {
+            margin-top: 0;
+        }
+
+        .form-group-create-project {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group-create-project label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group-create-project input,
+        .form-group-create-project select {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-actions-create-project {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-actions-create-project button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #submitCreateProject {
+            background-color: #00ff66;
+        }
+
+        #closeCreateProject {
+            background-color: #ccc;
+        }
+
+        .timeline-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 40px;
+            overflow-x: auto;
+        }
+
+        .timeline-line {
+            width: 100px;
+            height: 4px;
+            flex-shrink: 0;
+        }
+
+        .line-blue {
+            background: #3b82f6;
+        }
+
+        .line-purple {
+            background: #8b5cf6;
+        }
+
+        .stage-card {
+            width: 260px;
+            min-width: 260px;
+
+            background: #fff;
+
+            border-radius: 20px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, .05);
+
+            transition: .3s;
+        }
+
+        .stage-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stage-card.active {
+            transform: translateY(-8px);
+        }
+
+        .stage-blue {
+            border: 2px solid #3b82f6;
+        }
+
+        .stage-green {
+            border: 2px solid #22c55e;
+        }
+
+        .stage-purple {
+            border: 2px solid #8b5cf6;
+        }
+
+        .stage-icon {
+            width: 70px;
+            height: 70px;
+
+            border-radius: 50%;
+
+            background: #f3f4f6;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 32px;
+
+            margin-bottom: 20px;
+        }
+
+        .stage-no {
+            font-size: 32px;
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+        .stage-blue .stage-no {
+            color: #3b82f6;
+        }
+
+        .stage-green .stage-no {
+            color: #22c55e;
+        }
+
+        .stage-purple .stage-no {
+            color: #8b5cf6;
+        }
+
+        .stage-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .stage-info {
+            margin-bottom: 16px;
+        }
+
+        .label {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .value {
+            font-weight: 500;
         }
     </style>
 </head>
@@ -128,7 +309,7 @@
                     </div>
 
                     <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-light rounded-circle">
+                        <button type="button" class="btn btn-light rounded-circle">
                             <i class="bi bi-bell"></i>
                         </button>
 
@@ -149,91 +330,209 @@
                 <!-- Content -->
                 <div class="container-fluid" style="padding-left: 0px !important;">
 
-                    <div class="project-switcher">
-                        <select id="projectSelect" class="form-select" style="width: 200px;">
+                    <div class="project-switcher justify-content-between w-100">
 
-                        </select>
-                        <span id="project-status">
+                        <!-- Left -->
+                        <div class="d-flex align-items-center">
+                            <select id="projectSelect" class="form-select" style="width: 300px;"></select>
+                            <span id="project-status" class="ms-2"></span>
+                        </div>
 
-                        </span>
+                        <!-- Right -->
+                        <div class="d-flex gap-2">
+                            <button type="button" id="open-create-project-button" class="btn btn-outline-success">
+                                <i class="bi bi-plus-lg me-1"></i>
+                                Add Project
+                            </button>
+
+                            <button type="button" id="delete-project-button" class="btn btn-outline-danger">
+                                <i class="bi bi-trash me-1"></i>
+                                Delete Project
+                            </button>
+                        </div>
+
                     </div>
 
                     <!-- Vùng giai đoạn của dự án-->
-                    <div id="network" style="height:300px;border:2px solid #ddd;"></div>
+
+                    <div class="timeline-container">
+
+                        <div class="stage-card stage-blue">
+                            <div class="stage-icon">
+                                📄
+                            </div>
+
+                            <div class="stage-no">
+                                01
+                            </div>
+
+                            <h5 class="stage-title">
+                                Planning
+                            </h5>
+
+                            <hr>
+
+                            <div class="stage-info">
+                                <div class="label">Start Date</div>
+                                <div class="value">01/05/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">End Date</div>
+                                <div class="value">15/05/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">Status</div>
+                                <span class="badge bg-success-subtle text-success">
+                                    Completed
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-line line-blue"></div>
+
+                        <div class="stage-card stage-green">
+                            <div class="stage-icon">
+                                ✏️
+                            </div>
+
+                            <div class="stage-no">
+                                02
+                            </div>
+
+                            <h5 class="stage-title">
+                                Design
+                            </h5>
+
+                            <hr>
+
+                            <div class="stage-info">
+                                <div class="label">Start Date</div>
+                                <div class="value">16/05/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">End Date</div>
+                                <div class="value">31/05/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">Status</div>
+                                <span class="badge bg-success-subtle text-success">
+                                    Completed
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-line line-purple"></div>
+
+                        <div class="stage-card stage-purple active">
+                            <div class="stage-icon">
+                                💻
+                            </div>
+
+                            <div class="stage-no">
+                                03
+                            </div>
+
+                            <h5 class="stage-title">
+                                Development
+                            </h5>
+
+                            <hr>
+
+                            <div class="stage-info">
+                                <div class="label">Start Date</div>
+                                <div class="value">01/06/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">End Date</div>
+                                <div class="value">31/07/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">Status</div>
+                                <span class="badge bg-primary-subtle text-primary">
+                                    In Progress
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="stage-card stage-purple active">
+                            <div class="stage-icon">
+                                💻
+                            </div>
+
+                            <div class="stage-no">
+                                03
+                            </div>
+
+                            <h5 class="stage-title">
+                                Development
+                            </h5>
+
+                            <hr>
+
+                            <div class="stage-info">
+                                <div class="label">Start Date</div>
+                                <div class="value">01/06/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">End Date</div>
+                                <div class="value">31/07/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">Status</div>
+                                <span class="badge bg-primary-subtle text-primary">
+                                    In Progress
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="stage-card stage-purple active">
+                            <div class="stage-icon">
+                                💻
+                            </div>
+
+                            <div class="stage-no">
+                                03
+                            </div>
+
+                            <h5 class="stage-title">
+                                Development
+                            </h5>
+
+                            <hr>
+
+                            <div class="stage-info">
+                                <div class="label">Start Date</div>
+                                <div class="value">01/06/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">End Date</div>
+                                <div class="value">31/07/2024</div>
+                            </div>
+
+                            <div class="stage-info">
+                                <div class="label">Status</div>
+                                <span class="badge bg-primary-subtle text-primary">
+                                    In Progress
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
                     <!-- Vùng giai đoạn của dự án-->
 
                     <div class="row g-3" style="padding-top: 20px;">
 
                         <div class="container-fluid py-4">
-
-                            <!-- Stage Detail -->
-                            <div class="card shadow-sm stage-card mb-4">
-
-                                <div class="card-header bg-white">
-
-                                    <div class="d-flex justify-content-between align-items-center">
-
-                                        <div>
-                                            <h4 class="mb-1">
-                                                Stage Number 1
-                                            </h4>
-
-                                            <small class="text-muted">
-                                                01/06/2024 - 06/06/2024
-                                            </small>
-                                        </div>
-
-                                        <div>
-                                            <button class="btn btn-outline-primary btn-sm">
-                                                Edit Stage
-                                            </button>
-
-                                            <button class="btn btn-primary btn-sm">
-                                                Add Task
-                                            </button>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="card-body" style="overflow-x: auto;">
-
-                                    <div class="row g-3">
-
-                                        <div class="col-md-3">
-                                            <div class="stat-box">
-                                                <h5>5</h5>
-                                                <span>Pending</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <div class="stat-box">
-                                                <h5 class="text-success">2</h5>
-                                                <span>Done</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <div class="stat-box">
-                                                <h5 class="text-primary">2</h5>
-                                                <span>In Progress</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <div class="stat-box">
-                                                <h5 class="text-danger">1</h5>
-                                                <span>Problem</span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
 
                             <!-- Task Table -->
 
@@ -247,7 +546,7 @@
                                             Tasks in this Stage
                                         </h5>
 
-                                        <button class="btn btn-success btn-sm">
+                                        <button type="button" class="btn btn-success btn-sm">
                                             Create Task
                                         </button>
 
@@ -289,9 +588,1143 @@
             </div>
         </div>
 
+        <!-- Form create new project-->
+        <div id="overlay-create-project" class="overlay-create-project">
+            <div class="popup-create-project">
+                <h2>Create New Project</h2>
+
+                <div class="form-group-create-project">
+                    <label>Project Name</label>
+                    <input type="text" id="project-name" placeholder="Enter project name" required>
+                </div>
+
+                <div class="form-group-create-project">
+                    <label>Start Date</label>
+                    <input type="date" id="start-date" required>
+                </div>
+
+                <div class="form-group-create-project">
+                    <label>End Date</label>
+                    <input type="date" id="end-date" required>
+                </div>
+
+                <div class="form-group-create-project">
+                    <label>PIC</label>
+                    <select id="pic" required></select>
+                </div>
+
+                <div class="form-group-create-project">
+                    <label>Members</label>
+                    <select id="members" multiple required></select>
+                </div>
+
+                <hr>
+
+                <div class="form-actions-create-project">
+                    <button type="button" id="submitCreateProject" class="btn bg-primary bg-gradient">
+                        <i class="bi bi-check2-circle me-1"></i>
+                        Create Project
+                    </button>
+                    <button type="button" id="closeCreateProject" class="btn bg-secondary bg-gradient">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
 
 </body>
 
-<script src="../Script/project.js"></script>
+<script>
+
+    /* =====================================================
+      Variables
+      ===================================================== */
+
+    // projectData
+    let projectList = [];
+
+    let currentProjectId = null;
+
+    // stage data
+    let stageListByProject = [];
+    let currentTaskID = 0; // task đang được chọn của stage nào đó
+
+    // task data
+    let taskListByStage = [];
+    let curentStageID = 0; // stage đang được chọn của dự án nào đó 
+
+
+
+    let userMap = {};
+
+
+
+    window.tomSelectInstances = window.tomSelectInstances || {};
+    const overlayCreateProject = document.getElementById("overlay-create-project");
+    const closeCreateProject = document.getElementById("closeCreateProject");
+    const openCreateProjectBtn = document.getElementById("open-create-project-button");
+    const submitCreateProject = document.getElementById("submitCreateProject");
+
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000
+    });
+
+
+    $(document).ready(function () {
+
+        if (!checkAuthentication()) return;
+
+        document.querySelector(".container-fluid").style.display = "block";
+
+        // window.alert(window.innerWidth + " x " + window.innerHeight);
+        // Spec: 1528 * 732;
+
+        const currentPage = window.location.pathname;
+
+        if (currentPage.includes('dashboard')) {
+            document.getElementById('dashboard-link').classList.add('active');
+        } else if (currentPage.includes('order')) {
+            document.getElementById('order-link').classList.add('active');
+        } else if (currentPage.includes('user')) {
+            document.getElementById('user-link').classList.add('active');
+        } else if (currentPage.includes('setting')) {
+            document.getElementById('setting-link').classList.add('active');
+        } else if (currentPage.includes('project')) {
+            document.getElementById('project-link').classList.add('active');
+        }
+
+        changeIconAvatar();
+
+        changeTopbarText();
+
+        apiGetProjectsData().then(async () => {
+            renderProjectOptionList();
+            initDefaultProject();
+
+            if (projectList.length != 0) {
+                await apiGetStagesData(projectList[0].id);
+
+                await apiGetUsersData();
+
+
+
+            }
+        })
+
+
+    });
+
+    /* =========================================
+            Check authentication
+    ===========================================*/
+    function checkAuthentication() {
+        const token = localStorage.getItem("token");
+        if (!token || token.trim() === "") {
+            Swal.fire({
+                icon: 'warning',      // icon của popup: 'warning', 'error', 'success', 'info', 'question'
+                title: 'Access Denied',
+                text: 'You must log in to access this page',
+                confirmButtonText: 'Go to Login'
+            }).then(() => {
+                window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
+            });
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /* =====================================================
+       CONSTANTS
+       ===================================================== */
+    const COLLECTION_PROJECTS = "Projects";
+    const COLLECTION_TASKS = "Tasks";
+    const COLLECTION_USERS = "Users";
+    const COLLECTION_STAGES = "Stages";
+    const POCKETBASE_URL = "http://127.0.0.1:8090";
+
+
+
+    /* =========================================
+        API function to get, update, delete data
+     ===========================================*/
+    async function apiGetTasksData(stageID) {
+        try {
+            const token = localStorage.getItem("token");
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            };
+
+            const tasksRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=(stage="${stageID}")`, { headers });
+            if (!tasksRes.ok) {
+                throw new Error("Load data failed");
+            }
+
+            const tasks = await tasksRes.json();
+            taskListByStage = tasks.items || [];
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
+    async function apiGetUsersData() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_USERS}/records`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            result.items.forEach(user => {
+                userMap[user.id] = user;
+            });
+
+        } catch (error) {
+
+            console.log(error);
+        }
+    }
+
+
+    async function apiUpdateTask(taskID, updatedTaskData) {
+        try {
+            const token = localStorage.getItem('token');
+
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedTaskData)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            // 🔥 update local data
+            const index = taskListByStage.findIndex(t => t.id === taskID);
+            if (index !== -1) {
+                taskListByStage[index] = result;
+            }
+
+            // 🔥 re-render UI
+            renderTasks();
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Update task successfully',
+                showConfirmButton: false,
+                timer: 2000
+            });
+
+            return result;
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    async function apiGetTasksData(stageID) {
+        try {
+            const token = localStorage.getItem("token");
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            };
+
+            const tasksRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=(stage="${stageID}")`, { headers });
+            if (!tasksRes.ok) {
+                throw new Error("Load data failed");
+            }
+
+            const tasks = await tasksRes.json();
+            taskListByStage = tasks.items || [];
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
+    async function apiGetUsersData() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_USERS}/records`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            result.items.forEach(user => {
+                userMap[user.id] = user;
+            });
+
+        } catch (error) {
+
+            console.log(error);
+        }
+    }
+
+    async function apiGetProjectsData() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            projectList = result.items || [];
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function apiGetStagesData(projectID) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records?filter=(project="${projectID}")`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            stageListByProject = result.items || [];
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function apiCreateNewProject(newProjectData) {
+        try {
+            const token = localStorage.getItem("token");
+
+            // ===== 4. Create project first =====
+            const projectRes = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(newProjectData)
+                }
+            );
+
+            // Check API response
+            if (!projectRes.ok) {
+                Toast.fire({ icon: 'error', title: 'Create new task failed' });
+                throw new Error("Failed to create project");
+                return;
+            }
+
+            const projectData = await projectRes.json();
+
+            const select = document.getElementById("projectSelect");
+            const option = document.createElement("option");
+            option.value = projectData.id;
+            option.textContent = projectData.name;
+            select.appendChild(option);
+
+            projectList.push(projectData);
+
+            select.value = projectData.id;
+
+            // trigger event change
+            select.dispatchEvent(new Event("change"));
+
+            Toast.fire({ icon: 'success', title: 'Create new task successfully' });
+
+            // ===== 6. Close popup after success =====
+            closeCreateProjectPopup();
+
+        } catch (err) {
+            console.error("Create project error:", err);
+            Toast.fire({ icon: 'error', title: 'Create new project failed' });
+        }
+
+    }
+
+
+    // function api delete project => delete stages => delete tasks
+    async function apiDeleteProject(projectID) {
+        try {
+            const token = localStorage.getItem("token");
+
+            const dataResponse = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records/${projectID}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Check API response
+            if (!dataResponse.ok) {
+                Toast.fire({ icon: 'error', title: 'Delete project failed' });
+                throw new Error("Failed to delete project");
+                return false;
+            }
+
+            Toast.fire({ icon: 'success', title: 'Delete project successfully' });
+            return true;
+
+        } catch (err) {
+            console.log(err);
+            Toast.fire({ icon: 'error', title: 'Something went wrong' });
+        }
+    }
+
+    // function api delete stage => delete tasks
+    async function apiDeleteStage(stageID) {
+        try {
+            const token = localStorage.getItem("token");
+
+
+            const dataRes = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records/${stageID}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Check API response
+            if (!dataRes.ok) {
+                Toast.fire({ icon: 'error', title: 'Delete project failed' });
+                throw new Error("Failed to delete stage");
+                return;
+            }
+
+            Toast.fire({ icon: 'success', title: 'Create stage successfully' });
+
+        } catch (err) {
+            console.log(err);
+            Toast.fire({ icon: 'error', title: 'Something went wrong' });
+        }
+    }
+
+    // function api delete stage => delete tasks
+    async function apiDeleteTask(taskID) {
+        try {
+            const token = localStorage.getItem("token");
+
+
+            const dataRes = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Check API response
+            if (!dataRes.ok) {
+                Toast.fire({ icon: 'error', title: 'Delete task failed' });
+                throw new Error("Failed to delete task");
+                return;
+            }
+
+            Toast.fire({ icon: 'success', title: 'Delete task successfully' });
+
+        } catch (err) {
+            console.log(err);
+            Toast.fire({ icon: 'error', title: 'Something went wrong' });
+        }
+    }
+
+    /* =========================================
+            update, change UI when user interact on UI
+         ===========================================*/
+
+    function changeIconAvatar() {
+        const dropdownAvatar = document.querySelector('.dropdown img');
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        if (!dropdownAvatar || !userData) return;
+
+        dropdownAvatar.src =
+            `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
+    }
+
+    function changeTopbarText() {
+        const topbarText = document.querySelector('.topbar .text-muted');
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        if (!topbarText || !userData) return;
+
+        topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
+    }
+
+    function renderProjectOptionList() {
+
+        const select = document.getElementById("projectSelect");
+        select.innerHTML = "";
+
+        // add option mới từ API
+        projectList.forEach(project => {
+            const option = document.createElement("option");
+            option.value = project.id;
+            option.textContent = project.name;
+            select.appendChild(option);
+        });
+
+    }
+
+    function changeProjectStatusUI(status) {
+        const el = document.getElementById("project-status");
+        const map = {
+            Done: {
+                text: "Done",
+                class: "bg-success"
+            },
+            Processing: {
+                text: "Processing",
+                class: "bg-warning text-dark"
+            },
+            Pending: {
+                text: "Pending",
+                class: "bg-secondary"
+            }
+        };
+
+        const s = map[status] || map.pending;
+
+        el.innerHTML = `
+        <span class="badge ${s.class}">
+            ${s.text}
+        </span>
+    `;
+    }
+
+    // renderTasks();
+
+    function initDefaultProject() {
+        const first = projectList[0];
+
+        if (!first) return;
+
+        document.getElementById("projectSelect").value = first.id;
+        changeProjectStatusUI(first.status);
+    }
+
+    function renderTasks() {
+
+        const tbody = document.getElementById("taskBody");
+
+        if (!Array.isArray(taskListByStage)) {
+            console.error("taskListByStage not array");
+            return;
+        }
+
+        tbody.innerHTML = taskListByStage.map(task => {
+
+            const handlers = task.handler || [];
+
+            const avatarsHtml = handlers.map(handlerID => {
+
+                const user = userMap?.[handlerID];
+
+                const avatarUrl = user?.avatar
+                    ? `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${user.id}/${user.avatar}`
+                    : "https://i.pravatar.cc/40";
+
+                return `
+                <img
+                    src="${avatarUrl}"
+                    title="${user?.employee_id || ''}"
+                    style="
+                        width:28px;
+                        height:28px;
+                        border-radius:50%;
+                        object-fit:cover;
+                        border:2px solid white;
+                        margin-left:-8px;
+                    "
+                />
+            `;
+            }).join('');
+
+            return `
+        <tr>
+            <td class="task-name">${task.name}</td>
+            <td class="task-handler">${avatarsHtml}</td>
+            <td class="task-status">${getStatusBadge(task.status)}</td>
+            <td class="task-percent">${task.percent}</td>
+            <td class="task-start">${formatDate(task.start_date)}</td>
+            <td class="task-end">${formatDate(task.end_date)}</td>
+           <td class="task-action-button">
+    <div class="d-flex gap-1">
+
+        <button
+           class="btn btn-sm btn-outline-primary btn-edit-task"
+           data-id="${task.id}"
+           title="Edit Task">
+           <i class="bi bi-pencil"></i>
+        </button>
+
+        <button
+            class="btn btn-sm btn-outline-info btn-view-more-task"
+            data-id="${task.id}"
+            title="View More">
+            <i class="bi bi-eye"></i>
+        </button>
+
+        <button
+            class="btn btn-sm btn-outline-success btn-save-task"
+            data-id="${task.id}"
+            title="Save">
+            <i class="bi bi-floppy"></i>
+        </button>
+
+        <button
+            class="btn btn-sm btn-outline-danger btn-delete-task"
+            data-id="${task.id}"
+            title="Delete Task">
+            <i class="bi bi-trash"></i>
+        </button>
+
+    </div>
+</td>
+        </tr>
+        `;
+        }).join('');
+    }
+
+    function renderMembersSelect(type) {  // type: "pic", "members", "handler"
+        const select = document.getElementById(type);
+        if (!select) return;
+
+        // Xoá option cũ
+        select.innerHTML = "";
+
+        // Thêm option từ users.items
+        Object.values(userMap).forEach(user => {
+            const option = document.createElement("option");
+            option.value = user.id;
+            option.textContent = user.employee_id;
+            select.appendChild(option);
+        });
+
+        // Nếu chưa có instance TomSelect cho select này thì tạo mới
+        if (!window.tomSelectInstances[type]) {
+            window.tomSelectInstances[type] = new TomSelect(`#${type}`, {
+                plugins: ['remove_button'],
+                hideSelected: true,
+                create: false,
+                placeholder: type === "pic" ? "Select PIC" :
+                    type === "members" ? "Select Members" :
+                        "Select Handler",
+            });
+        } else {
+            // Nếu đã có instance thì refresh options
+            window.tomSelectInstances[type].clearOptions();
+            Object.values(userMap).forEach(user => {
+                window.tomSelectInstances[type].addOption({
+                    value: user.id,
+                    text: user.employee_id
+                });
+            });
+            window.tomSelectInstances[type].refreshOptions(false);
+        }
+    }
+
+    function enableRowEdit(tr, taskId) {
+
+        const task = taskListByStage.find(t => t.id === taskId);
+        if (!task) return;
+
+        // name
+        tr.querySelector(".task-name").innerHTML =
+            `<input class="form-control form-control-sm" value="${task.name}">`;
+
+        // status
+        tr.querySelector(".task-status").innerHTML = `
+        <select class="form-select form-select-sm">
+            <option ${task.status === "Done" ? "selected" : ""}>Done</option>
+            <option ${task.status === "Processing" ? "selected" : ""}>Processing</option>
+            <option ${task.status === "Problem" ? "selected" : ""}>Problem</option>
+        </select>
+    `;
+
+        // percent
+        tr.querySelector(".task-percent").innerHTML =
+            `<input type="number" class="form-control form-control-sm" value="${task.percent}">`;
+
+        // handler (MULTI SELECT)
+        tr.querySelector(".task-handler").innerHTML = `
+        <select id="handler-${task.id}" multiple placeholder="Select Handler"></select>
+    `;
+
+        // Error
+        tr.querySelector(".task-start").innerHTML =
+            `<input type="date" class="form-control form-control-sm" value="${formatDate(task.start_date)}">`;
+
+        // Error
+        tr.querySelector(".task-end").innerHTML =
+            `<input type="date" class="form-control form-control-sm" value="${formatDate(task.end_date)}">`;
+
+        // init TomSelect sau khi DOM đã render
+        setTimeout(() => {
+
+            const select = document.getElementById(`handler-${task.id}`);
+
+            if (!select) return;
+
+            // add options
+            Object.values(userMap).forEach(user => {
+                const option = document.createElement("option");
+                option.value = user.id;
+                option.textContent = user.employee_id;
+
+                // preselect nếu có
+                if (task.handler?.includes(user.id)) {
+                    option.selected = true;
+                }
+
+                select.appendChild(option);
+            });
+
+            // init TomSelect
+            if (!window.tomSelectInstances) {
+                window.tomSelectInstances = {};
+            }
+
+            if (window.tomSelectInstances[task.id]) {
+                window.tomSelectInstances[task.id].destroy();
+            }
+
+            window.tomSelectInstances[task.id] = new TomSelect(select, {
+                plugins: ['remove_button'],
+                hideSelected: true,
+                placeholder: "Select Handler"
+            });
+        }, 0);
+    }
+
+    function cancelEditRow(tr, taskId) {
+
+        if (window.tomSelectInstances?.[taskId]) {
+            window.tomSelectInstances[taskId].destroy();
+            delete window.tomSelectInstances[taskId];
+        }
+
+        const task = taskListByStage.find(t => t.id === taskId);
+        if (!task) return;
+
+        // name
+        tr.querySelector(".task-name").textContent = task.name;
+
+        // handler (nếu bạn không edit thì giữ nguyên hoặc render lại avatar)
+        const handlers = task.handler || [];
+        const avatarsHtml = handlers.map(handlerID => {
+
+            const user = userMap?.[handlerID];
+
+            const avatarUrl = user?.avatar
+                ? `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${user.id}/${user.avatar}`
+                : "https://i.pravatar.cc/40";
+
+            return `
+            <img
+                src="${avatarUrl}"
+                title="${user?.employee_id || ''}"
+                style="
+                    width:28px;
+                    height:28px;
+                    border-radius:50%;
+                    object-fit:cover;
+                    border:2px solid white;
+                    margin-left:-8px;
+                "
+            />
+        `;
+        }).join('');
+
+        tr.querySelector(".task-handler").innerHTML = avatarsHtml;
+
+        // status
+        tr.querySelector(".task-status").innerHTML = getStatusBadge(task.status);
+
+        // percent
+        tr.querySelector(".task-percent").textContent = task.percent;
+
+        // start date
+        tr.querySelector(".task-start").textContent = formatDate(task.start_date);
+
+        // end date
+        tr.querySelector(".task-end").textContent = formatDate(task.end_date);
+
+        // remove edit mode class (nếu có)
+        tr.classList.remove("editing");
+    }
+
+    function getStatusBadge(status) {
+
+        switch (status) {
+
+            case "Done":
+                return `<span class="badge bg-success badge-status">${status}</span>`;
+
+            case "Processing":
+                return `<span class="badge bg-warning badge-status">${status}</span>`;
+
+            case "Problem":
+                return `<span class="badge bg-danger badge-status">${status}</span>`;
+
+            default:
+                return `<span class="badge bg-secondary badge-status">${status}</span>`;
+        }
+    }
+
+    function closeCreateProjectPopup() {
+        overlayCreateProject.style.display = "none";
+        document.body.style.overflow = "auto";
+
+        resetCreateProjectForm();
+    }
+
+    function openCreateProjectPopup() {
+        overlayCreateProject.style.display = "flex";
+        document.body.style.overflow = "hidden";
+
+        renderMembersSelect("pic");
+        renderMembersSelect("members");
+    }
+
+    function resetCreateProjectForm() {
+
+        // reset input text + date
+        document.getElementById("project-name").value = "";
+        document.getElementById("start-date").value = "";
+        document.getElementById("end-date").value = "";
+
+        // reset select DOM (quan trọng để tránh duplicate option)
+        document.getElementById("pic").innerHTML = "";
+        document.getElementById("members").innerHTML = "";
+
+        // reset TomSelect state
+        window.tomSelectInstances?.pic?.clear(true);
+        window.tomSelectInstances?.members?.clear(true);
+    }
+
+    function changeIconAvatar() {
+        const dropdownAvatar = document.querySelector('.dropdown img');
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        if (!dropdownAvatar || !userData) return;
+
+        dropdownAvatar.src =
+            `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
+    }
+
+    function changeTopbarText() {
+        const topbarText = document.querySelector('.topbar .text-muted');
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        if (!topbarText || !userData) return;
+
+        topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
+    }
+
+    async function selectProject(projectId) {
+
+        const project = projectList.find(p => p.id === projectId);
+        if (!project) return;
+
+        currentProjectId = projectId;
+
+        document.getElementById("projectSelect").value = projectId;
+
+        changeProjectStatusUI(project.status);
+
+        await apiGetStagesData(projectId);
+        //renderWorkFlow(stageListByProject);
+    }
+
+    /* =========================================
+            Catch event when user interact on UI
+     ===========================================*/
+    openCreateProjectBtn?.addEventListener("click", openCreateProjectPopup);
+
+    closeCreateProject?.addEventListener("click", closeCreateProjectPopup);
+
+    document.getElementById("projectSelect").addEventListener("change", async function (e) {
+        const selectedID = e.target.value;
+
+        const project = projectList.find(p => p.id == selectedID);
+
+        if (project) {
+            // change status UI follow selected project
+            changeProjectStatusUI(project.status);
+
+            // class api to get stage list follow selected project
+            await apiGetStagesData(selectedID);
+
+            // rerender stage on UI
+            //renderWorkFlow(stageListByProject);
+
+        }
+    });
+
+    // Push save button event
+    document.getElementById("taskBody").addEventListener("click", function (e) {
+
+        const saveButton = e.target.closest(".btn-save-task");
+        if (!saveButton) return;
+
+        const tr = saveButton.closest("tr");
+        const taskID = saveButton.dataset.id;
+
+        const nameInput = tr.querySelector(".task-name input");
+        const statusSelect = tr.querySelector(".task-status select");
+        const percentInput = tr.querySelector(".task-percent input");
+        const handlerSelect = window.tomSelectInstances?.[taskID];
+        const startInput = tr.querySelector(".task-start input");
+        const endInput = tr.querySelector(".task-end input");
+
+        const updatedTaskData = {
+            name: nameInput.value,
+            status: statusSelect.value,
+            percent: Number(percentInput.value),
+            handler: handlerSelect ? handlerSelect.getValue() : [],
+            start_date: startInput.value,
+            end_date: endInput.value
+        };
+
+        apiUpdateTask(taskID, updatedTaskData); // api function to save task
+    });
+
+    // Push edit button event
+    document.getElementById("taskBody").addEventListener("click", function (e) {
+
+        const editButton = e.target.closest(".btn-edit-task");
+        if (!editButton) return;
+
+        editButton.classList.toggle("active");
+
+        const isActive = editButton.classList.contains("active");
+
+        const taskId = editButton.dataset.id;
+        const tr = editButton.closest("tr");
+
+        if (isActive) {
+            enableRowEdit(tr, taskId);   // vào chế độ edit
+        } else {
+            cancelEditRow(tr, taskId);   // thoát edit
+        }
+    });
+
+    document.querySelectorAll('.menu-link').forEach(item => {
+        item.addEventListener('click', function () {
+            document.querySelectorAll('.menu-link').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            this.classList.add('active');
+        });
+    });
+
+    document.getElementById("logoutLink").addEventListener("click", function (e) {
+        e.preventDefault();
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "http://127.0.0.1:5500/Page/login.html";
+    });
+
+    submitCreateProject.addEventListener("click", async () => {
+
+        // ===== 1. Get input values from form =====
+        const projectName = document.getElementById("project-name").value.trim();
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+        const pic = document.getElementById("pic").value;
+
+
+
+        // Multiple select -> convert to array
+        const members = Array.from(
+            document.getElementById("members").selectedOptions
+        ).map(o => o.value);
+
+        const status = "Pending";
+
+        // ===== 2. Basic validation =====
+        if (!projectName || !startDate || !endDate || !pic || members.length == 0) {
+            Toast.fire({ icon: 'warning', title: 'Please fill all fields' });
+            return;
+        }
+
+        const newProjectData = {
+            name: projectName,
+            start_date: startDate,
+            end_date: endDate,
+            pic: pic,
+            members: members,
+            status: "Pending"
+
+        }
+
+        // Call api to save new project
+        apiCreateNewProject(newProjectData);
+    });
+
+    document.getElementById("delete-project-button")
+        .addEventListener("click", async function () {
+
+            const select = document.getElementById("projectSelect");
+
+            const projectID = select.value;
+
+            if (!projectID) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "No project selected"
+                });
+                return;
+            }
+
+            const confirm = await Swal.fire({
+                icon: "warning",
+                title: "Delete this project?",
+                text: "This action cannot be undone",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete",
+                cancelButtonText: "Cancel"
+            });
+
+            if (!confirm.isConfirmed) return;
+
+            const success = await apiDeleteProject(projectID);
+
+            if (!success) return;
+
+            Swal.fire({
+                icon: "success",
+                title: "Project deleted"
+            });
+
+            // =========================
+            // 1. tìm index trong state
+            // =========================
+            const index = projectList.findIndex(p => p.id === projectID);
+
+            if (index === -1) return;
+
+            // =========================
+            // 2. xóa khỏi state
+            // =========================
+            projectList.splice(index, 1);
+
+            // =========================
+            // 3. xóa option khỏi UI
+            // =========================
+            const option = select.querySelector(`option[value="${projectID}"]`);
+            if (option) option.remove();
+
+            // =========================
+            // 4. chọn project tiếp theo theo logic mảng
+            // =========================
+            let nextProject = null;
+
+            if (projectList.length === 0) {
+                // không còn project
+                select.value = "";
+                document.getElementById("project-status").innerHTML = "";
+                document.getElementById("taskBody").innerHTML = "";
+                return;
+            }
+
+            // nếu xóa phần tử cuối → lấy phần tử trước nó
+            if (index >= projectList.length) {
+                nextProject = projectList[projectList.length - 1];
+            } else {
+                // lấy phần tử tại index (vì sau splice nó đã shift lên)
+                nextProject = projectList[index];
+            }
+
+            // =========================
+            // 5. update UI
+            // =========================
+            select.value = nextProject.id;
+
+            select.dispatchEvent(new Event("change"));
+        });
+
+
+
+    /* ========================
+              Helper Function
+     =========================*/
+    function formatDate(dateStr) {
+        const d = new Date(dateStr);
+
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+
+        return `${day}/${month}`;
+    }
+
+
+
+
+</script>
+
 
 </html>
