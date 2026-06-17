@@ -174,14 +174,13 @@
 
                     </div>
 
-                    <!-- Vùng giai đoạn của dự án-->
+                    <!-- Vùng giai đoạn - workflow của dự án-->
 
                     <div class="row g-3" style="padding-top: 20px;">
 
                         <div class="container-fluid py-4">
 
                             <!-- Task Table -->
-
                             <div class="card shadow-sm">
 
                                 <div class="card-header bg-white">
@@ -753,9 +752,8 @@
 
 
     /* =========================================
-            update, change UI when user interact on UI
-         ===========================================*/
-
+        update, change UI when user interact on UI
+    =============================================*/
     function changeIconAvatar() {
         const dropdownAvatar = document.querySelector('.dropdown img');
         const userData = JSON.parse(localStorage.getItem("user"));
@@ -1037,7 +1035,7 @@
         }).join('');
     }
 
-    function enterEditStageMode(stageId) {
+    function enableStageEditMode(stageId) {
 
         const stage = stageListByProject.find(s => s.id == stageId);
         if (!stage) return;
@@ -1121,7 +1119,7 @@
         }
     }
 
-    function enableTaskEdit(tr, taskId) {
+    function enableTaskEditMode(tr, taskId) {
 
         const task = taskListByStage.find(t => t.id === taskId);
         if (!task) return;
@@ -1194,7 +1192,7 @@
         }, 0);
     }
 
-    function cancelTaskEdit(tr, taskId) {
+    function disableTaskEditMode(tr, taskId) {
 
         if (window.tomSelectInstances?.[taskId]) {
             window.tomSelectInstances[taskId].destroy();
@@ -1300,25 +1298,6 @@
         window.tomSelectInstances?.members?.clear(true);
     }
 
-    function changeIconAvatar() {
-        const dropdownAvatar = document.querySelector('.dropdown img');
-        const userData = JSON.parse(localStorage.getItem("user"));
-
-        if (!dropdownAvatar || !userData) return;
-
-        dropdownAvatar.src =
-            `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
-    }
-
-    function changeTopbarText() {
-        const topbarText = document.querySelector('.topbar .text-muted');
-        const userData = JSON.parse(localStorage.getItem("user"));
-
-        if (!topbarText || !userData) return;
-
-        topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
-    }
-
     async function loadProjectData(projectId) {
         const project = projectList.find(p => p.id == projectId);
         if (!project) return;
@@ -1387,9 +1366,9 @@
         const tr = editButton.closest("tr");
 
         if (isActive) {
-            enableTaskEdit(tr, taskId);   // vào chế độ edit
+            enableTaskEditMode(tr, taskId);   // vào chế độ edit
         } else {
-            cancelTaskEdit(tr, taskId);   // thoát edit
+            disableTaskEditMode(tr, taskId);   // thoát edit
         }
     });
 
@@ -1567,7 +1546,7 @@
 
         // EDIT
         if (e.target.closest(".btn-edit-stage")) {
-            enterEditStageMode(stageID);
+            enableStageEditMode(stageID);
             return;
         }
 
@@ -1606,7 +1585,7 @@
         }
     });
     /* ========================
-              Helper Function
+        Helper Function
      =========================*/
     function formatDate(dateStr) {
         const d = new Date(dateStr);
