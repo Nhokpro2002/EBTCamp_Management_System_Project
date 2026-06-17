@@ -137,8 +137,172 @@ button {
     font-weight: 600;
 }
 
-.kanban-column {
-    height: 70vh;
-    overflow-y: auto;
+.project-switcher {
+    margin-top: 20px;
+}
+
+.stat-box {
     background: #f8f9fa;
+    border-radius: 12px;
+    text-align: center;
+    padding: 20px;
+}
+
+.stat-box h5 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+.badge-status {
+    font-size: 13px;
+    padding: 8px 12px;
+}
+
+.btn-edit-task.active {
+    background-color: #0d6efd !important;
+    color: white !important;
+    border-color: #0d6efd !important;
+}
+
+.overlay-create-project {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-create-project {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 600px;
+    max-height: 90%;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+}
+
+.popup-create-project h2,
+.popup-create-project h3 {
+    margin-top: 0;
+}
+
+.form-group-create-project {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-create-project label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group-create-project input,
+.form-group-create-project select {
+    padding: 8px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-actions-create-project {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.form-actions-create-project button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+#submitCreateProject {
+    background-color: #00ff66;
+}
+
+#closeCreateProject {
+    background-color: #ccc;
+}
+
+#timeline-container {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 40px;
+    overflow-x: auto;
+}
+
+.timeline-line {
+    width: 100px;
+    height: 4px;
+    flex-shrink: 0;
+}
+
+.line-blue {
+    background: #3b82f6;
+}
+
+.stage-card {
+    min-width: 220px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, .05);
+    transition: .3s;
+}
+
+.stage-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .12);
+}
+
+.stage-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.stage-no {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.stage-title {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.label {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.value {
+    font-weight: 500;
+}
+
+.stage-active {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25) !important;
+    /*background: #f8f9ff;*/
+    transition: all 0.2s ease;
 }

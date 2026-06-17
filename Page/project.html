@@ -38,224 +38,7 @@
 
 
     <style>
-        .project-switcher {
-            margin-top: 20px;
-        }
 
-        .stage-card {
-            border: none;
-            border-radius: 16px;
-        }
-
-        .stat-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .stat-box h5 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .table td,
-        .table th {
-            vertical-align: middle;
-        }
-
-        .badge-status {
-            font-size: 13px;
-            padding: 8px 12px;
-        }
-
-        .btn-edit-task.active {
-            background-color: #0d6efd !important;
-            color: white !important;
-            border-color: #0d6efd !important;
-        }
-
-        .overlay-create-project {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .popup-create-project {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            max-height: 90%;
-            overflow-y: auto;
-            font-family: Arial, sans-serif;
-        }
-
-        .popup-create-project h2,
-        .popup-create-project h3 {
-            margin-top: 0;
-        }
-
-        .form-group-create-project {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group-create-project label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group-create-project input,
-        .form-group-create-project select {
-            padding: 8px 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .form-actions-create-project {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .form-actions-create-project button {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
-
-        #submitCreateProject {
-            background-color: #00ff66;
-        }
-
-        #closeCreateProject {
-            background-color: #ccc;
-        }
-
-        .timeline-container {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            padding: 40px;
-            overflow-x: auto;
-        }
-
-        .timeline-line {
-            width: 100px;
-            height: 4px;
-            flex-shrink: 0;
-        }
-
-        .line-blue {
-            background: #3b82f6;
-        }
-
-        .line-purple {
-            background: #8b5cf6;
-        }
-
-        .stage-card {
-            width: 260px;
-            min-width: 260px;
-
-            background: #fff;
-
-            border-radius: 20px;
-
-            padding: 24px;
-
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, .05);
-
-            transition: .3s;
-        }
-
-        .stage-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stage-card.active {
-            transform: translateY(-8px);
-        }
-
-        .stage-blue {
-            border: 2px solid #3b82f6;
-        }
-
-        .stage-green {
-            border: 2px solid #22c55e;
-        }
-
-        .stage-purple {
-            border: 2px solid #8b5cf6;
-        }
-
-        .stage-icon {
-            width: 70px;
-            height: 70px;
-
-            border-radius: 50%;
-
-            background: #f3f4f6;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 32px;
-
-            margin-bottom: 20px;
-        }
-
-        .stage-no {
-            font-size: 32px;
-            font-weight: 700;
-
-            margin-bottom: 8px;
-        }
-
-        .stage-blue .stage-no {
-            color: #3b82f6;
-        }
-
-        .stage-green .stage-no {
-            color: #22c55e;
-        }
-
-        .stage-purple .stage-no {
-            color: #8b5cf6;
-        }
-
-        .stage-title {
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .stage-info {
-            margin-bottom: 16px;
-        }
-
-        .label {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-
-        .value {
-            font-weight: 500;
-        }
     </style>
 </head>
 
@@ -355,12 +138,9 @@
 
                     <!-- Vùng giai đoạn của dự án-->
 
-                    <div class="timeline-container">
+                    <div id="timeline-container">
 
-                        <div class="stage-card stage-blue">
-                            <div class="stage-icon">
-                                📄
-                            </div>
+                        <div class="stage-card">
 
                             <div class="stage-no">
                                 01
@@ -370,7 +150,7 @@
                                 Planning
                             </h5>
 
-                            <hr>
+                            <hr style="margin: 0px  !important;">
 
                             <div class="stage-info">
                                 <div class="label">Start Date</div>
@@ -391,140 +171,6 @@
                         </div>
 
                         <div class="timeline-line line-blue"></div>
-
-                        <div class="stage-card stage-green">
-                            <div class="stage-icon">
-                                ✏️
-                            </div>
-
-                            <div class="stage-no">
-                                02
-                            </div>
-
-                            <h5 class="stage-title">
-                                Design
-                            </h5>
-
-                            <hr>
-
-                            <div class="stage-info">
-                                <div class="label">Start Date</div>
-                                <div class="value">16/05/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">End Date</div>
-                                <div class="value">31/05/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">Status</div>
-                                <span class="badge bg-success-subtle text-success">
-                                    Completed
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="timeline-line line-purple"></div>
-
-                        <div class="stage-card stage-purple active">
-                            <div class="stage-icon">
-                                💻
-                            </div>
-
-                            <div class="stage-no">
-                                03
-                            </div>
-
-                            <h5 class="stage-title">
-                                Development
-                            </h5>
-
-                            <hr>
-
-                            <div class="stage-info">
-                                <div class="label">Start Date</div>
-                                <div class="value">01/06/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">End Date</div>
-                                <div class="value">31/07/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">Status</div>
-                                <span class="badge bg-primary-subtle text-primary">
-                                    In Progress
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="stage-card stage-purple active">
-                            <div class="stage-icon">
-                                💻
-                            </div>
-
-                            <div class="stage-no">
-                                03
-                            </div>
-
-                            <h5 class="stage-title">
-                                Development
-                            </h5>
-
-                            <hr>
-
-                            <div class="stage-info">
-                                <div class="label">Start Date</div>
-                                <div class="value">01/06/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">End Date</div>
-                                <div class="value">31/07/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">Status</div>
-                                <span class="badge bg-primary-subtle text-primary">
-                                    In Progress
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="stage-card stage-purple active">
-                            <div class="stage-icon">
-                                💻
-                            </div>
-
-                            <div class="stage-no">
-                                03
-                            </div>
-
-                            <h5 class="stage-title">
-                                Development
-                            </h5>
-
-                            <hr>
-
-                            <div class="stage-info">
-                                <div class="label">Start Date</div>
-                                <div class="value">01/06/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">End Date</div>
-                                <div class="value">31/07/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">Status</div>
-                                <span class="badge bg-primary-subtle text-primary">
-                                    In Progress
-                                </span>
-                            </div>
-                        </div>
 
                     </div>
 
@@ -657,11 +303,7 @@
     let taskListByStage = [];
     let curentStageID = 0; // stage đang được chọn của dự án nào đó 
 
-
-
     let userMap = {};
-
-
 
     window.tomSelectInstances = window.tomSelectInstances || {};
     const overlayCreateProject = document.getElementById("overlay-create-project");
@@ -705,17 +347,13 @@
 
         changeTopbarText();
 
-        apiGetProjectsData().then(async () => {
+        apiGetProjects().then(async () => {
             renderProjectOptionList();
             initDefaultProject();
 
             if (projectList.length != 0) {
-                await apiGetStagesData(projectList[0].id);
-
-                await apiGetUsersData();
-
-
-
+                loadProjectData(projectList[0].id)
+                await apiGetUsers();
             }
         })
 
@@ -756,32 +394,9 @@
 
 
     /* =========================================
-        API function to get, update, delete data
+        API function to get, update, delete user
      ===========================================*/
-    async function apiGetTasksData(stageID) {
-        try {
-            const token = localStorage.getItem("token");
-
-            const headers = {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            };
-
-            const tasksRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=(stage="${stageID}")`, { headers });
-            if (!tasksRes.ok) {
-                throw new Error("Load data failed");
-            }
-
-            const tasks = await tasksRes.json();
-            taskListByStage = tasks.items || [];
-        } catch (error) {
-            console.log(error);
-        }
-
-    }
-
-
-    async function apiGetUsersData() {
+    async function apiGetUsers() {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_USERS}/records`, {
@@ -804,6 +419,30 @@
         }
     }
 
+    /* =========================================
+        API function to get, update, delete task
+     ===========================================*/
+    async function apiGetTasks(stageID) {
+        try {
+            const token = localStorage.getItem("token");
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            };
+
+            const tasksRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=(stage="${stageID}")`, { headers });
+            if (!tasksRes.ok) {
+                throw new Error("Load data failed");
+            }
+
+            const tasks = await tasksRes.json();
+            taskListByStage = tasks.items || [];
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
 
     async function apiUpdateTask(taskID, updatedTaskData) {
         try {
@@ -852,54 +491,41 @@
         }
     }
 
-
-    async function apiGetTasksData(stageID) {
+    async function apiDeleteTask(taskID) {
         try {
             const token = localStorage.getItem("token");
 
-            const headers = {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            };
 
-            const tasksRes = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records?filter=(stage="${stageID}")`, { headers });
-            if (!tasksRes.ok) {
-                throw new Error("Load data failed");
+            const dataRes = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Check API response
+            if (!dataRes.ok) {
+                Toast.fire({ icon: 'error', title: 'Delete task failed' });
+                throw new Error("Failed to delete task");
+                return;
             }
 
-            const tasks = await tasksRes.json();
-            taskListByStage = tasks.items || [];
-        } catch (error) {
-            console.log(error);
-        }
+            Toast.fire({ icon: 'success', title: 'Delete task successfully' });
 
-    }
-
-
-    async function apiGetUsersData() {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${POCKETBASE_URL}/api/collections/${COLLECTION_USERS}/records`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-            const result = await response.json();
-            result.items.forEach(user => {
-                userMap[user.id] = user;
-            });
-
-        } catch (error) {
-
-            console.log(error);
+        } catch (err) {
+            console.log(err);
+            Toast.fire({ icon: 'error', title: 'Something went wrong' });
         }
     }
 
-    async function apiGetProjectsData() {
+    /* =========================================
+        API function to get, update, delete project
+     ===========================================*/
+    async function apiGetProjects() {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(
@@ -920,28 +546,7 @@
         }
     }
 
-    async function apiGetStagesData(projectID) {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(
-                `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records?filter=(project="${projectID}")`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-            const result = await response.json();
-            stageListByProject = result.items || [];
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    async function apiCreateNewProject(newProjectData) {
+    async function apiCreateProject(newProjectData) {
         try {
             const token = localStorage.getItem("token");
 
@@ -992,6 +597,95 @@
 
     }
 
+    async function apiGetStages(projectID) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records?filter=(project="${projectID}")`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            stageListByProject = result.items || [];
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function apiUpdateStage(stageID, updatedStageData) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_STAGES}/records/${stageID}`, {
+                method: "PATCH",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedStageData)
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Update stage successfully',
+                showConfirmButton: false,
+                timer: 2000
+            });
+
+        } catch (error) {
+            console.log(error);
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'error',
+                title: 'Something went wrong',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    }
+
+    async function apiDeleteStage(stageID) {
+        try {
+            const token = localStorage.getItem("token");
+
+            const dataResponse = await fetch(
+                `${POCKETBASE_URL}/api/collections/${COLLECTION_PROJECTS}/records/${stageID}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Check API response
+            if (!dataResponse.ok) {
+                Toast.fire({ icon: 'error', title: 'Delete project failed' });
+                throw new Error("Failed to delete project");
+                return false;
+            }
+
+            Toast.fire({ icon: 'success', title: 'Delete project successfully' });
+            return true;
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     // function api delete project => delete stages => delete tasks
     async function apiDeleteProject(projectID) {
@@ -1057,37 +751,6 @@
         }
     }
 
-    // function api delete stage => delete tasks
-    async function apiDeleteTask(taskID) {
-        try {
-            const token = localStorage.getItem("token");
-
-
-            const dataRes = await fetch(
-                `${POCKETBASE_URL}/api/collections/${COLLECTION_TASKS}/records/${taskID}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
-            );
-
-            // Check API response
-            if (!dataRes.ok) {
-                Toast.fire({ icon: 'error', title: 'Delete task failed' });
-                throw new Error("Failed to delete task");
-                return;
-            }
-
-            Toast.fire({ icon: 'success', title: 'Delete task successfully' });
-
-        } catch (err) {
-            console.log(err);
-            Toast.fire({ icon: 'error', title: 'Something went wrong' });
-        }
-    }
 
     /* =========================================
             update, change UI when user interact on UI
@@ -1127,6 +790,135 @@
 
     }
 
+    // function render stage link
+    function renderStages(stageListByProject) {
+
+        const workflow = document.getElementById("timeline-container");
+        workflow.innerHTML = "";
+
+        stageListByProject.forEach((stage, index) => {
+
+            const linkLine = document.createElement("div");
+            linkLine.classList.add("timeline-line");
+
+            const div = document.createElement("div");
+            div.setAttribute("data-id", stage.id);
+
+            let borderClass = "border-secondary";
+            let badgeClass = "bg-secondary text-white";
+            let textClass = "text-secondary";
+            let bgColor = "#f8f9fa";
+
+            switch (stage.status) {
+
+                case "Processing":
+                    borderClass = "border-warning";
+                    badgeClass = "bg-warning text-dark";
+                    textClass = "text-warning";
+                    bgColor = "#fff8e1";
+                    linkLine.classList.add("bg-warning");
+                    break;
+
+                case "Done":
+                    borderClass = "border-success";
+                    badgeClass = "bg-success text-white";
+                    textClass = "text-success";
+                    bgColor = "#e8f5e9";
+                    linkLine.classList.add("bg-success");
+                    break;
+
+                case "Pending":
+                default:
+                    borderClass = "border-secondary";
+                    badgeClass = "bg-secondary text-white";
+                    textClass = "text-secondary";
+                    bgColor = "#f5f5f5";
+                    linkLine.classList.add("bg-secondary");
+                    break;
+            }
+
+            div.classList.add(
+                "stage-card",
+                "p-3",
+                "rounded-3",
+                "border",
+                "border-2",
+                borderClass
+            );
+
+            div.style.backgroundColor = bgColor;
+
+            div.innerHTML = `
+            <div class="d-flex align-items-center justify-content-between ${textClass}">
+    
+    <div class="display-6 fw-bold">
+        <span>${index + 1}</span>
+    </div>
+
+    <div class="d-flex gap-1 d-none stage-actions">
+        <button
+            class="btn btn-sm btn-outline-primary btn-edit-stage"
+            data-id="${stage.id}"
+            title="Edit stage">
+            <i class="bi bi-pencil"></i>
+        </button>
+
+        <button
+            class="btn btn-sm btn-outline-danger btn-delete-stage"
+            data-id="${stage.id}"
+            title="Delete stage">
+            <i class="bi bi-trash"></i>
+        </button>
+
+    </div>
+
+</div>
+
+            <h5 class="${textClass} mb-1 text-truncate" title="${stage.name}">
+                   ${stage.name}
+            </h5>
+
+            <hr class="my-1">
+
+            <div class="mb-1">
+                <div class="text-muted small">
+                    Start Date
+                </div>
+
+                <div class="fw-bold fs-5 text-dark">
+                    ${formatDate(stage.start_date)}
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <div class="text-muted small">
+                    End Date
+                </div>
+
+                <div class="fw-bold fs-5 text-dark">
+                    ${formatDate(stage.end_date)}
+                </div>
+            </div>
+
+            <div>
+                <div class="text-muted small mb-2">
+                    Status
+                </div>
+
+                <span class="badge rounded-pill px-3 py-2 ${badgeClass}">
+                    ${stage.status}
+                </span>
+            </div>
+        `;
+
+            workflow.appendChild(div);
+
+            if (index < stageListByProject.length - 1) {
+                workflow.appendChild(linkLine);
+            }
+        });
+    }
+
     function changeProjectStatusUI(status) {
         const el = document.getElementById("project-status");
         const map = {
@@ -1152,8 +944,6 @@
         </span>
     `;
     }
-
-    // renderTasks();
 
     function initDefaultProject() {
         const first = projectList[0];
@@ -1247,6 +1037,52 @@
         }).join('');
     }
 
+    function enterEditStageMode(stageId) {
+
+        const stage = stageListByProject.find(s => s.id == stageId);
+        if (!stage) return;
+
+        const card = document.querySelector(`[data-id="${stageId}"]`).closest(".stage-card");
+
+        if (!card) return;
+
+        card.innerHTML = `
+        <div class="mb-2">
+            <label class="text-muted small">Stage Name</label>
+            <input class="form-control form-control-sm" id="stage-name" value="${stage.name}">
+        </div>
+
+        <div class="mb-2">
+            <label class="text-muted small">Start Date</label>
+            <input type="date" class="form-control form-control-sm" id="stage-start-date" value="${stage.start_date}">
+        </div>
+
+        <div class="mb-2">
+            <label class="text-muted small">End Date</label>
+            <input type="date" class="form-control form-control-sm" id="stage-end-date" value="${stage.end_date}">
+        </div>
+
+        <div class="mb-3">
+            <label class="text-muted small">Status</label>
+            <select class="form-select form-select-sm" id="stage-status">
+                <option value="Pending" ${stage.status === "Pending" ? "selected" : ""}>Pending</option>
+                <option value="Processing" ${stage.status === "Processing" ? "selected" : ""}>Processing</option>
+                <option value="Done" ${stage.status === "Done" ? "selected" : ""}>Done</option>
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-success btn-update-stage">
+                Save
+            </button>
+
+            <button type="button" class="btn btn-sm btn-secondary btn-return-stage">
+                Cancel
+            </button>
+        </div>
+    `;
+    }
+
     function renderMembersSelect(type) {  // type: "pic", "members", "handler"
         const select = document.getElementById(type);
         if (!select) return;
@@ -1285,7 +1121,7 @@
         }
     }
 
-    function enableRowEdit(tr, taskId) {
+    function enableTaskEdit(tr, taskId) {
 
         const task = taskListByStage.find(t => t.id === taskId);
         if (!task) return;
@@ -1358,7 +1194,7 @@
         }, 0);
     }
 
-    function cancelEditRow(tr, taskId) {
+    function cancelTaskEdit(tr, taskId) {
 
         if (window.tomSelectInstances?.[taskId]) {
             window.tomSelectInstances[taskId].destroy();
@@ -1483,9 +1319,8 @@
         topbarText.textContent = `Welcome back, ${userData.employee_id} 👋`;
     }
 
-    async function selectProject(projectId) {
-
-        const project = projectList.find(p => p.id === projectId);
+    async function loadProjectData(projectId) {
+        const project = projectList.find(p => p.id == projectId);
         if (!project) return;
 
         currentProjectId = projectId;
@@ -1494,10 +1329,10 @@
 
         changeProjectStatusUI(project.status);
 
-        await apiGetStagesData(projectId);
-        //renderWorkFlow(stageListByProject);
-    }
+        await apiGetStages(projectId);
 
+        renderStages(stageListByProject);
+    }
     /* =========================================
             Catch event when user interact on UI
      ===========================================*/
@@ -1506,22 +1341,9 @@
     closeCreateProject?.addEventListener("click", closeCreateProjectPopup);
 
     document.getElementById("projectSelect").addEventListener("change", async function (e) {
-        const selectedID = e.target.value;
-
-        const project = projectList.find(p => p.id == selectedID);
-
-        if (project) {
-            // change status UI follow selected project
-            changeProjectStatusUI(project.status);
-
-            // class api to get stage list follow selected project
-            await apiGetStagesData(selectedID);
-
-            // rerender stage on UI
-            //renderWorkFlow(stageListByProject);
-
-        }
+        await loadProjectData(e.target.value);
     });
+
 
     // Push save button event
     document.getElementById("taskBody").addEventListener("click", function (e) {
@@ -1565,9 +1387,9 @@
         const tr = editButton.closest("tr");
 
         if (isActive) {
-            enableRowEdit(tr, taskId);   // vào chế độ edit
+            enableTaskEdit(tr, taskId);   // vào chế độ edit
         } else {
-            cancelEditRow(tr, taskId);   // thoát edit
+            cancelTaskEdit(tr, taskId);   // thoát edit
         }
     });
 
@@ -1622,7 +1444,7 @@
         }
 
         // Call api to save new project
-        apiCreateNewProject(newProjectData);
+        apiCreateProject(newProjectData);
     });
 
     document.getElementById("delete-project-button")
@@ -1708,7 +1530,81 @@
         });
 
 
+    document.getElementById("timeline-container").addEventListener("click", async function (e) {
 
+        const card = e.target.closest(".stage-card");
+        if (!card) return;
+
+        const stageID = card.getAttribute("data-id");
+
+        // ❌ remove active all
+        document.querySelectorAll(".stage-card").forEach(el => {
+            el.classList.remove("stage-active");
+        });
+
+        // ✔ add active to clicked
+        card.classList.add("stage-active");
+
+        // show actions
+        document.querySelectorAll(".stage-actions").forEach(el => {
+            el.classList.add("d-none");
+        });
+
+        const actions = card.querySelector(".stage-actions");
+        if (actions) actions.classList.remove("d-none");
+
+        await apiGetTasks(stageID);
+        renderTasks();
+    });
+
+
+    document.getElementById("timeline-container").addEventListener("click", async function (e) {
+
+        const card = e.target.closest(".stage-card");
+        if (!card) return;
+
+        const stageID = card.getAttribute("data-id");
+
+        // EDIT
+        if (e.target.closest(".btn-edit-stage")) {
+            enterEditStageMode(stageID);
+            return;
+        }
+
+        // DELETE
+        if (e.target.closest(".btn-delete-stage")) {
+            await apiDeleteStage(stageID);
+            return;
+        }
+
+        // UPDATE
+        if (e.target.closest(".btn-update-stage")) {
+
+            const updatedStageData = {
+                name: card.querySelector("#stage-name").value,
+                start_date: card.querySelector("#stage-start-date").value,
+                end_date: card.querySelector("#stage-end-date").value,
+                status: card.querySelector("#stage-status").value
+            };
+
+            await apiUpdateStage(stageID, updatedStageData);
+            return;
+        }
+    });
+
+
+    document.getElementById("timeline-container").addEventListener("click", function (e) {
+
+        if (e.target.closest(".btn-return-stage")) {
+
+            const btn = e.target.closest(".btn-return-stage");
+            const stageId = btn.getAttribute("data-id");
+
+            renderWorkFlow(stageListByProject);
+
+            return;
+        }
+    });
     /* ========================
               Helper Function
      =========================*/
@@ -1721,7 +1617,11 @@
         return `${day}/${month}`;
     }
 
-
+    /*
+    ✔ API: verb + object
+    ✔ UI: handle + action
+    ✔ render: render + object
+    */
 
 
 </script>
