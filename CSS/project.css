@@ -170,6 +170,7 @@ button {
     border-color: #0d6efd !important;
 }
 
+.overlay-create-stage,
 .overlay-create-project {
     position: fixed;
     top: 0;
@@ -193,22 +194,26 @@ button {
     font-family: Arial, sans-serif;
 }
 
-.popup-create-project h2,
-.popup-create-project h3 {
+.popup-create-stage h2,
+.popup-create-project h2 {
     margin-top: 0;
 }
 
+.form-group-create-stage,
 .form-group-create-project {
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
 }
 
+.form-group-create-stage label,
 .form-group-create-project label {
     margin-bottom: 5px;
     font-weight: bold;
 }
 
+.form-group-create-stage input,
+.form-group-create-stage select,
 .form-group-create-project input,
 .form-group-create-project select {
     padding: 8px 10px;
@@ -216,6 +221,7 @@ button {
     border: 1px solid #ccc;
 }
 
+.form-actions-create-stage,
 .form-actions-create-project {
     display: flex;
     justify-content: flex-end;
