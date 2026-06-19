@@ -6,24 +6,22 @@ const Toast = Swal.mixin({
 });
 
 
-function formatDate(dateStr) {
+export function formatDate(dateStr) {
     const d = new Date(dateStr);
-
     const day = String(d.getDate()).padStart(2, "0");
     const month = String(d.getMonth() + 1).padStart(2, "0");
-
     return `${day}/${month}`;
 }
 
 
-function showSuccess(message) {
+export function showSuccess(message) {
     Toast.fire({
         icon: "success",
         title: message
     });
 }
 
-function showError(message) {
+export function showError(message) {
     Toast.fire({
         icon: "error",
         title: message
