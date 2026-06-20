@@ -1,43 +1,223 @@
-1. Dynamic Table + Inline Editing
-Thay vì chỉ thêm row mới, cho phép chỉnh sửa trực tiếp trên table.
-Có thể drag & drop để sắp xếp thứ tự sản phẩm trong đơn.
-Thêm tính năng auto-complete khi nhập sản phẩm (lấy từ master data sản phẩm).
+import * as api from "../Script/services/generic.api.js";
+import * as ui from "../Script/project/project.ui.js";
+import * as handleEvent from "../Script/project/project.handle.event.js";
 
-Lợi ích:
+/* =====================================================
+  Variables
+  ===================================================== */
+const variableGlobal = {
+    projectList: [],
+    currentProjectID: null,
+    stageListByProject: [],
+    currentStageID: null,
+    taskListByStage: [],
+    currentTaskID: null,
+    userMap: {}
+}
 
-Giống Excel nhưng người dùng không phải xóa/copy/paste thủ công.
-Nhập liệu nhanh, lỗi ít hơn.
-2. Validation & Calculation tự động
-Tự tính tổng tiền, thuế, chiết khấu, số lượng còn kho khi thêm sản phẩm.
-Thông báo ngay khi nhập số lượng vượt kho, giá không hợp lệ…
-Dùng màu, icon highlight khi có lỗi hoặc cảnh báo.
+const COLLECTION_PROJECTS = "projects";
+const COLLECTION_STAGES = "stages";
+const COLLECTION_TASKS = "tasks";
+const COLLECTION_USERS = "users";
 
-Ví dụ:
 
-Nếu số lượng > tồn kho → cell đỏ.
-Nếu giá nhập < giá vốn → warning icon.
-3. History & Versioning
-Khi chỉnh sửa đơn đã tạo → lưu lịch sử thay đổi.
-Giúp audit, không sợ mất dữ liệu cũ.
 
-Cách làm:
+/* Project */
+window.tomSelectInstances = window.tomSelectInstances || {};
+const overlayCreateProject = document.getElementById("overlay-create-project");
+const closeCreateProject = document.getElementById("closeCreateProject");
+const openCreateProjectBtn = document.getElementById("open-create-project-button");
+/* Project */
 
-Lưu order_items_history table trong DB.
-Web hiển thị version mới nhất, có thể restore phiên bản trước.
-4. Template / Reuse
-Cho phép lưu mẫu đơn hàng (template) cho khách hàng thường xuyên hoặc combo sản phẩm hay dùng.
-Khi tạo đơn → chọn template → auto điền các item + số lượng + giá.
-5. QR Code / Barcode
-Sinh QR code cho mỗi đơn → in kèm đơn, khi quét sẽ mở nhanh thông tin đơn trên web.
-Sinh barcode cho sản phẩm → quét khi xuất kho / nhập kho.
-6. Filter / Search / Live Update
-Có filter theo trạng thái (pending, shipped, completed).
-Có search live trên table (khách hàng, mã đơn, sản phẩm).
-Giúp quản lý đơn hàng dễ hơn Excel, đặc biệt với hàng trăm đơn.
-7. Excel / CSV Export & Import nâng cao
-Export → giữ cấu trúc đẹp, tự động tính tổng.
-Import → cho phép nhập từ Excel/CSV, validate ngay trên web trước khi lưu DB.
-8. Workflow & Automation
-Khi tạo đơn → auto generate task cho kho/shipper.
-Khi chỉnh sửa → gửi email thông báo khách hàng/đội ngũ liên quan.
-Có thể tích hợp tính năng báo cáo, alert: ví dụ đơn tồn > 7 ngày chưa xử lý.
+
+/* Stage */
+const overlayCreateStage = document.getElementById("overlay-create-stage");
+/* Stage */
+
+
+$(document).ready(function () {
+
+    if (!checkAuthentication()) return;
+
+    document.querySelector(".container-fluid").style.display = "block";
+
+    // window.alert(window.innerWidth + " x " + window.innerHeight);
+    // Spec: 1528 * 732;
+
+    const currentPage = window.location.pathname;
+
+    if (currentPage.includes('dashboard')) {
+        document.getElementById('dashboard-link').classList.add('active');
+    } else if (currentPage.includes('order')) {
+        document.getElementById('order-link').classList.add('active');
+    } else if (currentPage.includes('user')) {
+        document.getElementById('user-link').classList.add('active');
+    } else if (currentPage.includes('setting')) {
+        document.getElementById('setting-link').classList.add('active');
+    } else if (currentPage.includes('project')) {
+        document.getElementById('project-link').classList.add('active');
+    }
+
+    ui.changeIconAvatar();
+
+    ui.changeTopbarText();
+
+    async function init() {
+        variableGlobal.projectList = await api.getRecords(COLLECTION_PROJECTS);
+
+        ui.renderProjectOptionList();
+        initDefaultProject();
+
+        if (variableGlobal.projectList.length !== 0) {
+            loadProjectData(variableGlobal.projectList[0].id);
+        }
+
+        const users = await api.getRecords(COLLECTION_USERS);
+
+        users.forEach(user => {
+            variableGlobal.userMap[user.id] = user;
+        });
+    }
+
+    init();
+
+});
+
+/* =========================================
+        Check authentication
+===========================================*/
+function checkAuthentication() {
+    const token = localStorage.getItem("token");
+    if (!token || token.trim() === "") {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Access Denied',
+            text: 'You must log in to access this page',
+            confirmButtonText: 'Go to Login'
+        }).then(() => {
+            window.location.href = "http://127.0.0.1:5500/Page/login.html"; // chuyển hướng sau khi user bấm OK
+        });
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/* =========================================
+    update, change UI when user interact on UI
+=============================================*/
+
+function initDefaultProject() {
+    const first = variableGlobal.projectList[0];
+
+    if (!first) return;
+
+    document.getElementById("projectSelect").value = first.id;
+    ui.changeProjectStatusUI(first.status);
+}
+
+
+function closeCreateProjectPopup() {
+    overlayCreateProject.style.display = "none";
+    document.body.style.overflow = "auto";
+    resetCreateProjectForm();
+}
+
+function openCreateProjectPopup() {
+    overlayCreateProject.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    ui.renderMembersSelect("pic");
+    ui.renderMembersSelect("members");
+}
+
+function openCreateStagePopup() {
+    overlayCreateStage.style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+
+function closeCreateStagePopup() {
+    overlayCreateStage.style.display = "none";
+    document.body.style.overflow = "auto";
+}
+
+function resetCreateProjectForm() {
+
+    // reset input text + date
+    document.getElementById("project-name").value = "";
+    document.getElementById("start-date").value = "";
+    document.getElementById("end-date").value = "";
+
+    // reset select DOM (quan trọng để tránh duplicate option)
+    document.getElementById("pic").innerHTML = "";
+    document.getElementById("members").innerHTML = "";
+
+    // reset TomSelect state
+    window.tomSelectInstances?.pic?.clear(true);
+    window.tomSelectInstances?.members?.clear(true);
+}
+
+async function loadProjectData(projectID) {
+    const project = variableGlobal.projectList.find(p => p.id == projectID);
+    if (!project) return;
+
+    variableGlobal.currentProjectID = projectID;
+
+    document.getElementById("projectSelect").value = projectID;
+
+    ui.changeProjectStatusUI(project.status);
+
+    variableGlobal.stageListByProject = await api.getRecordsFilter(COLLECTION_STAGES, "project", projectID);
+
+    ui.renderStages(variableGlobal.stageListByProject);
+}
+/* =========================================
+        Catch event when user interact on UI
+ ===========================================*/
+openCreateProjectBtn?.addEventListener("click", openCreateProjectPopup);
+
+closeCreateProject?.addEventListener("click", closeCreateProjectPopup);
+
+document.getElementById("projectSelect").addEventListener("change", async function (e) {
+    await loadProjectData(e.target.value);
+});
+
+$("#logoutLink").on("click", function (e) {
+    e.preventDefault();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "http://127.0.0.1:5500/Page/login.html";
+});
+
+$("#taskBody").on("click", handleEvent.handleTaskActions);
+
+$("#button-submit-create-project").on("click", handleEvent.handleSubmitFormCreateProject);
+
+$("#delete-project-button").on("click", handleEvent.handleDeleteProject);
+
+$("#timeline-container")
+    .on("click", ".btn-edit-stage", handleEvent.handleEditStage)
+    .on("click", ".btn-delete-stage", handleEvent.handleDeleteStage)
+    .on("click", ".btn-save-stage", handleEvent.handleSaveStage)
+    .on("click", ".btn-return-stage", handleEvent.handleCancelEditStage);
+
+$("#timeline-container").on("click", ".stage-card", handleEvent.handleStageClick);
+
+$("#add-stage-button").on("click", async function (e) {
+    // ===== 1. Get input values from form =====
+    const stageName = $("#stage-name-input").val().trim();
+    const startDate = $("#start-date").val();
+    const endDate = $("#end-date").val();
+
+});
+
+document.querySelectorAll('.menu-link').forEach(item => {
+    item.addEventListener('click', function () {
+        document.querySelectorAll('.menu-link').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        this.classList.add('active');
+    });
+});

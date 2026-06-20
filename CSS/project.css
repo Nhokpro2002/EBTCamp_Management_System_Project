@@ -184,6 +184,7 @@ button {
     z-index: 1000;
 }
 
+.popup-create-stage,
 .popup-create-project {
     background: #fff;
     padding: 30px;

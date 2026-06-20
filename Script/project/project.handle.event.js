@@ -1,27 +1,19 @@
 import * as ui from "./project.ui.js";
 import * as api from "../services/generic.api.js";
+import * as utils from "../utils/utils.js";
+import { variableGlobal } from "./project.state.js";
+import { messageCommon } from "./project.state.js"
 
-const variableGlobal = {
-    projectList: [],
-    currentProjectID: null,
-    stageListByProject: [],
-    currentStageID: null,
-    taskListByStage: [],
-    currentTaskID: null,
-    userMap: {}
-}
-
-const COLLECTION_PROJECTS = "projects";
-const COLLECTION_STAGES = "stages";
-const COLLECTION_TASKS = "tasks";
-const COLLECTION_USERS = "users";
+const COLLECTION_PROJECTS = "Projects";
+const COLLECTION_STAGES = "Stages";
+const COLLECTION_TASKS = "Tasks";
+const COLLECTION_USERS = "Users";
 
 /*
 ===========================================
                   PROJECT
 ===========================================
 */
-
 export function getCreateProjectFormData() {
     const projectName = document.getElementById("project-name").value.trim();
     const startDate = document.getElementById("start-date").value;
@@ -35,6 +27,9 @@ export function getCreateProjectFormData() {
     return { projectName, startDate, endDate, pic, members };
 }
 
+/*
+  ! process: create new project -> push data response into project list -> selecte new project option -> call load function project data
+ */
 export async function handleSubmitFormCreateProject() {
     const formData = getCreateProjectFormData();
 
@@ -42,14 +37,30 @@ export async function handleSubmitFormCreateProject() {
 
     const payload = buildProjectPayload(formData);
 
-    const result = await api.createRecord(
-        COLLECTION_PROJECTS,
-        payload
-    );
+    try {
+        const result = await api.createRecord(COLLECTION_PROJECTS, payload);
+        utils.showSuccess(messageCommon.success.createSuccess);
+        variableGlobal.projectList.push(result);
+        loadProjectData(result.id);
+    } catch (error) {
+        utils.showError(messageCommon.error.createError);
+    }
 
-    variableGlobal.projectList.push(result);
+}
 
-    loadProjectData(result.id);
+export async function loadProjectData(projectID) {
+    const project = variableGlobal.projectList.find(p => p.id == projectID);
+    if (!project) return;
+
+    variableGlobal.currentProjectID = projectID;
+
+    $("#projectSelect").value = projectID;
+
+    ui.changeProjectStatusUI(project.status);
+
+    variableGlobal.stageListByProject = await api.getRecordsFilter(COLLECTION_STAGES, "project", projectID);
+
+    ui.renderStages(variableGlobal.stageListByProject);
 }
 
 export function validateProjectForm(data) {
@@ -83,6 +94,14 @@ export function buildProjectPayload(data) {
     };
 }
 
+/*
+! Error
+! Delete selected project -> 
+! + nếu là project cuối thì sẽ chọn vào cái trên nó
+! + nếu là cái ở phần giữa thì sẽ chọn project tiếp theo, xóa cái n thì chọn cái n + 1
+! + nếu xóa cái đầu thì chọn cái thứ 2
+! + xóa cái cuối cùng thì sẽ rỗng
+ */
 export async function handleDeleteProject() {
     const $select = $("#projectSelect");
     const projectID = $select.val();
@@ -104,25 +123,23 @@ export async function handleDeleteProject() {
     });
 
     if (!confirm.isConfirmed) return;
-    const success = await api.deleteRecord(
-        COLLECTION_PROJECTS,
-        projectID
-    );
-    if (!success) return;
-    Swal.fire({
-        icon: "success",
-        title: "Project deleted"
-    });
-    removeProjectFromState(projectID);
-    removeProjectOption(projectID);
-    const nextProject = getNextProject();
-    if (!nextProject) {
-        clearProjectUI();
-        return;
+    try {
+        const success = await api.deleteRecord(COLLECTION_PROJECTS, projectID);
+        if (!success) return;
+        utils.showSuccess(messageCommon.success.deleteSuccess);
+        removeProjectFromState(projectID);
+        removeProjectOption(projectID);
+        const nextProject = getNextProject();
+        if (!nextProject) {
+            clearProjectUI();
+            return;
+        }
+        $select
+            .val(nextProject.id)
+            .trigger("change");
+    } catch (error) {
+        utils.showSuccess(messageCommon.error.deleteError);
     }
-    $select
-        .val(nextProject.id)
-        .trigger("change");
 
 }
 
@@ -165,14 +182,20 @@ export function clearProjectUI() {
 // ==================================================
 // Edit stage
 // ==================================================
-export function handleEditStage(stageID) {
-    ui.enableStageEditMode(stageID);
+export function handleEditStage(e) {
+    const card = e.currentTarget.closest(".stage-card");
+    const selectedStageID = card.dataset.id;
+
+    ui.enableStageEditMode(selectedStageID);
 }
 
 // ==================================================
 // Delete stage
 // ==================================================
-export async function handleDeleteStage(stageID) {
+export async function handleDeleteStage(e) {
+
+    const card = e.currentTarget.closest(".stage-card");
+    const selectedStageID = card.dataset.id;
 
     const result = await Swal.fire({
         icon: "warning",
@@ -186,24 +209,19 @@ export async function handleDeleteStage(stageID) {
 
     if (!result.isConfirmed) return;
 
-    await api.deleteRecord(
-        COLLECTION_STAGES,
-        stageID
-    );
+    try {
+        await api.deleteRecord(COLLECTION_STAGES, selectedStageID);
+        variableGlobal.stageListByProject =
+            variableGlobal.stageListByProject.filter(
+                stage => stage.id != selectedStageID
+            );
 
-    variableGlobal.stageListByProject =
-        variableGlobal.stageListByProject.filter(
-            stage => stage.id != stageID
-        );
+        ui.renderStages(variableGlobal.stageListByProject);
 
-    ui.renderStages(variableGlobal.stageListByProject);
-
-    await Swal.fire({
-        icon: "success",
-        title: "Stage deleted",
-        timer: 1500,
-        showConfirmButton: false
-    });
+        utils.showSuccess(messageCommon.success.deleteSuccess);
+    } catch (error) {
+        utils.showError(messageCommon.error.deleteError);
+    }
 }
 
 // ==================================================
@@ -218,21 +236,21 @@ export async function handleSaveStage($card, stageID) {
         status: $card.find("#stage-status-input").val()
     };
 
-    const apiRes = await api.updateRecord(
-        COLLECTION_STAGES,
-        stageID,
-        updatedStageData
-    );
+    try {
+        const apiRes = await api.updateRecord(COLLECTION_STAGES, stageID, updatedStageData);
+        variableGlobal.stageListByProject.forEach(stage => {
 
-    variableGlobal.stageListByProject.forEach(stage => {
+            if (stage.id == apiRes.id) {
+                Object.assign(stage, apiRes);
+            }
+        });
+        ui.renderStages(variableGlobal.stageListByProject);
 
-        if (stage.id == apiRes.id) {
-            Object.assign(stage, apiRes);
-        }
+    } catch (error) {
+        utils.showError(messageCommon.error.updateError);
+        return;
+    }
 
-    });
-
-    ui.renderStages(variableGlobal.stageListByProject);
 }
 
 // ==================================================
@@ -271,15 +289,19 @@ export function setActiveStage($card) {
 // Load tasks by stage
 // ==================================================
 export async function loadTasksByStage(stageID) {
+    try {
+        variableGlobal.taskListByStage =
+            await api.getRecordsFilter(
+                COLLECTION_TASKS,
+                "stage",
+                stageID
+            );
 
-    variableGlobal.taskListByStage =
-        await api.getRecordsFilter(
-            COLLECTION_TASKS,
-            "stage",
-            stageID
-        );
+        ui.renderTasks(variableGlobal.taskListByStage);
+    } catch (error) {
+        utils.showError(messageCommon.error.getError);
+    }
 
-    ui.renderTasks(variableGlobal.taskListByStage);
 }
 
 // ==================================================
@@ -311,7 +333,7 @@ export async function handleSaveTask(e, saveButton) {
     const nameInput = tr.querySelector(".task-name input");
     const statusSelect = tr.querySelector(".task-status select");
     const percentInput = tr.querySelector(".task-percent input");
-    const handlerSelect = window.tomSelectInstances?.[taskId];
+    const handlerSelect = variableGlobal.tomSelectInstances?.[taskID];
     const startInput = tr.querySelector(".task-start input");
     const endInput = tr.querySelector(".task-end input");
 
@@ -324,9 +346,150 @@ export async function handleSaveTask(e, saveButton) {
         end_date: endInput.value
     };
 
-    return await api.updateRecord(COLLECTION_TASKS, taskID, updatedTaskData);
+    try {
+        const response = await api.updateRecord(COLLECTION_TASKS, taskID, updatedTaskData);
+    } catch (error) {
+        utils.showError(messageCommon.error.updateError);
+    }
+
+    variableGlobal.taskListByStage = variableGlobal.taskListByStage.map(task =>
+        task.id === response.id ? response : task
+    );
+
+    ui.renderTasks(variableGlobal.taskListByStage);
+
 }
 
+export function handleAddNewTask() {
+
+    const $tbody = $("#taskBody");
+
+    const tempId = "new_" + Date.now(); // id tạm
+
+    const newRowHtml = `
+        <tr class="task-row-new" data-temp-id="${tempId}"> 
+
+            <td>
+                <input type="text" class="form-control form-control-sm new-task-name" placeholder="Task name">
+            </td>
+
+            <td class="task-handler">
+                <select id="handler-${tempId}" multiple></select>
+            </td>
+
+            <td>
+                <select class="form-select form-select-sm new-task-status">
+                    <option value="Todo">Todo</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Done">Done</option>
+                </select>
+            </td>
+
+            <td>
+                <input type="number" class="form-control form-control-sm new-task-percent" value="0">
+            </td>
+
+            <td>
+                <input type="date" class="form-control form-control-sm new-task-start">
+            </td>
+
+            <td>
+                <input type="date" class="form-control form-control-sm new-task-end">
+            </td>
+
+            <td class="task-action-button">
+                <div class="d-flex gap-1">
+
+                    <button class="btn btn-sm btn-success btn-create-task" data-temp-id="${tempId}">
+                        <i class="bi bi-check-lg"></i>
+                    </button>
+
+                    <button class="btn btn-sm btn-secondary btn-cancel-new-task" data-temp-id="${tempId}">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+
+                </div>
+            </td>
+
+        </tr>
+    `;
+
+    $tbody.append(newRowHtml);
+
+    // 👉 init TomSelect sau khi DOM render
+    setTimeout(() => {
+
+        const select = document.getElementById(`handler-${tempId}`);
+        if (!select) return;
+
+        // add user options
+        Object.values(variableGlobal.userMap || {}).forEach(user => {
+            const option = document.createElement("option");
+            option.value = user.id;
+            option.textContent = user.employee_id;
+            select.appendChild(option);
+        });
+
+        // init storage
+        if (!variableGlobal.tomSelectInstances) {
+            variableGlobal.tomSelectInstances = {};
+        }
+
+        // init TomSelect
+        variableGlobal.tomSelectInstances[tempId] = new TomSelect(select, {
+            plugins: ['remove_button'],
+            hideSelected: true,
+            placeholder: "Select Handler"
+        });
+
+    }, 0);
+}
+
+export async function handleCreateTask(e) {
+
+    const $row = $(e.currentTarget).closest("tr");
+
+    const taskId = $(e.currentTarget).data("id");
+
+    // 👉 lấy handler từ TomSelect
+    const tempId = $row.data("temp-id") || taskId;
+
+    let handlerValues = [];
+
+    const tomSelect = variableGlobal.tomSelectInstances?.[tempId];
+    if (tomSelect) {
+        handlerValues = tomSelect.getValue();
+    }
+
+    const payload = {
+        name: $row.find(".new-task-name, .task-name input").val(),
+        status: $row.find(".new-task-status, .task-status select").val(),
+        percent: $row.find(".new-task-percent, .task-percent input").val(),
+        start_date: $row.find(".new-task-start, .task-start input").val(),
+        end_date: $row.find(".new-task-end, .task-end input").val(),
+        handler: handlerValues,
+        stage: variableGlobal.currentStageID
+    };
+
+    try {
+
+        let response;
+
+        // CREATE
+        if (!taskId) {
+            response = await api.createRecord(COLLECTION_TASKS, payload);
+            variableGlobal.taskListByStage.push(response);
+
+            utils.showSuccess(messageCommon.success.createSuccess);
+        }
+
+        ui.renderTasks(variableGlobal.taskListByStage);
+
+    } catch (error) {
+        console.error(error);
+        utils.showError(messageCommon.error.updateError);
+    }
+}
 
 export function handleEditTask(e, editButton) {
     const tr = editButton.closest("tr");
@@ -340,5 +503,54 @@ export function handleEditTask(e, editButton) {
         ui.enableTaskEditMode(tr, taskId);
     } else {
         ui.disableTaskEditMode(tr, taskId);
+    }
+}
+
+export function openCreateStagePopup() {
+    $("#overlay-create-stage").css("display", "flex");
+    $("body").css("overflow", "hidden");
+
+    const projectName = $("#projectSelect option:selected").text();
+    $("#stage-project-name").val(projectName);
+
+    // reset form
+    $("#stage-name-input").val("");
+    $("#start-date").val("");
+    $("#end-date").val("");
+    $("#stage-status-input").val("");
+}
+
+export function closeCreateStagePopup() {
+    $("#overlay-create-stage").css("display", "none");
+    $("body").css("overflow", "auto");
+}
+
+export async function createNewStage() {
+    const project = variableGlobal.currentProjectID;
+
+    const stageName = $("#stage-name-input").val().trim();
+    const startDate = $("#stage-start-date-input").val();
+    const endDate = $("#stage-end-date-input").val();
+    const status = $("#stage-status-input").val();
+
+    const payload = {
+        project: project,
+        name: stageName,
+        start_date: startDate,
+        end_date: endDate,
+        status: status
+    };
+
+    try {
+        const response = await api.createRecord(COLLECTION_STAGES, payload);
+
+        utils.showSuccess(messageCommon.success.createSuccess);
+
+        variableGlobal.stageListByProject.push(response);
+
+        ui.renderStages(variableGlobal.stageListByProject);
+
+    } catch (error) {
+        utils.showError(messageCommon.error.createError);
     }
 }

@@ -27,3 +27,10 @@ export function showError(message) {
         title: message
     });
 }
+
+export function showWarning(message) {
+    Toast.fire({
+        icon: "error",
+        title: message
+    });
+}

@@ -8,18 +8,11 @@
 // ==================================================
 
 import * as utils from "../utils/utils.js";
+import { variableGlobal } from "./project.state.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
+const COLLECTION_USERS = "users";
 
-const variableGlobal = {
-    projectList: [],
-    currentProjectID: null,
-    stageListByProject: [],
-    currentStageID: null,
-    taskListByStage: [],
-    currentTaskID: null,
-    userMap: {}
-}
 
 export function changeIconAvatar() {
 
@@ -76,6 +69,7 @@ export function renderProjectOptionList() {
 export function renderStages(stageListByProject) {
 
     const workflow = document.getElementById("timeline-container");
+    if (!workflow) return;
     workflow.innerHTML = "";
 
     stageListByProject.forEach((stage, index) => {
@@ -140,14 +134,12 @@ export function renderStages(stageListByProject) {
     <div class="d-flex gap-1 d-none stage-actions">
         <button
             class="btn btn-sm btn-outline-primary btn-edit-stage"
-            data-id="${stage.id}"
             title="Edit stage">
             <i class="bi bi-pencil"></i>
         </button>
 
         <button
             class="btn btn-sm btn-outline-danger btn-delete-stage"
-            data-id="${stage.id}"
             title="Delete stage">
             <i class="bi bi-trash"></i>
         </button>
@@ -202,41 +194,29 @@ export function renderStages(stageListByProject) {
 }
 
 export function changeProjectStatusUI(status) {
-    const el = document.getElementById("project-status");
     const map = {
-        Done: {
-            text: "Done",
-            class: "bg-success"
-        },
-        Processing: {
-            text: "Processing",
-            class: "bg-warning text-dark"
-        },
-        Pending: {
-            text: "Pending",
-            class: "bg-secondary"
-        }
+        Done: ["Done", "bg-success"],
+        Processing: ["Processing", "bg-warning text-dark"],
+        Pending: ["Pending", "bg-secondary"]
     };
 
-    const s = map[status] || map.pending;
+    const [text, className] = map[status] || map.Pending;
 
-    el.innerHTML = `
-        <span class="badge ${s.class}">
-            ${s.text}
-        </span>
-    `;
+    $("#project-status").html(
+        `<span class="badge ${className}">${text}</span>`
+    );
 }
 
 export function renderTasks(taskListByStage) {
 
-    const tbody = document.getElementById("taskBody");
+    const $tbody = $("#taskBody");
 
     if (!Array.isArray(taskListByStage)) {
         console.error("taskListByStage not array");
         return;
     }
 
-    tbody.innerHTML = taskListByStage.map(task => {
+    const html = taskListByStage.map(task => {
 
         const handlers = task.handler || [];
 
@@ -272,79 +252,112 @@ export function renderTasks(taskListByStage) {
             <td class="task-percent">${task.percent}</td>
             <td class="task-start">${utils.formatDate(task.start_date)}</td>
             <td class="task-end">${utils.formatDate(task.end_date)}</td>
-           <td class="task-action-button">
-    <div class="d-flex gap-1">
 
-        <button
-           class="btn btn-sm btn-outline-primary btn-edit-task"
-           data-id="${task.id}"
-           title="Edit Task">
-           <i class="bi bi-pencil"></i>
-        </button>
+            <td class="task-action-button">
+                <div class="d-flex gap-1">
 
-        <button
-            class="btn btn-sm btn-outline-info btn-view-more-task"
-            data-id="${task.id}"
-            title="View More">
-            <i class="bi bi-eye"></i>
-        </button>
+                    <button
+                        class="btn btn-sm btn-outline-primary btn-edit-task"
+                        data-id="${task.id}"
+                        title="Edit Task">
+                        <i class="bi bi-pencil"></i>
+                    </button>
 
-        <button
-            class="btn btn-sm btn-outline-success btn-save-task"
-            data-id="${task.id}"
-            title="Save">
-            <i class="bi bi-floppy"></i>
-        </button>
+                    <button
+                        class="btn btn-sm btn-outline-info btn-view-more-task"
+                        data-id="${task.id}"
+                        title="View More">
+                        <i class="bi bi-eye"></i>
+                    </button>
 
-        <button
-            class="btn btn-sm btn-outline-danger btn-delete-task"
-            data-id="${task.id}"
-            title="Delete Task">
-            <i class="bi bi-trash"></i>
-        </button>
+                    <button
+                        class="btn btn-sm btn-outline-success btn-save-task"
+                        data-id="${task.id}"
+                        title="Save">
+                        <i class="bi bi-floppy"></i>
+                    </button>
 
-    </div>
-</td>
+                    <button
+                        class="btn btn-sm btn-outline-danger btn-delete-task"
+                        data-id="${task.id}"
+                        title="Delete Task">
+                        <i class="bi bi-trash"></i>
+                    </button>
+
+                </div>
+            </td>
         </tr>
         `;
     }).join('');
+
+    $tbody.html(html);
 }
 
-export function renderMembersSelect(type) {  // type: "pic", "members", "handler"
-    const select = document.getElementById(type);
-    if (!select) return;
+export function getStatusBadge(status) {
+
+    switch (status) {
+
+        case "Done":
+            return `<span class="badge bg-success badge-status">${status}</span>`;
+
+        case "Processing":
+            return `<span class="badge bg-warning badge-status">${status}</span>`;
+
+        case "Problem":
+            return `<span class="badge bg-danger badge-status">${status}</span>`;
+
+        default:
+            return `<span class="badge bg-secondary badge-status">${status}</span>`;
+    }
+}
+
+function renderMembersSelect(type) {  // type: "pic", "members", "handler"
+
+    const $select = $(`#${type}`);
+    if (!$select.length) return;
 
     // Xoá option cũ
-    select.innerHTML = "";
+    $select.empty();
 
-    // Thêm option từ users.items
+    // Thêm option từ userMap
     Object.values(variableGlobal.userMap).forEach(user => {
-        const option = document.createElement("option");
-        option.value = user.id;
-        option.textContent = user.employee_id;
-        select.appendChild(option);
+        const $option = $("<option>", {
+            value: user.id,
+            text: user.employee_id
+        });
+
+        $select.append($option);
     });
 
-    // Nếu chưa có instance TomSelect cho select này thì tạo mới
-    if (!window.tomSelectInstances[type]) {
-        window.tomSelectInstances[type] = new TomSelect(`#${type}`, {
+    // Nếu chưa có instance TomSelect thì tạo mới
+    // ! Error
+    if (!variableGlobal.tomSelectInstances[type]) {
+
+        variableGlobal.tomSelectInstances[type] = new TomSelect(`#${type}`, {
             plugins: ['remove_button'],
             hideSelected: true,
             create: false,
-            placeholder: type === "pic" ? "Select PIC" :
-                type === "members" ? "Select Members" :
-                    "Select Handler",
+            placeholder:
+                type === "pic" ? "Select PIC" :
+                    type === "members" ? "Select Members" :
+                        "Select Handler",
         });
+
     } else {
+
         // Nếu đã có instance thì refresh options
-        window.tomSelectInstances[type].clearOptions();
+        const instance = variableGlobal.tomSelectInstances[type];
+
+        instance.clearOptions();
+
         Object.values(variableGlobal.userMap).forEach(user => {
-            window.tomSelectInstances[type].addOption({
+            instance.addOption({
                 value: user.id,
                 text: user.employee_id
             });
         });
-        window.tomSelectInstances[type].refreshOptions(false);
+
+        instance.refreshOptions(false);
     }
 }
 
@@ -394,7 +407,7 @@ export function enableStageEditMode(stageId) {
     `;
 }
 
-export function enableTaskEditMode(tr, taskId) {
+function enableTaskEditMode(tr, taskId) {
 
     const task = variableGlobal.taskListByStage.find(t => t.id === taskId);
     if (!task) return;
@@ -451,15 +464,15 @@ export function enableTaskEditMode(tr, taskId) {
         });
 
         // init TomSelect
-        if (!window.tomSelectInstances) {
-            window.tomSelectInstances = {};
+        if (!variableGlobal.tomSelectInstances) {
+            variableGlobal.tomSelectInstances = {};
         }
 
-        if (window.tomSelectInstances[task.id]) {
-            window.tomSelectInstances[task.id].destroy();
+        if (variableGlobal.tomSelectInstances[task.id]) {
+            variableGlobal.tomSelectInstances[task.id].destroy();
         }
 
-        window.tomSelectInstances[task.id] = new TomSelect(select, {
+        variableGlobal.tomSelectInstances[task.id] = new TomSelect(select, {
             plugins: ['remove_button'],
             hideSelected: true,
             placeholder: "Select Handler"
@@ -467,11 +480,11 @@ export function enableTaskEditMode(tr, taskId) {
     }, 0);
 }
 
-export function disableTaskEditMode(tr, taskId) {
+export function disableTaskEditMode(tr, taskID) {
 
-    if (window.tomSelectInstances?.[taskId]) {
-        window.tomSelectInstances[taskId].destroy();
-        delete window.tomSelectInstances[taskId];
+    if (variableGlobal.tomSelectInstances?.[taskID]) {
+        variableGlobal.tomSelectInstances[taskID].destroy();
+        delete variableGlobal.tomSelectInstances[taskID];
     }
 
     const task = variableGlobal.taskListByStage.find(t => t.id === taskId);
@@ -522,5 +535,26 @@ export function disableTaskEditMode(tr, taskId) {
 
     // remove edit mode class (nếu có)
     tr.classList.remove("editing");
+}
+
+export function openCreateProjectPopup() {
+    document.getElementById("overlay-create-project").style.display = "flex";
+    document.body.style.overflow = "hidden";
+    renderMembersSelect("pic");
+    renderMembersSelect("members");
+}
+
+
+function resetCreateProjectForm() {
+    $("#project-name, #start-date, #end-date").val("");
+    $("#pic, #members").empty();
+    variableGlobal.tomSelectInstances?.pic?.clear(true);
+    variableGlobal.tomSelectInstances?.members?.clear(true);
+}
+
+export function closeCreateProjectPopup() {
+    document.getElementById("overlay-create-project").style.display = "none";
+    document.body.style.overflow = "auto";
+    resetCreateProjectForm();
 }
 
