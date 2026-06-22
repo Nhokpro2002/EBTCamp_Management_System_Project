@@ -39,10 +39,43 @@ body {
 
 .project-switcher {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 16px;
     margin-bottom: 20px;
-    width: fit-content;
+    width: 100%;
+}
+
+
+/* Hàng chọn project */
+.project-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+}
+
+
+/* Select project */
+#projectSelect {
+    width: 400px;
+}
+
+
+/* Hàng button */
+.project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+
+.project-divider {
+    margin: 0 0 1rem 0;
+    width: 100%;
 }
 
 .project-selector {

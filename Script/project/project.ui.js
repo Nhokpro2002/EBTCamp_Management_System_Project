@@ -160,7 +160,7 @@ export function renderStages(stageListByProject) {
                 </div>
 
                 <div class="fw-bold fs-5 text-dark">
-                    ${utils.formatDate(stage.start_date)}
+                    ${utils.formatDateDisplay(stage.start_date)}
                 </div>
             </div>
 
@@ -170,7 +170,7 @@ export function renderStages(stageListByProject) {
                 </div>
 
                 <div class="fw-bold fs-5 text-dark">
-                    ${utils.formatDate(stage.end_date)}
+                    ${utils.formatDateDisplay(stage.end_date)}
                 </div>
             </div>
 
@@ -250,8 +250,8 @@ export function renderTasks(taskListByStage) {
             <td class="task-handler">${avatarsHtml}</td>
             <td class="task-status">${getStatusBadge(task.status)}</td>
             <td class="task-percent">${task.percent}</td>
-            <td class="task-start">${utils.formatDate(task.start_date)}</td>
-            <td class="task-end">${utils.formatDate(task.end_date)}</td>
+            <td class="task-start">${utils.formatDateDisplay(task.start_date)}</td>
+            <td class="task-end">${utils.formatDateDisplay(task.end_date)}</td>
 
             <td class="task-action-button">
                 <div class="d-flex gap-1">
@@ -273,7 +273,8 @@ export function renderTasks(taskListByStage) {
                     <button
                         class="btn btn-sm btn-outline-success btn-save-task"
                         data-id="${task.id}"
-                        title="Save">
+                        title="Save"
+                        disabled>
                         <i class="bi bi-floppy"></i>
                     </button>
 
@@ -407,7 +408,11 @@ export function enableStageEditMode(stageId) {
     `;
 }
 
-function enableTaskEditMode(tr, taskId) {
+export function enableTaskEditMode(tr, taskId) {
+
+    tr.classList.add("editing");
+
+    tr.querySelector(".btn-save-task").disabled = false;
 
     const task = variableGlobal.taskListByStage.find(t => t.id === taskId);
     if (!task) return;
@@ -434,13 +439,11 @@ function enableTaskEditMode(tr, taskId) {
         <select id="handler-${task.id}" multiple placeholder="Select Handler"></select>
     `;
 
-    // Error
     tr.querySelector(".task-start").innerHTML =
-        `<input type="date" class="form-control form-control-sm" value="${utils.formatDate(task.start_date)}">`;
+        `<input type="date" class="form-control form-control-sm" value="${utils.formatDateInput(task.start_date)}">`;
 
-    // Error
     tr.querySelector(".task-end").innerHTML =
-        `<input type="date" class="form-control form-control-sm" value="${utils.formatDate(task.end_date)}">`;
+        `<input type="date" class="form-control form-control-sm" value="${utils.formatDateInput(task.end_date)}">`;
 
     // init TomSelect sau khi DOM đã render
     setTimeout(() => {
@@ -482,13 +485,18 @@ function enableTaskEditMode(tr, taskId) {
 
 export function disableTaskEditMode(tr, taskID) {
 
+    tr.classList.remove("editing");
+
+    tr.querySelector(".btn-save-task").disabled = true;
+
     if (variableGlobal.tomSelectInstances?.[taskID]) {
         variableGlobal.tomSelectInstances[taskID].destroy();
         delete variableGlobal.tomSelectInstances[taskID];
     }
 
-    const task = variableGlobal.taskListByStage.find(t => t.id === taskId);
+    const task = variableGlobal.taskListByStage.find(t => t.id === taskID);
     if (!task) return;
+
 
     // name
     tr.querySelector(".task-name").textContent = task.name;
@@ -528,10 +536,10 @@ export function disableTaskEditMode(tr, taskID) {
     tr.querySelector(".task-percent").textContent = task.percent;
 
     // start date
-    tr.querySelector(".task-start").textContent = utils.formatDate(task.start_date);
+    tr.querySelector(".task-start").textContent = utils.formatDateDisplay(task.start_date);
 
     // end date
-    tr.querySelector(".task-end").textContent = utils.formatDate(task.end_date);
+    tr.querySelector(".task-end").textContent = utils.formatDateDisplay(task.end_date);
 
     // remove edit mode class (nếu có)
     tr.classList.remove("editing");

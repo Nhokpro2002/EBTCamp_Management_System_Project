@@ -48,19 +48,19 @@ export async function handleSubmitFormCreateProject() {
 
 }
 
+// * Function này đang làm hơi nhiều việc, cần cải thiện
+
 export async function loadProjectData(projectID) {
     const project = variableGlobal.projectList.find(p => p.id == projectID);
     if (!project) return;
-
     variableGlobal.currentProjectID = projectID;
-
     $("#projectSelect").value = projectID;
-
     ui.changeProjectStatusUI(project.status);
-
     variableGlobal.stageListByProject = await api.getRecordsFilter(COLLECTION_STAGES, "project", projectID);
-
     ui.renderStages(variableGlobal.stageListByProject);
+    variableGlobal.currentStageID = null;
+    variableGlobal.taskListByStage = [];
+    ui.renderTasks([]);
 }
 
 export function validateProjectForm(data) {
@@ -260,6 +260,7 @@ export async function handleStageClick(e) {
 
     const $card = $(e.currentTarget);
     const stageID = $card.data("id");
+    variableGlobal.currentStageID = stageID;
 
     setActiveStage($card);
 
@@ -319,14 +320,45 @@ export function handleCancelEditStage() {
 */
 
 export function handleTaskActions(e) {
-    const saveBtn = e.target.closest(".btn-save-task");
+    const saveBtn = e.target.closest(".btn-save-task"); // save button after edit
     if (saveBtn) return handleSaveTask(e, saveBtn);
 
     const editBtn = e.target.closest(".btn-edit-task");
     if (editBtn) return handleEditTask(e, editBtn);
+
+    const deleteBtn = e.target.closest(".btn-delete-task");
+    if (deleteBtn) return handleDeleteTask(e, deleteBtn);
+
+    // * Làm tính năng viewmore sau
+    //const viewMoreBtn = e.target.closest(".btn-edit-task");
+    //if (editBtn) return handleEditTask(e, editBtn);
 }
 
-export async function handleSaveTask(e, saveButton) {
+async function handleDeleteTask(e, editButton) {
+    //const tr = editButton.closest("tr");
+    const taskID = editButton.dataset.id;
+
+    try {
+        const response = await api.deleteRecord(COLLECTION_TASKS, taskID);
+
+        if (response) {
+
+            variableGlobal.taskListByStage =
+                variableGlobal.taskListByStage.filter(
+                    task => task.id !== taskID
+                );
+
+            utils.showSuccess(messageCommon.success.deleteSuccess);
+
+            ui.renderTasks(variableGlobal.taskListByStage);
+
+        }
+    } catch (error) {
+        utils.showError(messageCommon.error.deleteError);
+    }
+}
+
+async function handleSaveTask(e, saveButton) {
     const tr = saveButton.closest("tr");
     const taskID = saveButton.dataset.id;
 
@@ -348,15 +380,16 @@ export async function handleSaveTask(e, saveButton) {
 
     try {
         const response = await api.updateRecord(COLLECTION_TASKS, taskID, updatedTaskData);
+        variableGlobal.taskListByStage = variableGlobal.taskListByStage.map(task =>
+            task.id === response.id ? response : task
+        );
+
+        ui.renderTasks(variableGlobal.taskListByStage);
     } catch (error) {
         utils.showError(messageCommon.error.updateError);
     }
 
-    variableGlobal.taskListByStage = variableGlobal.taskListByStage.map(task =>
-        task.id === response.id ? response : task
-    );
 
-    ui.renderTasks(variableGlobal.taskListByStage);
 
 }
 
@@ -379,7 +412,7 @@ export function handleAddNewTask() {
 
             <td>
                 <select class="form-select form-select-sm new-task-status">
-                    <option value="Todo">Todo</option>
+                    <option value="Pending">Pending</option>
                     <option value="Processing">Processing</option>
                     <option value="Done">Done</option>
                 </select>
@@ -445,6 +478,17 @@ export function handleAddNewTask() {
     }, 0);
 }
 
+/*
+* button này click vào sẽ hủy cái row nhập input mà người dùng vừa tạo
+ */
+export function cancelCreateNewTask(e) {
+
+}
+
+/*
+* Cái này là button "✓" khi người dùng click button "Create Task" thì nó tạo ra một row có các field input để người dùng nhập
+* ấn cái này thì sẽ lưu data vào db 
+ */
 export async function handleCreateTask(e) {
 
     const $row = $(e.currentTarget).closest("tr");
@@ -491,7 +535,10 @@ export async function handleCreateTask(e) {
     }
 }
 
-export function handleEditTask(e, editButton) {
+function handleEditTask(e, editButton) {
+
+    const $row = $(e.currentTarget).closest("tr");
+    $row.find(".btn-save-task").prop("disabled", false);
     const tr = editButton.closest("tr");
     const taskId = editButton.dataset.id;
 

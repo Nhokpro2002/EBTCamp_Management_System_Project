@@ -119,7 +119,8 @@ $("#add-stage-button").on("click", handleEvent.openCreateStagePopup);
 
 $("#submit-create-stage-form").on("click", handleEvent.createNewStage);
 
-$("#taskBody").on("click", handleEvent.handleTaskActions);
+$("#taskBody").on("click", handleEvent.handleTaskActions)
+    .on("click", ".btn-create-task", handleEvent.handleCreateTask);
 
 $("#button-submit-create-project").on("click", handleEvent.handleSubmitFormCreateProject);
 
@@ -133,13 +134,204 @@ $("#timeline-container")
 
 $("#timeline-container").on("click", ".stage-card", handleEvent.handleStageClick);
 
-$(".btn-create-task").on("click", handleEvent.handleCreateTask);
-
-$("#button-add-task").on("click", handleEvent.handleAddNewTask);
+$("#button-add-task").on("click", handleEvent.handleAddNewTask); // * nhấn vào button "Create Task" bên phải cái task body
 
 $('.menu-link').on('click', function () {
     $('.menu-link').removeClass('active');
     $(this).addClass('active');
+});
+
+
+//const projectItemsData = []; // * cái này sẽ lấy api từ bảng project_items, lấy ra những record có project là projectID đang được chọn
+// * show project items table
+$("#view-items-button").on("click", function () {
+    $("#project-items").addClass("show");
+    /*$('#my_table').DataTable({
+        data: projectItemsData,
+        scrollY: true,
+        scrollX: true,
+        paging: true,
+        sort: true,
+        select: true,
+        scrollCollapse: true,
+        columnDefs: [
+            { targets: 0, width: "200px" }, // name
+            { targets: 1, width: "200px" }, // model
+            { targets: 2, width: "200px" }, // code (XCode/QCode)
+            { targets: 3, width: "200px" }, // required_quantity
+            { targets: 4, width: "200px" }, // stock_quantity
+            { targets: 5, width: "200px" } // purchase_quantity
+        ],
+
+        columns: [
+            {
+                title: "Name", data: "name", render: function (data) {
+                    return `<div class="name-cell" title="${data}">${data}</div>`;
+                }
+            },
+            {
+                title: "Model", data: "model", render: function (data) {
+                    return `<div class="model-cell" title="${data}">${data} </div>`;
+                }
+            },
+            {
+                title: "XCode/QCode", data: "code"
+            },
+            { title: "Required", data: "required_quantity" },
+            { title: "Stock", data: "stock_quantity" },
+            { title: "Purchase", data: "purchase_quantity" }
+        ]
+    });*/
+});
+
+// INIT GANTT
+// =========================
+gantt.init("gantt_here");
+
+// =========================
+// CONFIG
+// =========================
+gantt.config.date_format = "%Y-%m-%d";
+
+gantt.config.columns = [
+    { name: "text", label: "Name", tree: true, width: 250 },
+    { name: "start_date", label: "Start", align: "center" },
+    { name: "end_date", label: "End", align: "center" },
+    { name: "duration", label: "Duration", align: "center" },
+    { name: "progress", label: "Progress", align: "center" }
+];
+
+gantt.config.drag_move = true;
+gantt.config.drag_resize = true;
+gantt.config.drag_progress = true;
+
+gantt.config.open_tree_initially = true;
+
+// =========================
+// STYLE (PROJECT / STAGE / TASK)
+// =========================
+gantt.templates.task_class = function (start, end, task) {
+
+    if (task.type === "project") return "task-project";
+    if (task.type === "stage") return "task-stage";
+    if (task.type === "task") return "task-task";
+
+    if (task.status === "Done") return "task-done";
+    if (task.status === "Processing") return "task-processing";
+
+    return "";
+};
+
+// =========================
+// DATA STRUCTURE
+// =========================
+
+const links = [
+    {
+        id: 1,
+        source: 4, // * id của task
+        target: 5, // * id của task
+        type: "0"
+    },
+    {
+        id: 2,
+        source: 5, // * id của task
+        target: 6, // * id của task
+        type: "0"
+    }
+];
+
+const data = [
+    // PROJECT (ROOT)
+    {
+        id: 1,
+        text: "Project Website",
+        type: "project",
+        open: true
+    },
+
+    // STAGES
+    {
+        id: 2,
+        text: "Design Phase",
+        parent: 1,
+        type: "stage",
+        start_date: "2026-06-01",
+        end_date: "2026-07-01",
+        duration: 30,
+        progress: 0.3,
+        status: "Processing"
+    },
+
+    {
+        id: 3,
+        text: "Development Phase",
+        parent: 1,
+        type: "stage",
+        start_date: "2026-06-06",
+        end_date: "2026-06-10",
+        duration: 4,
+        progress: 0.1,
+        status: "Processing"
+    },
+
+    // TASKS (LEVEL 3)
+    {
+        id: 4,
+        text: "UI Mockup",
+        parent: 2,
+        type: "task",
+        start_date: "2026-06-01",
+        end_date: "2026-06-11",
+        duration: 10,
+        progress: 1,
+        status: "Done"
+    },
+
+    {
+        id: 5,
+        text: "Logo Design",
+        parent: 2,
+        type: "task",
+        start_date: "2026-06-02",
+        end_date: "2026-06-04",
+        duration: 2,
+        progress: 0.5,
+        status: "Processing"
+    },
+
+    {
+        id: 6,
+        text: "Frontend Setup",
+        parent: 3,
+        type: "task",
+        start_date: "2026-06-06",
+        end_date: "2026-06-20",
+        duration: 14,
+        progress: 0.2,
+        status: "Processing"
+    }
+];
+
+// =========================
+// LOAD DATA
+// =========================
+gantt.parse({ data: data, links: links });
+
+// =========================
+// EVENTS
+// =========================
+gantt.attachEvent("onAfterTaskUpdate", function (id, task) {
+    console.log("UPDATED:", task);
+});
+
+gantt.attachEvent("onAfterTaskDrag", function (id) {
+    console.log("DRAGGED:", gantt.getTask(id));
+});
+
+// * disable project items table
+$("#back-project-items").on("click", function () {
+    $("#project-items").removeClass("show");
 });
 
 /*
