@@ -6,6 +6,7 @@ export const variableGlobal = {
     taskListByStage: [],
     currentTaskID: null,
     userMap: {},
+    projectItemList: [],
 
     tomSelectInstances: {}
 };

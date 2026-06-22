@@ -244,7 +244,7 @@ const links = [
 const data = [
     // PROJECT (ROOT)
     {
-        id: 1,
+        id: 1, // id của project
         text: "Project Website",
         type: "project",
         open: true
@@ -252,9 +252,9 @@ const data = [
 
     // STAGES
     {
-        id: 2,
+        id: 2, // id của stage
         text: "Design Phase",
-        parent: 1,
+        parent: 1, // id của project chứa nó
         type: "stage",
         start_date: "2026-06-01",
         end_date: "2026-07-01",
@@ -264,9 +264,9 @@ const data = [
     },
 
     {
-        id: 3,
+        id: 3, // id của stage
         text: "Development Phase",
-        parent: 1,
+        parent: 1, // id của project chứa nó
         type: "stage",
         start_date: "2026-06-06",
         end_date: "2026-06-10",
@@ -277,9 +277,9 @@ const data = [
 
     // TASKS (LEVEL 3)
     {
-        id: 4,
+        id: 4, // id của task
         text: "UI Mockup",
-        parent: 2,
+        parent: 2, // id của stage chứa nó
         type: "task",
         start_date: "2026-06-01",
         end_date: "2026-06-11",
@@ -289,9 +289,9 @@ const data = [
     },
 
     {
-        id: 5,
+        id: 5, // id của task
         text: "Logo Design",
-        parent: 2,
+        parent: 2, // id của stage chứa nó
         type: "task",
         start_date: "2026-06-02",
         end_date: "2026-06-04",
@@ -301,9 +301,9 @@ const data = [
     },
 
     {
-        id: 6,
+        id: 6, // id của task
         text: "Frontend Setup",
-        parent: 3,
+        parent: 3, // id của stage chứa nó
         type: "task",
         start_date: "2026-06-06",
         end_date: "2026-06-20",
@@ -332,6 +332,16 @@ gantt.attachEvent("onAfterTaskDrag", function (id) {
 // * disable project items table
 $("#back-project-items").on("click", function () {
     $("#project-items").removeClass("show");
+});
+
+$("#btn-add-item").on("click", ui.renderProjectItemList);
+
+$("#itemBody").on("click", ".btn-delete-item", function () {
+    const index = $(this).data("index");
+
+    variableGlobal.projectItemList.splice(index, 1);
+
+    ui.renderProjectItemList();
 });
 
 /*

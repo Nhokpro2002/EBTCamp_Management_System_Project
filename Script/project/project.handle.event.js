@@ -14,6 +14,7 @@ const COLLECTION_USERS = "Users";
                   PROJECT
 ===========================================
 */
+// ! ID có thể sẽ trùng khi code scale
 export function getCreateProjectFormData() {
     const projectName = document.getElementById("project-name").value.trim();
     const startDate = document.getElementById("start-date").value;
@@ -49,7 +50,6 @@ export async function handleSubmitFormCreateProject() {
 }
 
 // * Function này đang làm hơi nhiều việc, cần cải thiện
-
 export async function loadProjectData(projectID) {
     const project = variableGlobal.projectList.find(p => p.id == projectID);
     if (!project) return;
@@ -63,6 +63,7 @@ export async function loadProjectData(projectID) {
     ui.renderTasks([]);
 }
 
+// * Done
 export function validateProjectForm(data) {
     const { projectName, startDate, endDate, pic, members } = data;
     const isValid =
@@ -83,6 +84,7 @@ export function validateProjectForm(data) {
     return true;
 }
 
+// * Done
 export function buildProjectPayload(data) {
     return {
         name: data.projectName,
@@ -182,16 +184,17 @@ export function clearProjectUI() {
 // ==================================================
 // Edit stage
 // ==================================================
+// * Done
 export function handleEditStage(e) {
     const card = e.currentTarget.closest(".stage-card");
     const selectedStageID = card.dataset.id;
-
     ui.enableStageEditMode(selectedStageID);
 }
 
 // ==================================================
 // Delete stage
 // ==================================================
+// * Done
 export async function handleDeleteStage(e) {
 
     const card = e.currentTarget.closest(".stage-card");
@@ -227,6 +230,7 @@ export async function handleDeleteStage(e) {
 // ==================================================
 // Save stage
 // ==================================================
+// * Done
 export async function handleSaveStage($card, stageID) {
 
     const updatedStageData = {
@@ -256,20 +260,19 @@ export async function handleSaveStage($card, stageID) {
 // ==================================================
 // Handle stage click
 // ==================================================
+// * Done
 export async function handleStageClick(e) {
-
     const $card = $(e.currentTarget);
     const stageID = $card.data("id");
     variableGlobal.currentStageID = stageID;
-
     setActiveStage($card);
-
     await loadTasksByStage(stageID);
 }
 
 // ==================================================
 // Set active stage
 // ==================================================
+// * Done
 export function setActiveStage($card) {
 
     $(".stage-card")
@@ -289,6 +292,7 @@ export function setActiveStage($card) {
 // ==================================================
 // Load tasks by stage
 // ==================================================
+// * Done
 export async function loadTasksByStage(stageID) {
     try {
         variableGlobal.taskListByStage =
@@ -308,6 +312,7 @@ export async function loadTasksByStage(stageID) {
 // ==================================================
 // Return stage
 // ==================================================
+// * Done
 export function handleCancelEditStage() {
     ui.renderStages(variableGlobal.stageListByProject);
 }
@@ -319,6 +324,7 @@ export function handleCancelEditStage() {
 ===========================================
 */
 
+// * Còn tính năng view more, xem chi tiết task
 export function handleTaskActions(e) {
     const saveBtn = e.target.closest(".btn-save-task"); // save button after edit
     if (saveBtn) return handleSaveTask(e, saveBtn);
@@ -334,6 +340,7 @@ export function handleTaskActions(e) {
     //if (editBtn) return handleEditTask(e, editBtn);
 }
 
+// * Đã hoàn thiện, cái này đôi lúc đang bị reset nhưng về cơ bản đã hoàn thiện tính năng
 async function handleDeleteTask(e, editButton) {
     //const tr = editButton.closest("tr");
     const taskID = editButton.dataset.id;
@@ -358,6 +365,7 @@ async function handleDeleteTask(e, editButton) {
     }
 }
 
+// * Đã hoàn thiện
 async function handleSaveTask(e, saveButton) {
     const tr = saveButton.closest("tr");
     const taskID = saveButton.dataset.id;
@@ -389,10 +397,9 @@ async function handleSaveTask(e, saveButton) {
         utils.showError(messageCommon.error.updateError);
     }
 
-
-
 }
 
+// * Đã hoàn thiện
 export function handleAddNewTask() {
 
     const $tbody = $("#taskBody");
@@ -535,6 +542,7 @@ export async function handleCreateTask(e) {
     }
 }
 
+// * Đã hoàn thiện
 function handleEditTask(e, editButton) {
 
     const $row = $(e.currentTarget).closest("tr");
@@ -553,6 +561,7 @@ function handleEditTask(e, editButton) {
     }
 }
 
+// * Đã hoàn thiện
 export function openCreateStagePopup() {
     $("#overlay-create-stage").css("display", "flex");
     $("body").css("overflow", "hidden");
@@ -567,11 +576,13 @@ export function openCreateStagePopup() {
     $("#stage-status-input").val("");
 }
 
+// * Đã hoàn thiện
 export function closeCreateStagePopup() {
     $("#overlay-create-stage").css("display", "none");
     $("body").css("overflow", "auto");
 }
 
+// * Đã hoàn thiện
 export async function createNewStage() {
     const project = variableGlobal.currentProjectID;
 

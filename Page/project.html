@@ -78,6 +78,24 @@
         .task-processing .gantt_task_content {
             opacity: 0.9;
         }
+
+        .inventory-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .inventory-modal.show {
+            display: block;
+        }
+
+        .inventory-box {
+            background: white;
+            width: 80%;
+            margin: 50px auto;
+            padding: 20px;
+        }
     </style>
 </head>
 
@@ -389,8 +407,38 @@
             <div class="p-3" id="project-items-table" style="height:700px;">
                 <h3>Project Items</h3>
 
-                <!-- items render ở đây -->
 
+                <button id="btn-add-item" class="btn btn-success mb-2">
+                    Add Item
+                </button>
+                <button id="btn-save-project-item" class="btn btn-info mb-2">
+                    Add Item
+                </button>
+                <!-- items render ở đây -->
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Name</th>
+                            <th>XCode/QCode</th>
+                            <th>Required</th>
+                            <th>Stock</th>
+                            <th>Purchase</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="itemBody"></tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div id="inventoryModal" class="inventory-modal">
+            <div class="inventory-box">
+                <button id="closeInventory">X</button>
+
+                <table id="inventoryTable" class="table table-striped"></table>
             </div>
         </div>
     </div>

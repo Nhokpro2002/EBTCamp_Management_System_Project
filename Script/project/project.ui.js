@@ -290,23 +290,17 @@ export function renderTasks(taskListByStage) {
         </tr>
         `;
     }).join('');
-
     $tbody.html(html);
 }
 
 export function getStatusBadge(status) {
-
     switch (status) {
-
         case "Done":
             return `<span class="badge bg-success badge-status">${status}</span>`;
-
         case "Processing":
             return `<span class="badge bg-warning badge-status">${status}</span>`;
-
         case "Problem":
             return `<span class="badge bg-danger badge-status">${status}</span>`;
-
         default:
             return `<span class="badge bg-secondary badge-status">${status}</span>`;
     }
@@ -564,5 +558,66 @@ export function closeCreateProjectPopup() {
     document.getElementById("overlay-create-project").style.display = "none";
     document.body.style.overflow = "auto";
     resetCreateProjectForm();
+}
+
+export function renderProjectItemList() {
+    const $tbody = $("#itemBody");
+    variableGlobal.projectItemList.push({
+        model: "",
+        name: "",
+        code: "",
+        required: 0,
+        stock: 0,
+        purchase: 0
+    });
+
+    const html = variableGlobal.projectItemList.map((item, index) => `
+        <tr data-index="${index}">
+
+            <td>
+                <input class="form-control form-control-sm item-model"
+                       value="${item.model || ''}"
+                       readonly
+                       data-index="${index}">
+            </td>
+
+            <td>
+                <input class="form-control form-control-sm item-name"
+                       value="${item.name || ''}"
+                       readonly>
+            </td>
+
+            <td>
+                <input class="form-control form-control-sm item-code"
+                       value="${item.code || ''}"
+                       readonly>
+            </td>
+
+            <td>
+                <input type="number" class="form-control form-control-sm item-required"
+                       value="${item.required || 0}">
+            </td>
+
+            <td>
+                <input type="number" class="form-control form-control-sm item-stock"
+                       value="${item.stock || 0}">
+            </td>
+
+            <td>
+                <input type="number" class="form-control form-control-sm item-purchase"
+                       value="${item.purchase || 0}">
+            </td>
+
+            <td>
+                <button class="btn btn-sm btn-danger btn-delete-item"
+                        data-index="${index}">
+                    Delete
+                </button>
+            </td>
+
+        </tr>
+    `).join('');
+
+    $tbody.html(html);
 }
 
