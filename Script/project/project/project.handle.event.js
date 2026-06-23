@@ -147,3 +147,6 @@ export function handleMoreProject(projectID) {
     alert("More actions for: " + project.name);
 }
 
+// git fetch origin
+// git checkout -b feature/management/project origin/feature/management/project
+
