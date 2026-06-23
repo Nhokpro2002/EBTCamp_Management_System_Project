@@ -117,21 +117,26 @@ export function buildProjectPayload(data) {
     };
 }
 
-function handleEditTask(e, editButton) {
+export async function handleDeleteProject(deleteButton) {
+    const projectID = deleteButton.dataset.id;
 
-    const $row = $(e.currentTarget).closest("tr");
-    $row.find(".btn-save-task").prop("disabled", false);
-    const tr = editButton.closest("tr");
-    const taskId = editButton.dataset.id;
+    try {
+        const response = await api.deleteRecord(COLLECTION_PROJECTS, projectID);
 
-    editButton.classList.toggle("active");
+        if (response) {
 
-    const isActive = editButton.classList.contains("active");
+            variableGlobal.projectList =
+                variableGlobal.projectList.filter(
+                    project => project.id !== projectID
+                );
 
-    if (isActive) {
-        ui.enableTaskEditMode(tr, taskId);
-    } else {
-        ui.disableTaskEditMode(tr, taskId);
+            utils.showSuccess(messageCommon.success.deleteSuccess);
+
+            ui.renderProjectPage();
+
+        }
+    } catch (error) {
+        utils.showError(messageCommon.error.deleteError);
     }
 }
 

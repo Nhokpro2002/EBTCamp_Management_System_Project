@@ -142,14 +142,14 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
                             <i class="bi bi-three-dots"></i>
                         </button>
 
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><button class="dropdown-item js-view">View more</button></li>
-                        <li><button class="dropdown-item js-edit">Edit</button></li>
-                        <li><button class="dropdown-item js-save">Save</button></li>
-                        <li><button class="dropdown-item text-danger js-delete">Delete</button></li>
-                    </ul>
-    </div>
-</td>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item js-view">View more</button></li>
+                                <li><button class="dropdown-item js-edit">Edit</button></li>
+                                <li><button class="dropdown-item js-save">Save</button></li>
+                                <li><button class="dropdown-item text-danger js-delete" data-id="${project.id}">Delete</button></li>
+                        </ul>
+                    </div>
+                </td>      
             </tr>
         `).join("");
 

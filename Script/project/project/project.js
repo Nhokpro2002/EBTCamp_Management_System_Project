@@ -92,6 +92,9 @@ $(document).on("click", ".js-page", function () {
     ui.handlePageChange(page);
 });
 
+$(document).on("click", ".js-delete", function () {
+    handlerEvent.handleDeleteProject(this);
+});
 
 $(".btn-create-project").on("click", ui.openCreateProjectPopup);
 
