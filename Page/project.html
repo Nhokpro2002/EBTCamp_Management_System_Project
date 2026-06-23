@@ -4,14 +4,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Project Page</title>
+    <title>Projects Dashboard</title>
 
-    <!-- DataTables-->
-    <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
-    <script src="../Libs/DataTables/datatables.min.js"></script>
+    <!-- Bootstrap 5 -->
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Bootstrap Icons -->
     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Project Page CSS -->
+    <link href="../CSS/project.css" rel="stylesheet">
 
     <!-- JQuery 4.0.0-->
     <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
@@ -20,430 +23,92 @@
     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
     <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="../Libs/Bootstrap/css/bootstrap.min.css">
-    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Tom Select-->
-    <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
-    <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
-
-    <!-- Grantt Timeline-->
-    <link href="../Libs/Grantt/dhtmlxgantt.css" rel="stylesheet">
-    <script src="../Libs/Grantt/dhtmlxgantt.js"></script>
-
-    <!-- Project Css-->
-    <link href="../CSS/project.css" rel="stylesheet">
-
-    <style>
-        #project-items {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100vh;
-            background: white;
-            z-index: 9999;
-            transform: translateX(100%);
-            transition: transform 0.35s ease;
-            overflow-y: auto;
-            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.15);
-        }
-
-        /* mở panel */
-        #project-items.show {
-            transform: translateX(0);
-        }
-
-        .task-project .gantt_task_content {
-            background: #3f51b5;
-            color: white;
-            font-weight: bold;
-        }
-
-        .task-stage .gantt_task_content {
-            background: #ff9800;
-            color: white;
-        }
-
-        .task-task .gantt_task_content {
-            background: #4caf50;
-            color: white;
-        }
-
-        .task-done .gantt_task_content {
-            background: #2e7d32 !important;
-        }
-
-        .task-processing .gantt_task_content {
-            opacity: 0.9;
-        }
-
-        .inventory-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-        }
-
-        .inventory-modal.show {
-            display: block;
-        }
-
-        .inventory-box {
-            background: white;
-            width: 80%;
-            margin: 50px auto;
-            padding: 20px;
-        }
-    </style>
 </head>
 
 <body>
+    <div class="projects-page">
+        <div class="page-card">
+            <!-- Header -->
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                <div>
+                    <h1 class="page-title">Projects</h1>
+                    <p class="page-subtitle">Manage all projects in the system</p>
+                </div>
 
-    <div class="container-fluid">
-        <div class="row">
-
-            <!-- Sidebar -->
-            <div class="col-lg-2 p-4 sidebar sticky-top">
-                <h3 class="fw-bold mb-5">
-                    <i class="bi bi-grid-1x2-fill"></i> EBT Camp
-                </h3>
-
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/dashboard.html" id="dashboard-link">
-                        <i class="bi bi-house-door me-2"></i> Dashboard
-                    </a>
-
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
-                        <i class="bi bi-box-seam me-2"></i> Inventory
-                    </a>
-
-                    <a class=" nav-link" href="#" id="order-link">
-                        <i class="bi bi-cart me-2"></i> Order
-                    </a>
-
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/setting.html" id="setting-link">
-                        <i class="bi bi-gear me-2"></i> Setting
-                    </a>
-
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/project.html" id="project-link">
-                        <i class="bi bi-tools me-2"></i> Project
-                    </a>
-
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/user.html" id="user-link">
-                        <i class="bi bi-people me-2"></i> User
-                        <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
-                    </a>
-                </nav>
+                <button class="btn btn-new-project">
+                    <i class="bi bi-plus-lg me-2"></i>New Project
+                </button>
             </div>
 
-            <!-- Main -->
-            <div class="col-lg-10 p-4">
+            <!-- Stats -->
+            <div class="row g-3 mb-4" id="statsContainer">
+                <!-- JS render -->
+            </div>
 
-                <!-- Topbar -->
-                <div class="topbar d-flex justify-content-between align-items-center mb-2">
-                    <div>
-                        <h3 class="fw-bold mb-0">Orders Page</h3>
-                        <small class="text-muted">Welcome back, User👋</small>
+            <!-- Toolbar -->
+            <div class="row g-3 align-items-center toolbar">
+                <div class="col-lg-6">
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search projects..." />
                     </div>
+                </div>
 
-                    <div class="d-flex align-items-center gap-3">
-                        <button type="button" class="btn btn-light rounded-circle">
-                            <i class="bi bi-bell"></i>
+                <div class="col-lg-6">
+                    <div class="d-flex gap-2 justify-content-lg-end">
+                        <select class="form-select" id="statusFilter" style="max-width: 220px;">
+                            <option value="all">All Status</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="On Hold">On Hold</option>
+                            <option value="Not Started">Not Started</option>
+                        </select>
+
+                        <button class="btn btn-filter" title="Filter">
+                            <i class="bi bi-funnel"></i>
                         </button>
-
-                        <div class="dropdown">
-                            <img src="https://i.pravatar.cc/100" class="avatar dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                style="width:40px;height:40px;border-radius:50%;cursor:pointer" />
-
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" id="logoutLink" href="#">Logout</a>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
-                </div>
-
-                <!-- Content -->
-                <div class="container-fluid" style="padding-left: 0px !important;">
-
-                    <div class="project-switcher">
-
-                        <!-- Hàng 1 -->
-                        <div class="project-header">
-
-                            <select id="projectSelect" class="form-select">
-                            </select>
-
-                            <span id="project-status" class="ms-2"></span>
-
-                        </div>
-
-
-                        <!-- Hàng 2 -->
-                        <div style="width:100%;">
-
-                            <hr class="project-divider">
-
-
-                            <div class="project-actions">
-
-                                <button type="button" id="add-stage-button" class="btn btn-success">
-                                    Add Stage
-                                </button>
-
-                                <button type="button" id="edit-project-button" class="btn btn-outline-primary">
-                                    Edit Project
-                                </button>
-
-                                <button type="button" id="delete-project-button" class="btn btn-outline-danger">
-                                    Delete Project
-                                </button>
-
-                                <button type="button" id="open-create-project-button" class="btn btn-outline-success">
-                                    Add Project
-                                </button>
-
-                                <button type="button" id="view-items-button" class="btn btn-info">
-                                    View Items
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- Vùng giai đoạn của dự án-->
-
-                    <div id="timeline-container">
-
-                        <div class="stage-card">
-
-                            <div class="stage-no">
-                                01
-                            </div>
-
-                            <h5 class="stage-title">
-                                Planning
-                            </h5>
-
-                            <hr style="margin: 0px  !important;">
-
-                            <div class="stage-info">
-                                <div class="label">Start Date</div>
-                                <div class="value">01/05/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">End Date</div>
-                                <div class="value">15/05/2024</div>
-                            </div>
-
-                            <div class="stage-info">
-                                <div class="label">Status</div>
-                                <span class="badge bg-success-subtle text-success">
-                                    Completed
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="timeline-line line-blue"></div>
-
-                    </div>
-
-                    <!-- ======================================= -->
-                    <div class="row g-3" style="padding-top: 20px;">
-                        <div class="container-fluid py-4">
-                            <!-- Task Table -->
-                            <div class="card shadow-sm" style="min-height: 500px;">
-                                <div class="card-header bg-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0">
-                                            Tasks in this Stage
-                                        </h5>
-                                        <button type="button" class="btn btn-success btn-sm" id="button-add-task">
-                                            Create Task
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" style="overflow-x: auto;">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Task Name</th>
-                                                <th id="task-handler">Handler</th>
-                                                <th>Status</th>
-                                                <th>Percent</th>
-                                                <th>Start Date</th>
-                                                <th>End Date</th>
-                                                <th width="120">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="taskBody">
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div id="gantt_here" style="height: 100vh;">
-
-                    </div>
-
                 </div>
             </div>
-        </div>
 
-        <!-- Form create new project-->
-        <div id="overlay-create-project" class="overlay-create-project">
-            <div class="popup-create-project">
-                <h2>Create New Project</h2>
-
-                <div class="form-group-create-project">
-                    <label>Project Name</label>
-                    <input type="text" id="project-name" placeholder="Enter project name" required>
+            <!-- Table -->
+            <div class="table-wrap">
+                <div class="table-scroll">
+                    <table class="table projects-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 180px;">Project Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th style="min-width: 220px;">Progress</th>
+                                <th>Status</th>
+                                <th style="width: 120px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectTableBody">
+                            <!-- JS render -->
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="form-group-create-project">
-                    <label>Start Date</label>
-                    <input type="date" id="start-date" required>
+                <!-- Footer -->
+                <div
+                    class="table-footer d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                    <div class="table-info" id="tableInfo">
+                        Showing 1 to 5 of 12 projects
+                    </div>
+
+                    <nav>
+                        <ul class="pagination pagination-custom" id="pagination">
+                            <!-- JS render -->
+                        </ul>
+                    </nav>
                 </div>
-
-                <div class="form-group-create-project">
-                    <label>End Date</label>
-                    <input type="date" id="end-date" required>
-                </div>
-
-                <div class="form-group-create-project">
-                    <label>PIC</label>
-                    <select id="pic" required></select>
-                </div>
-
-                <div class="form-group-create-project">
-                    <label>Members</label>
-                    <select id="members" multiple required></select>
-                </div>
-
-                <hr>
-
-                <div class="form-actions-create-project">
-                    <button type="button" id="button-submit-create-project" class="btn bg-primary bg-gradient">
-                        <i class="bi bi-check2-circle me-1"></i>
-                        Create Project
-                    </button>
-                    <button type="button" id="closeCreateProject" class="btn bg-secondary bg-gradient">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Form create stage-->
-
-        <div id="overlay-create-stage" class="overlay-create-stage">
-            <div class="popup-create-stage">
-                <h2>Create New Stage</h2>
-
-                <div class="form-group-create-stage">
-                    <label>Project</label>
-                    <input type="text" id="stage-project-name" readonly>
-                    <input type="hidden" id="stage-project-id">
-                </div>
-
-                <div class="form-group-create-stage">
-                    <label>Stage Name</label>
-                    <input type="text" id="stage-name-input" placeholder="Enter stage name" required>
-                </div>
-
-                <div class="form-group-create-project">
-                    <label>Start Date</label>
-                    <input type="date" id="stage-start-date-input" required>
-                </div>
-
-                <div class="form-group-create-project">
-                    <label>End Date</label>
-                    <input type="date" id="stage-end-date-input" required>
-                </div>
-
-                <div class="form-group-create-stage">
-                    <label>Status</label>
-                    <select id="stage-status-input" required>
-                        <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Done">Done</option>
-                    </select>
-                </div>
-
-                <hr>
-
-                <div class="form-actions-create-stage">
-                    <button type="button" id="submit-create-stage-form" class="btn bg-primary bg-gradient">
-                        <i class="bi bi-check2-circle me-1"></i>
-                        Create Stage
-                    </button>
-
-                    <button type="button" id="close-create-stage-form" class="btn bg-secondary bg-gradient">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="project-items">
-            <button id="back-project-items" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i>
-                Back
-            </button>
-
-
-            <div class="p-3" id="project-items-table" style="height:700px;">
-                <h3>Project Items</h3>
-
-
-                <button id="btn-add-item" class="btn btn-success mb-2">
-                    Add Item
-                </button>
-                <button id="btn-save-project-item" class="btn btn-info mb-2">
-                    Save
-                </button>
-                <!-- items render ở đây -->
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Model</th>
-                            <th>Name</th>
-                            <th>XCode/QCode</th>
-                            <th>Required</th>
-                            <th>Stock</th>
-                            <th>Purchase</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="itemBody"></tbody>
-                </table>
-
-            </div>
-        </div>
-
-        <div id="inventoryModal" class="inventory-modal">
-            <div class="inventory-box">
-                <button id="closeInventory">X</button>
-
-                <table id="inventoryTable" class="table table-striped"></table>
             </div>
         </div>
     </div>
-</body>
 
-<script type="module" src="../Script/project/project.js"></script>
+    <script type="module" src="../Script/project/project/project.js"></script>
+</body>
 
 </html>

@@ -1,7 +1,7 @@
-import * as api from "../services/generic.api.js";
+import * as api from "../../services/generic.api.js";
 import * as ui from "./project.ui.js";
 import * as handleEvent from "./project.handle.event.js";
-import { variableGlobal } from "./project.state.js";
+import { variableGlobal } from "../project.state.js";
 
 /* =====================================================
   Variables

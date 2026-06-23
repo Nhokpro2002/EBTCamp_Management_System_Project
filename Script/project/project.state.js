@@ -1,4 +1,4 @@
-export const variableGlobal = {
+export let variableGlobal = {
     projectList: [],
     currentProjectID: null,
     stageListByProject: [],
@@ -7,6 +7,9 @@ export const variableGlobal = {
     currentTaskID: null,
     userMap: {},
     projectItemList: [],
+    filteredProjects: [],
+    pageSize: 5,
+    currentPage: 1,
 
     tomSelectInstances: {}
 };
@@ -26,3 +29,12 @@ export const messageCommon = {
     }
 
 };
+
+export let projectElements = {
+    statsContainer: null,
+    projectTableBody: null,
+    pagination: null,
+    tableInfo: null,
+    searchInput: null,
+    statusFilter: null
+}

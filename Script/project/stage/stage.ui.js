@@ -7,8 +7,8 @@
 // Change user avatar in dropdown
 // ==================================================
 
-import * as utils from "../utils/utils.js";
-import { variableGlobal } from "./project.state.js";
+import * as utils from "../../utils/utils.js";
+import { variableGlobal } from "../project.state.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "users";

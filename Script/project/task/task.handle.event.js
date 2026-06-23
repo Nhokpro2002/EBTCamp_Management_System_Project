@@ -1,8 +1,8 @@
-import * as ui from "./project.ui.js";
-import * as api from "../services/generic.api.js";
-import * as utils from "../utils/utils.js";
-import { variableGlobal } from "./project.state.js";
-import { messageCommon } from "./project.state.js"
+import * as ui from "./task.ui.js";
+import * as api from "../../services/generic.api.js";
+import * as utils from "../../utils/utils.js";
+import { variableGlobal } from "../project.state.js";
+import { messageCommon } from "../project.state.js"
 
 const COLLECTION_PROJECTS = "Projects";
 const COLLECTION_STAGES = "Stages";

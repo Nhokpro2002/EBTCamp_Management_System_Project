@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>Projects Dashboard</title>
+
+     <!-- Bootstrap 5 -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+     <!-- Bootstrap Icons -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+     <style>
+          :root {
+               --page-bg: #f6f7fb;
+               --card-bg: #ffffff;
+               --border-color: #eceef3;
+               --text-main: #1f2937;
+               --text-muted: #8a94a6;
+               --green: #16a34a;
+               --blue: #3b82f6;
+               --orange: #f59e0b;
+               --red: #ef4444;
+               --shadow-sm: 0 6px 20px rgba(15, 23, 42, 0.05);
+          }
+
+          body {
+               background: var(--page-bg);
+               font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+               color: var(--text-main);
+          }
+
+          .projects-page {
+               max-width: 1180px;
+               margin: 28px auto;
+               padding: 0 16px;
+          }
+
+          .page-card {
+               background: var(--card-bg);
+               border: 1px solid var(--border-color);
+               border-radius: 18px;
+               box-shadow: var(--shadow-sm);
+               padding: 22px;
+          }
+
+          /* ===== Header ===== */
+          .page-title {
+               font-size: 24px;
+               font-weight: 700;
+               margin-bottom: 4px;
+          }
+
+          .page-subtitle {
+               font-size: 13px;
+               color: var(--text-muted);
+               margin-bottom: 0;
+          }
+
+          .btn-new-project {
+               background: #15803d;
+               border-color: #15803d;
+               color: #fff;
+               font-weight: 600;
+               border-radius: 10px;
+               padding: 10px 16px;
+               box-shadow: 0 8px 16px rgba(21, 128, 61, 0.2);
+          }
+
+          .btn-new-project:hover {
+               background: #166534;
+               border-color: #166534;
+               color: #fff;
+          }
+
+          /* ===== Stat cards ===== */
+          .stat-card {
+               background: #fff;
+               border: 1px solid var(--border-color);
+               border-radius: 14px;
+               padding: 16px 18px;
+               height: 100%;
+               transition: all 0.2s ease;
+          }
+
+          .stat-card:hover {
+               transform: translateY(-2px);
+               box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+          }
+
+          .stat-top {
+               display: flex;
+               align-items: center;
+               gap: 8px;
+               margin-bottom: 10px;
+               font-size: 13px;
+               color: var(--text-muted);
+               font-weight: 600;
+          }
+
+          .stat-dot {
+               width: 10px;
+               height: 10px;
+               border-radius: 50%;
+               display: inline-block;
+          }
+
+          .dot-blue {
+               background: var(--blue);
+          }
+
+          .dot-green {
+               background: var(--green);
+          }
+
+          .dot-orange {
+               background: var(--orange);
+          }
+
+          .dot-red {
+               background: var(--red);
+          }
+
+          .stat-value {
+               font-size: 32px;
+               line-height: 1;
+               font-weight: 700;
+               color: var(--text-main);
+          }
+
+          /* ===== Toolbar ===== */
+          .toolbar {
+               margin-top: 22px;
+               margin-bottom: 18px;
+          }
+
+          .search-box {
+               position: relative;
+          }
+
+          .search-box .form-control {
+               padding-left: 40px;
+               border-radius: 12px;
+               height: 44px;
+               border: 1px solid var(--border-color);
+               box-shadow: none;
+          }
+
+          .search-box i {
+               position: absolute;
+               top: 50%;
+               left: 14px;
+               transform: translateY(-50%);
+               color: #9aa3b2;
+               font-size: 15px;
+          }
+
+          .toolbar .form-select,
+          .toolbar .btn-filter {
+               height: 44px;
+               border-radius: 12px;
+               border: 1px solid var(--border-color);
+               box-shadow: none;
+          }
+
+          .btn-filter {
+               background: #fff;
+               min-width: 44px;
+          }
+
+          /* ===== Table ===== */
+          .table-wrap {
+               border: 1px solid var(--border-color);
+               border-radius: 16px;
+               overflow: hidden;
+               background: #fff;
+          }
+
+          .projects-table {
+               margin-bottom: 0;
+               vertical-align: middle;
+          }
+
+          .projects-table thead th {
+               background: #fafbfc;
+               color: #7b8797;
+               font-size: 13px;
+               font-weight: 700;
+               border-bottom: 1px solid var(--border-color);
+               padding: 14px 18px;
+               white-space: nowrap;
+          }
+
+          .projects-table tbody td {
+               padding: 18px;
+               border-bottom: 1px solid #f0f2f6;
+               font-size: 14px;
+          }
+
+          .projects-table tbody tr:last-child td {
+               border-bottom: none;
+          }
+
+          .project-name {
+               font-weight: 700;
+               color: #111827;
+          }
+
+          .date-text {
+               color: #4b5563;
+               font-weight: 500;
+          }
+
+          /* ===== Progress ===== */
+          .progress-cell {
+               min-width: 180px;
+          }
+
+          .progress-percent {
+               font-size: 13px;
+               font-weight: 700;
+               color: #4b5563;
+               margin-bottom: 8px;
+          }
+
+          .custom-progress {
+               height: 8px;
+               background: #edf1f7;
+               border-radius: 999px;
+               overflow: hidden;
+          }
+
+          .custom-progress .progress-bar {
+               border-radius: 999px;
+          }
+
+          .progress-blue {
+               background: var(--blue);
+          }
+
+          .progress-green {
+               background: var(--green);
+          }
+
+          .progress-orange {
+               background: var(--orange);
+          }
+
+          .progress-red {
+               background: var(--red);
+          }
+
+          /* ===== Status badge ===== */
+          .status-badge {
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               min-width: 110px;
+               padding: 7px 12px;
+               border-radius: 999px;
+               font-size: 12px;
+               font-weight: 700;
+               border: 1px solid transparent;
+          }
+
+          .status-in-progress {
+               color: #2563eb;
+               background: #eff6ff;
+               border-color: #dbeafe;
+          }
+
+          .status-completed {
+               color: #15803d;
+               background: #ecfdf3;
+               border-color: #d1fae5;
+          }
+
+          .status-on-hold {
+               color: #d97706;
+               background: #fff7ed;
+               border-color: #fed7aa;
+          }
+
+          .status-not-started {
+               color: #dc2626;
+               background: #fef2f2;
+               border-color: #fecaca;
+          }
+
+          /* ===== Action buttons ===== */
+          .action-group {
+               display: flex;
+               align-items: center;
+               gap: 8px;
+          }
+
+          .icon-action {
+               width: 34px;
+               height: 34px;
+               border-radius: 10px;
+               border: 1px solid var(--border-color);
+               background: #fff;
+               color: #6b7280;
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               transition: 0.2s ease;
+          }
+
+          .icon-action:hover {
+               background: #f9fafb;
+               color: #111827;
+               transform: translateY(-1px);
+          }
+
+          /* ===== Footer / Pagination ===== */
+          .table-footer {
+               border-top: 1px solid var(--border-color);
+               padding: 16px 18px;
+               background: #fff;
+          }
+
+          .table-info {
+               color: var(--text-muted);
+               font-size: 13px;
+               font-weight: 500;
+          }
+
+          .pagination-custom {
+               gap: 8px;
+               margin: 0;
+          }
+
+          .pagination-custom .page-link {
+               width: 36px;
+               height: 36px;
+               padding: 0;
+               border-radius: 10px !important;
+               border: 1px solid var(--border-color);
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               color: #4b5563;
+               font-weight: 600;
+               background: #fff;
+          }
+
+          .pagination-custom .page-item.active .page-link {
+               background: #2563eb;
+               border-color: #2563eb;
+               color: #fff;
+          }
+
+          .pagination-custom .page-link:hover {
+               background: #f8fafc;
+               color: #111827;
+          }
+
+          .pagination-custom .page-item.active .page-link:hover {
+               background: #2563eb;
+               color: #fff;
+          }
+
+          /* ===== Responsive ===== */
+          @media (max-width: 992px) {
+               .projects-table {
+                    min-width: 950px;
+               }
+
+               .table-scroll {
+                    overflow-x: auto;
+               }
+          }
+     </style>
+</head>
+
+<body>
+     <div class="projects-page">
+          <div class="page-card">
+               <!-- Header -->
+               <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                    <div>
+                         <h1 class="page-title">Projects</h1>
+                         <p class="page-subtitle">Manage all projects in the system</p>
+                    </div>
+
+                    <button class="btn btn-new-project">
+                         <i class="bi bi-plus-lg me-2"></i>New Project
+                    </button>
+               </div>
+
+               <!-- Stats -->
+               <div class="row g-3 mb-4" id="statsContainer">
+                    <!-- JS render -->
+               </div>
+
+               <!-- Toolbar -->
+               <div class="row g-3 align-items-center toolbar">
+                    <div class="col-lg-6">
+                         <div class="search-box">
+                              <i class="bi bi-search"></i>
+                              <input type="text" class="form-control" id="searchInput"
+                                   placeholder="Search projects..." />
+                         </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                         <div class="d-flex gap-2 justify-content-lg-end">
+                              <select class="form-select" id="statusFilter" style="max-width: 220px;">
+                                   <option value="all">All Status</option>
+                                   <option value="In Progress">In Progress</option>
+                                   <option value="Completed">Completed</option>
+                                   <option value="On Hold">On Hold</option>
+                                   <option value="Not Started">Not Started</option>
+                              </select>
+
+                              <button class="btn btn-filter" title="Filter">
+                                   <i class="bi bi-funnel"></i>
+                              </button>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Table -->
+               <div class="table-wrap">
+                    <div class="table-scroll">
+                         <table class="table projects-table">
+                              <thead>
+                                   <tr>
+                                        <th style="min-width: 180px;">Project Name</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th style="min-width: 220px;">Progress</th>
+                                        <th>Status</th>
+                                        <th style="width: 120px;">Actions</th>
+                                   </tr>
+                              </thead>
+                              <tbody id="projectTableBody">
+                                   <!-- JS render -->
+                              </tbody>
+                         </table>
+                    </div>
+
+                    <!-- Footer -->
+                    <div
+                         class="table-footer d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                         <div class="table-info" id="tableInfo">
+                              Showing 1 to 5 of 12 projects
+                         </div>
+
+                         <nav>
+                              <ul class="pagination pagination-custom" id="pagination">
+                                   <!-- JS render -->
+                              </ul>
+                         </nav>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <script>
+          const projects = [
+               {
+                    id: 1,
+                    name: "Project Alpha",
+                    startDate: "01/06/2026",
+                    endDate: "30/08/2026",
+                    progress: 45,
+                    status: "In Progress"
+               },
+               {
+                    id: 2,
+                    name: "Project Beta",
+                    startDate: "15/05/2026",
+                    endDate: "15/09/2026",
+                    progress: 60,
+                    status: "In Progress"
+               },
+               {
+                    id: 3,
+                    name: "Project Gamma",
+                    startDate: "01/07/2026",
+                    endDate: "31/10/2026",
+                    progress: 20,
+                    status: "On Hold"
+               },
+               {
+                    id: 4,
+                    name: "Project Delta",
+                    startDate: "10/06/2026",
+                    endDate: "20/08/2026",
+                    progress: 100,
+                    status: "Completed"
+               },
+               {
+                    id: 5,
+                    name: "Project Epsilon",
+                    startDate: "20/07/2026",
+                    endDate: "25/11/2026",
+                    progress: 10,
+                    status: "Not Started"
+               },
+               {
+                    id: 6,
+                    name: "Project Zeta",
+                    startDate: "05/07/2026",
+                    endDate: "20/10/2026",
+                    progress: 35,
+                    status: "In Progress"
+               },
+               {
+                    id: 7,
+                    name: "Project Theta",
+                    startDate: "12/06/2026",
+                    endDate: "10/09/2026",
+                    progress: 85,
+                    status: "In Progress"
+               },
+               {
+                    id: 8,
+                    name: "Project Sigma",
+                    startDate: "01/08/2026",
+                    endDate: "15/12/2026",
+                    progress: 0,
+                    status: "Not Started"
+               },
+               {
+                    id: 9,
+                    name: "Project Omega",
+                    startDate: "18/04/2026",
+                    endDate: "30/07/2026",
+                    progress: 100,
+                    status: "Completed"
+               },
+               {
+                    id: 10,
+                    name: "Project Nova",
+                    startDate: "25/06/2026",
+                    endDate: "25/09/2026",
+                    progress: 50,
+                    status: "In Progress"
+               },
+               {
+                    id: 11,
+                    name: "Project Orion",
+                    startDate: "03/07/2026",
+                    endDate: "28/11/2026",
+                    progress: 15,
+                    status: "On Hold"
+               },
+               {
+                    id: 12,
+                    name: "Project Atlas",
+                    startDate: "11/08/2026",
+                    endDate: "10/12/2026",
+                    progress: 5,
+                    status: "Not Started"
+               }
+          ];
+
+          const pageSize = 5;
+          let currentPage = 1;
+          let filteredProjects = [...projects];
+
+          const statsContainer = document.getElementById("statsContainer");
+          const projectTableBody = document.getElementById("projectTableBody");
+          const pagination = document.getElementById("pagination");
+          const tableInfo = document.getElementById("tableInfo");
+          const searchInput = document.getElementById("searchInput");
+          const statusFilter = document.getElementById("statusFilter");
+
+          function getStats(data) {
+               return {
+                    total: data.length,
+                    inProgress: data.filter(p => p.status === "In Progress").length,
+                    completed: data.filter(p => p.status === "Completed").length,
+                    onHold: data.filter(p => p.status === "On Hold").length
+               };
+          }
+
+          function renderStats(data) {
+               const stats = getStats(data);
+
+               const statItems = [
+                    {
+                         label: "Total Projects",
+                         value: stats.total,
+                         dotClass: "dot-blue"
+                    },
+                    {
+                         label: "In Progress",
+                         value: stats.inProgress,
+                         dotClass: "dot-blue"
+                    },
+                    {
+                         label: "Completed",
+                         value: stats.completed,
+                         dotClass: "dot-green"
+                    },
+                    {
+                         label: "On Hold",
+                         value: stats.onHold,
+                         dotClass: "dot-orange"
+                    }
+               ];
+
+               statsContainer.innerHTML = statItems.map(item => `
+                <div class="col-md-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-dot ${item.dotClass}"></span>
+                            <span>${item.label}</span>
+                        </div>
+                        <div class="stat-value">${item.value}</div>
+                    </div>
+                </div>
+            `).join("");
+          }
+
+          function getProgressBarClass(progress, status) {
+               if (status === "Completed") return "progress-green";
+               if (status === "On Hold") return "progress-orange";
+               if (status === "Not Started") return "progress-red";
+               return "progress-blue";
+          }
+
+          function getStatusClass(status) {
+               switch (status) {
+                    case "In Progress":
+                         return "status-in-progress";
+                    case "Completed":
+                         return "status-completed";
+                    case "On Hold":
+                         return "status-on-hold";
+                    case "Not Started":
+                         return "status-not-started";
+                    default:
+                         return "";
+               }
+          }
+
+          function renderTable(data, page = 1) {
+               const start = (page - 1) * pageSize;
+               const end = start + pageSize;
+               const pageData = data.slice(start, end);
+
+               if (!pageData.length) {
+                    projectTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted fw-semibold">
+                            No projects found.
+                        </td>
+                    </tr>
+                `;
+                    tableInfo.textContent = "Showing 0 to 0 of 0 projects";
+                    pagination.innerHTML = "";
+                    return;
+               }
+
+               projectTableBody.innerHTML = pageData.map(project => `
+                <tr>
+                    <td>
+                        <div class="project-name">${project.name}</div>
+                    </td>
+                    <td>
+                        <span class="date-text">${project.startDate}</span>
+                    </td>
+                    <td>
+                        <span class="date-text">${project.endDate}</span>
+                    </td>
+                    <td class="progress-cell">
+                        <div class="progress-percent">${project.progress}%</div>
+                        <div class="custom-progress">
+                            <div
+                                class="progress-bar ${getProgressBarClass(project.progress, project.status)}"
+                                style="width: ${project.progress}%"
+                            ></div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${getStatusClass(project.status)}">
+                            ${project.status}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-group">
+                            <button class="icon-action" title="View" onclick="handleView(${project.id})">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="icon-action" title="More" onclick="handleMore(${project.id})">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join("");
+
+               const total = data.length;
+               const from = start + 1;
+               const to = Math.min(end, total);
+               tableInfo.textContent = `Showing ${from} to ${to} of ${total} projects`;
+
+               renderPagination(total, page);
+          }
+
+          function renderPagination(totalItems, current) {
+               const totalPages = Math.ceil(totalItems / pageSize);
+
+               if (totalPages <= 1) {
+                    pagination.innerHTML = "";
+                    return;
+               }
+
+               let html = "";
+
+               html += `
+                <li class="page-item ${current === 1 ? "disabled" : ""}">
+                    <button class="page-link" ${current === 1 ? "disabled" : ""} onclick="changePage(${current - 1})">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </li>
+            `;
+
+               for (let i = 1; i <= totalPages; i++) {
+                    html += `
+                    <li class="page-item ${i === current ? "active" : ""}">
+                        <button class="page-link" onclick="changePage(${i})">${i}</button>
+                    </li>
+                `;
+               }
+
+               html += `
+                <li class="page-item ${current === totalPages ? "disabled" : ""}">
+                    <button class="page-link" ${current === totalPages ? "disabled" : ""} onclick="changePage(${current + 1})">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </li>
+            `;
+
+               pagination.innerHTML = html;
+          }
+
+          function applyFilters() {
+               const keyword = searchInput.value.trim().toLowerCase();
+               const selectedStatus = statusFilter.value;
+
+               filteredProjects = projects.filter(project => {
+                    const matchKeyword = project.name.toLowerCase().includes(keyword);
+                    const matchStatus =
+                         selectedStatus === "all" || project.status === selectedStatus;
+
+                    return matchKeyword && matchStatus;
+               });
+
+               currentPage = 1;
+               renderStats(filteredProjects);
+               renderTable(filteredProjects, currentPage);
+          }
+
+          function changePage(page) {
+               currentPage = page;
+               renderTable(filteredProjects, currentPage);
+          }
+
+          function handleView(id) {
+               const project = projects.find(p => p.id === id);
+               alert("View project: " + project.name);
+          }
+
+          function handleMore(id) {
+               const project = projects.find(p => p.id === id);
+               alert("More actions for: " + project.name);
+          }
+
+          searchInput.addEventListener("input", applyFilters);
+          statusFilter.addEventListener("change", applyFilters);
+
+          // init
+          renderStats(filteredProjects);
+          renderTable(filteredProjects, currentPage);
+     </script>
+</body>
+
+</html>
