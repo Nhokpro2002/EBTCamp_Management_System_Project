@@ -419,7 +419,7 @@ export function enableTaskEditMode(tr, taskId) {
     tr.querySelector(".task-status").innerHTML = `
         <select class="form-select form-select-sm">
             <option ${task.status === "Done" ? "selected" : ""}>Done</option>
-            <option ${task.status === "Processing" ? "selected" : ""}>Processing</option>
+            <option ${task.status === "Processing" ? "scelected" : ""}>Processing</option>
             <option ${task.status === "Problem" ? "selected" : ""}>Problem</option>
         </select>
     `;

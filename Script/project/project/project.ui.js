@@ -9,6 +9,8 @@
 
 import * as utils from "../../utils/utils.js";
 import { variableGlobal } from "../project.state.js";
+import { projectElements } from "../project.state.js";
+import * as handleEvent from "./project.handle.event.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "users";
@@ -58,7 +60,7 @@ export function getStats(data) {
 }
 
 export function renderStats(data, container) {
-    const stats = this.getStats(data);
+    const stats = getStats(data);
 
     const statItems = [
         {
@@ -118,32 +120,36 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
                 <td>
                     <div class="project-name">${project.name}</div>
                 </td>
-                <td><span class="date-text">${project.startDate}</span></td>
-                <td><span class="date-text">${project.endDate}</span></td>
+                <td><span class="date-text">${utils.formatDateDisplay(project.start_date)}</span></td>
+                <td><span class="date-text">${utils.formatDateDisplay(project.end_date)}</span></td>
                 <td class="progress-cell">
                     <div class="progress-percent">${project.progress}%</div>
                     <div class="custom-progress">
                         <div
-                            class="progress-bar ${this.getProgressBarClass(project.status)}"
+                            class="progress-bar ${getProgressBarClass(project.status)}"
                             style="width: ${project.progress}%"
                         ></div>
                     </div>
                 </td>
                 <td>
-                    <span class="status-badge ${this.getStatusClass(project.status)}">
+                    <span class="status-badge ${getStatusClass(project.status)}">
                         ${project.status}
                     </span>
                 </td>
-                <td>
-                    <div class="action-group">
-                        <button class="icon-action" title="View" onclick="ProjectHandler.handleViewProject(${project.id})">
-                            <i class="bi bi-eye"></i>
+                <td class="action-cell">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
                         </button>
-                        <button class="icon-action" title="More" onclick="ProjectHandler.handleMoreProject(${project.id})">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                    </div>
-                </td>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item js-view">View more</button></li>
+                        <li><button class="dropdown-item js-edit">Edit</button></li>
+                        <li><button class="dropdown-item js-save">Save</button></li>
+                        <li><button class="dropdown-item text-danger js-delete">Delete</button></li>
+                    </ul>
+    </div>
+</td>
             </tr>
         `).join("");
 
@@ -153,6 +159,7 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
 }
 
 export function renderPagination(totalItems, currentPage, pageSize, paginationContainer) {
+
     const totalPages = Math.ceil(totalItems / pageSize);
 
     if (totalPages <= 1) {
@@ -161,31 +168,60 @@ export function renderPagination(totalItems, currentPage, pageSize, paginationCo
     }
 
     let html = `
-            <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-                <button class="page-link" onclick="ProjectHandler.handlePageChange(${currentPage - 1})">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-            </li>
-        `;
+        <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+            <button class="page-link js-page" data-page="${currentPage - 1}">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        </li>
+    `;
 
     for (let i = 1; i <= totalPages; i++) {
         html += `
-                <li class="page-item ${i === currentPage ? "active" : ""}">
-                    <button class="page-link" onclick="ProjectHandler.handlePageChange(${i})">${i}</button>
-                </li>
-            `;
-    }
-
-    html += `
-            <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-                <button class="page-link" onclick="ProjectHandler.handlePageChange(${currentPage + 1})">
-                    <i class="bi bi-chevron-right"></i>
+            <li class="page-item ${i === currentPage ? "active" : ""}">
+                <button class="page-link js-page" data-page="${i}">
+                    ${i}
                 </button>
             </li>
         `;
+    }
+
+    html += `
+        <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+            <button class="page-link js-page" data-page="${currentPage + 1}">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </li>
+    `;
 
     paginationContainer.innerHTML = html;
 }
+
+export function handlePageChange(page) {
+    const totalPages = Math.ceil(variableGlobal.filteredProjects.length / variableGlobal.pageSize);
+
+    if (page < 1 || page > totalPages) return;
+
+    variableGlobal.currentPage = page;
+    renderProjectPage();
+}
+
+export function renderProjectPage() {
+    renderStats(variableGlobal.filteredProjects, projectElements.statsContainer);
+    renderTable(
+        variableGlobal.filteredProjects,
+        variableGlobal.currentPage,
+        variableGlobal.pageSize,
+        projectElements.projectTableBody,
+        projectElements.tableInfo
+    );
+    renderPagination(
+        variableGlobal.filteredProjects.length,
+        variableGlobal.currentPage,
+        variableGlobal.pageSize,
+        projectElements.pagination
+    );
+}
+
 
 export function getProgressBarClass(status) {
     if (status === "Completed") return "progress-green";
@@ -206,6 +242,76 @@ export function getStatusClass(status) {
             return "status-not-started";
         default:
             return "";
+    }
+}
+
+export function openCreateProjectPopup() {
+    document.getElementById("overlay-create-project").style.display = "flex";
+    document.body.style.overflow = "hidden";
+    renderMembersSelect("pic");
+    renderMembersSelect("members");
+}
+
+export function closeCreateProjectPopup() {
+    document.getElementById("overlay-create-project").style.display = "none";
+    document.body.style.overflow = "auto";
+    resetCreateProjectForm();
+}
+
+function resetCreateProjectForm() {
+    $("#project-name, #start-date, #end-date").val("");
+    $("#pic, #members").empty();
+    variableGlobal.tomSelectInstances?.pic?.clear(true);
+    variableGlobal.tomSelectInstances?.members?.clear(true);
+}
+
+function renderMembersSelect(type) {  // type: "pic", "members", "handler"
+
+    const $select = $(`#${type}`);
+    if (!$select.length) return;
+
+    // Xoá option cũ
+    $select.empty();
+
+    // Thêm option từ userMap
+    Object.values(variableGlobal.userMap).forEach(user => {
+        const $option = $("<option>", {
+            value: user.id,
+            text: user.employee_id
+        });
+
+        $select.append($option);
+    });
+
+    // Nếu chưa có instance TomSelect thì tạo mới
+    // ! Error
+    if (!variableGlobal.tomSelectInstances[type]) {
+
+        variableGlobal.tomSelectInstances[type] = new TomSelect(`#${type}`, {
+            plugins: ['remove_button'],
+            hideSelected: true,
+            create: false,
+            placeholder:
+                type === "pic" ? "Select PIC" :
+                    type === "members" ? "Select Members" :
+                        "Select Handler",
+        });
+
+    } else {
+
+        // Nếu đã có instance thì refresh options
+        const instance = variableGlobal.tomSelectInstances[type];
+
+        instance.clearOptions();
+
+        Object.values(variableGlobal.userMap).forEach(user => {
+            instance.addOption({
+                value: user.id,
+                text: user.employee_id
+            });
+        });
+
+        instance.refreshOptions(false);
     }
 }
 

@@ -1,58 +1,15 @@
-
 import { variableGlobal } from "../project.state.js";
 import { projectElements } from "../project.state.js";
+import { messageCommon } from "../project.state.js";
+import * as api from "../../services/generic.api.js";
 import * as ui from "./project.ui.js";
 import * as handlerEvent from "./project.handle.event.js";
-projects: [
-    {
-        id: 1,
-        name: "Project Alpha",
-        startDate: "01/06/2026",
-        endDate: "30/08/2026",
-        progress: 45,
-        status: "In Progress"
-    },
-    {
-        id: 2,
-        name: "Project Beta",
-        startDate: "15/05/2026",
-        endDate: "15/09/2026",
-        progress: 60,
-        status: "In Progress"
-    },
-    {
-        id: 3,
-        name: "Project Gamma",
-        startDate: "01/07/2026",
-        endDate: "31/10/2026",
-        progress: 20,
-        status: "On Hold"
-    },
-    {
-        id: 4,
-        name: "Project Delta",
-        startDate: "10/06/2026",
-        endDate: "20/08/2026",
-        progress: 100,
-        status: "Completed"
-    },
-    {
-        id: 5,
-        name: "Project Epsilon",
-        startDate: "20/07/2026",
-        endDate: "25/11/2026",
-        progress: 10,
-        status: "Not Started"
-    },
-    {
-        id: 6,
-        name: "Project Zeta",
-        startDate: "05/07/2026",
-        endDate: "20/10/2026",
-        progress: 35,
-        status: "In Progress"
-    }
-]
+import * as utils from "../../utils/utils.js";
+
+const COLLECTION_PROJECTS = "Projects";
+const COLLECTION_STAGES = "Stages";
+const COLLECTION_TASKS = "Tasks";
+const COLLECTION_USERS = "Users";
 
 projectElements.statsContainer = document.getElementById("statsContainer");
 projectElements.projectTableBody = document.getElementById("projectTableBody");
@@ -61,15 +18,85 @@ projectElements.tableInfo = document.getElementById("tableInfo");
 projectElements.searchInput = document.getElementById("searchInput");
 projectElements.statusFilter = document.getElementById("statusFilter");
 
+
+$(document).ready(function () {
+    if (!checkAuthentication()) return;
+    document.querySelector(".container-fluid").style.display = "block";
+    // window.alert(window.innerWidth + " x " + window.innerHeight);
+    // Spec: 1528 * 732;
+    const currentPage = window.location.pathname;
+    if (currentPage.includes('dashboard')) {
+        document.getElementById('dashboard-link').classList.add('active');
+    } else if (currentPage.includes('user')) {
+        document.getElementById('user-link').classList.add('active');
+    } else if (currentPage.includes('stage')) {
+        document.getElementById('stage-link').classList.add('active');
+    } else if (currentPage.includes('task')) {
+        document.getElementById('task-link').classList.add('active');
+    } else if (currentPage.includes('project')) {
+        document.getElementById('project-link').classList.add('active');
+    }
+
+    ui.changeIconAvatar();
+
+    ui.changeTopbarText();
+
+    initProjectPage();
+});
+
 function bindProjectEvents() {
     projectElements.searchInput.addEventListener("input", handlerEvent.handleFilterChange);
     projectElements.statusFilter.addEventListener("change", handlerEvent.handleFilterChange);
 }
 
-function initProjectPage() {
-    variableGlobal.filteredProjects = [...variableGlobal.projectList];
-    bindProjectEvents();
-    handlerEvent.renderProjectPage();
+
+async function initProjectPage() {
+    try {
+        variableGlobal.projectList = await api.getRecords(COLLECTION_PROJECTS);
+
+        const users = await api.getRecords(COLLECTION_USERS);
+
+        variableGlobal.userMap = Object.fromEntries(
+            users.map(user => [user.id, user])
+        );
+
+        variableGlobal.filteredProjects = [...variableGlobal.projectList];
+
+        bindProjectEvents();
+        ui.renderProjectPage();
+
+    } catch (error) {
+        console.log(error);
+        utils.showError(messageCommon.error.getError);
+    }
 }
 
-document.addEventListener("DOMContentLoaded", initProjectPage);
+function checkAuthentication() {
+    const token = localStorage.getItem("token");
+    if (!token || token.trim() === "") {
+        utils.showPopup("Warning", "You must login", "warning")
+            .then(() => {
+                window.location.href = "http://127.0.0.1:5500/Page/login.html";// chuyển hướng sau khi user bấm OK
+            });
+        return false;
+    }
+    return true;
+}
+
+$(document).on("click", ".js-page", function () {
+
+    const page = Number($(this).data("page"));
+
+    if (!page || page < 1) return;
+
+    ui.handlePageChange(page);
+});
+
+
+$(".btn-create-project").on("click", ui.openCreateProjectPopup);
+
+$(".btn-close-project-popup").on("click", ui.closeCreateProjectPopup);
+
+$(".btn-save-project").on("click", handlerEvent.handleSubmitFormCreateProject);
+
+

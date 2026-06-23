@@ -42,3 +42,12 @@ export function showWarning(message) {
         title: message
     });
 }
+
+export function showPopup(title, text = "", icon = "info") {
+    return Swal.fire({
+        title,
+        text,
+        icon,
+        confirmButtonText: "OK"
+    });
+}
