@@ -18,8 +18,7 @@ body {
 }
 
 .projects-page {
-    min-width: 1200px;
-    max-width: 1200px;
+    min-width: 1212px;
 }
 
 .page-card {
@@ -359,4 +358,126 @@ body {
     .table-scroll {
         overflow-x: auto;
     }
+}
+
+.sidebar {
+    height: 100vh;
+    background: linear-gradient(180deg, #0d6efd, #0b5ed7);
+    color: white;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    transition: 0.3s;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.topbar {
+    background: white;
+    border-radius: 20px;
+    padding: 16px 24px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.overlay-create-project {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-create-project {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 600px;
+    max-height: 90%;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+}
+
+.form-group-create-project {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-create-project label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group-create-project input,
+.form-group-create-project select {
+    padding: 8px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-actions-create-project {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.form-actions-create-project button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.action-menu {
+    position: absolute;
+    right: 5px;
+    min-width: 120px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 1000;
+    top: -15px;
+}
+
+.action-menu.show {
+    display: block;
+}
+
+.action-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.active {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.action-item:hover {
+    background: #f5f5f5;
 }

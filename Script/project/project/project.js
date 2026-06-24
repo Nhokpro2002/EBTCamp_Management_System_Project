@@ -92,8 +92,76 @@ $(document).on("click", ".js-page", function () {
     ui.handlePageChange(page);
 });
 
-$(document).on("click", ".js-delete", function () {
-    handlerEvent.handleDeleteProject(this);
+document.addEventListener("click", function (e) {
+    const toggleBtn = e.target.closest(".js-menu-toggle");
+    const menu = e.target.closest(".action-menu");
+    const editItem = e.target.closest(".btn-edit-project");
+    const viewMoreItem = e.target.closest(".btn-view-more-project");
+    const deleteItem = e.target.closest(".btn-delete-project");
+
+    const openMenus = document.querySelectorAll(".action-menu.show");
+
+    // =========================
+    // 1. CLICK BUTTON ...
+    // =========================
+    if (toggleBtn) {
+        const row = toggleBtn.closest("tr");
+        const currentMenu = row.querySelector(".action-menu");
+
+        // đóng menu khác
+        openMenus.forEach(m => {
+            if (m !== currentMenu) m.classList.remove("show");
+        });
+
+        // toggle menu hiện tại
+        currentMenu.classList.toggle("show");
+        return;
+    }
+
+    /*
+    * Click xem nhiều thông tin project hơn, list vật tư của nó nữa
+    */
+    if (viewMoreItem) {
+        return;
+    }
+
+    // =========================
+    // 2. CLICK EDIT → KHÔNG ĐÓNG MENU
+    // =========================
+    if (editItem) {
+        const row = editItem.closest("tr");
+        const menu = row.querySelector(".action-menu");
+
+        // giữ menu mở
+        menu.classList.add("show");
+
+        // handle edit logic
+        handlerEvent.handleEditProject(e, editItem);
+
+        return;
+    }
+
+    if (deleteItem) {
+        const row = deleteItem.closest("tr");
+        const menu = row.querySelector(".action-menu");
+
+        // handle delete project logic
+        handlerEvent.handleDeleteProject(deleteItem);
+
+        return;
+    }
+
+    // =========================
+    // 3. CLICK TRONG MENU → KHÔNG ĐÓNG
+    // =========================
+    if (menu) {
+        return;
+    }
+
+    // =========================
+    // 4. CLICK NGOÀI → ĐÓNG ALL MENU
+    // =========================
+    openMenus.forEach(m => m.classList.remove("show"));
 });
 
 $(".btn-create-project").on("click", ui.openCreateProjectPopup);

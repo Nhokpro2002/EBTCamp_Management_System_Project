@@ -125,8 +125,8 @@ export async function handleDeleteProject(deleteButton) {
 
         if (response) {
 
-            variableGlobal.projectList =
-                variableGlobal.projectList.filter(
+            variableGlobal.filteredProjects =
+                variableGlobal.filteredProjects.filter(
                     project => project.id !== projectID
                 );
 
@@ -137,6 +137,22 @@ export async function handleDeleteProject(deleteButton) {
         }
     } catch (error) {
         utils.showError(messageCommon.error.deleteError);
+    }
+}
+
+
+export function handleEditProject(e, editButton) {
+    const tr = editButton.closest("tr");
+    const projectID = editButton.dataset.id;
+
+    const isActive = editButton.classList.contains("active");
+
+    if (isActive) {
+        editButton.classList.remove("active");
+        ui.disableProjectEditMode(tr, projectID);
+    } else {
+        editButton.classList.add("active");
+        ui.enableProjectEditMode(tr, projectID);
     }
 }
 

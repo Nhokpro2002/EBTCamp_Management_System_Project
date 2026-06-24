@@ -8,12 +8,15 @@
 // ==================================================
 
 import * as utils from "../../utils/utils.js";
+import * as handleEvent from "./project.handle.event.js";
+import * as api from "../../services/generic.api.js";
+import { messageCommon } from "../project.state.js";
 import { variableGlobal } from "../project.state.js";
 import { projectElements } from "../project.state.js";
-import * as handleEvent from "./project.handle.event.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
-const COLLECTION_USERS = "users";
+const COLLECTION_USERS = "Users";
+const COLLECTION_PROJECTS = "Projects"
 
 
 export function changeIconAvatar() {
@@ -136,20 +139,27 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
                         ${project.status}
                     </span>
                 </td>
-                <td class="action-cell">
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">
-                            <i class="bi bi-three-dots"></i>
-                        </button>
+                <td class="action-cell position-relative">
 
-                        <ul class="dropdown-menu dropdown-menu-end">
-                                <li><button class="dropdown-item js-view">View more</button></li>
-                                <li><button class="dropdown-item js-edit">Edit</button></li>
-                                <li><button class="dropdown-item js-save">Save</button></li>
-                                <li><button class="dropdown-item text-danger js-delete" data-id="${project.id}">Delete</button></li>
-                        </ul>
-                    </div>
-                </td>      
+  <button type="button" class="btn btn-sm btn-light border js-menu-toggle">
+    <i class="bi bi-three-dots"></i>
+  </button>
+
+  <div class="action-menu">
+    <div class="action-item btn-view-more-project text-primary" data-id=${project.id}>
+      <i class="bi bi-eye me-2"></i> View more
+    </div>
+
+    <div class="action-item btn-edit-project text-warning" data-id=${project.id}>
+      <i class="bi bi-pencil-square me-2"></i> Edit
+    </div>
+
+    <div class="action-item btn-delete-project text-danger" data-id=${project.id}>
+      <i class="bi bi-trash me-2"></i> Delete
+    </div>
+  </div>
+
+</td>
             </tr>
         `).join("");
 
@@ -284,7 +294,6 @@ function renderMembersSelect(type) {  // type: "pic", "members", "handler"
     });
 
     // Nếu chưa có instance TomSelect thì tạo mới
-    // ! Error
     if (!variableGlobal.tomSelectInstances[type]) {
 
         variableGlobal.tomSelectInstances[type] = new TomSelect(`#${type}`, {
@@ -313,6 +322,151 @@ function renderMembersSelect(type) {  // type: "pic", "members", "handler"
 
         instance.refreshOptions(false);
     }
+}
+
+export function enableProjectEditMode(tr, projectID) {
+    if (!tr) return;
+
+    // tránh enable nhiều lần
+    if (tr.classList.contains("editing")) return;
+    tr.classList.add("editing");
+
+    const nameTd = tr.querySelector(".project-name").closest("td");
+    const startTd = tr.querySelectorAll("td")[1];
+    const endTd = tr.querySelectorAll("td")[2];
+    const progressTd = tr.querySelector(".progress-cell");
+    const statusTd = tr.querySelectorAll("td")[4];
+
+    const name = tr.querySelector(".project-name").innerText;
+    const start = tr.querySelectorAll(".date-text")[0].innerText;
+    const end = tr.querySelectorAll(".date-text")[1].innerText;
+    const progress = tr.querySelector(".progress-percent").innerText.replace("%", "");
+    const status = tr.querySelector(".status-badge").innerText.trim();
+
+    // =========================
+    // NAME INPUT
+    // =========================
+    nameTd.innerHTML = `
+    <input class="form-control form-control-sm js-edit-name" value="${name}">
+  `;
+
+    // =========================
+    // START DATE
+    // =========================
+    startTd.innerHTML = `
+    <input type="date" class="form-control form-control-sm js-edit-start" value="${(start)}">
+  `;
+
+    // =========================
+    // END DATE
+    // =========================
+    endTd.innerHTML = `
+    <input type="date" class="form-control form-control-sm js-edit-end" value="${(end)}">
+  `;
+
+    // =========================
+    // PROGRESS
+    // =========================
+    progressTd.innerHTML = `
+    <input type="number" min="0" max="100"
+      class="form-control form-control-sm js-edit-progress"
+      value="${progress}">
+  `;
+
+    // =========================
+    // STATUS
+    // =========================
+    statusTd.innerHTML = `
+    <select class="form-select form-select-sm js-edit-status">
+      <option value="Not Started" ${status == "Not Started" ? "selected" : ""}>Not Started</option>
+      <option value="In Progress" ${status == "In Progress" ? "selected" : ""}>In Progress</option>
+      <option value="On Hold" ${status == "On Hold" ? "selected" : ""}>On Hold</option>
+      <option value="Completed" ${status == "Completed" ? "selected" : ""}>Completed</option>
+    </select>
+  `;
+
+}
+
+
+export async function disableProjectEditMode(tr, projectID) {
+    if (!tr) return;
+
+    // thoát edit mode UI
+    //tr.classList.remove("editing");
+
+    try {
+        // =========================
+        // 1. KHÔNG THAY ĐỔI
+        // =========================
+        const hasChanges = hasProjectChanged(tr);
+        if (!hasChanges) {
+            renderProjectPage();
+            return;
+        }
+
+        // =========================
+        // 2. CÓ THAY ĐỔI → CALL API UPDATE
+        // =========================
+        const updatedData = buildProjectUpdatePayload(tr);
+        const response = await api.updateRecord(
+            COLLECTION_PROJECTS,
+            projectID,
+            updatedData
+        );
+
+        if (response) {
+            // update trong DATA GỐC
+            variableGlobal.projectList = variableGlobal.projectList.map(project =>
+                project.id === projectID ? response : project
+            );
+
+            variableGlobal.filteredProjects = variableGlobal.filteredProjects.map(project =>
+                project.id === projectID ? response : project
+            );
+
+            renderProjectPage();
+
+            utils.showSuccess(messageCommon.success.updateSuccess);
+        }
+
+    } catch (error) {
+        utils.showError(messageCommon.error.updateError);
+    }
+}
+
+
+function hasProjectChanged(tr) {
+    if (!tr) return false;
+
+    const original = {
+        name: tr.querySelector(".project-name")?.innerText?.trim(),
+        start: tr.querySelectorAll(".date-text")[0]?.innerText?.trim(),
+        end: tr.querySelectorAll(".date-text")[1]?.innerText?.trim(),
+        progress: tr.querySelector(".progress-percent")?.innerText?.replace("%", "").trim(),
+        status: tr.querySelector(".status-badge")?.innerText?.trim(),
+    };
+
+    const current = {
+        name: tr.querySelector(".js-edit-name")?.value?.trim(),
+        start: tr.querySelector(".js-edit-start")?.value?.trim(),
+        end: tr.querySelector(".js-edit-end")?.value?.trim(),
+        progress: tr.querySelector(".js-edit-progress")?.value?.trim(),
+        status: tr.querySelector(".js-edit-status")?.value?.trim(),
+    };
+
+    return JSON.stringify(original) !== JSON.stringify(current);
+}
+
+function buildProjectUpdatePayload(tr) {
+    if (!tr) return null;
+
+    return {
+        name: tr.querySelector(".js-edit-name")?.value?.trim(),
+        start_date: tr.querySelector(".js-edit-start")?.value?.trim(),
+        end_date: tr.querySelector(".js-edit-end")?.value?.trim(),
+        progress: Number(tr.querySelector(".js-edit-progress")?.value || 0),
+        status: tr.querySelector(".js-edit-status")?.value?.trim(),
+    };
 }
 
 

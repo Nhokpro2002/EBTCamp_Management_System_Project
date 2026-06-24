@@ -27,94 +27,7 @@
     <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
 
     <style>
-        .sidebar {
-            height: 100vh;
-            background: linear-gradient(180deg, #0d6efd, #0b5ed7);
-            color: white;
-        }
 
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.85);
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: 0.3s;
-        }
-
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-
-        .topbar {
-            background: white;
-            border-radius: 20px;
-            padding: 16px 24px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .overlay-create-project {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .popup-create-project {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            width: 600px;
-            max-height: 90%;
-            overflow-y: auto;
-            font-family: Arial, sans-serif;
-        }
-
-        .form-group-create-project {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group-create-project label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group-create-project input,
-        .form-group-create-project select {
-            padding: 8px 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .form-actions-create-project {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .form-actions-create-project button {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
     </style>
 
 </head>
@@ -316,6 +229,17 @@
         </div>
     </div>
 
+    <!-- ngày 24/06: làm tính năng chuyển đổi chế độ edit project-->
+    <!-- ấn button sẽ vào chế độ edit, button sẽ duy trì màu xuyên suốt khi trong chế độ edit-->
+    <!-- khi thay đổi và tắt button đi thì sẽ call api để lưu thay đổi vào db-->
+    <!-- Khi delete projetc thì sẽ thay đổi UI, xóa cái project đó trên UI -->
+    <!--  Popup có 3 button là viewmore, delete, edit-->
+
+    <!--Làm một trang mới để lưu item, các items mua để làm dự án, trang này có thông tin chi tiết về dự án, các vật tư, chi phí-->
+    <!--Dữ liệu trang này sẽ được bind từ trang project qua khi người dùng click viewmore button-->
+    <!--Trang này list button sẽ là tự code(html, css, js, bootrap), mỗi row có button delete -->
+    <!--Thêm item vào dự án, sẽ mở ra một cái popup, trong đó là cái dataTable, người dùng click vào cái nào thì sẽ bind data đó vào list item dự án -->
+    <!--Có thể thêm nhiều item cùng lúc-->
     <script type="module" src="../Script/project/project/project.js"></script>
 </body>
 

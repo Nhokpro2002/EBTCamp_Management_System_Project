@@ -9,16 +9,18 @@ const Toast = Swal.mixin({
 export function formatDateInput(dateStr) {
     if (!dateStr) return "";
 
-    const d = new Date(dateStr);
-    return d.toISOString().split("T")[0];
+    // yyyy-MM-dd hoặc yyyy-MM-dd HH:mm:ss...
+    const datePart = dateStr.split(" ")[0];
+    const [year, month, day] = datePart.split("-");
+
+    if (!year || !month || !day) return "";
+
+    return `${month}/${day}/${year}`;
 }
 
 export function formatDateDisplay(dateStr) {
-    const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-
-    return `${day}/${month}`;
+    if (!dateStr) return "";
+    return dateStr.split(" ")[0];
 }
 
 
