@@ -1,0 +1,306 @@
+/* ===============================
+    Drawer
+================================ */
+#projectItemDrawer {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    transition: right .35s ease;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, .15);
+    padding: 10px;
+}
+
+#projectItemDrawer.show {
+    right: 0;
+}
+
+#drawerOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .35);
+    opacity: 0;
+    visibility: hidden;
+    transition: .3s;
+    z-index: 1040;
+
+}
+
+#drawerOverlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* ===============================
+    Header
+================================ */
+.drawer-header {
+    height: 75px;
+    padding: 15px 15px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    background: white;
+}
+
+
+/* ===============================
+    Inventory
+================================ */
+.inventory-panel {
+    background: white;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.inventory-header {
+    padding: 14.5px;
+    border-bottom: 1px solid #eee;
+}
+
+.inventory-panel .input-group {
+    padding: 15px;
+}
+
+#inventory-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+
+/* Scroll */
+#inventory-list::-webkit-scrollbar {
+    width: 7px;
+}
+
+#inventory-list::-webkit-scrollbar-thumb {
+    background: #cfd3d8;
+    border-radius: 10px;
+}
+
+
+/* ===============================
+    Inventory Card
+================================ */
+.inventory-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    cursor: grab;
+    transition: .25s;
+}
+
+.inventory-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+}
+
+.inventory-item:active {
+    cursor: grabbing;
+}
+
+.inventory-item img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+
+.inventory-info {
+    flex: 1;
+}
+
+.inventory-info strong {
+    display: block;
+    margin-bottom: 3px;
+}
+
+.inventory-code {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.inventory-stock {
+    color: #198754;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+
+/* ===============================
+    Project
+================================ */
+.project-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+}
+
+.project-toolbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+
+/* ===============================
+    Drop Zone
+================================ */
+#drop-zone {
+    margin: 20px;
+    border: 2px dashed #0d6efd;
+    border-radius: 12px;
+    background: #f5f9ff;
+    color: #0d6efd;
+    text-align: center;
+    padding: 22px;
+    transition: .25s;
+}
+
+#drop-zone.drag-over {
+    background: #dcecff;
+    border-color: #0b5ed7;
+    transform: scale(1.01);
+}
+
+
+/* ===============================
+    Table
+================================ */
+.table-wrapper {
+    flex: 1;
+    overflow: auto;
+    padding: 0 20px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: white;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.table td {
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+
+/* Scroll */
+.table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #ced4da;
+    border-radius: 10px;
+}
+
+
+/* ===============================
+    Footer
+================================ */
+.project-footer {
+    height: 60px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 35px;
+    padding: 0 25px;
+    background: white;
+    flex-shrink: 0;
+}
+
+
+/* ===============================
+    Badge
+================================ */
+.badge-require {
+    background: #fff7d0;
+    color: #ffa200;
+    font-size: larger;
+}
+
+.badge-stock {
+    background: #d1e7dd;
+    color: #146c43;
+    font-size: larger;
+}
+
+.badge-order {
+    background: #fde2e4;
+    color: #c1121f;
+    font-size: larger;
+}
+
+/* ===============================
+    Button
+================================ */
+.btn {
+    border-radius: 8px;
+}
+
+.btn-sm {
+    padding: .35rem .55rem;
+}
+
+
+/* ===============================
+    Responsive
+================================ */
+@media (max-width:1200px) {
+    #projectItemDrawer {
+        width: 100vw;
+    }
+
+    .inventory-panel {
+        display: none;
+    }
+
+    .project-panel {
+        flex: 1;
+    }
+}
+
+
+.description-text {
+    display: inline-block;
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.popover {
+    max-width: 350px;
+}
+
+.popover-body {
+    white-space: pre-line;
+}

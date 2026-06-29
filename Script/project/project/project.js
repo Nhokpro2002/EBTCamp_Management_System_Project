@@ -42,6 +42,10 @@ $(document).ready(function () {
     ui.changeTopbarText();
 
     initProjectPage();
+
+    ui.renderInventory();
+
+    ui.renderProjectTable();
 });
 
 function bindProjectEvents() {
@@ -122,7 +126,8 @@ document.addEventListener("click", function (e) {
     * Click xem nhiều thông tin project hơn, list vật tư của nó nữa
     */
     if (viewMoreItem) {
-        return;
+        console.log("AAAAAAAAA");
+        openDrawer();
     }
 
     // =========================
@@ -169,5 +174,6 @@ $(".btn-create-project").on("click", ui.openCreateProjectPopup);
 $(".btn-close-project-popup").on("click", ui.closeCreateProjectPopup);
 
 $(".btn-save-project").on("click", handlerEvent.handleSubmitFormCreateProject);
+
 
 

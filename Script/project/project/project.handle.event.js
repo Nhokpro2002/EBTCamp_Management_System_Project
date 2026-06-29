@@ -9,6 +9,7 @@ const COLLECTION_PROJECTS = "Projects";
 const COLLECTION_STAGES = "Stages";
 const COLLECTION_TASKS = "Tasks";
 const COLLECTION_USERS = "Users";
+const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
 
 /*
 ===========================================
@@ -64,15 +65,11 @@ export function handleFilterChange() {
 export function handleViewProject(projectId) {
     const project = variableGlobal.projectList.find(p => p.id === projectId);
     if (!project) return;
-
-    alert("View project: " + project.name);
 }
 
 export function handleMoreProject(projectID) {
     const project = variableGlobal.projectList.find(p => p.id === projectID);
     if (!project) return;
-
-    alert("More actions for: " + project.name);
 }
 
 function getCreateProjectFormData() {
@@ -90,11 +87,8 @@ function getCreateProjectFormData() {
 
 export async function handleSubmitFormCreateProject() {
     const formData = getCreateProjectFormData();
-
     if (!validateProjectForm(formData)) return;
-
     const payload = buildProjectPayload(formData);
-
     try {
         const result = await api.createRecord(COLLECTION_PROJECTS, payload);
         utils.showSuccess(messageCommon.success.createSuccess);
@@ -102,7 +96,6 @@ export async function handleSubmitFormCreateProject() {
     } catch (error) {
         utils.showError(messageCommon.error.createError);
     }
-
 }
 
 
@@ -155,5 +148,6 @@ export function handleEditProject(e, editButton) {
         ui.enableProjectEditMode(tr, projectID);
     }
 }
+
 
 

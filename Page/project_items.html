@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<head>
+
+    <link href="../CSS/project_items.css" rel="stylesheet">
+
+    <!-- Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <!-- Bootstrap 5 -->
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap Icons -->
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- JQuery 4.0.0-->
+    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
+
+    <!-- Sweet Alert-->
+    <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
+    <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
+</head>
+
+<body>
+
+    <div id="projectItemDrawer">
+
+        <!-- Header -->
+        <div class="drawer-header">
+            <div>
+                <h4 class="mb-0">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Project Items
+                </h4>
+                <small class="text-secondary">
+                    Project : MES System Setup
+                </small>
+            </div>
+            <div>
+                <button class="btn btn-success me-2">
+                    <i class="bi bi-floppy"></i>
+                    Save
+                </button>
+                <button class="btn btn-light" id="btn-close-project-items">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="row h-100 g-0">
+            <!-- ================= INVENTORY ================= -->
+            <div class="col-2 inventory-panel">
+                <div class="inventory-header">
+                    <h5>
+                        <i class="bi bi-boxes me-2"></i>
+                        Inventory
+                    </h5>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input class="form-control" placeholder="Search inventory items">
+
+                </div>
+                <div id="inventory-list">
+                    <!-- render bằng JS -->
+                </div>
+            </div>
+
+            <!-- ================= PROJECT ITEMS ================= -->
+            <div class="col-10 project-panel">
+                <div class="project-toolbar">
+                    <div class="input-group w-50">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input class="form-control" placeholder="Search project items">
+                    </div>
+                </div>
+
+                <!-- Drop Zone -->
+                <div id="drop-zone">
+                    <i class="bi bi-mouse fs-3"></i>
+                    <div class="mt-2">
+                        Drag item from Inventory and drop here
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrapper">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Model</th>
+                                <th>XCode/QCode</th>
+                                <th class="text-center">Required</th>
+                                <th class="text-center">Stock</th>
+                                <th class="text-center">Order</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Total Price</th>
+                                <th>Requester</th>
+                                <th>Request Date</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="project-item-body">
+                            <!-- render bằng JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <!-- Footer -->
+                <div class="project-footer">
+                    <div>
+                        Total Items :
+                        <strong id="lbl-total-item">
+                            0
+                        </strong>
+                    </div>
+                    <div>
+                        Total Cost :
+                        <strong class="text-primary" id="lbl-total-cost">
+                            0 ₫
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="module" src="../Script/project/project_items/project_items.js"></script>
+
+</html>

@@ -23,6 +23,7 @@
     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
     <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
 
+    <!-- Tom Select -->
     <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
     <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
 
@@ -37,7 +38,8 @@
         <div class="row">
 
             <!-- Sidebar -->
-            <div class="col-lg-2 p-4 sidebar sticky-top">
+            <div class="col-lg-2 p-4 sticky-top"
+                style="height: 100vh; background: linear-gradient(180deg, #0d6efd, #0b5ed7); color: white;">
                 <h3 class="fw-bold mb-5">
                     <i class="bi bi-grid-1x2-fill"></i> EBT Camp
                 </h3>
@@ -73,7 +75,8 @@
             <div class="col-lg-10 p-4">
 
                 <!-- Topbar -->
-                <div class="topbar d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-2"
+                    style="background: white; border-radius: 20px; padding: 16px 24px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);">
                     <div>
                         <h3 class="fw-bold mb-0">Orders Page</h3>
                         <small class="text-muted">Welcome back, User👋</small>
@@ -85,9 +88,8 @@
                         </button>
 
                         <div class="dropdown">
-                            <img src="https://i.pravatar.cc/100" class="avatar dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                style="width:40px;height:40px;border-radius:50%;cursor:pointer" />
+                            <img src="https://i.pravatar.cc/100" class="dropdown-toggle" data-bs-toggle="dropdown"
+                                style="width:40px;height:40px;border-radius:50%;cursor:pointer; object-fit: cover;" />
 
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
@@ -99,17 +101,20 @@
                 </div>
 
 
-                <div class="projects-page">
-                    <div class="page-card">
+                <div style="min-width: 1212px;">
+                    <div
+                        style="background: var(--card-bg);border: 1px solid var(--border-color);border-radius: 18px;box-shadow: var(--shadow-sm);padding: 22px;">
                         <!-- Header -->
                         <div
                             class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
                             <div>
-                                <h1 class="page-title">Projects</h1>
-                                <p class="page-subtitle">Manage all projects in the system</p>
+                                <h1 style="font-size: 24px;font-weight: 700;margin-bottom: 4px;">Projects</h1>
+                                <p style="font-size: 13px;color: var(--text-muted);margin-bottom: 0;">Manage all
+                                    projects in the system</p>
                             </div>
 
-                            <button class="btn btn-create-project">
+                            <button class="btn btn-create-project"
+                                style="background: #15803d;border-color: #15803d;color: #fff;font-weight: 600;border-radius: 10px;padding: 10px 16px;box-shadow: 0 8px 16px rgba(21, 128, 61, 0.2);">
                                 <i class="bi bi-plus-lg me-2"></i>New Project
                             </button>
                         </div>
@@ -120,12 +125,13 @@
                         </div>
 
                         <!-- Toolbar -->
-                        <div class="row g-3 align-items-center toolbar">
+                        <div class="row g-3 align-items-center" style="margin-top: 22px;margin-bottom: 18px;">
                             <div class="col-lg-6">
-                                <div class="search-box">
-                                    <i class="bi bi-search"></i>
-                                    <input type="text" class="form-control" id="searchInput"
-                                        placeholder="Search projects..." />
+                                <div style="position: relative;">
+                                    <i class="bi bi-search"
+                                        style="position: absolute;top: 50%;left: 14px;transform: translateY(-50%);color: #9aa3b2;font-size: 15px;"></i>
+                                    <input type="text" id="searchInput" placeholder="Search projects..."
+                                        style="padding-left: 40px;border-radius: 12px;height: 44px;border: 1px solid var(--border-color);box-shadow: none;" />
                                 </div>
                             </div>
 
@@ -138,16 +144,13 @@
                                         <option value="On Hold">On Hold</option>
                                         <option value="Not Started">Not Started</option>
                                     </select>
-
-                                    <button class="btn btn-filter" title="Filter">
-                                        <i class="bi bi-funnel"></i>
-                                    </button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Table -->
-                        <div class="table-wrap">
+                        <div
+                            style="border: 1px solid var(--border-color);border-radius: 16px;overflow: hidden;background: #fff;min-height: 500px;">
                             <div class="table-scroll">
                                 <table class="table projects-table">
                                     <thead>
@@ -167,9 +170,9 @@
                             </div>
 
                             <!-- Footer -->
-                            <div
-                                class="table-footer d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-                                <div class="table-info" id="tableInfo">
+                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3"
+                                style="border-top: 1px solid var(--border-color);padding: 16px 18px;background: #fff;">
+                                <div id="tableInfo" style="color: var(--text-muted);font-size: 13px;font-weight: 500;">
                                     Showing 1 to 5 of 12 projects
                                 </div>
 
@@ -229,17 +232,6 @@
         </div>
     </div>
 
-    <!-- ngày 24/06: làm tính năng chuyển đổi chế độ edit project-->
-    <!-- ấn button sẽ vào chế độ edit, button sẽ duy trì màu xuyên suốt khi trong chế độ edit-->
-    <!-- khi thay đổi và tắt button đi thì sẽ call api để lưu thay đổi vào db-->
-    <!-- Khi delete projetc thì sẽ thay đổi UI, xóa cái project đó trên UI -->
-    <!--  Popup có 3 button là viewmore, delete, edit-->
-
-    <!--Làm một trang mới để lưu item, các items mua để làm dự án, trang này có thông tin chi tiết về dự án, các vật tư, chi phí-->
-    <!--Dữ liệu trang này sẽ được bind từ trang project qua khi người dùng click viewmore button-->
-    <!--Trang này list button sẽ là tự code(html, css, js, bootrap), mỗi row có button delete -->
-    <!--Thêm item vào dự án, sẽ mở ra một cái popup, trong đó là cái dataTable, người dùng click vào cái nào thì sẽ bind data đó vào list item dự án -->
-    <!--Có thể thêm nhiều item cùng lúc-->
     <script type="module" src="../Script/project/project/project.js"></script>
 </body>
 

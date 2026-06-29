@@ -8,6 +8,7 @@ export let variableGlobal = {
     userMap: {},
     projectItemList: [],
     filteredProjects: [],
+    inventoryItems: [],
     pageSize: 5,
     currentPage: 1,
 
