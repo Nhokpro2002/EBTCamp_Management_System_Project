@@ -17,8 +17,6 @@ import { projectElements } from "../project.state.js";
 const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "Users";
 const COLLECTION_PROJECTS = "Projects"
-const COLLECTION_PROJECT_ITEMS = "Project_Items"
-const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
 
 
 export function changeIconAvatar() {
@@ -464,85 +462,7 @@ function buildProjectUpdatePayload(tr) {
     };
 }
 
-export async function renderInventory() {
-    try {
-        const response = await api.getRecords(COLLECTION_INVENTORY_ITEMS);
-        if (!response) return;
-        variableGlobal.inventoryItems = response || [];
-        const $inventory = $("#inventory-list");
-        $inventory.empty();
-        $.each(variableGlobal.inventoryItems, function (_, item) {
-            $inventory.append(`
-                <div class="inventory-item" data-id="${item.id}">
-                    <div class="inventory-info">
-                        <strong>${item.name}</strong>
-                        <div>${item.model ?? ""}</div>
-                    </div>
-                </div>
-            `);
-        });
-    } catch (error) {
-        console.error(error);
-        utils.showError(messageCommon.error.getError);
-    }
-}
 
-export async function renderProjectTable(projectID) {
-    const token = localStorage.getItem("token");
-    try {
-        const response = await api.getRecordsFilter(COLLECTION_PROJECT_ITEMS, "project", projectID);
-        if (response) {
-            variableGlobal.projectItemList = response;
-            const tbody = $("#project-item-body");
-            tbody.empty();
-            let total = 0;
-            variableGlobal.projectItemList.forEach(item => {
-                const money = item.purchase_quantity * item.unit_price;
-                total += money;
-                tbody.append(`
-        <tr>
-            <td>${item.name}</td>
-            <td>${item.model}</td>
-            <td>${item.code}</td>
-            <td>06/2026</td>
-            <td class="text-center" style="min-width: 150px;>
-                ${item.required}
-            </td>
-            <td class="text-center" style="width: 150px;>
-                <span class="badge badge-stock">
-                    ${item.stock}
-                </span>
-            </td>
-            <td class="text-center" style="width: 150px;>
-                <span class="badge badge-order">
-                    ${Math.max(item.required - item.stock, 0)}
-                </span>
-            </td>
-            <td class="text-end">
-                $ ${item.price.toLocaleString()} 
-            </td>
-            <td class="text-end">
-                $ ${money.toLocaleString()} 
-            </td>
-            <td>Nguyen Van A</td>
-            <td>28/06/2026</td>
-            <td>
-                <button class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        </tr>
-        `);
-            });
-            $("#lbl-total-item").text(projectItems.length);
-            $("#lbl-total-cost").text(total.toLocaleString() + " ₫");
-
-        }
-    } catch (error) {
-        utils.showError(messageCommon.error.getError);
-    }
-
-}
 
 
 

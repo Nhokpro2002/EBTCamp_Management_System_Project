@@ -1,18 +1,92 @@
 // tên sản phảm, month, QCode/XCode, Mô tả, số lượng, đơn giá, tổng, người yêu cầu, ngày yêu cầu, dự án
+
+import * as handleEvent from "./project_items.handle.event.js";
+import * as ui from "./project_items.ui.js";
+
 import { variableGlobal } from "../project.state.js";
-import { projectElements } from "../project.state.js";
+import { projectElements } from "../project.state.js"
 
-function openDrawer() {
-    $("#projectItemDrawer").addClass("show");
-    $("#drawerOverlay").addClass("show");
+const projectID = new URLSearchParams(location.search).get("projectID");
+
+$(document).ready(async function () {
+    await ui.renderProjectTable(projectID);
+    await ui.renderInventoryItem();
+
+    syncInventoryItems();
+});
+
+$(document).on("input", ".js-required, .js-unit-price", function () {
+
+    const $row = $(this).closest("tr");
+
+    const required = parseFloat($row.find(".js-required").val()) || 0;
+    const stock = parseFloat($row.find(".badge-stock").text()) || 0;
+    const unitPrice = parseFloat($row.find(".js-unit-price").val()) || 0;
+
+    // ✅ LOGIC ORDER MỚI
+    const order = Math.max(required - stock, 0);
+
+    const total = order * unitPrice;
+
+    $row.find(".js-order").text(order);
+    $row.find(".js-total-price").text("$ " + total.toLocaleString());
+
+    ui.updateProjectSummary();
+});
+
+$(document).on("click", ".btn-outline-danger", function () {
+    const row = $(this).closest("tr");
+    const index = row.index();
+    projectItems.splice(index, 1);
+});
+
+document.getElementById("checkAll").addEventListener("change", function () {
+    const isChecked = this.checked;
+
+    document.querySelectorAll("#project-item-body .row-checkbox").forEach(cb => {
+        cb.checked = isChecked;
+    });
+
+    updateBulkActionBar();
+});
+
+$("#btn-close-project-items").on("click", function () {
+    window.location.href = "project.html";
+})
+
+$("#button-export-excel").on("click", function () {
+    handleEvent.handleExportExcelProjectItems();
+})
+
+$("#button-save-project-item").on("click", function () {
+    handleEvent.handleSaveProjectItems();
+})
+
+function updateBulkActionBar() {
+    const checkedBoxes = document.querySelectorAll(".row-checkbox:checked");
+    const bar = document.getElementById("bulkActionBar");
+
+    if (checkedBoxes.length > 0) {
+        bar.classList.add("show");
+    } else {
+        bar.classList.remove("show");
+    }
 }
 
-function closeDrawer() {
-    $("#projectItemDrawer").removeClass("show");
-    $("#drawerOverlay").removeClass("show");
-}
+document.addEventListener("change", function (e) {
+    if (e.target.classList.contains("row-checkbox")) {
 
-$("#btn-close-project-items").on("click", closeDrawer);
+        const all = document.querySelectorAll(".row-checkbox");
+        const checked = document.querySelectorAll(".row-checkbox:checked");
+
+        // update checkAll state
+        const checkAll = document.getElementById("checkAll");
+
+        checkAll.checked = all.length === checked.length && all.length > 0;
+
+        updateBulkActionBar();
+    }
+});
 
 
 Sortable.create(document.getElementById("inventory-list"), {
@@ -32,102 +106,34 @@ Sortable.create(document.getElementById("drop-zone"), {
     },
     animation: 150,
     onAdd: function (evt) {
-        const id = evt.item.dataset.id;
+        const model = evt.item.dataset.model; // id của item trong bảng inventory
         evt.item.remove();
-        addItemToProject(id);
+        handleEvent.handleAddItemToProjectItems(model);
+
+        disableInventoryItem(model);
     }
 });
 
-function addItemToProject(id) {
-
-    const item = variableGlobal.inventoryItems.find(x => x.id === id);
-
-    if (!item) return;
-
-    if (variableGlobal.projectItemList.some(x => x.id === id)) {
-        alert("Item already exists.");
-        return;
-    }
-
-    variableGlobal.projectItemList.push({ ...item });
-
-    const tbody = $("#project-item-body");
-
-    const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");
-
-    const userString = localStorage.getItem("user");
-
-    const user = JSON.parse(userString);
-
-    tbody.append(`
-        <tr>
-            <td>${item.name}</td>
-            <td>${item.model ?? ""}</td>
-            <td>${item.code ?? ""}</td>
-
-            <td class="text-center">
-                <span class="badge badge-require">
-                    ${item.required_quantity ?? 0}
-                </span> 
-            </td>
-
-            <td class="text-center">
-                <span class="badge badge-stock">
-                    ${item.stock ?? 0}
-                </span>
-            </td>
-
-            <td class="text-center">
-                <span class="badge badge-order">
-                    ${Math.max((item.required_quantity ?? 0) - (item.stock ?? 0), 0)}
-                </span>
-            </td>
-
-            <td class="text-center">
-                ${(item.unit_price ?? 0).toLocaleString()}
-            </td>
-
-            <td class="text-center">
-                ${((item.required_quantity ?? 0) * (item.unit_price ?? 0)).toLocaleString()}
-            </td>
-
-            <td>${user.employee_id ?? ""}</td>
-            <td>${item.request_date ?? ""}</td>
-
-            <td>
-                <span
-                    class="description-text"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover focus"
-                    data-bs-html="true"
-                    data-bs-placement="left"
-                    data-bs-content="${descriptionHtml}">
-                    ${item.description}
-                </span>
-            </td>
-
-            <td>
-                <button class="btn btn-sm btn-outline-primary me-1">
-                    <i class="bi bi-pencil"></i>
-                </button>
-
-                <button class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `);
-
-    const popoverElement = tbody.find('[data-bs-toggle="popover"]').last()[0];
-
-    new bootstrap.Popover(popoverElement, {
-        html: true
+function syncInventoryItems() {
+    document.querySelectorAll("#project-item-body tr").forEach(row => {
+        disableInventoryItem(row.dataset.model);
     });
 }
 
-$(document).on("click", ".btn-outline-danger", function () {
-    const row = $(this).closest("tr");
-    const index = row.index();
-    projectItems.splice(index, 1);
-    ui.renderProjectTable();
-});
+
+function disableInventoryItem(model) {
+    const item = document.querySelector(`#inventory-list [data-model="${model}"]`);
+    if (!item) return;
+    item.classList.add("disabled");
+    item.setAttribute("data-disabled", "true");
+}
+
+// Xóa item trong project-items thì cần enable lại trong inventory-items
+function enableInventoryItem(model) {
+    const item = document.querySelector(`#inventory-list [data-model="${model}"]`);
+
+    if (!item) return;
+
+    item.classList.remove("disabled");
+    item.setAttribute("data-disabled", "false");
+}

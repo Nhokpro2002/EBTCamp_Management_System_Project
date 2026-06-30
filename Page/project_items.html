@@ -2,8 +2,6 @@
 
 <head>
 
-    <link href="../CSS/project_items.css" rel="stylesheet">
-
     <!-- Drag and Drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
@@ -17,9 +15,18 @@
     <!-- JQuery 4.0.0-->
     <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
 
-    <!-- Sweet Alert-->
+    <!-- Sweet Alert -->
     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
     <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
+
+    <!-- Sortable -->
+    <script src="../Libs/Sortable/sortable.min.js"></script>
+
+    <!-- ExcelJS -->
+    <script src="../Libs/ExcelJS/exceljs.min.js"></script>
+
+    <!-- Project_Items CSS -->
+    <link href="../CSS/project_items.css" rel="stylesheet">
 </head>
 
 <body>
@@ -38,11 +45,8 @@
                 </small>
             </div>
             <div>
-                <button class="btn btn-success me-2">
-                    <i class="bi bi-floppy"></i>
-                    Save
-                </button>
-                <button class="btn btn-light" id="btn-close-project-items">
+                <button class="btn btn-outline-danger bg-danger-subtle text-danger border-danger"
+                    id="btn-close-project-items">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
@@ -59,7 +63,7 @@
                     </h5>
                 </div>
 
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <span class="input-group-text">
                         <i class="bi bi-search"></i>
                     </span>
@@ -82,6 +86,23 @@
                     </div>
                 </div>
 
+                <div class="excel-toolbar d-flex justify-content-end gap-2 my-2">
+                    <button class="btn btn-info btn-sm fw-bold" id="button-save-project-item">
+                        <i class="bi bi-download me-1"></i>
+                        Save
+                    </button>
+
+                    <button class="btn btn-primary btn-sm fw-bold" id="button-import-excel">
+                        <i class="bi bi-file-earmark-excel me-1"></i>
+                        Import Excel
+                    </button>
+
+                    <button class="btn btn-success btn-sm fw-bold" id="button-export-excel">
+                        <i class="bi bi-floppy me-1"></i>
+                        Export Excel
+                    </button>
+                </div>
+
                 <!-- Drop Zone -->
                 <div id="drop-zone">
                     <i class="bi bi-mouse fs-3"></i>
@@ -92,12 +113,16 @@
 
                 <!-- Table -->
                 <div class="table-wrapper">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle" id="project-items-table">
                         <thead>
                             <tr>
+                                <th class="text-center">
+                                    <input type="checkbox" id="checkAll">
+                                </th>
                                 <th>Name</th>
                                 <th>Model</th>
                                 <th>XCode/QCode</th>
+                                <th>Description</th>
                                 <th class="text-center">Required</th>
                                 <th class="text-center">Stock</th>
                                 <th class="text-center">Order</th>
@@ -105,8 +130,6 @@
                                 <th class="text-end">Total Price</th>
                                 <th>Requester</th>
                                 <th>Request Date</th>
-                                <th>Description</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="project-item-body">
@@ -119,20 +142,20 @@
                 <!-- Footer -->
                 <div class="project-footer">
                     <div>
-                        Total Items :
-                        <strong id="lbl-total-item">
-                            0
-                        </strong>
-                    </div>
-                    <div>
                         Total Cost :
                         <strong class="text-primary" id="lbl-total-cost">
-                            0 ₫
+                            $ 0
                         </strong>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="bulkActionBar" class="bulk-action-bar">
+        <button class="btn btn-danger" id="deleteSelectedBtn">
+            Delete selected
+        </button>
     </div>
 </body>
 

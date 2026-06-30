@@ -43,9 +43,6 @@ $(document).ready(function () {
 
     initProjectPage();
 
-    ui.renderInventory();
-
-    ui.renderProjectTable();
 });
 
 function bindProjectEvents() {
@@ -123,11 +120,12 @@ document.addEventListener("click", function (e) {
     }
 
     /*
-    * Click xem nhiều thông tin project hơn, list vật tư của nó nữa
+    * 
     */
     if (viewMoreItem) {
-        console.log("AAAAAAAAA");
-        openDrawer();
+        // load project_items page and pass data current project
+        window.location.href = `project_items.html?projectID=${viewMoreItem.dataset.id}`;
+
     }
 
     // =========================
