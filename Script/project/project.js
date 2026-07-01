@@ -1,12 +1,13 @@
 // =========================
 // IMPORTS
 // =========================
-import { variableGlobal, projectElements, messageCommon } from "./project.state.js";
+import { variableGlobal, projectElements } from "./project.state.js";
+import { projectPageMessage } from "./project_page_message.js";
 
-import * as api from "/../services/generic.api.js";
+import * as api from "../services/generic.api.js";
 import * as ui from "./project.ui.js";
 import * as handlerEvent from "./project.handle.event.js";
-import * as utils from "/../utils/utils.js";
+import * as utils from "../utils/utils.js";
 
 // =========================
 // CONSTANTS
@@ -107,7 +108,7 @@ async function initProjectPage() {
 
     } catch (error) {
         console.error(error);
-        utils.showError(messageCommon.error.getError);
+        utils.showError(projectPageMessage.loadError);
     }
 }
 

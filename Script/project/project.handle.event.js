@@ -1,8 +1,9 @@
 import * as ui from "./project.ui.js";
-import * as api from "../../services/generic.api.js";
-import * as utils from "../../utils/utils.js";
+import * as api from "../services/generic.api.js";
+import * as utils from "../utils/utils.js";
 
-import { variableGlobal, projectElements, messageCommon } from "./project.state.js";
+import { variableGlobal, projectElements } from "./project.state.js";
+import { projectPageMessage } from "./project_page_message.js";
 
 // =========================
 // CONSTANTS
@@ -27,7 +28,7 @@ export function validateProjectForm(data) {
         members.length > 0;
 
     if (!isValid) {
-        utils.showPopup("Error", "Please complete all required fields.", "error");
+        utils.showPopup("Error", projectPageMessage.requiredFields, "error");
         return false;
     }
 
@@ -111,13 +112,13 @@ export async function handleSubmitFormCreateProject() {
 
         variableGlobal.projectList.push(result);
 
-        utils.showSuccess(messageCommon.success.createSuccess);
+        utils.showSuccess(projectPageMessage.createSuccess);
 
         ui.renderProjectPage();
 
     } catch (error) {
         console.error(error);
-        utils.showError(messageCommon.error.createError);
+        utils.showError(projectPageMessage.createFailed);
     }
 }
 
@@ -143,13 +144,13 @@ export async function handleDeleteProject(deleteButton) {
             p => p.id !== projectID
         );
 
-        utils.showSuccess(messageCommon.success.deleteSuccess);
+        utils.showSuccess(projectPageMessage.deleteSuccess);
 
         ui.renderProjectPage();
 
     } catch (error) {
         console.error(error);
-        utils.showError(messageCommon.error.deleteError);
+        utils.showError(projectPageMessage.deleteFailed);
     }
 }
 

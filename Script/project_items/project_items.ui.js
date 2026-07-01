@@ -4,8 +4,8 @@
 
 import * as utils from "../utils/utils.js";
 import * as api from "../services/generic.api.js";
-import { messageCommon } from "../project/project/project.state.js";
-import { variableGlobal } from "../project/project/project.state.js";
+import { projectItemPageMessage } from "./project_item_page_message.js";
+import { projectItemVariable } from "./project_item_variable.js";
 
 const COLLECTION_PROJECT_ITEMS = "Project_Items"
 const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
@@ -15,10 +15,10 @@ export async function renderInventoryItem() {
     try {
         const response = await api.getRecords(COLLECTION_INVENTORY_ITEMS);
         if (!response) return;
-        variableGlobal.inventoryItems = response || [];
+        projectItemVariable.inventoryItemList = response || [];
         const $inventory = $("#inventory-list");
         $inventory.empty();
-        $.each(variableGlobal.inventoryItems, function (_, item) {
+        $.each(projectItemVariable.inventoryItemList, function (_, item) {
             $inventory.append(`
                 <div class="inventory-item" data-model="${item.model}">
                     <div title="${item.name}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
@@ -33,7 +33,7 @@ export async function renderInventoryItem() {
         });
     } catch (error) {
         console.error(error);
-        utils.showError(messageCommon.error.getError);
+        utils.showError(projectItemPageMessage.loadInventoryItemListError);
     }
 }
 
@@ -48,12 +48,12 @@ export async function renderProjectTable(projectID) {
 
         if (!response) return;
 
-        variableGlobal.projectItemList = response;
+        projectItemVariable.projectItemList = response;
 
         const tbody = $("#project-item-body");
         tbody.empty();
 
-        variableGlobal.projectItemList.forEach(item => {
+        projectItemVariable.projectItemList.forEach(item => {
             tbody.append(createProjectItemRow(item, "database"));
         });
 
@@ -62,7 +62,7 @@ export async function renderProjectTable(projectID) {
 
     } catch (error) {
         console.error(error);
-        utils.showError(messageCommon.error.getError);
+        utils.showError(projectItemPageMessage.loadProjectItemListError);
     }
 }
 
@@ -73,13 +73,9 @@ export function processDropItem(item) {
 }
 
 function createProjectItemRow(item, type) {
-    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
-    const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");
-    const required = item.required_quantity ?? item.required ?? 0;
-    const stock = item.stock ?? 0;
-    const unitPrice = item.unit_price ?? item.price ?? 0;
-    const totalPrice = Math.max(required - stock, 0) * unitPrice;
     if (type == "database") {
+        const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");
+        const user = JSON.parse(localStorage.getItem("user") ?? "{}");
         return `
         <tr data-id="${item.id}" data-model="${item.model}">
             <td class="text-center"><input type="checkbox" class="row-checkbox"></td>
@@ -101,7 +97,7 @@ function createProjectItemRow(item, type) {
                 <input 
                     type="number"
                     class="form-control form-control-sm text-center js-required"
-                    value="${required}"
+                    value="${item.required_quantity}"
                     min="0"
                 />
             </td>
@@ -114,7 +110,7 @@ function createProjectItemRow(item, type) {
 
             <td class="text-center">
                 <span class="badge badge-order js-order">
-                    ${Math.max(required - stock, 0)}
+                    ${item.purchase_quantity}
                 </span>
                 
             </td>
@@ -123,13 +119,13 @@ function createProjectItemRow(item, type) {
                 <input 
                     type="number"
                     class="form-control form-control-sm text-end js-unit-price"
-                    value="${unitPrice}"
+                    value="${item.unit_price}"
                     min="0"
                 />
             </td>
 
             <td class="text-end js-total-price">
-                $ ${totalPrice.toLocaleString()}
+                $ ${item.total_price.toLocaleString()}
             </td>
 
             <td>${user.employee_id ?? ""}</td>
@@ -145,6 +141,13 @@ function createProjectItemRow(item, type) {
         </tr>
     `;
     } else {
+        const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+        const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");
+        const required = item.required_quantity ?? 0;
+        const stock = item.stock ?? 0;
+        const unitPrice = item.unit_price ?? item.price ?? 0;
+        const totalPrice = Math.max(required - stock, 0) * unitPrice;
+
         return `
         <tr data-model="${item.model}">
             <td class="text-center"><input type="checkbox" class="row-checkbox"></td>

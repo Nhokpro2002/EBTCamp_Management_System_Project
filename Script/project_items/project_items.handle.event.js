@@ -2,8 +2,8 @@ import * as utils from "../utils/utils.js";
 import * as ui from "./project_items.ui.js";
 import * as api from "../services/generic.api.js";
 
-import { messageCommon } from "../project/project/project.state.js";
-import { variableGlobal } from "../project/project/project.state.js";
+import { projectItemVariable } from "./project_item_variable.js";
+import { projectItemPageMessage } from "./project_item_page_message.js"
 
 const COLLECTION_PROJECT_ITEMS = "Project_Items";
 
@@ -22,22 +22,22 @@ export function handleAddItemToProjectItems(model) {  // Cái này là id của 
 
     // trong project item sẽ có những row có id - là những row mà data được lấy từ db => call api update
     // các row không có id là do người dùng thêm mới vào => call api tạo mới
-    const item = variableGlobal.inventoryItems.find(x => x.model === model);
+    const item = projectItemVariable.inventoryItemList.find(x => x.model === model);
 
 
     if (!item) {
-        utils.showError(messageCommon.error.updateError);
+        utils.showError(projectItemPageMessage.itemNotExistInDB);
         return;
     }
 
-    if (variableGlobal.projectItemList.some(x => x.model === model)) {
-        utils.showError(messageCommon.error.updateError);
+    if (projectItemVariable.projectItemList.some(x => x.model === model)) {
+        utils.showError(projectItemPageMessage.itemExistOnProjectItem);
         return;
     }
 
     const newItem = { ...item };
 
-    variableGlobal.projectItemList.push(item);
+    projectItemVariable.projectItemList.push(item);
 
     ui.processDropItem(newItem);
 }
@@ -186,12 +186,15 @@ export async function handleSaveProjectItems() {
 
         await Promise.all(requests);
 
-        utils.showSuccess(messageCommon.success.createSuccess);
+        utils.showSuccess(projectItemPageMessage.updateSuccess);
     } catch (error) {
-        utils.showError(messageCommon.error.createError);
+        utils.showError(projectItemPageMessage.updateFailed);
     }
 }
 
+/*
+! Error
+ */
 export async function handleDeleteProjectItems() {
     const rows = Array.from(
         document.querySelectorAll("#project-item-body tr")
@@ -226,10 +229,11 @@ export async function handleDeleteProjectItems() {
 
         const checkAll = document.getElementById("checkAll");
         if (checkAll) checkAll.checked = false;
+        ui.updateProjectSummary();
 
-        utils.showSuccess(messageCommon.success.deleteSuccess);
+        utils.showSuccess(projectItemPageMessage.deleteSuccess);
     } catch (error) {
-        utils.showError(messageCommon.error.deleteError);
+        utils.showError(projectItemPageMessage.createFailed);
     }
 }
 

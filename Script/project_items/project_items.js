@@ -7,7 +7,7 @@ import * as ui from "./project_items.ui.js";
 // ==========================
 // STATE
 // ==========================
-import { variableGlobal, projectElements } from "../project/project/project.state.js";
+import { projectItemVariable } from "./project_item_variable.js";
 
 const projectID = new URLSearchParams(location.search).get("projectID");
 
@@ -91,7 +91,7 @@ function bindEvents() {
     $(document).on("input", ".js-search-inventory", function () {
         const keyword = document.getElementsByClassName("js-search-inventory")[0].value.trim().toLowerCase();
 
-        variableGlobal.filteredInventoryItems = variableGlobal.inventoryItems.filter(inventoryItem => {
+        projectItemVariable.filteredInventoryItems = projectItemVariable.inventoryItemList.filter(inventoryItem => {
             const matchKeyword = inventoryItem.model?.toLowerCase().includes(keyword);
 
             return matchKeyword;
@@ -99,7 +99,7 @@ function bindEvents() {
 
         const $inventory = $("#inventory-list");
         $inventory.empty();
-        $.each(variableGlobal.filteredInventoryItems, function (_, item) {
+        $.each(projectItemVariable.filteredInventoryItems, function (_, item) {
             $inventory.append(`
                 <div class="inventory-item" data-model="${item.model}">
                     <div title="${item.name}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">

@@ -1,18 +1,13 @@
-// Chỉ chứa các sự kiện như việc người dùng click chuột
-// * Event -> Call function logic -> render UI
-// Chỉ chứa hàm render UI
-
 
 // ==================================================
 // Change user avatar in dropdown
 // ==================================================
 
-import * as utils from "../../utils/utils.js";
+import * as utils from "../utils/utils.js";
 import * as handleEvent from "./project.handle.event.js";
-import * as api from "../../services/generic.api.js";
-import { messageCommon } from "./project.state.js";
-import { variableGlobal } from "./project.state.js";
-import { projectElements } from "./project.state.js";
+import * as api from "../services/generic.api.js";
+import { variableGlobal, projectElements } from "./project.state.js";
+import { projectPageMessage } from "./project_page_message.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "Users";
@@ -147,7 +142,7 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
 
   <div class="action-menu">
     <div class="action-item btn-view-more-project text-primary" data-id=${project.id}>
-      <i class="bi bi-eye me-2"></i> View more
+      <i class="bi bi-eye me-2"></i> View items
     </div>
 
     <div class="action-item btn-edit-project text-warning" data-id=${project.id}>
@@ -420,10 +415,10 @@ export async function disableProjectEditMode(tr, projectID) {
                 project.id === projectID ? response : project
             );
             renderProjectPage();
-            utils.showSuccess(messageCommon.success.updateSuccess);
+            utils.showSuccess(projectPageMessage.updateSuccess);
         }
     } catch (error) {
-        utils.showError(messageCommon.error.updateError);
+        utils.showError(projectPageMessage.updateFailed);
     }
 }
 

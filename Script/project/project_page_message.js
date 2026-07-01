@@ -7,6 +7,9 @@ export const projectPageMessage = {
     updateFailed: "Failed to update project.",
     deleteFailed: "Failed to delete project.",
 
+    loadSuccess: "Project loaded successfully.",
+    loadError: "Failed to load project.",
+
     requiredFields: "Please fill in all required fields.",
 
     deleteConfirm: "Are you sure you want to delete the selected items?"
