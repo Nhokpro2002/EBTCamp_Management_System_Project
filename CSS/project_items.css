@@ -9,6 +9,8 @@
     transition: right .35s ease;
     box-shadow: -10px 0 30px rgba(0, 0, 0, .15);
     padding: 10px;
+    width: 100vw;
+    height: 100vh;
 }
 
 #projectItemDrawer.show {
@@ -56,14 +58,20 @@
 .inventory-item {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 8px;
     background: white;
     border: 1px solid #e9ecef;
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 12px;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
     cursor: grab;
     transition: .25s;
+    min-width: 0;
+    font-size: smaller;
+}
+
+.inventory-item>div {
+    min-width: 0;
 }
 
 .inventory-item:hover {
@@ -74,12 +82,6 @@
 
 .inventory-item:active {
     cursor: grabbing;
-}
-
-.inventory-item img {
-    width: 58px;
-    height: 58px;
-    object-fit: contain;
 }
 
 
@@ -198,7 +200,7 @@
     Footer
 ================================ */
 .project-footer {
-    height: 60px;
+    height: 50px;
     border-top: 1px solid #dee2e6;
     display: flex;
     justify-content: flex-end;
@@ -242,23 +244,6 @@
     padding: .35rem .55rem;
 }
 
-
-/* ===============================
-    Responsive
-================================ */
-@media (max-width:1200px) {
-    #projectItemDrawer {
-        width: 100vw;
-    }
-
-    .inventory-panel {
-        display: none;
-    }
-
-    .project-panel {
-        flex: 1;
-    }
-}
 
 /* ===============================
     Description

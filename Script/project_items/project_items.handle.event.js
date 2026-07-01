@@ -1,9 +1,9 @@
-import * as utils from "../../utils/utils.js";
+import * as utils from "../utils/utils.js";
 import * as ui from "./project_items.ui.js";
-import * as api from "../../services/generic.api.js";
+import * as api from "../services/generic.api.js";
 
-import { messageCommon } from "../project.state.js";
-import { variableGlobal } from "../project.state.js";
+import { messageCommon } from "../project/project/project.state.js";
+import { variableGlobal } from "../project/project/project.state.js";
 
 const COLLECTION_PROJECT_ITEMS = "Project_Items";
 
@@ -51,7 +51,7 @@ export async function handleExportExcelProjectItems() {
     const thead = table.querySelector("thead");
     const tbody = table.querySelector("tbody");
 
-    const ignoreColumns = ["Required", "Stock"];
+    const ignoreColumns = ["", "Required", "Stock"];
     const headers = [];
     const exportIndexes = [];
 
@@ -129,66 +129,115 @@ export async function handleExportExcelProjectItems() {
 }
 
 function buildDataPayload() {
-    const projectId = window.location.pathname.split("/").pop();
+    const rows = Array.from(document.querySelectorAll("#project-item-body tr"))
+        .filter(row => row.querySelector(".row-checkbox")?.checked);
 
-    const rows = document.querySelectorAll("#project-item-body tr");
-
-    const data = Array.from(rows).map(row => {
-        const name = row.querySelector("td:nth-child(2)")?.innerText.trim() || "";
-        const model = row.querySelector("td:nth-child(3)")?.innerText.trim() || "";
-        const code = row.querySelector("td:nth-child(4)")?.innerText.trim() || "";
-
+    return rows.map(row => {
         const required_quantity =
             parseFloat(row.querySelector(".js-required")?.value || 0);
 
-        const stock_quantity = parseFloat(
-            row.querySelector("td:nth-child(7) .badge-stock")?.innerText || 0
-        );
+        const stock_quantity =
+            parseFloat(
+                row.querySelector("td:nth-child(7) .badge-stock")?.innerText || 0
+            );
 
-        const order_quantity = parseFloat(
-            row.querySelector(".js-order")?.innerText || 0
-        );
-
-        const purchase_quantity = Math.max(required_quantity - stock_quantity, 0);
+        const order_quantity =
+            parseFloat(row.querySelector(".js-order")?.innerText || 0);
 
         const unit_price =
             parseFloat(row.querySelector(".js-unit-price")?.value || 0);
 
         const total_price =
-            parseFloat(row.querySelector(".js-total-price")?.innerText.replace(/[^0-9.-]+/g, "") || 0);
-
-        const request_date = row.querySelector(".js-request-date")?.value;
+            parseFloat(
+                row.querySelector(".js-total-price")?.innerText.replace(/[^0-9.-]+/g, "") || 0
+            );
 
         return {
-            name,
-            model,
-            code,
+            id: row.dataset.id || null,
+
+            name: row.querySelector("td:nth-child(2)")?.innerText.trim() || "",
+            model: row.querySelector("td:nth-child(3)")?.innerText.trim() || "",
+            code: row.querySelector("td:nth-child(4)")?.innerText.trim() || "",
+            description: row.querySelector("td:nth-child(5)")?.innerText.trim() || "",
+
             required_quantity,
             stock_quantity,
             order_quantity,
-            purchase_quantity,
+            purchase_quantity: Math.max(required_quantity - stock_quantity, 0),
+
             project: new URLSearchParams(location.search).get("projectID"),
+
             unit_price,
             total_price,
-            request_date
 
+            request_date: row.querySelector(".js-request-date")?.value || null
         };
     });
-
-    return data;
 }
-
 export async function handleSaveProjectItems() {
     const payload = buildDataPayload();
+
     try {
-        const requests = payload.map(item =>
-            api.createRecord(COLLECTION_PROJECT_ITEMS, item)
+        const requests = payload.map(({ id, ...data }) =>
+            id
+                ? api.updateRecord(COLLECTION_PROJECT_ITEMS, id, data)
+                : api.createRecord(COLLECTION_PROJECT_ITEMS, data)
         );
-        const response = await Promise.all(requests);
-        if (response) {
-            utils.showSuccess(messageCommon.success.createSuccess);
-        }
+
+        await Promise.all(requests);
+
+        utils.showSuccess(messageCommon.success.createSuccess);
     } catch (error) {
         utils.showError(messageCommon.error.createError);
     }
+}
+
+export async function handleDeleteProjectItems() {
+    const rows = Array.from(
+        document.querySelectorAll("#project-item-body tr")
+    ).filter(row => row.querySelector(".row-checkbox")?.checked);
+
+    if (!rows.length) return;
+
+    try {
+        const requests = [];
+
+        rows.forEach(row => {
+            const id = row.dataset.id;
+
+            if (id) {
+                // Có trong DB -> xóa DB rồi xóa UI
+                requests.push(
+                    api.deleteRecord(COLLECTION_PROJECT_ITEMS, id)
+                        .then(() => row.remove())
+                );
+            } else {
+                // Chưa lưu DB -> chỉ xóa UI
+                row.remove();
+            }
+            enableInventoryItem(row.dataset.model);
+
+        });
+
+        await Promise.all(requests);
+
+        //updateTotalCost();
+        ui.updateBulkActionBar();
+
+        const checkAll = document.getElementById("checkAll");
+        if (checkAll) checkAll.checked = false;
+
+        utils.showSuccess(messageCommon.success.deleteSuccess);
+    } catch (error) {
+        utils.showError(messageCommon.error.deleteError);
+    }
+}
+
+function enableInventoryItem(model) {
+    const item = document.querySelector(`#inventory-list [data-model="${model}"]`);
+
+    if (!item) return;
+
+    item.classList.remove("disabled");
+    item.setAttribute("data-disabled", "false");
 }

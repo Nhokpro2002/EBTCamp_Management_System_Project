@@ -10,9 +10,9 @@
 import * as utils from "../../utils/utils.js";
 import * as handleEvent from "./project.handle.event.js";
 import * as api from "../../services/generic.api.js";
-import { messageCommon } from "../project.state.js";
-import { variableGlobal } from "../project.state.js";
-import { projectElements } from "../project.state.js";
+import { messageCommon } from "./project.state.js";
+import { variableGlobal } from "./project.state.js";
+import { projectElements } from "./project.state.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "Users";

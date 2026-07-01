@@ -67,7 +67,7 @@
                     <span class="input-group-text">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input class="form-control" placeholder="Search inventory items">
+                    <input class="form-control js-search-inventory" placeholder="Search inventory items">
 
                 </div>
                 <div id="inventory-list">
@@ -82,24 +82,14 @@
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input class="form-control" placeholder="Search project items">
+                        <input class="form-control js-search-project-item" placeholder="Search project items">
                     </div>
                 </div>
 
                 <div class="excel-toolbar d-flex justify-content-end gap-2 my-2">
-                    <button class="btn btn-info btn-sm fw-bold" id="button-save-project-item">
-                        <i class="bi bi-download me-1"></i>
-                        Save
-                    </button>
-
                     <button class="btn btn-primary btn-sm fw-bold" id="button-import-excel">
                         <i class="bi bi-file-earmark-excel me-1"></i>
                         Import Excel
-                    </button>
-
-                    <button class="btn btn-success btn-sm fw-bold" id="button-export-excel">
-                        <i class="bi bi-floppy me-1"></i>
-                        Export Excel
                     </button>
                 </div>
 
@@ -153,8 +143,19 @@
     </div>
 
     <div id="bulkActionBar" class="bulk-action-bar">
-        <button class="btn btn-danger" id="deleteSelectedBtn">
-            Delete selected
+        <button class="btn btn-danger btn-sm fw-bold me-1" id="button-delete-project-item">
+            <i class="bi bi-trash me-1"></i>
+            Delete
+        </button>
+
+        <button class="btn btn-info btn-sm fw-bold me-1" id="button-save-project-item">
+            <i class="bi bi-download me-1"></i>
+            Save
+        </button>
+
+        <button class="btn btn-success btn-sm fw-bold me-1" id="button-export-excel">
+            <i class="bi bi-floppy me-1"></i>
+            Export Excel
         </button>
     </div>
 </body>

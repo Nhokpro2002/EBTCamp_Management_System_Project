@@ -1,7 +1,11 @@
-import * as utils from "../../utils/utils.js";
-import * as api from "../../services/generic.api.js";
-import { messageCommon } from "../project.state.js";
-import { variableGlobal } from "../project.state.js";
+// design lai phan inventory-item
+// code tính năng tìm kiếm trên inventory-items và project-items
+// code tính năng xóa item từ project-items, có row có id thì call api xóa, không có id thì xóa trên ui 
+
+import * as utils from "../utils/utils.js";
+import * as api from "../services/generic.api.js";
+import { messageCommon } from "../project/project/project.state.js";
+import { variableGlobal } from "../project/project/project.state.js";
 
 const COLLECTION_PROJECT_ITEMS = "Project_Items"
 const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
@@ -17,9 +21,12 @@ export async function renderInventoryItem() {
         $.each(variableGlobal.inventoryItems, function (_, item) {
             $inventory.append(`
                 <div class="inventory-item" data-model="${item.model}">
-                    <div style="display: flex; flex-direction: column; padding: 6px 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.05);">
-                        <div style="font-size: 14px; font-weight: 600; color: #222; line-height: 1.2;">${item.name}</div>
-                        <div style="margin-top: 2px; font-size: 12px; color: #6b7280; line-height: 1.2;">${item.model ?? ""}</div>
+                    <div title="${item.name}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+                        ${item.name}
+                    </div>
+                    <div>|</div>
+                    <div title="${item.model}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+                        ${item.model}
                     </div>
                 </div>
             `);
@@ -101,7 +108,7 @@ function createProjectItemRow(item, type) {
 
             <td class="text-center">
                 <span class="badge badge-stock">
-                    ${stock}
+                    ${item.stock_quantity}
                 </span>
             </td>
 
@@ -166,7 +173,7 @@ function createProjectItemRow(item, type) {
 
             <td class="text-center">
                 <span class="badge badge-stock">
-                    ${stock}
+                    ${item.stock}
                 </span>
             </td>
 
@@ -204,7 +211,6 @@ function createProjectItemRow(item, type) {
     `;
     }
 
-
 }
 
 export function updateProjectSummary() {
@@ -238,5 +244,16 @@ function initLastPopover() {
         new bootstrap.Popover(element, {
             html: true
         });
+    }
+}
+
+export function updateBulkActionBar() {
+    const checkedBoxes = document.querySelectorAll(".row-checkbox:checked");
+    const bar = document.getElementById("bulkActionBar");
+
+    if (checkedBoxes.length > 0) {
+        bar.classList.add("show");
+    } else {
+        bar.classList.remove("show");
     }
 }

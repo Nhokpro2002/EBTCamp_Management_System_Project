@@ -7,7 +7,7 @@
 // Change user avatar in dropdown
 // ==================================================
 
-import * as utils from "../../utils/utils.js";
+import * as utils from "../utils/utils.js";
 import { variableGlobal } from "../project.state.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
@@ -419,7 +419,7 @@ export function enableTaskEditMode(tr, taskId) {
     tr.querySelector(".task-status").innerHTML = `
         <select class="form-select form-select-sm">
             <option ${task.status === "Done" ? "selected" : ""}>Done</option>
-            <option ${task.status === "Processing" ? "selected" : ""}>Processing</option>
+            <option ${task.status === "Processing" ? "scelected" : ""}>Processing</option>
             <option ${task.status === "Problem" ? "selected" : ""}>Problem</option>
         </select>
     `;
