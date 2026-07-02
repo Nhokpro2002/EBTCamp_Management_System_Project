@@ -142,11 +142,11 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
 
   <div class="action-menu">
     <div class="action-item btn-view-more-project text-primary" data-id=${project.id}>
-      <i class="bi bi-eye me-2"></i> View items
+      <i class="bi bi-box-seam me-2"></i></i> Materials
     </div>
 
-    <div class="action-item btn-workflow-project text-primary" data-id=${project.id}>
-      <i class="bi bi-eye me-2"></i> Workflow
+    <div class="action-item btn-workflow-project text-info" data-id=${project.id}>
+      <i class="bi bi-calendar2-range me-2"></i> Workflow
     </div>
 
     <div class="action-item btn-edit-project text-warning" data-id=${project.id}>

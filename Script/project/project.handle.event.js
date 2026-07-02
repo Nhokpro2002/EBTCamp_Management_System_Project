@@ -110,6 +110,12 @@ export async function handleSubmitFormCreateProject() {
     try {
         const result = await api.createRecord(COLLECTION_PROJECTS, payload);
 
+        /*
+        * Call api tạo một project mới => call api tạo 5 giai đoạn của dự án setup máy
+       * Gồm: Desgin (lên bản vẽ), mechanical (gia công), assembly (lắp ráp), electric (đi điện), program (viết chương trình)
+
+        */
+
         variableGlobal.projectList.push(result);
 
         utils.showSuccess(projectPageMessage.createSuccess);

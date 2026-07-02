@@ -66,7 +66,7 @@ $("#checkAll").on("change", function () {
 // ==========================
 function bindEvents() {
 
-    $("#btn-close-project-items").on("click", function () {
+    $("#back-project-page-button").on("click", function () {
         window.location.href = "project.html";
     });
 

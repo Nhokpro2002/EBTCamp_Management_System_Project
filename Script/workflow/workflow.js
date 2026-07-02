@@ -12,6 +12,7 @@ let tomSelectTaskHandler = null;
 let userMap = null;
 
 const COLLECTION_USERS = "Users";
+const COLLECTION_TASKS = "Tasks";
 
 
 // =====================================================
@@ -77,7 +78,7 @@ gantt.config.columns = [
                     <span class="stage-name">${task.text}</span>
 
                     <button
-                        class="btn btn-sm btn-link stage-add-btn p-0 ms-2"
+                        class="btn btn-sm btn-link open-create-task-popup-btn p-0 ms-2"
                         data-id="${task.id}"
                         title="Add Task">
                         <i class="bi bi-node-plus-fill"></i>
@@ -867,7 +868,7 @@ document.querySelector("#btnExpand")?.addEventListener("click", function () {
 let currentStageId = null;
 
 document.addEventListener("click", function (e) {
-    const btn = e.target.closest(".stage-add-btn");
+    const btn = e.target.closest(".open-create-task-popup-btn");
     if (!btn)
         return;
     e.stopPropagation();
@@ -875,6 +876,7 @@ document.addEventListener("click", function (e) {
     openTaskPopup(btn);
 });
 
+// ! Error
 function openTaskPopup(button) {
     const popup = document.getElementById("task-create-popup");
     popup.classList.remove("d-none");
@@ -884,9 +886,10 @@ function openTaskPopup(button) {
     popup.style.top =
         window.scrollY + rect.top + "px";
 
+    resetCreateTaskForm();
+
     // process task handler
     renderTaskHandlerSelect()
-
 }
 
 function renderTaskHandlerSelect() {
@@ -931,6 +934,25 @@ function renderTaskHandlerSelect() {
     }
 }
 
+function resetCreateTaskForm() {
+    // Name
+    $("#task-name").val("");
+    // Start Date
+    $("#task-start-date").val("");
+    // Duration
+    $("#task-duration").val(1);
+
+    if (tomSelectTaskHandler) {
+        tomSelectTaskHandler.clear();
+        tomSelectTaskHandler.setTextboxValue("");
+        tomSelectTaskHandler.close();
+    }
+}
+
+$("#back-project-page-button").on("click", function () {
+    window.location.href = "project.html";
+})
+
 async function getUserData() {
     try {
         const users = await api.getRecords(COLLECTION_USERS);
@@ -948,11 +970,40 @@ document.getElementById("btn-close-task-popup").addEventListener("click", functi
     document.getElementById("task-create-popup").classList.add("d-none");
 });
 
+document.getElementById("btn-create-task").addEventListener("click", () => {
+    createNewTask();
+});
+
 document.addEventListener("click", function (e) {
     const popup = document.getElementById("task-create-popup");
-    if (popup.contains(e.target) || e.target.closest(".stage-add-btn")) {
+    if (popup.contains(e.target) || e.target.closest(".open-create-task-popup-btn")) {
         return;
     }
     popup.classList.add("d-none");
 });
+
+function makePayloadData() {
+    const payload = {
+        name: document.getElementById("task-name").value,
+        start_date: document.getElementById("task-start-date").value,
+        duration: Number(document.getElementById("task-duration").value),
+        handler: Array.from(
+            document.getElementById("task-handler")?.selectedOptions || []
+        ).map(o => o.value),
+        progress: 0,
+        stage: currentStageId
+    };
+    resetCreateTaskForm();
+
+    return payload;
+}
+
+async function createNewTask() {
+    try {
+        const payload = makePayloadData();
+        const response = await api.createRecord(COLLECTION_TASKS, payload);
+    } catch (error) {
+        console.log(error);
+    }
+}
 
