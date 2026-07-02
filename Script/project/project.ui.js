@@ -145,6 +145,10 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
       <i class="bi bi-eye me-2"></i> View items
     </div>
 
+    <div class="action-item btn-workflow-project text-primary" data-id=${project.id}>
+      <i class="bi bi-eye me-2"></i> Workflow
+    </div>
+
     <div class="action-item btn-edit-project text-warning" data-id=${project.id}>
       <i class="bi bi-pencil-square me-2"></i> Edit
     </div>

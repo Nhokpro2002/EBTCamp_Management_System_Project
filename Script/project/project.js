@@ -138,6 +138,7 @@ document.addEventListener("click", function (e) {
     const menu = e.target.closest(".action-menu");
     const editItem = e.target.closest(".btn-edit-project");
     const viewMoreItem = e.target.closest(".btn-view-more-project");
+    const workflowItem = e.target.closest(".btn-workflow-project");
     const deleteItem = e.target.closest(".btn-delete-project");
 
     const openMenus = document.querySelectorAll(".action-menu.show");
@@ -162,6 +163,14 @@ document.addEventListener("click", function (e) {
     // =========================
     if (viewMoreItem) {
         window.location.href = `project_items.html?projectID=${viewMoreItem.dataset.id}`;
+        return;
+    }
+
+    // =========================
+    // PROJECT WORKFLOW
+    // =========================
+    if (workflowItem) {
+        window.location.href = `workflow.html?projectID=${workflowItem.dataset.id}`;
         return;
     }
 
