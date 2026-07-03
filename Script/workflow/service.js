@@ -1,0 +1,213 @@
+import * as api from "../services/generic.api.js";
+import * as utils from "../utils/utils.js";
+
+import { workflowData, projectData } from "./states.js";
+
+
+// COLLECTION_NAME
+const COLLECTION_STAGES = "Stages";
+const COLLECTION_TASKS = "Tasks";
+const COLLECTION_USERS = "Users";
+
+export async function createNewTask() {
+    try {
+        const payload = makePayloadData();
+        const response = await api.createRecord(COLLECTION_TASKS, payload);
+    } catch (error) {
+        console.log(error);
+        utils.showError(workflowPageMessage.createFailed);
+    }
+}
+
+export async function loadStageData(projectID) {
+    try {
+        // Load danh sách stage
+        const stages = await api.getRecordsFilter(COLLECTION_STAGES, "project", projectID);
+
+        workflowData.stages = stages || [];
+        workflowData.tasks = [];
+
+        if (workflowData.stages.length === 0) return;
+
+        // Load task của tất cả stage
+        const taskResults = await Promise.all(
+            workflowData.stages.map(stage =>
+                api.getRecordsFilter(COLLECTION_TASKS, "stage", stage.id)
+            )
+        );
+
+        // Gộp thành một mảng duy nhất
+        workflowData.tasks = taskResults.flat();
+
+    } catch (error) {
+        console.error(error);
+        utils.showError(workflowPageMessage.loadStageListError);
+    }
+}
+
+export function mappingData() {
+
+    projectData.data = [];
+    projectData.links = [];
+
+    // Stage
+    workflowData.stages.forEach(stage => {
+        projectData.data.push({
+            id: stage.id,
+            text: stage.name,
+            start_date: stage.start_date,
+            duration: stage.duration ?? 0,
+            progress: stage.progress ?? 0,
+            open: true,
+            type: gantt.config.types.project,
+            css: stage.css
+        });
+    });
+
+    // Task
+    workflowData.tasks.forEach(task => {
+        projectData.data.push({
+            id: task.id,
+            parent: task.stage,
+            text: task.name,
+            start_date: task.start_date,
+            duration: task.duration ?? 0,
+            progress: task.progress ?? 0,
+            css: task.css
+        });
+    });
+
+    // ============================
+    // Generate Links
+    // ============================
+    const taskGroups = {};
+
+    // Gom task theo stage
+    workflowData.tasks.forEach(task => {
+        if (!taskGroups[task.stage]) {
+            taskGroups[task.stage] = [];
+        }
+        taskGroups[task.stage].push(task);
+    });
+
+    let linkId = 1;
+
+    Object.values(taskGroups).forEach(tasks => {
+
+        // Nếu cần theo thời gian
+        tasks.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+
+        for (let i = 0; i < tasks.length - 1; i++) {
+            projectData.links.push({
+                id: linkId++,
+                source: tasks[i].id,
+                target: tasks[i + 1].id,
+                type: "0" // Finish to Start
+            });
+        }
+    });
+}
+
+// =====================================================
+// Zoom Buttons
+// =====================================================
+export function changeView(mode) {
+    if (mode === "day") {
+        gantt.config.scales = [
+            {
+                unit: "month",
+                step: 1,
+                format: "%F %Y"
+            },
+            {
+                unit: "day",
+                step: 1,
+                format: "%d"
+            }
+        ];
+    }
+
+    if (mode === "week") {
+        gantt.config.scales = [
+            {
+                unit: "month",
+                step: 1,
+                format: "%F %Y"
+            },
+            {
+                unit: "week",
+                step: 1,
+                format: "Week #%W"
+            }
+        ];
+    }
+
+    if (mode === "month") {
+        gantt.config.scales = [
+            {
+                unit: "year",
+                step: 1,
+                format: "%Y"
+            },
+            {
+                unit: "month",
+                step: 1,
+                format: "%M"
+            }
+        ];
+    }
+    gantt.render();
+}
+
+// =========================================================
+// Zoom
+// =========================================================
+export function setZoom(mode) {
+    switch (mode) {
+        case "day":
+            gantt.config.scales = [
+                {
+                    unit: "month",
+                    step: 1,
+                    format: "%F %Y"
+                },
+                {
+                    unit: "day",
+                    step: 1,
+                    format: "%d"
+                }
+            ];
+            break;
+
+        case "week":
+            gantt.config.scales = [
+                {
+                    unit: "month",
+                    step: 1,
+                    format: "%F %Y"
+                },
+                {
+                    unit: "week",
+                    step: 1,
+                    format: "Week %W"
+                }
+            ];
+            break;
+
+        case "month":
+            gantt.config.scales = [
+                {
+                    unit: "year",
+                    step: 1,
+                    format: "%Y"
+                },
+                {
+                    unit: "month",
+                    step: 1,
+                    format: "%M"
+                }
+            ];
+            break;
+    }
+    gantt.render();
+}

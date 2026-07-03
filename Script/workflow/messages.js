@@ -15,6 +15,8 @@ export const workflowPageMessage = {
     loadStageListSuccess: "Stage Data loaded successfully.",
     loadStageListError: "Failed to load stage data.",
 
+    loadUserDataError: "Failed to load user data.",
+
     requiredFields: "Please fill in all required fields.",
 
     deleteConfirm: "Are you sure you want to delete the selected tasks?"

@@ -9,6 +9,7 @@ import { projectPageMessage } from "./project_page_message.js";
 // CONSTANTS
 // =========================
 const COLLECTION_PROJECTS = "Projects";
+const COLLECTION_STAGES = "Stages";
 
 /*
 ===========================================
@@ -40,7 +41,6 @@ export function validateProjectForm(data) {
                 STATE HELPERS
 ===========================================
 */
-
 export function removeProjectFromState(projectID) {
     const list = variableGlobal.projectList;
 
@@ -55,7 +55,6 @@ export function removeProjectFromState(projectID) {
                 FILTER
 ===========================================
 */
-
 export function handleFilterChange() {
     const keyword = projectElements.searchInput.value.trim().toLowerCase();
     const selectedStatus = projectElements.statusFilter.value;
@@ -76,7 +75,6 @@ export function handleFilterChange() {
                 CREATE PROJECT
 ===========================================
 */
-
 function getCreateProjectFormData() {
     return {
         projectName: document.getElementById("project-name")?.value.trim(),
@@ -108,15 +106,33 @@ export async function handleSubmitFormCreateProject() {
     const payload = buildProjectPayload(formData);
 
     try {
-        const result = await api.createRecord(COLLECTION_PROJECTS, payload);
+        // Tạo project
+        const project = await api.createRecord(COLLECTION_PROJECTS, payload);
 
-        /*
-        * Call api tạo một project mới => call api tạo 5 giai đoạn của dự án setup máy
-       * Gồm: Desgin (lên bản vẽ), mechanical (gia công), assembly (lắp ráp), electric (đi điện), program (viết chương trình)
+        // Danh sách stage mặc định
+        const defaultStages = [
+            { name: "Design", css: "design" },
+            { name: "Mechanical", css: "mechanical" },
+            { name: "Assembly", css: "assembly" },
+            { name: "Electric", css: "electric" },
+            { name: "Program", css: "program" }
+        ];
 
-        */
+        // Tạo 5 stage
+        await Promise.all(
+            defaultStages.map(stage =>
+                api.createRecord(COLLECTION_STAGES, {
+                    project: project.id,
+                    name: stage.name,
+                    css: stage.css,
+                    start_date: project.start_date,
+                    duration: 0,
+                    progress: 0
+                })
+            )
+        );
 
-        variableGlobal.projectList.push(result);
+        variableGlobal.projectList.push(project);
 
         utils.showSuccess(projectPageMessage.createSuccess);
 
