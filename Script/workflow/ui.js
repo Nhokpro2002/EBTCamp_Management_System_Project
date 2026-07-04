@@ -1,13 +1,14 @@
-// make feature get data stage, task
+
 // change name task and save database
-// each create new project, auto call api save 5 stage: Design, Mechanical, Assembly, Electric, Program
-// create new task -> update UI
-// make link line
 // drag task bar moving new position => save change to database
 // change task progress => save database
 // change project name on the header
-// dat/week/month header => time
 // design idel to delete task
+
+import { workflowData, projectData } from "./states.js";
+import * as service from "./service.js";
+import * as api from "./service.js"
+import * as utils from "../utils/utils.js";
 
 // =====================================================
 // Today Line
@@ -46,76 +47,108 @@ export function renderTodayLine() {
     container.appendChild(label);
 }
 
-/*function renderTaskHandlerSelect() {
-    const $taskHandler = $("#task-handler");
-    if (!$taskHandler.length) return;
-    $taskHandler.empty();
-
-    Object.values(userMap).forEach(user => {
-        const $option = $("<option>", {
-            value: user.id,
-            text: user.employee_id
-        });
-
-        $taskHandler.append($option);
-    });
-
-    // Nếu chưa có instance TomSelect thì tạo mới
-    if (!tomSelectTaskHandler) {
-
-        tomSelectTaskHandler = new TomSelect(`#task-handler`, {
-            plugins: ['remove_button'],
-            hideSelected: true,
-            create: false,
-            placeholder: "Select task handlers",
-        });
-
-    } else {
-
-        // Nếu đã có instance thì refresh options
-        const instance = tomSelectTaskHandler;
-
-        instance.clearOptions();
-
-        Object.values(userMap).forEach(user => {
-            instance.addOption({
-                value: user.id,
-                text: user.employee_id
-            });
-        });
-
-        instance.refreshOptions(false);
-    }
-}*/
-
 // =====================================================
 // Task Color By Stage
 // =====================================================
 export function setTaskColor(task) {
     switch (task.css) {
+
         case "design":
-            task.color = "#1976d2";
-            task.progressColor = "#0d47a1";
+            task.color = "#a1d5ff";
+            task.progressColor = "#073374";
             break;
 
         case "mechanical":
-            task.color = "#00acc1";
-            task.progressColor = "#00838f";
+            task.color = "#bcf7ff";
+            task.progressColor = "#00705d";
             break;
 
         case "assembly":
-            task.color = "#43a047";
-            task.progressColor = "#2e7d32";
+            task.color = "#c9fbca";
+            task.progressColor = "#006307";
             break;
 
         case "electric":
-            task.color = "#fb8c00";
-            task.progressColor = "#ef6c00";
+            task.color = "#ffe3b9";
+            task.progressColor = "#923300";
             break;
 
         case "program":
-            task.color = "#7b1fa2";
-            task.progressColor = "#512da8";
+            task.color = "#f6c6ff";
+            task.progressColor = "#2f0168";
             break;
     }
 }
+
+export function openAddTaskModal(stageID, stageName) {
+    workflowData.currentStageID = stageID;
+
+    document.getElementById("stage-name").value = stageName;
+    document.getElementById("task-name").value = "";
+    document.getElementById("start-date").value = "";
+    document.getElementById("start-date").min = service.getMinStartDate(stageID);
+
+    document.getElementById("duration").value = "";
+
+    const modal = document.getElementById("taskModal");
+    modal.classList.add("open");
+}
+
+export async function submitTask() {
+    const response = await api.createNewTask();
+
+    if (response) {
+        // 1. add vào global tasks
+        workflowData.tasks.push(response);
+
+        // 2. make object for gantt
+        const newObject = {
+            id: response.id,
+            parent: response.stage,
+            text: response.name,
+            start_date: response.start_date,
+            duration: response.duration ?? 0,
+            progress: response.progress ?? 0,
+            css: response.css
+        };
+
+        projectData.data.push(newObject);
+
+        // 3. add vào taskGroups theo stage
+        if (!workflowData.taskGroups[response.stage]) {
+            workflowData.taskGroups[response.stage] = [];
+        }
+
+        const stageTasks = workflowData.taskGroups[response.stage];
+
+        // lấy task cuối cùng trong stage (trước khi push)
+        const lastTaskInStage = stageTasks.length
+            ? stageTasks[stageTasks.length - 1]
+            : null;
+
+        stageTasks.push(response);
+
+        // 4. tạo link nếu có task trước đó trong cùng stage
+        if (lastTaskInStage) {
+            const newLink = {
+                id: projectData.links.length
+                    ? Math.max(...projectData.links.map(l => l.id)) + 1
+                    : 1,
+                source: lastTaskInStage.id,
+                target: response.id,
+                type: "0"
+            };
+
+            projectData.links.push(newLink);
+        }
+
+        // 5. render lại gantt
+        gantt.parse(projectData);
+    }
+
+    closeTaskModal();
+}
+
+export function closeTaskModal() {
+    document.getElementById("taskModal").classList.remove("open");
+} 

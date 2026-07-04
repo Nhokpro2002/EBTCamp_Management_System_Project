@@ -75,12 +75,21 @@ gantt.config.columns = [
                 program: "bi-motherboard"
             };
 
-            const icon = task.$level === 0
-                ? `<i class="bi ${iconMap[task.css]} me-1"></i>`
+            const key = (task.css || "").toLowerCase();
+            const iconClass = iconMap[key];
+
+            const icon = (task.$level === 0 && iconClass)
+                ? `<i class="bi ${iconClass} me-2" style="color:${task.progressColor}"></i>`
+                : "";
+
+            const addBtn = task.$level === 0
+                ? `<i class="bi bi-plus-circle add-task-icon"
+              data-id="${task.id}"
+              data-name="${task.text}"></i>`
                 : "";
 
             return task.$level === 0
-                ? `<span class="stage-name">${icon}${task.text}</span>`
+                ? `<span class="stage-name">${icon}${task.text} ${addBtn}</span>`
                 : task.text;
         }
     },
@@ -148,6 +157,7 @@ gantt.templates.tooltip_text = function (start, end, task) {
 gantt.templates.task_text = function (start, end, task) {
     return task.text;
 };
+
 
 // =====================================================
 // Init

@@ -1,5 +1,6 @@
 import * as api from "../services/generic.api.js";
 import * as utils from "../utils/utils.js";
+import { workflowPageMessage } from "./messages.js";
 
 import { workflowData, projectData } from "./states.js";
 
@@ -11,18 +12,51 @@ const COLLECTION_USERS = "Users";
 
 export async function createNewTask() {
     try {
-        const payload = makePayloadData();
-        const response = await api.createRecord(COLLECTION_TASKS, payload);
+        const payload = makeNewTaskDataPayLoad();
+        return await api.createRecord(COLLECTION_TASKS, payload);
     } catch (error) {
         console.log(error);
         utils.showError(workflowPageMessage.createFailed);
     }
 }
 
+function makeNewTaskDataPayLoad() {
+
+    const name = document.getElementById("task-name").value;
+    const start_date = document.getElementById("start-date").value;
+    const duration = parseInt(document.getElementById("duration").value);
+    const stageID = workflowData.currentStageID;
+    const css = document.getElementById("stage-name").value.toLowerCase();
+
+    if (!name || !start_date || !duration) return;
+
+    return {
+        name,
+        start_date,
+        duration,
+        stage: stageID,
+        css,
+        progress: 0
+    };
+}
+
 export async function loadStageData(projectID) {
     try {
         // Load danh sách stage
+        const ORDER = {
+            design: 1,
+            mechanical: 2,
+            assembly: 3,
+            electric: 4,
+            program: 5
+        };
+
         const stages = await api.getRecordsFilter(COLLECTION_STAGES, "project", projectID);
+
+        stages.sort((a, b) =>
+            (ORDER[(a.css || "").toLowerCase()] ?? 999) -
+            (ORDER[(b.css || "").toLowerCase()] ?? 999)
+        );
 
         workflowData.stages = stages || [];
         workflowData.tasks = [];
@@ -46,7 +80,6 @@ export async function loadStageData(projectID) {
 }
 
 export function mappingData() {
-
     projectData.data = [];
     projectData.links = [];
 
@@ -64,7 +97,7 @@ export function mappingData() {
         });
     });
 
-    // Task
+    // Task => projectData.tasks (chuẩn hóa dữ liệu để render)
     workflowData.tasks.forEach(task => {
         projectData.data.push({
             id: task.id,
@@ -80,19 +113,19 @@ export function mappingData() {
     // ============================
     // Generate Links
     // ============================
-    const taskGroups = {};
+    //const taskGroups = {};
 
     // Gom task theo stage
     workflowData.tasks.forEach(task => {
-        if (!taskGroups[task.stage]) {
-            taskGroups[task.stage] = [];
+        if (!workflowData.taskGroups[task.stage]) {
+            workflowData.taskGroups[task.stage] = [];
         }
-        taskGroups[task.stage].push(task);
+        workflowData.taskGroups[task.stage].push(task);
     });
 
     let linkId = 1;
 
-    Object.values(taskGroups).forEach(tasks => {
+    Object.values(workflowData.taskGroups).forEach(tasks => {
 
         // Nếu cần theo thời gian
         tasks.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
@@ -106,7 +139,28 @@ export function mappingData() {
             });
         }
     });
+
+    console.log(projectData.links);
 }
+
+export function getMinStartDate(stageID) {
+    const stageTasks = workflowData.tasks.filter(task => task.stage == stageID);
+    if (!stageTasks.length) return "";
+    let latestEndDate = null;
+    for (const task of workflowData.tasks) {
+        const endDate = new Date(task.start_date);
+        endDate.setDate(endDate.getDate() + task.duration - 1);
+        if (!latestEndDate || endDate > latestEndDate) {
+            latestEndDate = endDate;
+        }
+    }
+    // Task mới phải bắt đầu sau task cuối cùng 1 ngày
+    latestEndDate.setDate(latestEndDate.getDate() + 1);
+    // Format yyyy-mm-dd cho input[type="date"]
+    return latestEndDate.toISOString().split("T")[0];
+}
+
+
 
 // =====================================================
 // Zoom Buttons

@@ -106,9 +106,9 @@ export function bindUIEvents() {
     // -------------------------
     // Zoom
     // -------------------------
-    document.querySelector("#btnDay")?.addEventListener("click", () => setZoom("day"));
-    document.querySelector("#btnWeek")?.addEventListener("click", () => setZoom("week"));
-    document.querySelector("#btnMonth")?.addEventListener("click", () => setZoom("month"));
+    //document.querySelector("#btnDay")?.addEventListener("click", () => setZoom("day"));
+    //document.querySelector("#btnWeek")?.addEventListener("click", () => setZoom("week"));
+    //document.querySelector("#btnMonth")?.addEventListener("click", () => setZoom("month"));
 
     // -------------------------
     // Add Task → dùng Lightbox mặc định
@@ -158,4 +158,24 @@ export function bindUIEvents() {
     document.querySelector("#back-project-page-button")?.addEventListener("click", function () {
         window.location.href = "project.html";
     })
+
+    document.addEventListener("click", function (e) {
+        const icon = e.target.closest(".add-task-icon");
+        if (!icon) return;
+
+        ui.openAddTaskModal(icon.dataset.id, icon.dataset.name);
+    });
+
+    document.addEventListener("click", function (e) {
+        const id = e.target.id;
+        if (id === "btnCancel") {
+            ui.closeTaskModal();
+        }
+        if (id === "btnCreate") {
+            ui.submitTask();
+        }
+    });
+
 }
+
+
