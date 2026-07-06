@@ -54,7 +54,7 @@ export async function renderProjectTable(projectID) {
         tbody.empty();
 
         projectItemVariable.projectItemList.forEach(item => {
-            tbody.append(createProjectItemRow(item, "database"));
+            tbody.append(createProjectItemRow(item));
         });
 
         initPopovers();
@@ -72,12 +72,15 @@ export function processDropItem(item) {
     updateProjectSummary();
 }
 
-function createProjectItemRow(item, type) {
-    if (type == "database") {
-        const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");
-        const user = JSON.parse(localStorage.getItem("user") ?? "{}");
-        return `
-        <tr data-id="${item.id}" data-model="${item.model}">
+function createProjectItemRow(item) {
+    const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");
+    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+    const required = item.required_quantity ?? 0;
+    const stock = item.stock ?? 0;
+    const unitPrice = item.unit_price ?? 0;
+    const totalPrice = item.total_price ?? Math.max(required - stock, 0) * unitPrice;
+    return `
+        <tr data-id="${item.id ?? ""}" data-model="${item.model}">
             <td class="text-center"><input type="checkbox" class="row-checkbox"></td>
             <td>${item.name}</td>
             <td>${item.model ?? ""}</td>
@@ -97,79 +100,7 @@ function createProjectItemRow(item, type) {
                 <input 
                     type="number"
                     class="form-control form-control-sm text-center js-required"
-                    value="${item.required_quantity}"
-                    min="0"
-                />
-            </td>
-
-            <td class="text-center">
-                <span class="badge badge-stock">
-                    ${item.stock_quantity}
-                </span>
-            </td>
-
-            <td class="text-center">
-                <span class="badge badge-order js-order">
-                    ${item.purchase_quantity}
-                </span>
-                
-            </td>
-
-            <td class="text-end">
-                <input 
-                    type="number"
-                    class="form-control form-control-sm text-end js-unit-price"
-                    value="${item.unit_price}"
-                    min="0"
-                />
-            </td>
-
-            <td class="text-end js-total-price">
-                $ ${item.total_price.toLocaleString()}
-            </td>
-
-            <td>${user.employee_id ?? ""}</td>
-
-            <td>
-                <input
-                    type="date"
-                    class="form-control form-control-sm js-request-date"
-                    value="${utils.formatDateDisplay(item.request_date) ?? ""}"
-                    />
-            </td>
-
-        </tr>
-    `;
-    } else {
-        const user = JSON.parse(localStorage.getItem("user") ?? "{}");
-        const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");
-        const required = item.required_quantity ?? 0;
-        const stock = item.stock ?? 0;
-        const unitPrice = item.unit_price ?? item.price ?? 0;
-        const totalPrice = Math.max(required - stock, 0) * unitPrice;
-
-        return `
-        <tr data-model="${item.model}">
-            <td class="text-center"><input type="checkbox" class="row-checkbox"></td>
-            <td>${item.name}</td>
-            <td>${item.model ?? ""}</td>
-            <td>${item.code ?? ""}</td>
-
-            <td>
-                <span
-                    class="description-text"
-                    data-bs-toggle="popover"
-                    data-bs-html="true"
-                    data-bs-content="${descriptionHtml}">
-                    ${item.description ?? ""}
-                </span>
-            </td>
-
-            <td class="text-center">
-                <input 
-                    type="number"
-                    class="form-control form-control-sm text-center js-required"
-                    value="${required}"
+                    value="${item.required_quantity ?? 0}"
                     min="0"
                 />
             </td>
@@ -182,7 +113,7 @@ function createProjectItemRow(item, type) {
 
             <td class="text-center">
                 <span class="badge badge-order js-order">
-                    ${Math.max(required - stock, 0)}
+                    ${item.purchase_quantity ?? Math.max(required - stock, 0)}
                 </span>
                 
             </td>
@@ -191,7 +122,7 @@ function createProjectItemRow(item, type) {
                 <input 
                     type="number"
                     class="form-control form-control-sm text-end js-unit-price"
-                    value="${unitPrice}"
+                    value="${item.unit_price ?? 0}"
                     min="0"
                 />
             </td>
@@ -209,10 +140,8 @@ function createProjectItemRow(item, type) {
                     value="${utils.formatDateDisplay(item.request_date) ?? ""}"
                     />
             </td>
-
         </tr>
     `;
-    }
 
 }
 

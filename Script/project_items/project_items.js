@@ -88,6 +88,7 @@ function bindEvents() {
         ui.updateProjectSummary();
     });
 
+    // Tìm kiếm trong inventory list (list  trái)
     $(document).on("input", ".js-search-inventory", function () {
         const keyword = document.getElementsByClassName("js-search-inventory")[0].value.trim().toLowerCase();
 
@@ -111,6 +112,34 @@ function bindEvents() {
                     </div>
                 </div>
             `);
+        });
+    });
+
+    // Tìm kiếm trong project item list (list  phải)
+    // ! Error
+    $(document).on("input", ".js-search-project-item", function () {
+        const keyword = document.getElementsByClassName("js-search-project-item")[0].value.trim().toLowerCase();
+
+        projectItemVariable.filteredProjectItems = projectItemVariable.projectItemList.filter(projectItem => {
+            const matchKeyword = projectItem.model?.toLowerCase().includes(keyword);
+
+            return matchKeyword;
+        });
+
+        const $projectItemBody = $("#project-item-body");
+        $projectItemBody.empty();
+        $.each(projectItemVariable.filteredProjectItems, function (_, item) {
+            /*$projectItemBody.append(`
+                <div class="inventory-item" data-model="${item.model}">
+                    <div title="${item.name}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+                        ${item.name}
+                    </div>
+                    <div>|</div>
+                    <div title="${item.model}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+                        ${item.model}
+                    </div>
+                </div>
+            `);*/
         });
     });
 }

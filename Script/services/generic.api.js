@@ -95,3 +95,23 @@ export async function getRecordsFilter(collection, field, value) {
     const data = await res.json();
     return data.items || [];
 }
+
+export async function loadInventoryItemEachPage(collection, page = 1, size = 10) {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+        `${POCKETBASE_URL}/api/collections/${collection}/records?page=${page}&perPage=${size}`,
+        {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
+
+    if (!res.ok) {
+        throw new Error("Cannot load inventory items");
+    }
+
+    return await res.json();
+}

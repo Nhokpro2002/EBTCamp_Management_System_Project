@@ -71,11 +71,9 @@ function setupActiveMenu() {
     const currentPage = window.location.pathname;
 
     const map = {
-        dashboard: "dashboard-link",
+        inventory: "inventory-link",
+        project: "project-link",
         user: "user-link",
-        stage: "stage-link",
-        task: "task-link",
-        project: "project-link"
     };
 
     Object.entries(map).forEach(([key, id]) => {

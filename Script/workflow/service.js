@@ -1,7 +1,7 @@
 import * as api from "../services/generic.api.js";
 import * as utils from "../utils/utils.js";
-import { workflowPageMessage } from "./messages.js";
 
+import { workflowPageMessage } from "./messages.js";
 import { workflowData, projectData } from "./states.js";
 
 
@@ -12,7 +12,17 @@ const COLLECTION_USERS = "Users";
 
 export async function createNewTask() {
     try {
-        const payload = makeNewTaskDataPayLoad();
+
+        const payload = {
+            name: document.getElementById("task-name").value,
+            start_date: document.getElementById("start-date").value,
+            duration: parseInt(document.getElementById("duration").value),
+            stage: workflowData.currentStageID,
+            css: document.getElementById("stage-name").value.toLowerCase(),
+            progress: 0
+        }
+        if (!payload.name || !payload.start_date || !payload.duration) return;
+
         return await api.createRecord(COLLECTION_TASKS, payload);
     } catch (error) {
         console.log(error);
@@ -20,24 +30,22 @@ export async function createNewTask() {
     }
 }
 
-function makeNewTaskDataPayLoad() {
+export async function updateTask(id, data) {
+    try {
+        return await api.updateRecord(COLLECTION_TASKS, id, data);
+    } catch (error) {
+        console.log(error);
+        utils.showError(workflowPageMessage.updateFailed);
+    }
+}
 
-    const name = document.getElementById("task-name").value;
-    const start_date = document.getElementById("start-date").value;
-    const duration = parseInt(document.getElementById("duration").value);
-    const stageID = workflowData.currentStageID;
-    const css = document.getElementById("stage-name").value.toLowerCase();
-
-    if (!name || !start_date || !duration) return;
-
-    return {
-        name,
-        start_date,
-        duration,
-        stage: stageID,
-        css,
-        progress: 0
-    };
+export async function deleteTask(id) {
+    try {
+        return await api.deleteRecord(COLLECTION_TASKS, id);
+    } catch (error) {
+        console.log(error);
+        utils.showError(workflowPageMessage.deleteFailed);
+    }
 }
 
 export async function loadStageData(projectID) {
@@ -139,15 +147,13 @@ export function mappingData() {
             });
         }
     });
-
-    console.log(projectData.links);
 }
 
 export function getMinStartDate(stageID) {
     const stageTasks = workflowData.tasks.filter(task => task.stage == stageID);
     if (!stageTasks.length) return "";
     let latestEndDate = null;
-    for (const task of workflowData.tasks) {
+    for (const task of stageTasks) {
         const endDate = new Date(task.start_date);
         endDate.setDate(endDate.getDate() + task.duration - 1);
         if (!latestEndDate || endDate > latestEndDate) {

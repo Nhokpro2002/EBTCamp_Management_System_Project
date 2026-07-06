@@ -36,6 +36,7 @@ export function handleAddItemToProjectItems(model) {  // Cái này là id của 
     }
 
     const newItem = { ...item };
+    delete newItem.id;
 
     projectItemVariable.projectItemList.push(item);
 
@@ -136,7 +137,7 @@ function buildDataPayload() {
         const required_quantity =
             parseFloat(row.querySelector(".js-required")?.value || 0);
 
-        const stock_quantity =
+        const stock =
             parseFloat(
                 row.querySelector("td:nth-child(7) .badge-stock")?.innerText || 0
             );
@@ -161,9 +162,9 @@ function buildDataPayload() {
             description: row.querySelector("td:nth-child(5)")?.innerText.trim() || "",
 
             required_quantity,
-            stock_quantity,
+            stock,
             order_quantity,
-            purchase_quantity: Math.max(required_quantity - stock_quantity, 0),
+            purchase_quantity: Math.max(required_quantity - stock, 0),
 
             project: new URLSearchParams(location.search).get("projectID"),
 
@@ -174,6 +175,7 @@ function buildDataPayload() {
         };
     });
 }
+
 export async function handleSaveProjectItems() {
     const payload = buildDataPayload();
 
@@ -192,9 +194,7 @@ export async function handleSaveProjectItems() {
     }
 }
 
-/*
-! Error
- */
+
 export async function handleDeleteProjectItems() {
     const rows = Array.from(
         document.querySelectorAll("#project-item-body tr")

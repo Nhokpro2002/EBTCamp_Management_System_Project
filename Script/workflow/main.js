@@ -91,7 +91,7 @@ gantt.config.columns = [
             return task.$level === 0
                 ? `<span class="stage-name">${icon}${task.text} ${addBtn}</span>`
                 : task.text;
-        }
+        },
     },
     {
         name: "start_date",
@@ -116,6 +116,8 @@ gantt.config.columns = [
         }
     }
 ];
+
+gantt.config.editable_columns = true;
 
 
 // =====================================================

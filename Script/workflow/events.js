@@ -1,4 +1,5 @@
 import * as ui from "./ui.js";
+import * as api from "./service.js";
 import { workflowData } from "./states.js";
 
 //
@@ -44,14 +45,38 @@ export function bindGanttEvents() {
     // -------------------------
     // Update Task
     // -------------------------
-    gantt.attachEvent("onAfterTaskUpdate", function (id, task) {
+    gantt.attachEvent("onAfterTaskUpdate", async function (id, task) {
+        const updatedTaskData = {
+            name: task.text,
+            start_date: task.start_date,
+            duration: task.duration,
+            progress: task.progress,
+        };
+
+        const result = await api.updateTask(id, updatedTaskData);
+        return true;
+    });
+
+    gantt.attachEvent("onLightboxSave", async function (id, task) {
+
+        const updatedTaskData = {
+            name: task.text,
+            start_date: task.start_date,
+            duration: task.duration,
+            progress: task.progress,
+        };
+
+        const result = await api.updateTask(id, updatedTaskData);
         return true;
     });
 
     // -------------------------
     // Delete Task
     // -------------------------
-    gantt.attachEvent("onAfterTaskDelete", function (id) {
+    gantt.attachEvent("onAfterTaskDelete", async function (id) {
+        // Call api delete task
+        const result = await api.deleteTask(id);
+
         if (workflowData.currentTaskID === id) {
             workflowData.currentTaskID = null;
         }
@@ -86,6 +111,7 @@ export function bindGanttEvents() {
     });
 
     gantt.attachEvent("onScroll", ui.renderTodayLine);
+
     gantt.attachEvent("onTaskDrag", ui.renderTodayLine);
 
     gantt.attachEvent("onGanttRender", function () {
@@ -95,6 +121,13 @@ export function bindGanttEvents() {
     gantt.attachEvent("onGanttRender", function () {
         ui.renderTodayLine();
     });
+
+    gantt.config.auto_scheduling = true;
+
+    gantt.plugins({
+        auto_scheduling: true
+    });
+
 }
 
 //
@@ -175,6 +208,7 @@ export function bindUIEvents() {
             ui.submitTask();
         }
     });
+
 
 }
 
