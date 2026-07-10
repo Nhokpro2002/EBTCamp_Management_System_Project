@@ -160,7 +160,19 @@ document.addEventListener("click", function (e) {
     // VIEW MORE
     // =========================
     if (viewMoreItem) {
-        window.location.href = `project_items.html?projectID=${viewMoreItem.dataset.id}`;
+        const projectID = viewMoreItem.dataset.id;
+
+        // Tìm project theo id
+        const project = variableGlobal.projectList.find(
+            item => String(item.id) === String(projectID)
+        );
+
+        // Lưu tên project vào localStorage
+        if (project) {
+            localStorage.setItem("projectName", project.name);
+        }
+
+        window.location.href = `project_items.html?projectID=${projectID}`;
         return;
     }
 
@@ -168,7 +180,19 @@ document.addEventListener("click", function (e) {
     // PROJECT WORKFLOW
     // =========================
     if (workflowItem) {
-        window.location.href = `workflow.html?projectID=${workflowItem.dataset.id}`;
+        const projectID = workflowItem.dataset.id;
+
+        // Tìm project theo id
+        const project = variableGlobal.projectList.find(
+            item => String(item.id) === String(projectID)
+        );
+
+        // Lưu tên project vào localStorage
+        if (project) {
+            localStorage.setItem("projectName", project.name);
+        }
+
+        window.location.href = `workflow.html?projectID=${projectID}`;
         return;
     }
 

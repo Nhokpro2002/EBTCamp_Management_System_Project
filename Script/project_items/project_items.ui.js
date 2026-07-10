@@ -1,6 +1,3 @@
-// design lai phan inventory-item
-// code tính năng tìm kiếm trên inventory-items và project-items
-// code tính năng xóa item từ project-items, có row có id thì call api xóa, không có id thì xóa trên ui 
 
 import * as utils from "../utils/utils.js";
 import * as api from "../services/generic.api.js";

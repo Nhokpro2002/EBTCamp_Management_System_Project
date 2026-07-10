@@ -1,6 +1,10 @@
 export const inventoryVariable = {
-    inventoryItemList: [],
+    inventoryItemFull: [],
+    inventoryItemFiltered: [],
     currentInventoryPage: 1,
-    pageSize: 5,
-    totalPages: 0
+    pageSize: 6,
+    totalPages: null,
+    searchKeyword: "",
+    selectedBrand: "",
+    selectedType: ""
 }

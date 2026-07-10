@@ -8,6 +8,8 @@ import * as service from "./service.js";
 handleEvent.bindGanttEvents();
 handleEvent.bindUIEvents();
 
+document.querySelector(".project-info-name").textContent = localStorage.getItem("projectName");
+
 
 // =====================================================
 // DHTMLX Gantt Configuration

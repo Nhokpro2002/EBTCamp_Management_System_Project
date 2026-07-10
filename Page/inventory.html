@@ -83,21 +83,57 @@
                 </div>
 
                 <div class="inventory-card shadow-sm">
+
                     <div class="inventory-header">
-                        <h5 class="mb-0 fw-bold">
-                            Products
-                        </h5>
 
-                        <div class="d-flex gap-2">
-                            <select class="form-select w-auto">
-                                <option>All Brands</option>
+                        <!--search bar-->
+                        <div class="input-group" style="width:300px;">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+                        </div>
+
+                        <div class="d-flex gap-2 align-items-center">
+                            <select class="form-select w-auto" id="brandFilter">
+                                <option value="">All Brands</option>
+                                <option value="Schneider">Schneider</option>
+                                <option value="ABB">ABB</option>
+                                <option value="Siemens">Siemens</option>
+                                <option value="Mitsubishi">Mitsubishi</option>
+                                <option value="LS">LS</option>
+                                <option value="Fuji">Fuji</option>
+                                <option value="Omron">Omron</option>
                             </select>
 
-                            <select class="form-select  w-auto">
-                                <option>All Types</option>
+                            <!-- Type -->
+                            <select class="form-select w-auto" id="typeFilter">
+                                <option value="">All Types</option>
+                                <option value="HMI">HMI</option>
+                                <option value="PLC">PLC</option>
+                                <option value="PSU">PSU</option>
+                                <option value="Relay">Relay</option>
+                                <option value="Inverter">Inverter</option>
+                                <option value="Aptomat">Aptomat</option>
+                                <option value="Pilot Light">Pilot Light</option>
+                                <option value="Servo Motor">Servo Motor</option>
+                                <option value="Transformer">Transformer</option>
+                                <option value="Limit Switch">Limit Switch</option>
+                                <option value="Current Transformer">Current Transformer</option>
+                                <option value="Solid State Relay">Solid State Relay</option>
+                                <option value="Surge Protective Device">Surge Protective Device</option>
+                                <option value="Emergency Stop">Emergency Stop</option>
+                                <option value="Communication Module">Communication Module</option>
+                                <option value="Terminal Block">Terminal Block</option>
+                                <option value="Power Meter">Power Meter</option>
+                                <option value="Temperature Controller">Temperature Controller</option>
+                                <option value="Proximity Sensor">Proximity Sensor</option>
+                                <option value="Photoelectric Sensor">Photoelectric Sensor</option>
+                                <option value="MCB">MCB</option>
+                                <option value="MCCB">MCCB</option>
                             </select>
 
-                            <button class="btn btn-light border w-auto ">
+                            <button class="btn btn-light border w-auto">
                                 <i class="bi bi-funnel"></i>
                                 Filters
                             </button>
@@ -134,7 +170,6 @@
                             </ul>
                         </nav>
                     </div>
-
                 </div>
 
             </div>

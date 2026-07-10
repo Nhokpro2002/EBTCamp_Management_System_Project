@@ -2,9 +2,6 @@
 
 <head>
 
-    <!-- Drag and Drop -->
-    <!--<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>-->
-
     <!-- Bootstrap 5 -->
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -27,6 +24,10 @@
 
     <!-- Project_Items CSS -->
     <link href="../CSS/project_items.css" rel="stylesheet">
+
+    <style>
+
+    </style>
 </head>
 
 <body>
@@ -35,14 +36,17 @@
 
         <!-- Header -->
         <div class="drawer-header">
-            <div>
-                <h4 class="mb-0">
+            <div class="project-header">
+                <div class="project-title">
                     <i class="bi bi-box-seam me-2"></i>
-                    Project Items
-                </h4>
-                <small class="text-secondary">
-                    Project : MES System Setup
-                </small>
+                    <h4>Project Items</h4>
+                </div>
+
+                <div class="project-name">
+                    <i class="bi bi-folder-fill"></i>
+                    <span>Project :</span>
+                    <span class="project-info">MES System Setup</span>
+                </div>
             </div>
             <div>
                 <button class="btn btn-outline-secondary" id="back-project-page-button">

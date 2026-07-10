@@ -3,331 +3,177 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Bootstrap CSS -->
-    <link href="../CSS/bootstrap.min.css" rel="stylesheet">
-    <link href="../CSS/bootstrap.min.css.map" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="../Libs/DataTables/datatables.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- font Nunito -->
+    <!-- Bootstrap 5 -->
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <!-- use version 0.20.3 -->
-    <script type="text/javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        body {
-            background: #f4f7fb;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(180deg, #0d6efd, #0b5ed7);
-            color: white;
-        }
-
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.85);
-            padding: 12px 16px;
+        .activity-panel {
+            background: #fff;
             border-radius: 12px;
-            margin-bottom: 8px;
-            transition: 0.3s;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
         }
 
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
+        .activity-header {
+            padding: 12px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .topbar {
-            background: white;
-            border-radius: 20px;
-            padding: 16px 24px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f1f1;
+            transition: .2s;
         }
 
-        .avatar {
-            width: 42px;
-            height: 42px;
+        .activity-item:hover {
+            background: #f8f9fa;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
-        .container-fluid {
-            display: none;
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .activity-desc {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 4px;
+        }
+
+        /* Warning */
+        .warning .activity-icon {
+            background: #fff3cd;
+            color: #f59f00;
+        }
+
+        /* Issue */
+        .danger .activity-icon {
+            background: #ffe3e3;
+            color: #dc3545;
+        }
+
+        /* Update */
+        .info .activity-icon {
+            background: #e7f5ff;
+            color: #1971c2;
+        }
+
+        .old-value {
+            color: #dc3545;
+            text-decoration: line-through;
+        }
+
+        .new-value {
+            color: #198754;
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
 
-            <!-- Sidebar -->
-            <div class="col-lg-2 p-4 sidebar">
-                <h3 class="fw-bold mb-5">
-                    <i class="bi bi-grid-1x2-fill"></i> EBT Camp
-                </h3>
+    <div class="activity-panel">
 
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/dashboard.html" id="dashboard-link">
-                        <i class="bi bi-house-door me-2"></i> Dashboard
-                    </a>
+        <div class="activity-header">
+            <i class="bi bi-bell-fill"></i>
+            System Activities
+        </div>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
-                        <i class="bi bi-box-seam me-2"></i> Inventory
-                    </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/order.html" id="order-link">
-                        <i class="bi bi-cart me-2"></i> Order
-                    </a>
-
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/setting.html" id="setting-link">
-                        <i class="bi bi-gear me-2"></i> Setting
-                    </a>
-
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/project.html" id="project-link">
-                        <i class="bi bi-tools me-2"></i> Project
-                    </a>
-
-                    <a class="nav-link" href="#" id="user-link">
-                        <i class="bi bi-people me-2"></i> User
-                        <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
-                    </a>
-                </nav>
+        <!-- Alert -->
+        <div class="activity-item warning">
+            <div class="activity-icon">
+                <i class="bi bi-exclamation-triangle-fill"></i>
             </div>
-
-            <!-- Main -->
-            <div class="col-lg-10 p-4">
-
-                <!-- Topbar -->
-                <div class="topbar d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h3 class="fw-bold mb-0">User page</h3>
-                        <small class="text-muted">Welcome back, User👋</small>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-light rounded-circle">
-                            <i class="bi bi-bell"></i>
-                        </button>
-
-                        <div class="dropdown">
-                            <img src="https://i.pravatar.cc/100" class="avatar dropdown-toggle"
-                                data-bs-toggle="dropdown"
-                                style="width:40px;height:40px;border-radius:50%;cursor:pointer" />
-
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" id="logoutLink" href="#">Logout</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+            <div class="activity-content">
+                <div class="activity-title">
+                    Task overdue
                 </div>
-                <!-- Content -->
-                <div class="row g-4">
-                    <div class="col-12">
-                        <div class="card p-4 shadow-sm">
-                            <div class="row align-items-center">
-
-                                <!-- Avatar + Change Button -->
-                                <div class="col-md-4 text-center">
-                                    <img id="user-avatar" src="https://i.pravatar.cc/150" alt="Avatar"
-                                        class="rounded-circle mb-3"
-                                        style="width:150px; height:150px; object-fit:cover; border:3px solid #0d6efd;">
-                                    <input type="file" id="avatar-input" accept="image/*" style="display:none;">
-                                    <button id="change-avatar-btn" class="btn btn-primary btn-sm d-block mx-auto">Change
-                                        Avatar</button>
-                                </div>
-
-                                <!-- User Info -->
-                                <div class="col-md-8">
-                                    <h4 class="fw-bold mb-3">User Information</h4>
-                                    <div class="mb-2"><strong>Email:</strong> <span id="user-email"></span></div>
-                                    <div class="mb-2"><strong>Employee ID:</strong> <span id="user-employee-id"></span>
-                                    </div>
-                                    <div class="mb-2"><strong>VH Code:</strong> <span id="user-vh-code"></span></div>
-                                    <div class="mb-2"><strong>Department:</strong> <span id="user-department"></span>
-                                    </div>
-                                    <button id="save-avatar-btn" class="btn btn-success mt-3">Save Avatar</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
+                <div class="activity-desc">
+                    MES System - Design Database delayed 3 days
                 </div>
+                <div class="activity-time">
+                    10 minutes ago
+                </div>
+            </div>
+        </div>
 
+        <!-- Issue -->
+        <div class="activity-item danger">
+            <div class="activity-icon">
+                <i class="bi bi-exclamation-circle-fill"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">
+                    PLC Connection Failed
+                </div>
+                <div class="activity-desc">
+                    Machine cannot connect to controller
+                </div>
+                <div class="activity-time">
+                    Raised by Nguyen Van A · 30 minutes ago
+                </div>
+            </div>
+        </div>
+
+        <!-- Information update -->
+        <div class="activity-item info">
+            <div class="activity-icon">
+                <i class="bi bi-pencil-square"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">
+                    Deadline updated
+                </div>
+                <div class="activity-desc">
+                    Project deadline changed
+                    <span class="old-value">
+                        30/07
+                    </span>
+                    <span>→</span>
+                    <span class="new-value">
+                        15/08
+                    </span>
+                </div>
+                <div class="activity-time">
+                    Updated by John · 1 hour ago
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </body>
-
-<script>
-
-    const POCKETBASE_URL = "http://127.0.0.1:8090";
-    const COLLECTION_USERS = "Users";
-
-    function checkAuthentication() {
-        const token = localStorage.getItem("token");
-        if (!token || token.trim() === "") {
-            Swal.fire({
-                icon: 'warning',      // icon popup: 'warning', 'error', 'success', 'info', 'question'
-                title: 'Access Denied',
-                text: 'You must log in to access this page',
-                confirmButtonText: 'Go to Login'
-            }).then(() => {
-                window.location.href = "http://127.0.0.1:5500/Page/login.html";
-            });
-
-            return false;
-
-        }
-        return true;
-    }
-
-
-    $(document).ready(function () {
-
-        if (!checkAuthentication()) return;
-
-        document.querySelector(".container-fluid").style.display = "block";
-
-        initSidebar();
-
-        changeIconAvatar();
-
-        changeTopbarText();
-    })
-
-    function initSidebar() {
-        const currentPage = window.location.pathname;
-
-        if (currentPage.includes('dashboard')) {
-            document.getElementById('dashboard-link').classList.add('active');
-        } else if (currentPage.includes('order')) {
-            document.getElementById('order-link').classList.add('active');
-        } else if (currentPage.includes('user')) {
-            document.getElementById('user-link').classList.add('active');
-        } else if (currentPage.includes('inventory')) {
-            document.getElementById('inventory-link').classList.add('active');
-        } else if (currentPage.includes('project')) {
-            document.getElementById('project-link').classList.add('active');
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-
-        const userData = JSON.parse(localStorage.getItem("user"));
-
-        // --- Render user info ---
-        document.getElementById("user-email").textContent = userData.email;
-        document.getElementById("user-employee-id").textContent = userData.employee_id;
-        document.getElementById("user-vh-code").textContent = userData.vh_code;
-        document.getElementById("user-department").textContent = userData.department;
-        document.getElementById("user-avatar").src = POCKETBASE_URL + '/api/files/' + COLLECTION_USERS + '/' + userData.id + '/' + userData.avatar;
-        const avatarInput = document.getElementById("avatar-input");
-        const avatarImg = document.getElementById("user-avatar");
-        let selectedFile = null;
-
-        // --- Change Avatar Button ---
-        document.getElementById("change-avatar-btn").addEventListener("click", () => {
-            avatarInput.click();
-        });
-
-        avatarInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = function (ev) {
-                    avatarImg.src = ev.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // --- Save Avatar Button ---
-        document.getElementById("save-avatar-btn").addEventListener("click", async () => {
-            if (!selectedFile) {
-                Swal.fire({ icon: 'warning', title: 'No image selected', text: 'Please choose an avatar first!' });
-                return;
-            }
-
-            try {
-                const token = localStorage.getItem("token");
-                const id = JSON.parse(localStorage.getItem("user")).id;
-                const formData = new FormData();
-                formData.append("avatar", selectedFile);
-
-                const res = await fetch(
-                    `${POCKETBASE_URL}/api/collections/${COLLECTION_USERS}/records/${id}`,
-                    {
-                        method: "PATCH",
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        },
-                        body: formData
-                    }
-                );
-
-                if (!res.ok) throw new Error("Upload failed");
-
-                const dataResponse = await res.json();
-
-                console.log(dataResponse);
-
-                Swal.fire({ icon: 'success', title: 'Avatar updated!', timer: 1500, showConfirmButton: true });
-
-                document.getElementById("user-avatar").src = `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${id}/${dataResponse.avatar}`;
-
-                const user = JSON.parse(localStorage.getItem("user"));
-                user.avatar = dataResponse.avatar;
-                localStorage.setItem("user", JSON.stringify(user));
-
-                changeIconAvatar();
-                selectedFile = null;
-
-            } catch (err) {
-                console.error(err);
-                Swal.fire({ icon: 'error', title: 'Upload failed', text: err.message });
-            }
-        });
-
-    });
-
-    document.getElementById("logoutLink").addEventListener("click", function (e) {
-        e.preventDefault(); // ngăn link reload trang
-        // Xóa storage
-        localStorage.clear();
-        sessionStorage.clear();
-
-        // Redirect về trang login hoặc homepage nếu muốn
-        window.location.href = "http://127.0.0.1:5500/Page/login.html";
-    });
-
-    function changeIconAvatar() {
-        const dropdownAvatar = document.querySelector('.dropdown img');
-        let userData = JSON.parse(localStorage.getItem("user"));
-        dropdownAvatar.src = `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}`;
-    }
-
-    function changeTopbarText() {
-        let topbarText = document.querySelector('.text-muted');
-        let userData = JSON.parse(localStorage.getItem("user"));
-        topbarText.textContent = `Welcome back, ${userData.employee_id}`;
-    }
-
-</script>
 
 </html>
