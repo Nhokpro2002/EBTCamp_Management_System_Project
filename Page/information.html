@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f6f8;
+            padding: 30px;
+        }
+
+        .activity-panel {
+            width: 700px;
+            margin: auto;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid #ececec;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 14px 18px;
+            border-bottom: 1px solid #f1f3f5;
+            transition: .2s;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: #f8f9fa;
+        }
+
+        .activity-left {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e8f4ff;
+            color: #0d6efd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .activity-desc {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .activity-fields {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 3px 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e9ecef;
+            font-size: 12px;
+        }
+
+        .field-name {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .field-value {
+            color: #212529;
+            word-break: break-word;
+        }
+
+        .activity-user {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #adb5bd;
+        }
+
+        .activity-right {
+            text-align: right;
+            min-width: 90px;
+            margin-left: 20px;
+        }
+
+        .activity-time {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .activity-date {
+            font-size: 12px;
+            color: #adb5bd;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="activity-panel">
+
+        <div class="activity-header">
+            <i class="bi bi-bell-fill"></i>
+            System Activities
+        </div>
+
+        <div id="activity-list"></div>
+
+    </div>
+
+    <script src="../Libs/PocketbaseSDK/pocketbase.umd.js"></script>
+
+    <script type="module">
+
+        const pb = new PocketBase("http://127.0.0.1:8090");
+
+        // =========================
+
+        pb.collection("Tasks").subscribe("*", (e) => {
+
+            if (e.action != "update") return;
+
+            renderTaskActivity(e.record);
+
+        });
+
+        // =========================
+
+        function renderTaskActivity(task) {
+            const panel = document.querySelector("#activity-list");
+            const progress = task.progress
+                ? Math.round(task.progress * 100) + "%"
+                : "0%";
+            const updated = new Date(task.updated);
+            const time = updated.toLocaleTimeString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+            const date = updated.toLocaleDateString("vi-VN");
+            const endDate = calculateEndDate(
+                task.start_date,
+                task.duration
+            );
+            const html = `
+    <div class="activity-item">
+        <div class="activity-left">
+            <div class="activity-icon">
+                <i class="bi bi-pencil-square"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">
+                    Task updated
+                </div>
+                <div class="activity-desc">
+                    <strong>${task.name}</strong> was updated.
+                </div>
+                <div class="activity-fields">
+                    <div class="field-name">Start</div>
+                    <div class="field-value">
+                        ${formatDate(task.start_date)}
+                    </div>
+                    <div class="field-name">End</div>
+                    <div class="field-value">
+                        ${formatDate(endDate)}
+                    </div>
+                    <div class="field-name">Duration</div>
+                    <div class="field-value">
+                        ${task.duration ?? "-"} days
+                    </div>
+                    <div class="field-name">Progress</div>
+                    <div class="field-value">
+                        ${progress}
+                    </div>
+                    <div class="field-name">Updated By</div>
+                    <div class="field-value">
+                        ${task.updatedBy ?? "Unknown"}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="activity-right">
+            <div class="activity-time">
+                ${time}
+            </div>
+            <div class="activity-date">
+                ${date}
+            </div>
+        </div>
+
+    </div>
+
+    `;
+
+            panel.insertAdjacentHTML("afterbegin", html);
+
+        }
+
+        function renderIssueActivity(issue) {
+
+        }
+
+        function renderAlertSystem(alert) {
+
+        }
+
+        function formatDate(date) {
+            if (!date) return "-";
+            return new Date(date).toLocaleDateString("vi-VN");
+        }
+
+        function calculateEndDate(startDate, duration) {
+            if (!startDate || !duration) return "";
+            const d = new Date(startDate);
+            d.setDate(d.getDate() + Number(duration));
+            return d;
+        }
+
+    </script>
+
+</body>
+
+</html>

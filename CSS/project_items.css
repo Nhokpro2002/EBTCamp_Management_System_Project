@@ -1,3 +1,7 @@
+body {
+    overflow-x: hidden;
+}
+
 /* ===============================
     Drawer
 ================================ */
@@ -239,6 +243,10 @@
     Footer
 ================================ */
 .project-footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
     height: 50px;
     border-top: 1px solid #dee2e6;
     display: flex;
@@ -247,7 +255,7 @@
     gap: 35px;
     padding: 0 25px;
     background: white;
-    flex-shrink: 0;
+    z-index: 1000;
 }
 
 

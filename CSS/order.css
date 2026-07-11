@@ -1,0 +1,79 @@
+body {
+    background: var(--page-bg);
+    font-family: "Segoe UI", sans-serif;
+    font-size: 15px;
+    color: var(--text-main);
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    padding: 13px 15px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    transition: 0.3s;
+}
+
+.nav-link:hover {
+    background: #223446;
+    color: white;
+}
+
+.nav-link.active {
+    background: #19c2a4;
+    color: white;
+}
+
+
+.card {
+    border-radius: 18px;
+}
+
+.table thead th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #64748b;
+    border: none;
+    padding: 18px;
+}
+
+.table tbody td {
+    padding: 5px 10px;
+    vertical-align: middle;
+    border-color: #eef2f7;
+}
+
+.table tbody tr {
+    transition: .2s;
+}
+
+.table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.btn-success {
+    background: #19c2a4;
+    border: none;
+}
+
+.btn-success:hover {
+
+    background: #13a88d;
+
+}
+
+.badge {
+
+    font-size: 13px;
+
+    padding: 7px 12px;
+
+}
+
+.btn-outline-primary,
+.btn-outline-danger {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

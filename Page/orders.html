@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orders</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap Icons -->
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Order Page CSS -->
+    <link href="../CSS/order.css" rel="stylesheet">
+
+    <!-- JQuery 4.0.0-->
+    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
+
+    <!-- Sweet Alert-->
+    <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
+    <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 p-4 sticky-top" style="height: 100vh; background-color: #182330; color: #fff;">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
+                        <i class="bi bi-boxes me-2"></i> Inventory
+                    </a>
+
+                    <a class="nav-link" id="project-link">
+                        <i class="bi bi-tools me-2"></i> Project
+                    </a>
+
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/orders.html" id="order-link">
+                        <i class="bi bi-people me-2"></i> Order
+                    </a>
+
+                    <a class="nav-link" href="http://127.0.0.1:5500/Page/user.html" id="user-link">
+                        <i class="bi bi-people me-2"></i> User
+                        <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 p-4">
+
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <div>
+                        <h3 class="fw-bold mb-1">
+                            Order
+                        </h3>
+
+                        <div class="text-secondary">
+                            Container của các Order Items
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success px-4">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        New Order
+                    </button>
+                </div>
+
+                <!-- Card -->
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="70">#</th>
+                                        <th>Order ID</th>
+                                        <th width="220">Created Date</th>
+                                        <th width="150" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <span class="fw-semibold">
+                                                OD-20260711-001
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            11/07/2026
+                                        </td>
+
+                                        <td>
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <button class="btn btn-sm btn-outline-primary btn-detail">
+                                                    <i class="bi bi-box-arrow-up-right"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        document
+            .querySelectorAll(".btn-detail")
+            .forEach(btn => {
+
+                btn.addEventListener(
+                    "click",
+                    function () {
+                        const id = this.dataset.id;
+                        window.location.href =
+                            `order-detail.html?id=${id}`;
+                    }
+                );
+            });
+
+
+        function setupActiveMenu() {
+            const currentPage = window.location.pathname;
+            const map = {
+                inventory: "inventory-link",
+                project: "project-link",
+                user: "user-link",
+                order: "order-link",
+            };
+
+            Object.entries(map).forEach(([key, id]) => {
+                if (currentPage.includes(key)) {
+                    document.getElementById(id)?.classList.add("active");
+                }
+            });
+        }
+        setupActiveMenu();
+
+    </script>
+</body>
+
+</html>

@@ -3,7 +3,7 @@ const POCKETBASE_URL = "http://127.0.0.1:8090";
 
 let touched = {
     employee_id: false,
-    vh_code: false,
+    employee_name: false,
     email: false,
     password: false,
     passwordConfirm: false
@@ -43,20 +43,22 @@ function validateForm() {
         }
     }
 
-    // VH CODE
-    const vhCode = $("#vh_code").val().trim();
-    const vhCodeRegex = /^VH\d{6}$/;
-    if (touched.vh_code) {
-        if (!vhCodeRegex.test(vhCode)) {
-            $("#error_vh_code").text("Must be VH + 6 numberic digits");
-            $("#vh_code").addClass("is-invalid").removeClass("is-valid");
+
+    const employeeName = $("#employee_name").val().trim();
+    if (touched.employee_name) {
+        if (employeeName === "") {
+            $("#error_employee_name").text("Employee name required");
+            $("#employee_name")
+                .addClass("is-invalid")
+                .removeClass("is-valid");
             valid = false;
         } else {
-            $("#error_vh_code").text("");
-            $("#vh_code").addClass("is-valid").removeClass("is-invalid");
+            $("#error_employee_name").text("");
+            $("#employee_name")
+                .addClass("is-valid")
+                .removeClass("is-invalid");
         }
     }
-
     // EMAIL
     const email = $("#email").val().trim();
     const emailRegex = /^[A-Za-z0-9._%+-]+@lgdisplay\.com$/;
@@ -108,7 +110,7 @@ function validateForm() {
 }
 
 function setupTouchEvents() {
-    $("#employee_id, #vh_code, #email, #password, #passwordConfirm").on("blur", function () {
+    $("#employee_id, #employee_name, #email, #password, #passwordConfirm").on("blur", function () {
         const id = $(this).attr("id");
         touched[id] = true;
         validateForm();
@@ -129,7 +131,7 @@ async function registerNewUser() {
 
     const newUserData = {
         employee_id: $("#employee_id").val().trim(),
-        vh_code: $("#vh_code").val().trim(),
+        employee_name: $("#employee_name").val().trim(),
         email: $("#email").val().trim(),
         department: $("#department").val(),
         password: $("#password").val(),

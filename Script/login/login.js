@@ -7,7 +7,6 @@ $("#loginForm").on("submit", function (e) {
 });
 
 async function login() {
-
     const loginData = {
         identity: $("#email").val().trim(),
         password: $("#password").val().trim()

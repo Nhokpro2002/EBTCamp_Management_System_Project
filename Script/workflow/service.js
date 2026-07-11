@@ -12,14 +12,14 @@ const COLLECTION_USERS = "Users";
 
 export async function createNewTask() {
     try {
-
         const payload = {
             name: document.getElementById("task-name").value,
             start_date: document.getElementById("start-date").value,
             duration: parseInt(document.getElementById("duration").value),
             stage: workflowData.currentStageID,
             css: document.getElementById("stage-name").value.toLowerCase(),
-            progress: 0
+            progress: 0,
+            createdBy: JSON.parse(localStorage.getItem("user")).employee_name || ""
         }
         if (!payload.name || !payload.start_date || !payload.duration) return;
 

@@ -51,6 +51,7 @@ export function bindGanttEvents() {
             start_date: task.start_date,
             duration: task.duration,
             progress: task.progress,
+            updatedBy: JSON.parse(localStorage.getItem("user")).employee_name
         };
 
         const result = await api.updateTask(id, updatedTaskData);
@@ -64,6 +65,7 @@ export function bindGanttEvents() {
             start_date: task.start_date,
             duration: task.duration,
             progress: task.progress,
+            updatedBy: JSON.parse(localStorage.getItem("user")).employee_name
         };
 
         const result = await api.updateTask(id, updatedTaskData);
