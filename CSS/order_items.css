@@ -1,0 +1,291 @@
+/* ===========================
+    Global
+=========================== */
+
+body {
+     background: #0f1722;
+     color: #e9ecef;
+     font-family: "Segoe UI", sans-serif;
+}
+
+.card {
+     background: #17212d;
+     border: 1px solid #263445;
+     border-radius: 14px;
+     box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+}
+
+.card-body {
+     padding: 20px;
+}
+
+/* ===========================
+    Inventory
+=========================== */
+
+.inventory-card h5 {
+     color: #16e0c6;
+     font-weight: 600;
+}
+
+.inventory-item {
+     background: #1b2634;
+     border: 1px solid #2a394b;
+     border-radius: 12px;
+     padding: 14px;
+     cursor: pointer;
+     transition: .25s;
+     height: 100%;
+}
+
+.inventory-item:hover {
+     transform: translateY(-4px);
+     border-color: #16e0c6;
+     box-shadow: 0 10px 25px rgba(0, 0, 0, .35);
+}
+
+.item-image {
+     width: 74px;
+     height: 74px;
+     border-radius: 8px;
+     background: #fff;
+     object-fit: contain;
+     padding: 6px;
+     flex-shrink: 0;
+}
+
+.inventory-item h6 {
+     color: white;
+     margin-bottom: 6px;
+     font-size: 15px;
+}
+
+.inventory-item .text-muted {
+     font-size: 13px;
+     color: #9aa6b2 !important;
+     margin-bottom: 8px;
+}
+
+.badge {
+     font-size: 12px;
+     border-radius: 5px;
+     padding: 5px 9px;
+}
+
+
+/* ===========================
+    Search
+=========================== */
+
+.input-group-text,
+.form-control {
+     background: #182330;
+     border: 1px solid #314050;
+     color: white;
+}
+
+.form-control::placeholder {
+     color: #8d98a4;
+}
+
+.form-control:focus {
+     background: #182330;
+     color: white;
+     border-color: #16e0c6;
+     box-shadow: none;
+}
+
+.btn-outline-secondary {
+     border-color: #3a495b;
+     color: #d9d9d9;
+}
+
+.btn-outline-secondary:hover {
+     background: #263445;
+}
+
+
+/* ===========================
+    Drop Zone
+=========================== */
+.drop-zone {
+     margin-top: 25px;
+     border-top: 2px dashed #16e0c6;
+     color: #16e0c6;
+     text-align: center;
+     padding: 30px;
+     opacity: .9;
+}
+
+.drop-zone i {
+     display: block;
+     margin-bottom: 12px;
+     font-size: 38px;
+}
+
+
+/* ===========================
+    Header
+=========================== */
+label {
+     color: #9ba9b7;
+     font-size: 14px;
+     margin-bottom: 4px;
+}
+
+.badge.bg-primary {
+     background: #1d83ff !important;
+}
+
+
+/* ===========================
+    Table
+=========================== */
+.table {
+     color: white;
+     margin-bottom: 0;
+}
+
+.table thead {
+     background: #1d2836;
+}
+
+.table thead th {
+     color: white;
+     border: none;
+     padding: 14px;
+     font-weight: 600;
+}
+
+.table tbody td {
+     border-color: #2d3c4d;
+     vertical-align: middle;
+     padding: 14px;
+}
+
+.table tbody tr:hover {
+     background: #202c39;
+}
+
+.table-image {
+     width: 60px;
+     height: 60px;
+     border-radius: 8px;
+     object-fit: contain;
+     background: white;
+     padding: 5px;
+}
+
+
+/* ===========================
+    Qty Input
+=========================== */
+.table input[type=number] {
+     width: 110px;
+     background: #182330;
+     border: 1px solid #344456;
+     color: white;
+     text-align: center;
+}
+
+.table input[type=number]:focus {
+     border-color: #16e0c6;
+     box-shadow: none;
+}
+
+
+/* ===========================
+    Total
+=========================== */
+.text-success {
+     color: #1be58b !important;
+}
+
+#totalQty {
+     color: #bdeee0;
+}
+
+/* ===========================
+    Buttons
+=========================== */
+.btn-success {
+     background: #18c58d;
+     border: none;
+}
+
+.btn-success:hover {
+     background: #11b37f;
+}
+
+.btn-outline-success {
+     color: #18d89d;
+     border-color: #18d89d;
+}
+
+.btn-outline-success:hover {
+     background: #18d89d;
+     color: white;
+}
+
+.btn-outline-danger {
+     color: #ff6d6d;
+     border-color: #ff6d6d;
+}
+
+.btn-outline-danger:hover {
+     background: #ff6d6d;
+     color: white;
+}
+
+
+/* ===========================
+    Scrollbar
+=========================== */
+::-webkit-scrollbar {
+     width: 8px;
+     height: 8px;
+}
+
+::-webkit-scrollbar-track {
+     background: #17212d;
+}
+
+::-webkit-scrollbar-thumb {
+     background: #3b4d60;
+     border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+     background: #5b7288;
+}
+
+
+/* ===========================
+    Responsive
+=========================== */
+@media (max-width:992px) {
+     .inventory-item {
+          margin-bottom: 15px;
+     }
+
+     .table {
+          min-width: 1000px;
+     }
+
+}
+
+@media (max-width:768px) {
+     .card-body {
+          padding: 15px;
+     }
+
+     .item-image {
+          width: 40px;
+          height: 40px;
+     }
+
+     .inventory-item h6 {
+          font-size: 14px;
+     }
+
+}

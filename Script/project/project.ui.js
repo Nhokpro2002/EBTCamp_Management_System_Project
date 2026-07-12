@@ -460,9 +460,3 @@ function buildProjectUpdatePayload(tr) {
         status: tr.querySelector(".js-edit-status")?.value?.trim(),
     };
 }
-
-
-
-
-
-
