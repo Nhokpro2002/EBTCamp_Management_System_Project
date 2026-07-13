@@ -29,9 +29,31 @@ export function bindGanttEvents() {
     // -------------------------
     gantt.config.details_on_dblclick = true;
 
-    gantt.attachEvent("onTaskDblClick", function () {
-        return true; // mở lightbox mặc định
-    });
+    gantt.attachEvent(
+        "onTaskDblClick",
+        function (id) {
+
+            if (ui.isTaskLocked(id)) {
+                return false;
+            }
+
+            return true;
+        }
+    );
+
+    // Chặn thay đổi progress nếu task đang bị khóa
+    gantt.attachEvent(
+        "onBeforeTaskUpdate",
+        function (id, task) {
+
+            if (ui.isTaskLocked(id)) {
+                return false;
+            }
+
+
+            return true;
+        }
+    );
 
     // -------------------------
     // Add Task
@@ -45,18 +67,24 @@ export function bindGanttEvents() {
     // -------------------------
     // Update Task
     // -------------------------
-    gantt.attachEvent("onAfterTaskUpdate", async function (id, task) {
-        const updatedTaskData = {
-            name: task.text,
-            start_date: task.start_date,
-            duration: task.duration,
-            progress: task.progress,
-            updatedBy: JSON.parse(localStorage.getItem("user")).employee_name
-        };
+    gantt.attachEvent(
+        "onAfterTaskUpdate",
+        async function (id, task) {
 
-        const result = await api.updateTask(id, updatedTaskData);
-        return true;
-    });
+            const updatedTaskData = {
+                name: task.text,
+                start_date: task.start_date,
+                duration: task.duration,
+                progress: task.progress,
+                updatedBy:
+                    JSON.parse(localStorage.getItem("user"))
+                        .employee_name
+            };
+
+            await api.updateTask(id, updatedTaskData);
+            // refresh trạng thái disable
+            gantt.render();
+        });
 
     gantt.attachEvent("onLightboxSave", async function (id, task) {
 
@@ -88,9 +116,17 @@ export function bindGanttEvents() {
     // -------------------------
     // Drag
     // -------------------------
-    gantt.attachEvent("onBeforeTaskDrag", function () {
-        return true;
-    });
+    gantt.attachEvent(
+        "onBeforeTaskDrag",
+        function (id) {
+
+            if (ui.isTaskLocked(id)) {
+                return false;
+            }
+
+            return true;
+        }
+    );
 
     gantt.attachEvent("onAfterTaskDrag", function () {
         // dùng để trigger autosave nếu cần
@@ -115,10 +151,6 @@ export function bindGanttEvents() {
     gantt.attachEvent("onScroll", ui.renderTodayLine);
 
     gantt.attachEvent("onTaskDrag", ui.renderTodayLine);
-
-    gantt.attachEvent("onGanttRender", function () {
-        ui.renderTodayLine();
-    });
 
     gantt.attachEvent("onGanttRender", function () {
         ui.renderTodayLine();

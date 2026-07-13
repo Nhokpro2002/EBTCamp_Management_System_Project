@@ -7,7 +7,6 @@ import { projectItemVariable } from "./project_item_variable.js";
 const COLLECTION_PROJECT_ITEMS = "Project_Items"
 const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
 
-
 export async function renderInventoryItem() {
     try {
         const response = await api.getRecords(COLLECTION_INVENTORY_ITEMS);

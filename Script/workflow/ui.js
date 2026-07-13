@@ -3,11 +3,10 @@
 // drag task bar moving new position => save change to database
 // change task progress => save database
 // change project name on the header
-// design idel to delete task
+// design ideal to delete task
 
 import { workflowData, projectData } from "./states.js";
 import * as service from "./service.js";
-import * as api from "./service.js"
 import * as utils from "../utils/utils.js";
 
 // =====================================================
@@ -95,7 +94,7 @@ export function openAddTaskModal(stageID, stageName) {
 }
 
 export async function submitTask() {
-    const response = await api.createNewTask();
+    const response = await service.createNewTask();
 
     if (response) {
         // 1. add vào global tasks
@@ -151,4 +150,21 @@ export async function submitTask() {
 
 export function closeTaskModal() {
     document.getElementById("taskModal").classList.remove("open");
-} 
+}
+
+export function isTaskLocked(taskId) {
+    const links = gantt.getLinks();
+    // tìm các task trước nó
+    const parentLinks = links.filter(
+        link => link.target == taskId
+    );
+
+    for (const link of parentLinks) {
+        const parentTask = gantt.getTask(link.source);
+        // task trước chưa hoàn thành
+        if (parentTask.progress < 1) {
+            return true;
+        }
+    }
+    return false;
+}
