@@ -1,7 +1,6 @@
 /* ===========================
     Global
 =========================== */
-
 body {
      background: #0f1722;
      color: #e9ecef;
@@ -22,6 +21,15 @@ body {
 /* ===========================
     Inventory
 =========================== */
+#inventoryItemList {
+     height: 210px;
+     overflow-y: auto;
+     display: grid;
+     grid-template-columns: repeat(6, 1fr);
+     gap: 12px;
+     padding-right: 5px;
+     scrollbar-gutter: stable;
+}
 
 .inventory-card h5 {
      color: #16e0c6;
@@ -32,10 +40,17 @@ body {
      background: #1b2634;
      border: 1px solid #2a394b;
      border-radius: 12px;
-     padding: 14px;
+     padding: 0px 5px;
      cursor: pointer;
      transition: .25s;
-     height: 100%;
+     align-self: start;
+     display: flex;
+     align-items: center;
+}
+
+.inventory-item>.d-flex {
+     width: 100%;
+     align-items: center;
 }
 
 .inventory-item:hover {
@@ -45,19 +60,26 @@ body {
 }
 
 .item-image {
-     width: 74px;
-     height: 74px;
+     width: 40px;
+     height: 40px;
      border-radius: 8px;
      background: #fff;
-     object-fit: contain;
-     padding: 6px;
+     object-fit: cover;
      flex-shrink: 0;
 }
 
 .inventory-item h6 {
      color: white;
-     margin-bottom: 6px;
      font-size: 15px;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     margin-bottom: 0;
+     padding-top: 2px;
+}
+
+.inventory-item .flex-grow-1 {
+     min-width: 0;
 }
 
 .inventory-item .text-muted {
@@ -109,11 +131,9 @@ body {
     Drop Zone
 =========================== */
 .drop-zone {
-     margin-top: 25px;
      border-top: 2px dashed #16e0c6;
      color: #16e0c6;
      text-align: center;
-     padding: 30px;
      opacity: .9;
 }
 
@@ -142,8 +162,10 @@ label {
     Table
 =========================== */
 .table {
-     color: white;
-     margin-bottom: 0;
+     --bs-table-bg: #17212d;
+     --bs-table-color: #e9ecef;
+     --bs-table-border-color: #2d3c4d;
+     --bs-table-hover-bg: #202c39;
 }
 
 .table thead {
@@ -263,9 +285,9 @@ label {
 /* ===========================
     Responsive
 =========================== */
-@media (max-width:992px) {
+@media (max-width:900px) {
      .inventory-item {
-          margin-bottom: 15px;
+          margin-bottom: 10px;
      }
 
      .table {
@@ -288,4 +310,34 @@ label {
           font-size: 14px;
      }
 
+}
+
+.filter-card {
+     background: #1f2937;
+     border: 1px solid #334155;
+     border-radius: 14px;
+     padding: 24px;
+}
+
+.filter-card .form-label {
+     color: #dbe3ec;
+     font-weight: 600;
+}
+
+.filter-card .form-select {
+     background: #182330;
+     color: #fff;
+     border: 1px solid #334155;
+     height: 46px;
+}
+
+.filter-card .form-select:focus {
+     background: #182330;
+     color: #fff;
+     border-color: #22c55e;
+     box-shadow: none;
+}
+
+#filterPanel {
+     width: 100%;
 }

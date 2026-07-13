@@ -364,3 +364,12 @@ body {
     padding: 6px 12px;
     border-radius: 6px;
 }
+
+.task-disabled .gantt_task_content {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.task-disabled {
+    pointer-events: none;
+}
