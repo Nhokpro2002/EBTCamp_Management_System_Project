@@ -1,9 +1,10 @@
 
 import * as api from "../services/generic.api.js";
 import * as handleEvent from "./events.js";
+import * as ui from "./ui.js";
+import * as service from "./service.js";
 
 import { workflowData, projectData } from "./states.js";
-import * as service from "./service.js";
 
 handleEvent.bindGanttEvents();
 handleEvent.bindUIEvents();
@@ -126,7 +127,14 @@ gantt.config.editable_columns = true;
 // Task Color
 // =====================================================
 gantt.templates.task_class = function (start, end, task) {
-    return task.css || "";
+    let classes = [];
+    if (task.css) {
+        classes.push(task.css);
+    }
+    if (ui.isTaskLocked(task.id)) {
+        classes.push("task-disabled");
+    }
+    return classes.join(" ");
 };
 
 // =====================================================
@@ -166,9 +174,6 @@ gantt.templates.task_text = function (start, end, task) {
 // =====================================================
 // Init
 // =====================================================
-gantt.init("gantt_here");
-
-gantt.parse(projectData);
 
 async function initPage() {
     gantt.init("gantt_here");
