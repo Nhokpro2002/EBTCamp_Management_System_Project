@@ -5,6 +5,9 @@ import * as event from "./event.js";
 
 async function init() {
     try {
+
+        setupActiveMenu();
+
         await service.loadOrderList();
 
         ui.renderOrderList();
@@ -17,4 +20,24 @@ async function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
+// ==============================
+// MENU ACTIVE
+// ==============================
+function setupActiveMenu() {
+    const currentPage = window.location.pathname;
+    const map = {
+        inventory: "inventory-link",
+        project: "project-link",
+        user: "user-link",
+        orders: "orders-link"
+    };
+
+    Object.entries(map)
+        .forEach(([key, id]) => {
+            if (currentPage.includes(key)) {
+                document.getElementById(id)?.classList.add("active");
+            }
+        });
+}
 

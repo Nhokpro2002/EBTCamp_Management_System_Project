@@ -29,25 +29,41 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-lg-2 p-4 sticky-top" style="height: 100vh; background-color: #182330; color: #fff;">
+            <div class="col-lg-2 d-flex flex-column p-4 sticky-top"
+                style="height: 100vh; background-color: #182330; color: white;">
+
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/inventory.html" id="inventory-link">
+                    <a class="nav-link" href="invetory.html" id="inventory-link">
                         <i class="bi bi-boxes me-2"></i> Inventory
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/project.html" id="project-link">
+                    <a class="nav-link" id="orders-link">
+                        <i class="bi bi-receipt me-2"></i> Orders
+                    </a>
+
+                    <a class="nav-link" href="project.html" id="project-link">
                         <i class="bi bi-tools me-2"></i> Project
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/orders.html" id="order-link">
-                        <i class="bi bi-people me-2"></i> Order
+                    <a class="nav-link" href="information.html" id="information-link">
+                        <i class="bi bi-people me-2"></i> Information
                     </a>
 
-                    <a class="nav-link" href="http://127.0.0.1:5500/Page/user.html" id="user-link">
+                    <a class="nav-link" href="user.html" id="user-link">
                         <i class="bi bi-people me-2"></i> User
-                        <!--Nếu là Admin thì xem được thông tin của mọi người nhưng eng thì xem được thông tin của riêng họ -->
                     </a>
                 </nav>
+
+                <!-- User Info -->
+                <div class="mt-auto pt-3 border-top d-flex align-items-center">
+                    <img src="../Images/avatar.png" alt="Avatar" class="rounded-circle" width="45" height="45">
+
+                    <div class="ms-3">
+                        <div class="fw-semibold" id="user-name">Nguyễn Văn A</div>
+                        <small class="text-secondary" id="user-role">Engineer</small>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Main Content -->

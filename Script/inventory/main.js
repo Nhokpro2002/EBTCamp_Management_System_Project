@@ -29,8 +29,8 @@ $(document).ready(async function () {
 
     initLayout();
 
-    ui.changeIconAvatar();
-    ui.changeTopbarText();
+    //ui.changeIconAvatar();
+    //ui.changeTopbarText();
 
     setupActiveMenu();
 
@@ -159,7 +159,8 @@ function setupActiveMenu() {
     const map = {
         inventory: "inventory-link",
         project: "project-link",
-        user: "user-link"
+        user: "user-link",
+        orders: "orders-link"
     };
 
     Object.entries(map)

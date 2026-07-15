@@ -54,61 +54,41 @@ Sortable.create(
 
 event.initOrderItemEvents();
 
-$(document).on("input", ".js-search-inventory", function () {
-    const keyword = document.getElementsByClassName("js-search-inventory")[0].value.trim().toLowerCase();
 
-    orderDetailPageData.inventoryItemFilter =
-        orderDetailPageData.inventoryItemList.filter(item =>
-            item.model?.toLowerCase().includes(keyword) ||
-            item.name?.toLowerCase().includes(keyword)
-        );
+const checkAll = document.getElementById("checkAll");
 
-    ui.renderInventoryItemList(orderDetailPageData.inventoryItemFilter);
+// Checkbox cha
+checkAll.addEventListener("change", function () {
+    const checked = this.checked;
+
+    ui.getRowCheckboxes().forEach(cb => {
+        cb.checked = checked;
+
+        // giả lập sự kiện change của checkbox con
+        cb.dispatchEvent(new Event("change", {
+            bubbles: true
+        }));
+    });
 });
 
-function applyFilter() {
-    orderDetailPageData.inventoryItemFilter =
-        orderDetailPageData.inventoryItemList.filter(item => {
-            const matchSearch =
-                item.name.toLowerCase().includes(keyword) ||
-                item.model.toLowerCase().includes(keyword);
+// Checkbox con
+document.addEventListener("change", function (e) {
+    if (!e.target.classList.contains("row-checkbox")) {
+        return;
+    }
+    const checkboxes = [...ui.getRowCheckboxes()];
+    const checkedCount = checkboxes.filter(
+        cb => cb.checked
+    ).length;
 
-            const matchBrand =
-                inventoryVariable.selectedBrand == "" ||
-                item.brand == inventoryVariable.selectedBrand;
+    // Tất cả checkbox con được chọn
+    if (checkedCount === checkboxes.length) {
+        checkAll.checked = true;
+    }
+    // Có một phần hoặc không có checkbox nào được chọn
+    else {
+        checkAll.checked = false;
+    }
 
-            const matchType =
-                inventoryVariable.selectedType == "" ||
-                item.type == inventoryVariable.selectedType;
-
-            return matchSearch && matchBrand && matchType;
-        });
-
-
-    ui.renderTable(
-        inventoryVariable.inventoryItemFiltered.slice(
-            0,
-            inventoryVariable.pageSize
-        )
-    );
-}
-
-
-const searchInput = document.getElementById("searchInput");
-searchInput.addEventListener("input", () => {
-    inventoryVariable.searchKeyword =
-        searchInput.value.toLowerCase().trim();
-    applyFilter();
-});
-
-const brandFilter = document.getElementById("brandFilter");
-brandFilter.addEventListener("change", () => {
-    inventoryVariable.selectedBrand = brandFilter.value;
-    applyFilter();
-});
-
-const typeFilter = document.getElementById("typeFilter");
-typeFilter.addEventListener("change", () => {
-    inventoryVariable.selectedType = typeFilter.value;
-    applyFilter();
+    ui.updateActionButtons();
 });

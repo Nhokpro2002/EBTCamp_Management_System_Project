@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<head>
+    <!-- Bootstrap 5 -->
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap Icons -->
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+
+        .profile-card {
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+        }
+
+        .cover-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .avatar {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            border: 6px solid #fff;
+            object-fit: cover;
+            position: absolute;
+            bottom: -85px;
+            left: 40px;
+            background: white;
+        }
+
+        .profile-content {
+            padding-top: 100px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+
+        input:disabled,
+        textarea:disabled {
+            background: white !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container py-5">
+
+        <div class="card profile-card">
+
+            <!-- Cover -->
+            <div class="position-relative">
+
+                <img src="https://picsum.photos/1200/350" class="cover-image">
+
+                <button class="btn btn-light position-absolute end-0 bottom-0 m-3 shadow-sm">
+                    <i class="bi bi-image"></i>
+                    Change Cover
+                </button>
+
+                <img src="https://i.pravatar.cc/300" class="avatar">
+
+            </div>
+
+            <div class="card-body profile-content">
+
+                <div class="d-flex justify-content-between align-items-start flex-wrap">
+
+                    <div class="ms-lg-4">
+
+                        <h2 class="fw-bold mb-1">
+                            Nguyen Minh Tuan
+                        </h2>
+
+                        <p class="text-muted mb-2">
+                            Engineer
+                        </p>
+
+                        <span class="badge bg-primary">
+                            Equipment Technology Part
+                        </span>
+
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-3 mt-lg-0">
+
+                        <button class="btn btn-outline-primary action-btn">
+                            <i class="bi bi-person-circle"></i>
+                            Change Avatar
+                        </button>
+
+                        <button class="btn btn-primary action-btn">
+                            <i class="bi bi-pencil-square"></i>
+                            Edit Profile
+                        </button>
+
+                        <button class="btn btn-outline-warning action-btn">
+                            <i class="bi bi-key"></i>
+                            Change Password
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <hr class="my-4">
+
+                <div class="section-title">
+                    <i class="bi bi-person-vcard me-2"></i>
+                    Basic Information
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <div class="mb-3">
+                            <label class="info-label">Employee ID</label>
+                            <input class="form-control" value="nguyenminhtuan16" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="info-label">VH Code</label>
+                            <input class="form-control" value="VH132469" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="info-label">Full Name</label>
+                            <input class="form-control" value="Nguyen Minh Tuan" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="info-label">Email</label>
+                            <input class="form-control" value="nguyenminhtuan16@lgdisplay.com" disabled>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="mb-3">
+                            <label class="info-label">Phone</label>
+                            <input class="form-control" value="0336555130" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="info-label">Department</label>
+                            <input class="form-control" value="Equipment Technology Part" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="info-label">Position</label>
+                            <input class="form-control" value="Engineer" disabled> <!-- Cái này sẽ dùng để phân quyền-->
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <button class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </button>
+
+                    <button class="btn btn-success">
+                        <i class="bi bi-check-circle"></i>
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

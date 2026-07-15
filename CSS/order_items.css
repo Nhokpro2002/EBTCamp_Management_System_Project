@@ -22,7 +22,7 @@ body {
     Inventory
 =========================== */
 #inventoryItemList {
-     height: 210px;
+     max-height: 210px;
      overflow-y: auto;
      display: grid;
      grid-template-columns: repeat(6, 1fr);
@@ -175,14 +175,14 @@ label {
 .table thead th {
      color: white;
      border: none;
-     padding: 14px;
+     padding: 5px;
      font-weight: 600;
 }
 
 .table tbody td {
      border-color: #2d3c4d;
      vertical-align: middle;
-     padding: 14px;
+     padding: 5px;
 }
 
 .table tbody tr:hover {

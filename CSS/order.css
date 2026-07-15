@@ -56,17 +56,12 @@ body {
 }
 
 .btn-success:hover {
-
     background: #13a88d;
-
 }
 
 .badge {
-
     font-size: 13px;
-
     padding: 7px 12px;
-
 }
 
 .btn-outline-primary,
