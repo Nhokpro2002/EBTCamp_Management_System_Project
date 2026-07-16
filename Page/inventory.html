@@ -50,7 +50,7 @@
                     </a>
 
                     <a class="nav-link" href="information.html" id="information-link">
-                        <i class="bi bi-people me-2"></i> Information
+                        <i class="bi bi-info-square-fill me-2"></i> Information
                     </a>
 
                     <a class="nav-link" href="user.html" id="user-link">
@@ -120,14 +120,12 @@
                                 <option value="MCCB">MCCB</option>
                             </select>
 
-                            <button class="btn btn-light border w-auto">
-                                <i class="bi bi-funnel"></i>
-                                Filters
+                            <!-- ADD BUTTON -->
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                                <i class="bi bi-plus-lg"></i>
+                                Add Product
                             </button>
 
-                            <button class="btn btn-light border w-auto">
-                                <i class="bi bi-download"></i>
-                            </button>
                         </div>
                     </div>
 
@@ -139,7 +137,7 @@
                                     <th>Image</th>
                                     <th>Name</th>
                                     <th>Model</th>
-                                    <th>Code</th>
+                                    <th>XCode/QCode</th>
                                     <th>Brand</th>
                                     <th>Type</th>
                                     <th>Stock</th>
@@ -158,11 +156,166 @@
                         </nav>
                     </div>
                 </div>
-
             </div>
-
         </div>
+    </div>
 
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Add New Product
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm">
+                        <div class="row g-3">
+
+                            <!-- IMAGE -->
+                            <div class="col-md-6">
+                                <label class="form-label">Image</label>
+
+                                <input type="file" class="form-control" id="productImage" accept="image/*">
+
+                                <div class="invalid-feedback">
+                                    Please choose an image.
+                                </div>
+                            </div>
+
+                            <!-- NAME -->
+                            <div class="col-md-6">
+                                <label class="form-label">Name</label>
+
+                                <input type="text" class="form-control" id="productName" placeholder="Product name">
+
+                                <div class="invalid-feedback">
+                                    Product name is required.
+                                </div>
+                            </div>
+
+                            <!-- XCODE -->
+                            <div class="col-md-6">
+                                <label class="form-label">XCode / QCode</label>
+
+                                <input type="text" class="form-control" id="productCode"
+                                    placeholder="Enter XCode / QCode">
+
+                                <div class="invalid-feedback">
+                                    XCode / QCode is required.
+                                </div>
+                            </div>
+
+                            <!-- BRAND -->
+                            <div class="col-md-6">
+                                <label class="form-label">Brand</label>
+
+                                <select class="form-select" id="productBrand">
+
+                                    <option value="">Select Brand</option>
+                                    <option>Schneider</option>
+                                    <option>ABB</option>
+                                    <option>Siemens</option>
+                                    <option>Mitsubishi</option>
+                                    <option>LS</option>
+                                    <option>Fuji</option>
+                                    <option>Omron</option>
+
+                                </select>
+
+                                <div class="invalid-feedback">
+                                    Please select a brand.
+                                </div>
+                            </div>
+
+                            <!-- MODEL -->
+                            <div class="col-md-6">
+                                <label class="form-label">Model</label>
+
+                                <input type="text" class="form-control" id="productModel" placeholder="Enter model">
+
+                                <div class="invalid-feedback">
+                                    Model is required.
+                                </div>
+                            </div>
+
+                            <!-- TYPE -->
+                            <div class="col-md-6">
+                                <label class="form-label">Type</label>
+
+                                <select class="form-select" id="productType">
+
+                                    <option value="">Select Type</option>
+                                    <option>HMI</option>
+                                    <option>PLC</option>
+                                    <option>PSU</option>
+                                    <option>Relay</option>
+                                    <option>Inverter</option>
+                                    <option>Aptomat</option>
+                                    <option>Pilot Light</option>
+                                    <option>Servo Motor</option>
+                                    <option>Transformer</option>
+                                    <option>Limit Switch</option>
+                                    <option>Current Transformer</option>
+                                    <option>Solid State Relay</option>
+                                    <option>Surge Protective Device</option>
+                                    <option>Emergency Stop</option>
+                                    <option>Communication Module</option>
+                                    <option>Terminal Block</option>
+                                    <option>Power Meter</option>
+                                    <option>Temperature Controller</option>
+                                    <option>Proximity Sensor</option>
+                                    <option>Photoelectric Sensor</option>
+                                    <option>MCB</option>
+                                    <option>MCCB</option>
+
+                                </select>
+
+                                <div class="invalid-feedback">
+                                    Please select a type.
+                                </div>
+                            </div>
+
+                            <!-- STOCK -->
+                            <div class="col-md-6">
+                                <label class="form-label">Stock</label>
+
+                                <input type="number" class="form-control" id="productStock" min="0" placeholder="0">
+
+                                <div class="invalid-feedback">
+                                    Stock is required.
+                                </div>
+                            </div>
+
+                            <!-- DESCRIPTION -->
+                            <div class="col-12">
+                                <label class="form-label">Description</label>
+
+                                <textarea class="form-control" id="productDescription" rows="3"
+                                    placeholder="Enter product description"></textarea>
+
+                                <div class="invalid-feedback">
+                                    Description is required.
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" id="saveProductBtn">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
 

@@ -5,7 +5,7 @@
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-     <title>EBT Camp - Login</title>
+     <title>EBT CAMP - Login</title>
 
      <!-- Bootstrap -->
      <link rel="stylesheet" href="../Libs/Bootstrap/css/bootstrap.min.css">
@@ -15,73 +15,43 @@
      <link rel="stylesheet" href="../Libs/DataTables/datatables.min.css">
      <script src="../Libs/DataTables/datatables.min.js"></script>
 
-     <!-- Bootstrap Icon -->
+     <!-- Bootstrap Icons -->
      <link rel="stylesheet" href="../Libs/BootstrapIcon/bootstrap-icons.css">
 
-     <!-- Sweet Alert-->
-     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
+     <!-- SweetAlert2 -->
+     <link rel="stylesheet" href="../Libs/SweetAlert2/sweetalert2.min.css">
      <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
 
      <!-- JQuery -->
      <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
 
-     <!-- Login.css -->
-     <link href="../CSS/login.css" rel="stylesheet">
+     <!-- Login CSS -->
+     <link rel="stylesheet" href="../CSS/login.css">
 </head>
 
 <body>
 
      <div class="register-container">
 
-          <!-- LEFT (UNCHANGED) -->
+          <!-- LEFT -->
           <div class="left-panel">
 
-               <div class="grid-overlay"></div>
-
-               <div class="system-status">
-                    <span class="signal"></span>
-                    SYSTEM ONLINE
+               <div class="brand">
+                    EBT CAMP
                </div>
 
-               <div style="position: relative; z-index: 2;">
-
-                    <div class="brand">EBT CAMP</div>
-
-                    <div class="sub-title">
-                         Engineering inventory management platform for
-                         production systems, machine components,
-                         purchasing operations and industrial workflow.
-                    </div>
-
-                    <div class="tech-card">
-
-                         <div class="tech-item">
-                              <i class="bi bi-1-circle"></i>
-                              Machine Equipment Monitoring
-                         </div>
-
-                         <div class="tech-item">
-                              <i class="bi bi-2-circle"></i>
-                              Smart Inventory Control
-                         </div>
-
-                         <div class="tech-item">
-                              <i class="bi bi-3-circle"></i>
-                              QR / Barcode Tracking
-                         </div>
-
-                         <div class="tech-item">
-                              <i class="bi bi-4-circle"></i>
-                              Engineering Purchase Workflow
-                         </div>
-
-                    </div>
-
+               <div class="sub-title">
+                    Engineering Business Tool
                </div>
+
+               <p class="intro">
+                    Inventory management platform for engineering materials,
+                    purchasing requests and production support.
+               </p>
 
           </div>
 
-          <!-- RIGHT → LOGIN -->
+          <!-- RIGHT -->
           <div class="right-panel">
 
                <div class="login-title">
@@ -89,39 +59,48 @@
                </div>
 
                <div class="login-desc">
-                    Enter credentials to access system
+                    Sign in using your LG Display account.
                </div>
 
                <form id="loginForm">
 
                     <div class="mb-3">
-                         <label class="form-label">Employee Email</label>
-                         <input type="text" id="email" class="form-control" placeholder="name@lgdisplay.com">
+                         <label for="email" class="form-label">
+                              Employee Email
+                         </label>
+
+                         <input type="text" id="email" class="form-control" placeholder="name@lgdisplay.com"
+                              autocomplete="username">
                     </div>
 
-                    <div class="mb-3">
-                         <label class="form-label">Password</label>
-                         <input type="password" id="password" class="form-control" placeholder="••••••••">
+                    <div class="mb-4">
+                         <label for="password" class="form-label">
+                              Password
+                         </label>
+
+                         <input type="password" id="password" class="form-control" placeholder="Enter password"
+                              autocomplete="current-password">
                     </div>
 
                     <button type="submit" class="login-btn">
-                         LOGIN
+                         Login
                     </button>
 
                </form>
 
                <div class="footer-text">
-                    No account?
-                    <a href="http://127.0.0.1:5500/Page/register.html">Sign up</a>
+                    Don't have an account?
+                    <a href="../Page/register.html">
+                         Sign up
+                    </a>
                </div>
 
           </div>
 
      </div>
 
+     <script src="../Script/login/login.js"></script>
+
 </body>
-
-
-<script src="../Script/login/login.js"></script>
 
 </html>

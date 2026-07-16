@@ -4,6 +4,7 @@ export const inventoryVariable = {
     currentInventoryPage: 1,
     pageSize: 8,
     totalPages: null,
+
     searchKeyword: "",
     selectedBrand: "",
     selectedType: ""

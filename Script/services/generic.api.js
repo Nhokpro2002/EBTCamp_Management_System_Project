@@ -1,4 +1,4 @@
-const POCKETBASE_URL = "http://127.0.0.1:8090";
+const POCKETBASE_URL = "http://127.0.0.1:8090"; // Cần đổi sang đường dẫn ip của máy chạy server + 8090
 
 export async function createRecord(collection, data) {
     const token = localStorage.getItem("token");

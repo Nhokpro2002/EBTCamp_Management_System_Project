@@ -5,6 +5,7 @@ body {
      background: #0f1722;
      color: #e9ecef;
      font-family: "Segoe UI", sans-serif;
+     overflow: hidden;
 }
 
 .card {
@@ -15,7 +16,12 @@ body {
 }
 
 .card-body {
-     padding: 20px;
+     padding: 10px;
+}
+
+.card-body-1 {
+     max-height: 350px;
+     min-height: 350px;
 }
 
 /* ===========================
@@ -296,7 +302,7 @@ label {
 
 }
 
-@media (max-width:768px) {
+@media (max-width:730px) {
      .card-body {
           padding: 15px;
      }
@@ -340,4 +346,10 @@ label {
 
 #filterPanel {
      width: 100%;
+}
+
+#order-item-table {
+     overflow-y: auto;
+     font-size: 14px;
+     padding-bottom: 25px !important;
 }

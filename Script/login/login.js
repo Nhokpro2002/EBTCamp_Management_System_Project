@@ -35,7 +35,9 @@ async function login() {
             text: "Login successfully",
             confirmButtonText: "OK"
         }).then(() => {
-            window.location.href = "http://127.0.0.1:5500/Page/dashboard.html";
+            // Cần sửa đường dẫn 
+            // ! Error
+            window.location.href = "http://127.0.0.1:5500/Page/inventory.html";
         });
 
     } catch (error) {

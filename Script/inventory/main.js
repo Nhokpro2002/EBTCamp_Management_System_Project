@@ -1,22 +1,15 @@
 import * as service from "./service.js";
 import * as ui from "./ui.js";
+import * as event from "./event.js";
 
 import { inventoryVariable } from "./state.js";
+
 
 
 // ==============================
 // CONSTANT
 // ==============================
-
 const COLLECTION_ITEMS = "Inventory_Items";
-
-
-// ==============================
-// DOM ELEMENT
-// ==============================
-
-const pagination = document.getElementById("pagination");
-const searchInput = document.getElementById("searchInput");
 
 
 // ==============================
@@ -27,7 +20,8 @@ $(document).ready(async function () {
 
     if (!checkAuthentication()) return;
 
-    initLayout();
+
+    event.initEvent();
 
     //ui.changeIconAvatar();
     //ui.changeTopbarText();
@@ -61,20 +55,8 @@ function checkAuthentication() {
         return false;
     }
 
-
     return true;
 }
-
-
-
-// ==============================
-// PAGE SETUP
-// ==============================
-function initLayout() {
-    document.querySelector(".container-fluid").style.display = "block";
-}
-
-
 
 // ==============================
 // LOAD DATA
@@ -118,39 +100,6 @@ function renderCurrentPage() {
 }
 
 
-searchInput.addEventListener("input", () => {
-    inventoryVariable.searchKeyword =
-        searchInput.value.toLowerCase().trim();
-    applyFilter();
-});
-
-const brandFilter = document.getElementById("brandFilter");
-brandFilter.addEventListener("change", () => {
-    inventoryVariable.selectedBrand = brandFilter.value;
-    applyFilter();
-});
-
-const typeFilter = document.getElementById("typeFilter");
-typeFilter.addEventListener("change", () => {
-    inventoryVariable.selectedType = typeFilter.value;
-    applyFilter();
-});
-
-
-// ==============================
-// PAGINATION
-// ==============================
-pagination.addEventListener(
-    "click",
-    (e) => {
-        const btn =
-            e.target.closest(".page-btn");
-        if (!btn) return;
-        service.changePage(
-            Number(btn.dataset.page)
-        );
-    });
-
 // ==============================
 // MENU ACTIVE
 // ==============================
@@ -169,34 +118,4 @@ function setupActiveMenu() {
                 document.getElementById(id)?.classList.add("active");
             }
         });
-}
-
-
-function applyFilter() {
-    inventoryVariable.inventoryItemFiltered =
-        inventoryVariable.inventoryItemFull.filter(item => {
-            const matchSearch =
-                inventoryVariable.searchKeyword == "" ||
-                item.name.toLowerCase().includes(inventoryVariable.searchKeyword) ||
-                item.model.toLowerCase().includes(inventoryVariable.searchKeyword);
-
-            const matchBrand =
-                inventoryVariable.selectedBrand == "" ||
-                item.brand == inventoryVariable.selectedBrand;
-
-            const matchType =
-                inventoryVariable.selectedType == "" ||
-                item.type == inventoryVariable.selectedType;
-
-            return matchSearch && matchBrand && matchType;
-        });
-
-    inventoryVariable.currentInventoryPage = 1;
-
-    ui.renderTable(
-        inventoryVariable.inventoryItemFiltered.slice(
-            0,
-            inventoryVariable.pageSize
-        )
-    );
 }

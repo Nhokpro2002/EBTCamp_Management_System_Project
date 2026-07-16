@@ -1,10 +1,13 @@
 import * as api from "../services/generic.api.js";
 import * as ui from "./ui.js";
+import * as utils from "../utils/utils.js";
 
+const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
+
+import { inventoryItemPageMessage } from "./inventory_items_page_message.js"
 import { inventoryVariable } from "./state.js";
 
 export async function changePage(page) {
-    console.log(page);
     if (page < 1 || page > inventoryVariable.totalPages)
         return;
     inventoryVariable.currentInventoryPage = page;
@@ -26,6 +29,18 @@ export async function loadInventoryItemData(collection) {
     } catch (error) {
         console.log(error);
     }
+}
 
+export async function saveItem(data) {
+    try {
+        const response = await api.createRecord(OLLECTION_INVENTORY_ITEMS, data);
+        if (response) {
+
+        }
+
+    } catch (error) {
+        console.log(error);
+        utils.showError(inventoryItemPageMessage.saveFailed);
+    }
 }
 

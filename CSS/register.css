@@ -1,163 +1,213 @@
+/* =========================
+   GLOBAL
+========================= */
 body {
-    background: #f5f7fb;
+    background:
+        linear-gradient(rgba(0, 0, 0, .4),
+            rgba(0, 0, 0, .4)),
+        url("../Image/lg.jpg");
+    background-size: cover;
+    background-position: center;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Nunito', sans-serif;
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
 }
 
+.register-title {
+    color: #A50034;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+
+.register-desc {
+    color: #777;
+    font-size: 15px;
+    margin-top: 8px;
+}
+
+/* =========================
+   MAIN CARD
+========================= */
 .register-container {
-    width: 1160px;
-    max-width: 1180px;
-    height: 720px;
+    width: 1050px;
+    min-height: 650px;
+    height: auto;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
     display: flex;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, .35);
+
+}
+
+
+
+/* =========================
+   LEFT BRAND
+========================= */
+.left-panel {
+    flex: 1;
+    padding: 60px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    background:
+
+        linear-gradient(135deg,
+            #8f002d,
+            #c8102e);
+
 }
 
 .left-panel {
     flex: 1;
-    position: relative;
-    padding: 40px;
-    background: linear-gradient(135deg, #eff6ff, #f0fdf4);
-}
-
-.grid-overlay {
-    position: absolute;
-    inset: 0;
     background-image:
-        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
+        url("../Image/KTX.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-.brand {
-    font-size: 38px;
-    font-weight: 800;
-    color: #2563eb;
-}
 
-.sub-title {
-    margin-top: 12px;
-    color: #475569;
-    font-size: 15px;
-    line-height: 1.6;
-}
-
-.tech-card {
-    margin-top: 35px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 20px;
-}
-
-.tech-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #334155;
-    margin-bottom: 14px;
-}
-
-.tech-item .material-icons {
-    color: #2563eb;
-}
-
+/* =========================
+   RIGHT FORM
+========================= */
 .right-panel {
-    width: 470px;
+    width: 450px;
     background: #ffffff;
-    border-left: 1px solid #e5e7eb;
-    padding-top: 11px;
-    padding-right: 35px;
-    padding-bottom: 30px;
-    padding-left: 35px;
+    padding: 35px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
+
+.right-panel form>div {
+    margin-bottom: 14px !important;
+}
+
 
 .register-title {
-    font-size: 26px;
+    color: #A50034;
+    font-size: 32px;
     font-weight: 800;
-    color: #111827;
 }
 
 .register-desc {
-    color: #64748b;
-    margin-bottom: 10px;
+    color: #777;
+    margin-top: 8px;
+    margin-bottom: 25px;
 }
 
+/* =========================
+   FORM
+========================= */
 .form-label {
-    color: #374151;
+    color: #333;
     font-weight: 700;
 }
 
 .form-control {
-    height: 42px;
+
+    height: 40px;
+
     border-radius: 8px;
+
     border: 1px solid #d1d5db;
+
     background: #fff;
-    color: #111827;
+
 }
 
 .form-control:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 .2rem rgba(59, 130, 246, .15);
+
+    border-color: #A50034;
+
+    box-shadow:
+        0 0 0 .2rem rgba(165, 0, 52, .15);
+
 }
 
 .form-control::placeholder {
-    color: #64748b;
+    color: #aaa;
 }
 
+/* =========================
+   BUTTON
+========================= */
 #register-btn {
     width: 100%;
-    height: 42px;
+    height: 45px;
     border: none;
     border-radius: 10px;
-    background: #2563eb;
+    background: #A50034;
     color: white;
     font-weight: 700;
-    transition: 0.2s;
+    transition: .2s;
 }
 
 #register-btn:hover {
-    background: #1d4ed8;
+    background: #85002a;
     transform: translateY(-1px);
 }
 
+/* =========================
+   FOOTER
+========================= */
 .footer-text {
     text-align: center;
-    margin-top: 14px;
-    color: #64748b;
+    margin-top: 20px;
+    color: #777;
 }
 
 .footer-text a {
-    color: #2563eb;
+    color: #A50034;
     font-weight: 700;
     text-decoration: none;
 }
 
-.signal {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #22c55e;
-    display: inline-block;
-    margin-right: 6px;
+a:hover {
+    text-decoration: underline;
 }
 
-.system-status {
+/* =========================
+   ERROR
+========================= */
+.error {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 13px;
-    color: #16a34a;
+    left: 0;
+    bottom: -16px;
+    color: #dc2626;
+    font-size: 11px;
 }
 
-@media(max-width: 500px) {
+input.is-invalid {
+    border-color: #dc2626;
+}
+
+input.is-valid {
+    border-color: #22c55e;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+
+
+/* =========================
+   MOBILE
+========================= */
+@media(max-width:800px) {
     .left-panel {
         display: none;
     }
@@ -167,27 +217,8 @@ body {
     }
 
     .register-container {
+        width: 90%;
         height: auto;
+
     }
-}
-
-.error {
-    position: absolute;
-    left: 0;
-    bottom: -18px;
-    color: #ef4444;
-    font-size: 12px;
-}
-
-input.is-invalid {
-    border-color: #ef4444;
-}
-
-input.is-valid {
-    border-color: #00ffcc;
-}
-
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
 }

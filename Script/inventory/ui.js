@@ -95,3 +95,77 @@ export function renderPagination() {
     `;
 }
 
+export function validateProductForm() {
+    let isValid = true;
+    const fields = [
+        "#productImage",
+        "#productName",
+        "#productCode",
+        "#productBrand",
+        "#productModel",
+        "#productType",
+        "#productStock",
+        "#productDescription"
+    ];
+
+    fields.forEach(selector => {
+        const element = $(selector);
+        let value;
+        if (element.attr("type") === "file") {
+            value = element[0].files.length;
+        } else {
+            value = element.val().trim();
+        }
+
+        if (!value) {
+            element.addClass("is-invalid");
+            isValid = false;
+        } else {
+            element.removeClass("is-invalid");
+        }
+
+    });
+
+    return isValid;
+
+}
+
+export function resetProductForm() {
+    const form = $("#addProductForm")[0];
+
+    form.reset();
+
+    $("#addProductForm")
+        .find(".is-invalid, .is-valid")
+        .removeClass("is-invalid is-valid");
+}
+
+export function applyFilter() {
+    inventoryVariable.inventoryItemFiltered =
+        inventoryVariable.inventoryItemFull.filter(item => {
+            const matchSearch =
+                inventoryVariable.searchKeyword == "" ||
+                item.name.toLowerCase().includes(inventoryVariable.searchKeyword) ||
+                item.model.toLowerCase().includes(inventoryVariable.searchKeyword);
+
+            const matchBrand =
+                inventoryVariable.selectedBrand == "" ||
+                item.brand == inventoryVariable.selectedBrand;
+
+            const matchType =
+                inventoryVariable.selectedType == "" ||
+                item.type == inventoryVariable.selectedType;
+
+            return matchSearch && matchBrand && matchType;
+        });
+
+    inventoryVariable.currentInventoryPage = 1;
+
+    renderTable(
+        inventoryVariable.inventoryItemFiltered.slice(
+            0,
+            inventoryVariable.pageSize
+        )
+    );
+}
+
