@@ -19,7 +19,7 @@ export function renderOrderList() {
             </td>
 
             <td>
-                ${utils.formatDateDisplay(order.created)}
+                ${utils.formatDateDisplay(order.createdDate)}
             </td>
 
             <td>

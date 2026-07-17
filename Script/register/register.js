@@ -1,12 +1,15 @@
+import { URL_LOCAL } from "../config.js";
+
 const USERS = "users";
-const POCKETBASE_URL = "http://127.0.0.1:8090";
 
 let touched = {
     employee_id: false,
     employee_name: false,
     email: false,
     password: false,
-    passwordConfirm: false
+    passwordConfirm: false,
+    department: false
+
 };
 
 function validateForm() {
@@ -59,12 +62,40 @@ function validateForm() {
                 .removeClass("is-invalid");
         }
     }
+
+    // DEPARTMENT
+    const department = $("#department").val();
+
+    if (touched.department) {
+
+        if (department === "") {
+
+            $("#errorDepartment").text(
+                "Please select your department"
+            );
+
+            $("#department")
+                .addClass("is-invalid")
+                .removeClass("is-valid");
+
+            valid = false;
+
+        } else {
+
+            $("#errorDepartment").text("");
+
+            $("#department")
+                .addClass("is-valid")
+                .removeClass("is-invalid");
+        }
+    }
+
     // EMAIL
     const email = $("#email").val().trim();
     const emailRegex = /^[A-Za-z0-9._%+-]+@lgdisplay\.com$/;
     if (touched.email) {
         if (!emailRegex.test(email)) {
-            $("#errorEmail").text("Must be @lgdisplay.com");
+            $("#errorEmail").text("Must contain @lgdisplay.com");
             $("#email").addClass("is-invalid").removeClass("is-valid");
             valid = false;
         } else {
@@ -83,7 +114,7 @@ function validateForm() {
 
     if (touched.password) {
         if (!okPassword) {
-            $("#errorPassword").text("8-30 chars, upper, number, special");
+            $("#errorPassword").text("8-30 chars, uppercase, number, special character required");
             $("#password").addClass("is-invalid").removeClass("is-valid");
             valid = false;
         } else {
@@ -110,7 +141,7 @@ function validateForm() {
 }
 
 function setupTouchEvents() {
-    $("#employee_id, #employee_name, #email, #password, #passwordConfirm").on("blur", function () {
+    $("#employee_id, #employee_name, #email, #password, #passwordConfirm, #department").on("blur", function () {
         const id = $(this).attr("id");
         touched[id] = true;
         validateForm();
@@ -139,7 +170,7 @@ async function registerNewUser() {
     };
 
     try {
-        const res = await fetch(`${POCKETBASE_URL}/api/collections/${USERS}/records`, {
+        const res = await fetch(`${URL_LOCAL}/api/collections/${USERS}/records`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newUserData)
@@ -161,7 +192,7 @@ async function registerNewUser() {
 
                 setTimeout(() => {
                     window.location.href =
-                        "http://127.0.0.1:5500/Page/login.html";
+                        "login.html";
                 }, 1000);
             }
         });
@@ -180,4 +211,8 @@ async function registerNewUser() {
 $(document).ready(function () {
     setupTouchEvents();
     validateForm();
+});
+
+$("#register-btn").on("click", function () {
+    registerNewUser();
 });

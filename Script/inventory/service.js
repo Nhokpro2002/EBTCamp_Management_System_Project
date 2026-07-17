@@ -33,11 +33,10 @@ export async function loadInventoryItemData(collection) {
 
 export async function saveItem(data) {
     try {
-        const response = await api.createRecord(OLLECTION_INVENTORY_ITEMS, data);
+        const response = await api.createRecord(COLLECTION_INVENTORY_ITEMS, data);
         if (response) {
-
+            utils.showSuccess(inventoryItemPageMessage.saveSuccess);
         }
-
     } catch (error) {
         console.log(error);
         utils.showError(inventoryItemPageMessage.saveFailed);

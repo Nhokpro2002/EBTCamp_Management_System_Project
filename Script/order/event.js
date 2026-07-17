@@ -1,38 +1,45 @@
 import * as service from "./service.js";
+import * as utils from "../utils/utils.js";
+import * as ui from "./ui.js";
+
+import { message } from "./message.js";
+
 
 export function initOrderEvents() {
+
+    // Bootstrap Modal
+    const newOrderModal = new bootstrap.Modal(
+        document.getElementById("newOrderModal")
+    );
+
+    // Open popup
+    document
+        .getElementById("btnNewOrder")
+        .addEventListener("click", () => {
+            newOrderModal.show();
+        });
+
+
     // Save Order Event
     const btnSaveOrder = document.getElementById("btnSaveOrder");
     if (btnSaveOrder) {
         btnSaveOrder.addEventListener("click", async () => {
-            const orderDate = document.getElementById("orderDate").value;
-            if (!orderDate) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Please select order date."
-                });
+            const createdDate = document.getElementById("createdDate").value;
+            if (!createdDate) {
+                utils.showPopup("Warning", message.saveWarning, "warning");
                 return;
             }
 
             const data = {
-                orderDate: orderDate
+                createdDate: createdDate
             };
 
-            try {
-                await service.createOrder(data);
-                Swal.fire({
-                    icon: "success",
-                    title: "Order created."
-                });
-                newOrderModal.hide();
 
-            } catch (error) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Create order failed."
-                });
-                console.error(error);
-            }
+            await service.createOrder(data);
+            newOrderModal.hide();
+            document.getElementById("createdDate").value = "";
+            ui.renderOrderList();
+
         });
     }
 

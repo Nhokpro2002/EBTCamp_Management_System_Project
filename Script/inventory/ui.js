@@ -169,3 +169,47 @@ export function applyFilter() {
     );
 }
 
+export function createPayload() {
+    const formData = new FormData();
+
+    formData.append(
+        "name",
+        $("#productName").val().trim()
+    );
+
+    formData.append(
+        "code",
+        $("#productCode").val().trim()
+    );
+
+    formData.append(
+        "brand",
+        $("#productBrand").val()
+    );
+
+    formData.append(
+        "model",
+        $("#productModel").val().trim()
+    );
+
+    formData.append(
+        "type",
+        $("#productType").val()
+    );
+
+    formData.append(
+        "stock",
+        $("#productStock").val()
+    );
+
+    formData.append(
+        "description",
+        $("#productDescription").val().trim()
+    );
+    const image = $("#productImage")[0].files[0];
+    if (image) {
+        formData.append("image", image);
+    }
+    return formData;
+}
+

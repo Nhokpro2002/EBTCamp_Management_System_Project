@@ -5,7 +5,6 @@ import * as event from "./event.js";
 
 async function init() {
     try {
-
         setupActiveMenu();
 
         await service.loadOrderList();

@@ -35,8 +35,21 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-lg-2 d-flex flex-column p-4 sticky-top"
-                style="height: 100vh; background-color: #182330; color: white;">
+            <div class="col-lg-2 d-flex flex-column p-4 sticky-top" style="
+              height: 100vh;
+                background-color: #ffffff;
+                color: #222222;
+              border-right: 1px solid #e5e5e5;
+                  ">
+
+                <!-- LOGO -->
+                <div class="text-center mb-4">
+                    <img src="../Image/lg_display_logo_web.png" alt="Logo" style="
+                width: 140px;
+                height: auto;
+                object-fit: contain;
+             ">
+                </div>
 
                 <nav class="nav flex-column">
                     <a class="nav-link" href="inventory.html" id="inventory-link">
@@ -61,18 +74,36 @@
                 </nav>
 
                 <!-- User Info -->
-                <div class="mt-auto pt-3 border-top d-flex align-items-center">
-                    <img src="../Images/avatar.png" alt="Avatar" class="rounded-circle" width="45" height="45">
+                <div class="mt-auto pt-3 d-flex align-items-center" style="
+                       border-top:1px solid #eeeeee;
+                   ">
+
+                    <img src="../Images/avatar.png" alt="Avatar" class="rounded-circle" width="45" height="45" style="
+                           border:2px solid #e60012;
+                       ">
 
                     <div class="ms-3">
-                        <div class="fw-semibold" id="user-name">Nguyễn Văn A</div>
-                        <small class="text-secondary" id="user-role">Engineer</small>
+
+                        <div class="fw-semibold" id="user-name" style="
+                color:#222;
+             ">
+                            Nguyễn Văn A
+                        </div>
+
+
+                        <small id="user-role" style="
+                color:#888;
+             ">
+                            Engineer
+                        </small>
+
                     </div>
+
                 </div>
 
             </div>
 
-            <div class="col-lg-10 p-4">
+            <div class="col-lg-10 p-1">
                 <div style="min-width: 1212px;">
                     <div
                         style="background: var(--card-bg);border: 1px solid var(--border-color);border-radius: 18px;box-shadow: var(--shadow-sm);padding: 22px;">

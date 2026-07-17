@@ -4,15 +4,16 @@
 <head>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
      <title>EBT Camp - Register</title>
 
      <!-- Bootstrap Icons -->
      <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
 
-     <!-- JQuery 4.0.0-->
+     <!-- JQuery -->
      <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
 
-     <!-- Sweet Alert-->
+     <!-- Sweet Alert -->
      <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
      <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
 
@@ -20,7 +21,7 @@
      <link rel="stylesheet" href="../Libs/Bootstrap/css/bootstrap.min.css">
      <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
 
-     <!--Register CSS-->
+     <!-- Register CSS -->
      <link href="../CSS/register.css" rel="stylesheet">
 
 </head>
@@ -28,74 +29,160 @@
 <body>
 
      <div class="register-container">
-          <!-- LEFT PANEL -->
-          <div class="left-panel">
 
-          </div>
+          <!-- LEFT PANEL -->
+          <div class="left-panel"></div>
+
 
           <!-- RIGHT PANEL -->
           <div class="right-panel">
+
                <div class="register-title">
                     SYSTEM SIGN UP
                </div>
 
-               <form onsubmit="return false;">
-                    <div>
-                         <label class="form-label">Employee ID</label>
+
+               <form id="register-form" onsubmit="return false;">
+
+                    <div class="form-group">
+                         <label class="form-label">
+                              Employee ID
+                         </label>
+
                          <input type="text" class="form-control" id="employee_id" placeholder="Enter Employee ID">
+
                          <div class="error" id="error_employee_id"></div>
                     </div>
 
-                    <div>
-                         <label class="form-label">Employee Name</label>
+
+
+                    <div class="form-group">
+
+                         <label class="form-label">
+                              Employee Name
+                         </label>
+
                          <input type="text" class="form-control" id="employee_name" placeholder="Your name">
+
                          <div class="error" id="error_employee_name"></div>
+
                     </div>
 
-                    <div>
-                         <label class="form-label">Email</label>
+
+
+                    <div class="form-group">
+
+                         <label class="form-label">
+                              Email
+                         </label>
+
                          <input type="email" class="form-control" id="email" placeholder="name@lgdisplay.com">
+
                          <div class="error" id="errorEmail"></div>
+
                     </div>
 
-                    <div>
-                         <label class="form-label">Department</label>
+
+
+                    <div class="form-group">
+
+                         <label class="form-label">
+                              Department
+                         </label>
+
                          <select class="form-control" id="department">
-                              <option>Production Technology Team</option>
-                              <option>Equipment Technology Part</option>
-                              <option>Localization Part</option>
-                              <option>Design - Mechanical Part</option>
+
+                              <option value="">
+                                   -- Select Department --
+                              </option>
+
+                              <option value="Equipment Technology Part">
+                                   Equipment Technology Part
+                              </option>
+
+                              <option value="Localization Part">
+                                   Localization Part
+                              </option>
+
+                              <option value="Design - Mechanical Part">
+                                   Design - Mechanical Part
+                              </option>
 
                          </select>
+
+                         <div class="error" id="errorDepartment"></div>
+
                     </div>
 
-                    <div>
-                         <label class="form-label">Password</label>
+
+
+
+                    <div class="form-group">
+
+                         <label class="form-label">
+                              Password
+                         </label>
+
                          <input type="password" class="form-control" id="password" placeholder="••••••••">
+
                          <div class="error" id="errorPassword"></div>
+
                     </div>
 
-                    <div>
-                         <label class="form-label">Confirm Password</label>
+
+
+
+
+                    <div class="form-group">
+
+                         <label class="form-label">
+                              Confirm Password
+                         </label>
+
                          <input type="password" class="form-control" id="passwordConfirm" placeholder="••••••••">
+
+
                          <div class="error" id="errorPasswordConfirm"></div>
+
                     </div>
 
-                    <button type="button" id="register-btn" onclick="registerNewUser()">REGISTER SYSTEM ACCOUNT</button>
+
+
+
+                    <!-- BUTTON -->
+                    <div class="register-action">
+
+                         <button type="button" id="register-btn">
+
+                              REGISTER SYSTEM ACCOUNT
+
+                         </button>
+
+                    </div>
+
 
                </form>
 
+
+
                <div class="footer-text">
+
                     Already have account?
-                    <a href="http://127.0.0.1:5500/Page/login.html">Sign In</a>
+
+                    <a href="./login.html">
+                         Sign In
+                    </a>
+
                </div>
+
 
           </div>
 
      </div>
 
-</body>
 
-<script src="../Script/register/register.js"></script>
+     <script type="module" src="../Script/register/register.js"></script>
+
+</body>
 
 </html>

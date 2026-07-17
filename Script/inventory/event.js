@@ -1,5 +1,6 @@
 import { inventoryVariable } from "./state.js";
 import * as ui from "./ui.js";
+import * as service from "./service.js";
 
 export function initEvent() {
     const pagination = document.getElementById("pagination");
@@ -38,8 +39,8 @@ export function initEvent() {
         .getElementById("saveProductBtn")
         .addEventListener("click", () => {
             if (!ui.validateProductForm()) return;
-
-            console.log("Save Success");
+            const inventoryItemData = ui.createPayload();
+            service.saveItem(inventoryItemData);
         });
 
     document

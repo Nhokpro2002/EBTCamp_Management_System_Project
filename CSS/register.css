@@ -1,119 +1,122 @@
 /* =========================
    GLOBAL
 ========================= */
+
 body {
+
     background:
         linear-gradient(rgba(0, 0, 0, .4),
             rgba(0, 0, 0, .4)),
         url("../Image/lg.jpg");
+
     background-size: cover;
     background-position: center;
+
     min-height: 100vh;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
     font-family:
         "Segoe UI",
         Arial,
         sans-serif;
 }
 
-.register-title {
-    color: #A50034;
-    font-size: 32px;
-    font-weight: 800;
-    letter-spacing: .5px;
+a:hover {
+    text-decoration: underline !important;
 }
 
 
-.register-desc {
-    color: #777;
-    font-size: 15px;
-    margin-top: 8px;
-}
+
 
 /* =========================
-   MAIN CARD
+   CONTAINER
 ========================= */
+
 .register-container {
-    width: 1050px;
-    min-height: 650px;
-    height: auto;
-    background: #ffffff;
+    background: white;
     border-radius: 20px;
+
     overflow: hidden;
+
     display: flex;
+
     box-shadow:
         0 25px 60px rgba(0, 0, 0, .35);
 
 }
 
 
-
 /* =========================
-   LEFT BRAND
+   RIGHT PANEL
 ========================= */
-.left-panel {
-    flex: 1;
-    padding: 60px;
-    color: white;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    background:
 
-        linear-gradient(135deg,
-            #8f002d,
-            #c8102e);
-
-}
-
-.left-panel {
-    flex: 1;
-    background-image:
-        url("../Image/KTX.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-
-/* =========================
-   RIGHT FORM
-========================= */
 .right-panel {
-    width: 450px;
-    background: #ffffff;
+
+
+    width: 666px;
+
+    background: white;
+
     padding: 35px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+
 }
 
-.right-panel form>div {
-    margin-bottom: 14px !important;
-}
+
 
 
 .register-title {
+
     color: #A50034;
+
     font-size: 32px;
+
     font-weight: 800;
+
+    margin-bottom: 25px;
+
 }
 
-.register-desc {
-    color: #777;
-    margin-top: 8px;
-    margin-bottom: 25px;
-}
+
 
 /* =========================
-   FORM
+   FORM GRID
 ========================= */
-.form-label {
-    color: #333;
-    font-weight: 700;
+
+#register-form {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 18px 20px;
+
 }
+
+
+
+.form-group {
+
+    position: relative;
+
+}
+
+
+
+
+.form-label {
+
+    color: #333;
+
+    font-weight: 700;
+
+}
+
+
+
 
 .form-control {
 
@@ -121,11 +124,12 @@ body {
 
     border-radius: 8px;
 
-    border: 1px solid #d1d5db;
-
-    background: #fff;
+    border:
+        1px solid #d1d5db;
 
 }
+
+
 
 .form-control:focus {
 
@@ -136,15 +140,62 @@ body {
 
 }
 
-.form-control::placeholder {
-    color: #aaa;
+
+
+
+
+/* =========================
+   ERROR
+========================= */
+
+.error {
+
+    position: absolute;
+
+    left: 0;
+
+    bottom: -15px;
+
+    color: #dc2626;
+
+    font-size: 11px;
+
 }
+
+
+
+
+input.is-invalid {
+
+    border-color: #dc2626;
+
+}
+
+
+
+input.is-valid {
+
+    border-color: #22c55e;
+
+}
+
+
+
 
 /* =========================
    BUTTON
 ========================= */
+.register-action {
+    grid-column:
+        1 / 3;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
 #register-btn {
-    width: 100%;
+    width: 80%;
     height: 45px;
     border: none;
     border-radius: 10px;
@@ -174,35 +225,6 @@ body {
     text-decoration: none;
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
-/* =========================
-   ERROR
-========================= */
-.error {
-    position: absolute;
-    left: 0;
-    bottom: -16px;
-    color: #dc2626;
-    font-size: 11px;
-}
-
-input.is-invalid {
-    border-color: #dc2626;
-}
-
-input.is-valid {
-    border-color: #22c55e;
-}
-
-button:disabled {
-    opacity: .6;
-    cursor: not-allowed;
-}
-
-
 
 /* =========================
    MOBILE
@@ -218,7 +240,19 @@ button:disabled {
 
     .register-container {
         width: 90%;
-        height: auto;
+    }
 
+    #register-form {
+        grid-template-columns:
+            1fr;
+    }
+
+    .register-action {
+        grid-column:
+            1;
+    }
+
+    #register-btn {
+        width: 100%;
     }
 }

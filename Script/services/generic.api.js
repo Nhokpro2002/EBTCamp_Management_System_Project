@@ -1,26 +1,59 @@
-const POCKETBASE_URL = "http://127.0.0.1:8090"; // Cần đổi sang đường dẫn ip của máy chạy server + 8090
+import { URL_LOCAL } from "../config.js";
 
 export async function createRecord(collection, data) {
     const token = localStorage.getItem("token");
+    const isFormData = data instanceof FormData;
+    const options = {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    };
+
+    if (isFormData) {
+
+        // Upload file
+        options.body = data;
+
+    } else {
+
+        // JSON bình thường
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(data);
+
+    }
+
     const res = await fetch(
-        `${POCKETBASE_URL}/api/collections/${collection}/records`,
+        `${URL_LOCAL}/api/collections/${collection}/records`,
+        options
+    );
+
+    if (!res.ok) {
+        throw new Error("Create failed");
+    }
+
+    return await res.json();
+}
+
+export async function login(collection, data) {
+    const res = await fetch(
+        `${URL_LOCAL}/api/collections/${collection}/auth-with-password`,
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(data)
         }
     );
-    if (!res.ok) throw new Error("Create failed");
-    return await res.json();
+
+    return res;
 }
 
 export async function updateRecord(collection, id, data) {
     const token = localStorage.getItem("token");
     const res = await fetch(
-        `${POCKETBASE_URL}/api/collections/${collection}/records/${id}`,
+        `${URL_LOCAL}/api/collections/${collection}/records/${id}`,
         {
             method: "PATCH",
             headers: {
@@ -37,7 +70,7 @@ export async function updateRecord(collection, id, data) {
 export async function deleteRecord(collection, id) {
     const token = localStorage.getItem("token");
     const res = await fetch(
-        `${POCKETBASE_URL}/api/collections/${collection}/records/${id}`,
+        `${URL_LOCAL}/api/collections/${collection}/records/${id}`,
         {
             method: "DELETE",
             headers: {
@@ -51,7 +84,7 @@ export async function deleteRecord(collection, id) {
 
 export async function getRecords(collection) {
     const token = localStorage.getItem("token");
-    let url = `${POCKETBASE_URL}/api/collections/${collection}/records`;
+    let url = `${URL_LOCAL}/api/collections/${collection}/records`;
     const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -64,7 +97,7 @@ export async function getRecords(collection) {
 
 export async function getRecordsFilter(collection, field, value) {
     const token = localStorage.getItem("token");
-    let url = `${POCKETBASE_URL}/api/collections/${collection}/records`;
+    let url = `${URL_LOCAL}/api/collections/${collection}/records`;
     const filter = `${field} = "${value}"`;
     url += `?filter=${encodeURIComponent(filter)}`;
     const res = await fetch(url, {
@@ -80,7 +113,7 @@ export async function getRecordsFilter(collection, field, value) {
 export async function loadInventoryItemEachPage(collection, page = 1, size = 7) {
     const token = localStorage.getItem("token");
     const res = await fetch(
-        `${POCKETBASE_URL}/api/collections/${collection}/records?page=${page}&perPage=${size}`,
+        `${URL_LOCAL}/api/collections/${collection}/records?page=${page}&perPage=${size}`,
         {
             method: "GET",
             headers: {

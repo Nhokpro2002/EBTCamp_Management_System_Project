@@ -1,169 +1,795 @@
 <!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap 5 -->
+    <title>Project Materials</title>
+
+    <!-- Bootstrap -->
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Bootstrap Icons -->
     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- JQuery 4.0.0-->
-    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
-
-    <!-- Sweet Alert -->
-    <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
-    <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
-
-    <!-- Sortable -->
-    <script src="../Libs/Sortable/sortable.min.js"></script>
-
-    <!-- ExcelJS -->
-    <script src="../Libs/ExcelJS/exceljs.min.js"></script>
-
-    <!-- Project_Items CSS -->
-    <link href="../CSS/project_items.css" rel="stylesheet">
-
-    <style>
-
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../CSS/project_items.css">
 </head>
 
 <body>
 
-    <div id="projectItemDrawer">
+    <div class="wrapper">
 
-        <!-- Header -->
-        <div class="drawer-header">
-            <div class="project-header">
-                <div class="project-title">
-                    <i class="bi bi-box-seam me-2"></i>
-                    <h4>Project Items</h4>
+        <!-- ===========================
+                SIDEBAR
+        ============================ -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+
+                <div class="logo-icon">
+                    <i class="bi bi-box-seam"></i>
                 </div>
 
-                <div class="project-name">
-                    <i class="bi bi-folder-fill"></i>
-                    <span>Project :</span>
-                    <span class="project-info">MES System Setup</span>
+                <div>
+                    <h4>EBTCamp</h4>
+                    <small>Management System</small>
                 </div>
-            </div>
-            <div>
-                <button class="btn btn-outline-secondary" id="back-project-page-button">
-                    <i class="bi bi-arrow-left"></i>
-                    Back
-                </button>
-            </div>
-        </div>
 
-        <!-- Body -->
-        <div class="row h-100 g-0">
-            <!-- ================= INVENTORY ================= -->
-            <div class="col-2 inventory-panel">
-                <div class="inventory-header">
-                    <h5>
-                        <i class="bi bi-boxes me-2"></i>
+            </div>
+
+            <ul class="menu">
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-grid"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-box"></i>
                         Inventory
-                    </h5>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-receipt"></i>
+                        Orders
+                    </a>
+                </li>
+
+                <li class="active">
+                    <a href="#">
+                        <i class="bi bi-kanban"></i>
+                        Project
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-people"></i>
+                        Users
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-bar-chart"></i>
+                        Reports
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-gear"></i>
+                        Settings
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="sidebar-user">
+
+                <img src="https://i.pravatar.cc/80?img=12">
+
+                <div>
+
+                    <h6>Nguyễn Văn A</h6>
+
+                    <small>Project Engineer</small>
+
                 </div>
 
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input class="form-control js-search-inventory" placeholder="Search inventory items">
-
-                </div>
-                <div id="inventory-list">
-
-                </div>
             </div>
 
-            <!-- ================= PROJECT ITEMS ================= -->
-            <div class="col-10 project-panel">
-                <div class="project-toolbar">
-                    <div class="input-group w-50">
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
+        </aside>
+
+        <!-- ===========================
+                CONTENT
+        ============================ -->
+
+        <main class="content">
+
+            <!-- Header -->
+
+            <header class="topbar">
+
+                <div>
+
+                    <h2>Project Materials</h2>
+
+                    <p>
+                        Project
+                        <i class="bi bi-chevron-right"></i>
+                        Packaging Machine
+                        <i class="bi bi-chevron-right"></i>
+                        Materials
+                    </p>
+
+                </div>
+
+                <div class="header-right">
+
+                    <button class="btn btn-light position-relative">
+
+                        <i class="bi bi-bell"></i>
+
+                        <span class="badge bg-danger notification-badge">
+                            3
                         </span>
-                        <input class="form-control js-search-project-item" placeholder="Search project items">
-                    </div>
-                </div>
 
-                <div class="excel-toolbar d-flex justify-content-end gap-2 my-2">
-                    <button class="btn btn-primary btn-sm fw-bold" id="button-import-excel">
-                        <i class="bi bi-file-earmark-excel me-1"></i>
-                        Import Excel
                     </button>
+
+                    <button class="btn btn-outline-danger">
+                        <i class="bi bi-person-circle"></i>
+                        Admin
+                    </button>
+
                 </div>
 
-                <!-- Drop Zone -->
-                <div id="drop-zone">
-                    <i class="bi bi-mouse fs-3"></i>
-                    <div class="mt-2">
-                        Drag item from Inventory and drop here
+            </header>
+
+            <!-- ======================
+                    PROJECT CARD
+            ======================= -->
+
+            <section class="project-card">
+
+                <div class="project-left">
+
+                    <div class="project-icon">
+
+                        <i class="bi bi-cpu"></i>
+
                     </div>
-                </div>
 
-                <!-- Table -->
-                <div class="table-wrapper">
-                    <table class="table table-hover align-middle" id="project-items-table">
-                        <thead>
-                            <tr>
-                                <th class="text-center">
-                                    <input type="checkbox" id="checkAll">
-                                </th>
-                                <th>Name</th>
-                                <th>Model</th>
-                                <th>XCode/QCode</th>
-                                <th>Description</th>
-                                <th class="text-center">Required</th>
-                                <th class="text-center">Stock</th>
-                                <th class="text-center">Order</th>
-                                <th class="text-end">Unit Price</th>
-                                <th class="text-end">Total Price</th>
-                                <th>Requester</th>
-                                <th>Request Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="project-item-body">
-                            <!-- render bằng JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-
-                <!-- Footer -->
-                <div class="project-footer">
                     <div>
-                        Total Cost :
-                        <strong class="text-primary" id="lbl-total-cost">
-                            $ 0
-                        </strong>
+
+                        <h3>Automatic Packaging Machine</h3>
+
+                        <div class="project-tags">
+
+                            <span class="badge bg-light text-dark">
+                                PRJ-2026-001
+                            </span>
+
+                            <span class="badge bg-danger">
+                                In Progress
+                            </span>
+
+                        </div>
+
                     </div>
+
                 </div>
+
+                <div class="project-summary">
+
+                    <div class="summary-item">
+
+                        <h5>Total Materials</h5>
+
+                        <span id="totalMaterial">56</span>
+
+                    </div>
+
+                    <div class="summary-item">
+
+                        <h5>Issued</h5>
+
+                        <span id="issuedMaterial">32</span>
+
+                    </div>
+
+                    <div class="summary-item">
+
+                        <h5>Remaining</h5>
+
+                        <span id="remainingMaterial">24</span>
+
+                    </div>
+
+                    <div class="summary-item">
+
+                        <h5>Total Cost</h5>
+
+                        <span>$8,240</span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- =======================
+                    TOOLBAR
+            ======================== -->
+
+            <section class="toolbar">
+
+                <div class="toolbar-left">
+
+                    <div class="search-box">
+
+                        <i class="bi bi-search"></i>
+
+                        <input type="text" id="txtSearch" placeholder="Search material...">
+
+                    </div>
+
+                    <select id="categoryFilter" class="form-select">
+
+                        <option>All Categories</option>
+
+                    </select>
+
+                    <select id="statusFilter" class="form-select">
+
+                        <option>All Status</option>
+
+                    </select>
+
+                </div>
+
+                <div class="toolbar-right">
+
+                    <button class="btn btn-outline-secondary">
+
+                        <i class="bi bi-funnel"></i>
+
+                        Filter
+
+                    </button>
+
+                    <button class="btn btn-danger">
+
+                        <i class="bi bi-plus-lg"></i>
+
+                        Add Material
+
+                    </button>
+
+                </div>
+
+            </section>
+
+            <!-- =======================
+                    TABLE
+            ======================== -->
+
+            <section class="table-card">
+
+                <div class="table-responsive">
+
+                    <table class="table align-middle">
+
+                        <thead>
+
+                            <tr>
+
+                                <th width="40">
+                                    <input type="checkbox">
+                                </th>
+
+                                <th>#</th>
+
+                                <th>Image</th>
+
+                                <th>Name</th>
+
+                                <th>Code</th>
+
+                                <th>Category</th>
+
+                                <th>Unit</th>
+
+                                <th>Required</th>
+
+                                <th>Issued</th>
+
+                                <th>Remaining</th>
+
+                                <th>Status</th>
+
+                                <th width="60"></th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="materialTable">
+
+                            <!-- Render by JS -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <!-- =======================
+                    FOOTER
+            ======================== -->
+
+            <div class="table-footer">
+
+                <div>
+
+                    Showing
+
+                    <span id="showingCount">
+
+                        1-6
+
+                    </span>
+
+                    of
+
+                    <span id="totalCount">
+
+                        56
+
+                    </span>
+
+                    materials
+
+                </div>
+
+                <nav>
+
+                    <ul class="pagination mb-0">
+
+                        <li class="page-item">
+
+                            <a class="page-link" href="#">
+
+                                <i class="bi bi-chevron-left"></i>
+
+                            </a>
+
+                        </li>
+
+                        <li class="page-item active">
+
+                            <a class="page-link" href="#">
+                                1
+                            </a>
+
+                        </li>
+
+                        <li class="page-item">
+
+                            <a class="page-link" href="#">
+                                2
+                            </a>
+
+                        </li>
+
+                        <li class="page-item">
+
+                            <a class="page-link" href="#">
+                                3
+                            </a>
+
+                        </li>
+
+                        <li class="page-item">
+
+                            <a class="page-link" href="#">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </nav>
+
             </div>
-        </div>
+
+        </main>
+
     </div>
 
-    <div id="bulkActionBar" class="bulk-action-bar">
-        <button class="btn btn-danger btn-sm fw-bold me-1" id="button-delete-project-item">
-            <i class="bi bi-trash me-1"></i>
-            Delete
-        </button>
-
-        <button class="btn btn-info btn-sm fw-bold me-1" id="button-save-project-item">
-            <i class="bi bi-download me-1"></i>
-            Save
-        </button>
-
-        <button class="btn btn-success btn-sm fw-bold me-1" id="button-export-excel">
-            <i class="bi bi-floppy me-1"></i>
-            Export Excel
-        </button>
-    </div>
 </body>
 
-<script type="module" src="../Script/project_items/project_items.js"></script>
+<script>
+    // ======================================================
+    // Fake Data
+    // ======================================================
+
+    const materials = [
+        {
+            id: 1,
+            image: "https://via.placeholder.com/60",
+            name: "Mitsubishi PLC FX5U",
+            code: "PLC-001",
+            category: "PLC",
+            unit: "PCS",
+            required: 10,
+            issued: 8
+        },
+        {
+            id: 2,
+            image: "https://via.placeholder.com/60",
+            name: "24V Power Supply",
+            code: "PWR-101",
+            category: "Power",
+            unit: "PCS",
+            required: 12,
+            issued: 12
+        },
+        {
+            id: 3,
+            image: "https://via.placeholder.com/60",
+            name: "LS Contactor MC-18",
+            code: "CTR-023",
+            category: "Contactor",
+            unit: "PCS",
+            required: 20,
+            issued: 9
+        },
+        {
+            id: 4,
+            image: "https://via.placeholder.com/60",
+            name: "Omron Relay MY2N",
+            code: "RLY-120",
+            category: "Relay",
+            unit: "PCS",
+            required: 15,
+            issued: 15
+        },
+        {
+            id: 5,
+            image: "https://via.placeholder.com/60",
+            name: "Servo Motor 750W",
+            code: "SRV-750",
+            category: "Servo",
+            unit: "PCS",
+            required: 6,
+            issued: 2
+        },
+        {
+            id: 6,
+            image: "https://via.placeholder.com/60",
+            name: "Photo Sensor",
+            code: "SNS-555",
+            category: "Sensor",
+            unit: "PCS",
+            required: 30,
+            issued: 30
+        }
+    ];
+
+    let currentData = [...materials];
+
+    // ======================================================
+    // DOM
+    // ======================================================
+
+    const tableBody = document.getElementById("materialTable");
+    const txtSearch = document.getElementById("txtSearch");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    // ======================================================
+    // Init
+    // ======================================================
+
+    window.onload = () => {
+
+        renderCategory();
+
+        renderStatus();
+
+        renderTable(currentData);
+
+        updateSummary();
+
+    };
+
+    // ======================================================
+    // Category
+    // ======================================================
+
+    function renderCategory() {
+
+        const categories = [...new Set(materials.map(x => x.category))];
+
+        categories.forEach(item => {
+
+            categoryFilter.innerHTML += `
+            <option value="${item}">
+                ${item}
+            </option>
+        `;
+
+        });
+
+    }
+
+    // ======================================================
+    // Status
+    // ======================================================
+
+    function renderStatus() {
+
+        const arr = [
+
+            "In Stock",
+
+            "Low Stock",
+
+            "Completed"
+
+        ];
+
+        arr.forEach(item => {
+
+            statusFilter.innerHTML += `
+            <option value="${item}">
+                ${item}
+            </option>
+        `;
+
+        });
+
+    }
+
+    // ======================================================
+    // Render Table
+    // ======================================================
+
+    function renderTable(data) {
+
+        tableBody.innerHTML = "";
+
+        data.forEach((item, index) => {
+
+            const remain = item.required - item.issued;
+
+            let status = "";
+
+            let className = "";
+
+            if (remain == 0) {
+
+                status = "Completed";
+
+                className = "instock";
+
+            } else if (remain <= 5) {
+
+                status = "Low Stock";
+
+                className = "low";
+
+            } else {
+
+                status = "In Stock";
+
+                className = "out";
+
+            }
+
+            tableBody.innerHTML += `
+
+        <tr>
+
+            <td>
+                <input type="checkbox">
+            </td>
+
+            <td>${index + 1}</td>
+
+            <td>
+
+                <img src="${item.image}">
+
+            </td>
+
+            <td>
+
+                <strong>${item.name}</strong>
+
+            </td>
+
+            <td>${item.code}</td>
+
+            <td>${item.category}</td>
+
+            <td>${item.unit}</td>
+
+            <td>${item.required}</td>
+
+            <td>${item.issued}</td>
+
+            <td>${remain}</td>
+
+            <td>
+
+                <span class="status ${className}">
+                    ${status}
+                </span>
+
+            </td>
+
+            <td>
+
+                <div class="dropdown">
+
+                    <button
+                        class="btn btn-light btn-sm"
+                        data-bs-toggle="dropdown">
+
+                        <i class="bi bi-three-dots"></i>
+
+                    </button>
+
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-eye"></i>
+                                View
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="bi bi-pencil"></i>
+                                Edit
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item text-danger" href="#">
+                                <i class="bi bi-trash"></i>
+                                Delete
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </td>
+
+        </tr>
+
+        `;
+
+        });
+
+    }
+
+    // ======================================================
+    // Search
+    // ======================================================
+
+    txtSearch.addEventListener("keyup", filterData);
+
+    categoryFilter.addEventListener("change", filterData);
+
+    statusFilter.addEventListener("change", filterData);
+
+    // ======================================================
+    // Filter
+    // ======================================================
+
+    function filterData() {
+
+        const keyword = txtSearch.value.toLowerCase();
+
+        const category = categoryFilter.value;
+
+        const status = statusFilter.value;
+
+        currentData = materials.filter(item => {
+
+            const remain = item.required - item.issued;
+
+            let itemStatus = "";
+
+            if (remain == 0)
+
+                itemStatus = "Completed";
+
+            else if (remain <= 5)
+
+                itemStatus = "Low Stock";
+
+            else
+
+                itemStatus = "In Stock";
+
+            return (
+
+                (item.name.toLowerCase().includes(keyword) ||
+
+                    item.code.toLowerCase().includes(keyword))
+
+                &&
+
+                (category == "All Categories" ||
+
+                    item.category == category)
+
+                &&
+
+                (status == "All Status" ||
+
+                    itemStatus == status)
+
+            );
+
+        });
+
+        renderTable(currentData);
+
+    }
+
+    // ======================================================
+    // Summary
+    // ======================================================
+
+    function updateSummary() {
+
+        const total = materials.length;
+
+        let issued = 0;
+
+        let remain = 0;
+
+        materials.forEach(item => {
+
+            issued += item.issued;
+
+            remain += item.required - item.issued;
+
+        });
+
+        document.getElementById("totalMaterial").innerHTML = total;
+
+        document.getElementById("issuedMaterial").innerHTML = issued;
+
+        document.getElementById("remainingMaterial").innerHTML = remain;
+
+        document.getElementById("showingCount").innerHTML =
+            `1-${materials.length}`;
+
+        document.getElementById("totalCount").innerHTML =
+            materials.length;
+
+    }
+</script>
 
 </html>
