@@ -1,206 +1,430 @@
+/* ==========================================================
+   GLOBAL
+========================================================== */
+
+:root {
+    --primary: #ef4444;
+    --primary-dark: #dc2626;
+    --primary-light: #fee2e2;
+    --success: #16a34a;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #222;
+    --text-light: #666;
+    --border: #ececec;
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --radius: 16px;
+    --shadow:
+        0 8px 30px rgba(0, 0, 0, .05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    background: #f5f5f5;
-    font-family: "Inter", sans-serif;
-    font-size: 15px;
-    color: #333;
-}
-
-/* =========================
-   SIDEBAR MENU
-========================= */
-.nav-link {
-    color: #333;
-    margin-bottom: 10px;
-    padding: 13px 15px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    transition: .25s;
+    background: var(--bg);
+    font-family: "Segoe UI", sans-serif;
+    color: var(--text);
 }
 
 
-.nav-link:hover {
-    background: #fff1f3;
-    border-color: #e60012;
-    color: #222;
+/* ==========================================================
+    LAYOUT
+========================================================== */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
 }
 
-
-.nav-link.active {
-    background: #ffffff;
-    border-color: #e60012;
-    color: #333;
-}
-
-/* =========================
-   CARD
-========================= */
-.inventory-card {
+/* ==========================================================
+    SIDEBAR
+========================================================== */
+.sidebar {
+    width: 290px;
     background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #e5e5e5;
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .08);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.logo-icon img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo {
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo-icon {
+    width: 55px;
+    height: 55px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.logo h4 {
+    margin: 0;
+    font-weight: 700;
+    background-color: white;
+}
+
+.logo small {
+    color: #888;
+}
+
+.menu {
+    list-style: none;
+    padding: 20px;
+    flex: 1;
+}
+
+.menu li {
+    margin-bottom: 8px;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: #555;
+    transition: .25s;
+    font-weight: 500;
+}
+
+.menu a:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.menu .active a {
+    background: var(--primary);
+    color: #fff;
+}
+
+.sidebar-user {
+    margin: 20px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.sidebar-user img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.sidebar-user h6 {
+    margin-bottom: 2px;
+    font-weight: 700;
+}
+
+.sidebar-user small {
+    color: #888;
 }
 
 
+/* ==========================================================
+    CONTENT
+========================================================== */
+.content {
+    flex: 1;
+    padding: 30px;
+}
 
-/* =========================
-   HEADER
-========================= */
-.inventory-header {
-    padding: 20px;
+/* ==========================================================
+    HEADER
+========================================================== */
+.topbar {
+    background: #fff;
+    border-radius: 18px;
+    padding: 25px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom:
-        1px solid #eee;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
 }
 
-
-
-.inventory-header h3,
-.inventory-header h4 {
-    color: #e60012;
+.topbar h2 {
     font-weight: 700;
+    margin-bottom: 5px;
 }
 
-
-/* =========================
-   TABLE
-========================= */
-table {
+.topbar p {
+    color: #777;
     margin: 0;
 }
 
-
-thead th {
+.topbar p i {
+    margin: 0 8px;
     font-size: 12px;
-    color: #666;
-    text-transform: uppercase;
-    font-weight: 700;
-    background: #fafafa;
-    border-bottom:
-        2px solid #e60012;
 }
 
-tbody td {
-    vertical-align: middle;
-    border-color: #eee;
-    padding-bottom: 0.3rem !important;
-    padding-top: 0.3rem !important;
+.header-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
-tbody tr {
-    transition: .2s;
-}
-
-tbody tr:hover {
-    background: #fff5f6;
-}
-
-/* =========================
-   PRODUCT
-========================= */
-.product-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    object-fit: cover;
-    border:
-        1px solid #ddd;
-}
-
-.product-img:hover {
-    border-color: #e60012;
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
 }
 
 
-.product-name {
-    font-weight: 600;
-    color: #222;
+/* ==========================================================
+    TOOLBAR
+========================================================== */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
 }
 
-
-.product-model {
-    color: #777;
-    font-size: 13px;
+.toolbar-left {
+    display: flex;
+    gap: 15px;
 }
 
-
-
-/* =========================
-   STOCK
-========================= */
-.stock {
-    font-weight: 700;
+.toolbar-right {
+    display: flex;
+    gap: 10px;
 }
 
-.stock.low {
-    color: #e60012;
-}
-
-.stock.medium {
-    color: #ff9800;
-}
-
-.stock.high {
-    color: #16a34a;
-}
-
-
-/* =========================
-   ACTION BUTTON
-========================= */
-.action-btn {
-    border: none;
+.search-box {
     background: #fff;
-    color: #555;
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
+    border: 1px solid var(--border);
+    width: 340px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.search-box i {
+    padding: 0 18px;
+    color: #999;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 100%;
+}
+
+.toolbar select {
+    width: 180px;
+    border-radius: 12px;
+}
+
+/* ==========================================================
+    TABLE
+========================================================== */
+.table-card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.table {
+    margin: 0;
+}
+
+.table thead {
+    background: #fff8f8;
+}
+
+.table thead th {
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 700;
+    border-bottom: 2px solid #ffe3e3;
+    padding: 18px;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding-left: 17px;
+    border-color: #f2f2f2;
+}
+
+.table tbody tr {
+    transition: .25s;
+}
+
+.table tbody tr:hover {
+    background: #fff7f7;
+}
+
+.table img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    background: #fff;
+    padding: 5px;
+}
+
+/* ==========================================================
+    BADGE
+========================================================== */
+.status {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.instock {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.low {
+    color: #b45309;
+    background: #fef3c7;
+}
+
+.out {
+    color: #b91c1c;
+    background: #fee2e2;
+}
+
+/* ==========================================================
+    BUTTON
+========================================================== */
+.btn-danger {
+    background: var(--primary);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 22px;
+}
+
+.btn-danger:hover {
+    background: var(--primary-dark);
+}
+
+.btn-outline-danger {
+    border-radius: 12px;
+}
+
+.btn-outline-secondary {
+    border-radius: 12px;
+}
+
+
+/* ==========================================================
+    ACTION BUTTON
+========================================================== */
+.action-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
     transition: .25s;
 }
 
 .action-btn:hover {
-    background: #e60012;
-    color: white;
+    background: var(--primary);
+    color: #fff;
 }
 
-/* =========================
-   BUTTON
-========================= */
-.btn-primary {
-    background: #e60012;
-    border-color: #e60012;
+/* ==========================================================
+    RESPONSIVE
+========================================================== */
+@media(max-width:1400px) {
+    .project-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+    }
+
+    .project-summary {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
-.btn-primary:hover {
-    background: #c90010;
-    border-color: #c90010;
+@media(max-width:1200px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .toolbar-left {
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        width: 100%;
+    }
 }
 
-.btn-outline-primary {
-    color: #e60012;
-    border-color: #e60012;
+@media(max-width:992px) {
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        padding: 20px;
+    }
 }
 
-.btn-outline-primary:hover {
-    background: #e60012;
-    color: white;
-}
+@media(max-width:768px) {
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
 
+    .project-summary {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
 
-/* =========================
-   INPUT SEARCH
-========================= */
-.form-control {
-    border:
-        1px solid #ddd;
-}
-
-.form-control:focus {
-    border-color: #e60012;
-    box-shadow:
-        0 0 0 .2rem rgba(230, 0, 18, .15);
+    .summary-item {
+        width: 45%;
+        border: none;
+        padding: 0;
+    }
 }

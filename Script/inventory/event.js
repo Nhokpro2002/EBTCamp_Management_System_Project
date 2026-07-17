@@ -49,6 +49,6 @@ export function initEvent() {
             ui.resetProductForm();
         });
 
-    document.querySelector(".container-fluid").style.display = "block";
+    //document.querySelector(".container-fluid").style.display = "block";
 
 }

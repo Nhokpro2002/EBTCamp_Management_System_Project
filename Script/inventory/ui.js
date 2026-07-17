@@ -23,8 +23,10 @@ export function changeTopbarText() {
 
 export function renderTable(filteredList) {
     tbody.innerHTML = "";
-    filteredList.forEach(item => {
+
+    filteredList.forEach((item, index) => {
         let stockClass = "high";
+
         if (item.stock < 10)
             stockClass = "low";
         else if (item.stock < 30)
@@ -35,10 +37,21 @@ export function renderTable(filteredList) {
         tbody.innerHTML += `
         <tr style="font-size:14px">
             <td>
+                <input
+                    type="checkbox"
+                    class="row-checkbox"
+                    value="${item.id}">
+            </td>
+
+            <td>${(inventoryVariable.currentInventoryPage - 1) * inventoryVariable.pageSize + index + 1}</td>
+
+            <td>
                 <img src="${imageUrl}" class="product-img" alt="${item.name}">
             </td>
 
-            <td><div class="product-name">${item.name}</div></td>
+            <td>
+                <div class="product-name">${item.name}</div>
+            </td>
 
             <td>${item.model}</td>
             <td>${item.code}</td>
@@ -46,7 +59,9 @@ export function renderTable(filteredList) {
             <td>${item.type}</td>
 
             <td>
-                <span class="stock ${stockClass}">${item.stock}</span>
+                <span class="stock ${stockClass}">
+                    ${item.stock}
+                </span>
             </td>
 
             <td>
