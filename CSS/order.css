@@ -19,6 +19,25 @@
         0 8px 30px rgba(0, 0, 0, .05);
 }
 
+.table-wrapper {
+    position: relative;
+}
+
+.column-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.column-nav.left {
+    left: 8px;
+}
+
+.column-nav.right {
+    right: 8px;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -44,7 +63,7 @@ body {
     SIDEBAR
 ========================================================== */
 .sidebar {
-    width: 290px;
+    width: 230px;
     background: #fff;
     border-right: 1px solid var(--border);
     display: flex;
@@ -55,39 +74,18 @@ body {
     height: 100vh;
 }
 
-.logo-icon img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
 .logo {
-    padding: 28px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-bottom: 1px solid var(--border);
-}
-
-.logo-icon {
-    width: 55px;
-    height: 55px;
-    background: #fff;
+    padding: 15px 28px 15px 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    border-bottom: 1px solid var(--border);
 }
 
-.logo h4 {
-    margin: 0;
-    font-weight: 700;
-    background-color: white;
-}
-
-.logo small {
-    color: #888;
+.logo img {
+    max-width: 100%;
+    max-height: 50px;
+    object-fit: contain;
 }
 
 .menu {
@@ -362,6 +360,50 @@ body {
 .action-btn:hover {
     background: var(--primary);
     color: #fff;
+}
+
+#inventoryModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    width: 800px;
+    height: 600px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.selection-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #ddd;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+
+.selection-bar.show {
+    transform: translateY(0);
 }
 
 /* ==========================================================

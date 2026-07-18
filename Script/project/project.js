@@ -33,12 +33,6 @@ projectElements.statusFilter = document.getElementById("statusFilter");
 $(document).ready(function () {
     if (!checkAuthentication()) return;
 
-    showApp();
-    setupActiveMenu();
-
-    ui.changeIconAvatar();
-    ui.changeTopbarText();
-
     initProjectPage();
 });
 
@@ -58,29 +52,6 @@ function checkAuthentication() {
     }
 
     return true;
-}
-
-// =========================
-// UI BOOTSTRAP HELPERS
-// =========================
-function showApp() {
-    document.querySelector(".container-fluid").style.display = "block";
-}
-
-function setupActiveMenu() {
-    const currentPage = window.location.pathname;
-
-    const map = {
-        inventory: "inventory-link",
-        project: "project-link",
-        user: "user-link",
-    };
-
-    Object.entries(map).forEach(([key, id]) => {
-        if (currentPage.includes(key)) {
-            document.getElementById(id)?.classList.add("active");
-        }
-    });
 }
 
 // =========================

@@ -1,58 +1,75 @@
+import * as ui from "./ui.js";
 import * as service from "./service.js";
 import * as utils from "../utils/utils.js";
-import * as ui from "./ui.js";
 
-import { message } from "./message.js";
-
-
-export function initOrderEvents() {
-
-    // Bootstrap Modal
-    const newOrderModal = new bootstrap.Modal(
-        document.getElementById("newOrderModal")
-    );
-
-    // Open popup
-    document
-        .getElementById("btnNewOrder")
-        .addEventListener("click", () => {
-            newOrderModal.show();
-        });
+import { orderDetailPageData } from "./state.js";
+import { orderPageMessage } from "./message.js";
 
 
-    // Save Order Event
-    const btnSaveOrder = document.getElementById("btnSaveOrder");
-    if (btnSaveOrder) {
-        btnSaveOrder.addEventListener("click", async () => {
-            const createdDate = document.getElementById("createdDate").value;
-            if (!createdDate) {
-                utils.showPopup("Warning", message.saveWarning, "warning");
-                return;
-            }
-
-            const data = {
-                createdDate: createdDate
-            };
-
-
-            await service.createOrder(data);
-            newOrderModal.hide();
-            document.getElementById("createdDate").value = "";
-            ui.renderOrderList();
-
-        });
+export function handleAddItemToProjectItems(itemID) {
+    const item = orderDetailPageData.inventoryItemList.find(x => x.id === itemID);
+    if (!item) {
+        utils.showError(orderPageMessage.itemNotExist);
+        return;
     }
 
-    // Order Detail Event 
-    const tbody = document.querySelector("#orderListTable");
-    if (tbody) {
-        tbody.addEventListener("click", (event) => {
-            const btn = event.target.closest(".btn-detail");
-            if (!btn) return;
-            const orderID = btn.dataset.id;
-            console.log("Clicked order:", orderID);
-            window.location.href = `order_items.html?orderID=${orderID}`;
-        });
+    if (orderDetailPageData.orderItemList.some(x => x.id === itemID)) {
+        utils.showError(orderPageMessage.itemExistInOrder);
+        return;
     }
+    const newItem = { ...item };
+    delete newItem.id;
+    orderDetailPageData.orderItemList.push(item);
+    utils.showSuccess(orderPageMessage.addItemSuccess);
+}
+
+export function initOrderItemEvents() {
+
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", () => {
+        orderDetailPageData.searchKeyword =
+            searchInput.value.trim().toLowerCase();
+        ui.applyFilter();
+    });
+
+    const brandFilter = document.getElementById("brandFilter");
+    brandFilter.addEventListener("change", () => {
+        orderDetailPageData.selectedBrand = brandFilter.value;
+        ui.applyFilter();
+    });
+
+    const typeFilter = document.getElementById("typeFilter");
+    typeFilter.addEventListener("change", () => {
+        orderDetailPageData.selectedType = typeFilter.value;
+        ui.applyFilter();
+    });
+
+    const exportExcelSelected = document.getElementById("exportExcelSelected");
+    exportExcelSelected.addEventListener("click", async () => {
+        service.exportExcel();
+    });
+
+    const saveSelectedButton = document.getElementById("saveSelected");
+    saveSelectedButton.addEventListener("click", async () => {
+        const orderItemList = ui.getSelectedItems();
+        service.saveOrderItem(orderItemList);
+    })
+
+    const deleteSelected = document.getElementById("deleteSelected");
+    deleteSelected.addEventListener("click", async () => {
+        const orderItemList = ui.getSelectedItems();
+        service.deleteOrderItem(orderItemList);
+    })
 
 }
+
+
+
+
+
+
+
+
+
+
+

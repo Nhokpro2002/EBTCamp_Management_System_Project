@@ -2,240 +2,220 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Projects</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap 5 -->
+    <title>Project</title>
+
+    <!-- Bootstrap -->
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Bootstrap Icons -->
     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Project Page CSS -->
-    <link href="../CSS/project.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../CSS/inventory.css">
 
-    <!-- JQuery 4.0.0-->
-    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
-
-    <!-- Sweet Alert-->
+    <!-- Sweet Alert 2 -->
     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
     <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
 
-    <!-- Tom Select -->
-    <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
-    <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
-
-    <style></style>
-
+    <!-- JQuery -->
+    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-lg-2 d-flex flex-column p-4 sticky-top" style="
-              height: 100vh;
-                background-color: #ffffff;
-                color: #222222;
-              border-right: 1px solid #e5e5e5;
-                  ">
 
-                <!-- LOGO -->
-                <div class="text-center mb-4">
-                    <img src="../Image/lg_display_logo_web.png" alt="Logo" style="
-                width: 140px;
-                height: auto;
-                object-fit: contain;
-             ">
+    <div class="wrapper">
+
+        <!-- ===========================
+                SIDEBAR
+        ============================ -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../Image/lg_display_logo_web.png" alt="Logo LG">
+            </div>
+
+            <ul class="menu">
+                <li>
+                    <a href="#">
+                        <i class="bi bi-grid"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="inventory.html">
+                        <i class="bi bi-box"></i>
+                        Inventory
+                    </a>
+                </li>
+
+                <li>
+                    <a href="order.html">
+                        <i class="bi bi-receipt"></i>
+                        Order
+                    </a>
+                </li>
+
+                <li class="active">
+                    <a href="#">
+                        <i class="bi bi-kanban"></i>
+                        Project
+                    </a>
+                </li>
+
+                <li>
+                    <a href="user.html">
+                        <i class="bi bi-people"></i>
+                        User
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-bar-chart"></i>
+                        Reports
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-gear"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <img src="https://i.pravatar.cc/80?img=12">
+                <div>
+                    <small>Engineer</small>
                 </div>
+            </div>
+        </aside>
 
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="inventory.html" id="inventory-link">
-                        <i class="bi bi-boxes me-2"></i> Inventory
-                    </a>
+        <!-- ===========================
+                CONTENT
+        ============================ -->
+        <main class="content">
 
-                    <a class="nav-link" href="orders.html" id="orders-link">
-                        <i class="bi bi-receipt me-2"></i> Orders
-                    </a>
+            <div class="project-card">
 
-                    <a class="nav-link" id="project-link">
-                        <i class="bi bi-tools me-2"></i> Project
-                    </a>
-
-                    <a class="nav-link" href="information.html" id="information-link">
-                        <i class="bi bi-info-square-fill me-2"></i> Information
-                    </a>
-
-                    <a class="nav-link" href="user.html" id="user-link">
-                        <i class="bi bi-people me-2"></i> User
-                    </a>
-                </nav>
-
-                <!-- User Info -->
-                <div class="mt-auto pt-3 d-flex align-items-center" style="
-                       border-top:1px solid #eeeeee;
-                   ">
-
-                    <img src="../Images/avatar.png" alt="Avatar" class="rounded-circle" width="45" height="45" style="
-                           border:2px solid #e60012;
-                       ">
-
-                    <div class="ms-3">
-
-                        <div class="fw-semibold" id="user-name" style="
-                color:#222;
-             ">
-                            Nguyễn Văn A
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" placeholder="Search projects...">
                         </div>
 
-
-                        <small id="user-role" style="
-                color:#888;
-             ">
-                            Engineer
-                        </small>
-
+                        <select class="form-select status-filter">
+                            <option value="">All Status</option>
+                            <option value="Planning">Planning</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
                     </div>
 
+                    <button class="btn btn-add-project bg-primary">
+                        <i class="bi bi-plus-lg"></i>
+                        Add Project
+                    </button>
+                </div>
+
+
+                <!-- Table -->
+
+                <div class="table-responsive">
+                    <table class="table align-middle project-table">
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th style="width:220px">Progress</th>
+                                <th>Status</th>
+                                <th width="80">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <i class="bi bi-building me-2"></i>
+                                    <span>LG Factory Upgrade</span>
+                                </td>
+                                <td>15/04/2025</td>
+                                <td>15/08/2025</td>
+                                <td>
+                                    <div class="progress-number">
+                                        75%
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-danger" style="width:75%">
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="status status-progress">
+                                        In Progress
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <button class="action-btn">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
             </div>
-
-            <div class="col-lg-10 p-1">
-                <div style="min-width: 1212px;">
-                    <div
-                        style="background: var(--card-bg);border: 1px solid var(--border-color);border-radius: 18px;box-shadow: var(--shadow-sm);padding: 22px;">
-                        <!-- Header -->
-                        <div
-                            class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-                            <div>
-                                <h1 style="font-size: 24px;font-weight: 700;margin-bottom: 4px;">Projects</h1>
-                                <p style="font-size: 13px;color: var(--text-muted);margin-bottom: 0;">Manage all
-                                    projects in the system</p>
-                            </div>
-
-                            <button class="btn btn-create-project"
-                                style="background: #15803d;border-color: #15803d;color: #fff;font-weight: 600;border-radius: 10px;padding: 10px 16px;box-shadow: 0 8px 16px rgba(21, 128, 61, 0.2);">
-                                <i class="bi bi-plus-lg me-2"></i>New Project
-                            </button>
-                        </div>
-
-                        <!-- Stats -->
-                        <div class="row g-3 mb-4" id="statsContainer">
-                            <!-- JS render -->
-                        </div>
-
-                        <!-- Toolbar -->
-                        <div class="row g-3 align-items-center" style="margin-top: 22px;margin-bottom: 18px;">
-                            <div class="col-lg-6">
-                                <div style="position: relative;">
-                                    <i class="bi bi-search"
-                                        style="position: absolute;top: 50%;left: 14px;transform: translateY(-50%);color: #9aa3b2;font-size: 15px;"></i>
-                                    <input type="text" id="searchInput" placeholder="Search projects..."
-                                        style="padding-left: 40px;border-radius: 12px;height: 44px;border: 1px solid var(--border-color);box-shadow: none;" />
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="d-flex gap-2 justify-content-lg-end">
-                                    <select class="form-select" id="statusFilter" style="max-width: 220px;">
-                                        <option value="all">All Status</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="Completed">Completed</option>
-                                        <option value="On Hold">On Hold</option>
-                                        <option value="Not Started">Not Started</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Table -->
-                        <div
-                            style="border: 1px solid var(--border-color);border-radius: 16px;overflow: hidden;background: #fff;min-height: 500px;">
-                            <div class="table-scroll">
-                                <table class="table projects-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="min-width: 180px;">Project Name</th>
-                                            <th>Start Date</th>
-                                            <th>End Date</th>
-                                            <th style="min-width: 220px;">Progress</th>
-                                            <th>Status</th>
-                                            <th style="width: 120px;">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="projectTableBody">
-                                        <!-- JS render -->
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Footer -->
-                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3"
-                                style="border-top: 1px solid var(--border-color);padding: 16px 18px;background: #fff;">
-                                <div id="tableInfo" style="color: var(--text-muted);font-size: 13px;font-weight: 500;">
-                                    Showing 1 to 5 of 12 projects
-                                </div>
-
-                                <nav>
-                                    <ul class="pagination pagination-custom" id="pagination">
-                                        <!-- JS render -->
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 
-    <div id="overlay-create-project" class="overlay-create-project">
-        <div class="popup-create-project">
-            <h2>Create New Project</h2>
 
-            <div class="form-group-create-project">
-                <label>Project Name</label>
-                <input type="text" id="project-name" placeholder="Enter project name" required>
-            </div>
+    <div class="table-footer">
 
-            <div class="form-group-create-project">
-                <label>Start Date</label>
-                <input type="date" id="start-date" required>
-            </div>
+        <span>
+            Showing 1 to 5 of 5 projects
+        </span>
 
-            <div class="form-group-create-project">
-                <label>End Date</label>
-                <input type="date" id="end-date" required>
-            </div>
+        <div class="pagination">
 
-            <div class="form-group-create-project">
-                <label>PIC</label>
-                <select id="pic" required></select>
-            </div>
+            <button>
+                <i class="bi bi-chevron-left"></i>
+            </button>
 
-            <div class="form-group-create-project">
-                <label>Members</label>
-                <select id="members" multiple required></select>
-            </div>
+            <button class="active">
+                1
+            </button>
 
-            <hr>
+            <button>
+                <i class="bi bi-chevron-right"></i>
+            </button>
 
-            <div class="form-actions-create-project">
-                <button type="button" class="btn bg-primary bg-gradient btn-save-project">
-                    <i class="bi bi-check2-circle me-1"></i>
-                    Create Project
-                </button>
-                <button type="button" class="btn bg-secondary bg-gradient btn-close-project-popup">
-                    Cancel
-                </button>
-            </div>
         </div>
+
     </div>
 
-    <script type="module" src="../Script/project/project.js"></script>
+    </div>
+
+    </main>
+
+    </div>
+
+
+
 </body>
+
+<script type="module" src="../Script/project/project.js"></script>
 
 </html>

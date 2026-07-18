@@ -1,4 +1,5 @@
 import { inventoryVariable } from "./state.js";
+import { URL_LOCAL } from "../config.js";
 
 const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "Users";
@@ -11,7 +12,7 @@ export function changeIconAvatar() {
     const userData = JSON.parse(localStorage.getItem("user"));
     if (!dropdownAvatar || !userData) return;
     dropdownAvatar.src =
-        `${POCKETBASE_URL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
+        `${URL_LOCAL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
 }
 
 export function changeTopbarText() {
@@ -32,7 +33,7 @@ export function renderTable(filteredList) {
         else if (item.stock < 30)
             stockClass = "medium";
 
-        const imageUrl = `http://127.0.0.1:8090/api/files/Inventory_Items/${item.id}/${item.image}`;
+        const imageUrl = `${URL_LOCAL}/api/files/Inventory_Items/${item.id}/${item.image}`;
 
         tbody.innerHTML += `
         <tr style="font-size:14px">
@@ -62,18 +63,44 @@ export function renderTable(filteredList) {
                 <span class="stock ${stockClass}">
                     ${item.stock}
                 </span>
-            </td>
-
-            <td>
-                <button class="action-btn">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </button>
-            </td>
+            </td>           
         </tr>
         `;
     });
 
     renderPagination();
+
+    bindCheckboxEvent();
+}
+
+function bindCheckboxEvent() {
+    const checkboxes = document.querySelectorAll(
+        ".row-checkbox"
+    );
+
+    const selectionBar = document.getElementById(
+        "selectionBar"
+    );
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener(
+            "change",
+            function () {
+                const checkedCount =
+                    document.querySelectorAll(
+                        ".row-checkbox:checked"
+                    ).length;
+
+
+                if (checkedCount > 0) {
+                    selectionBar.classList.add("show");
+                }
+                else {
+                    selectionBar.classList.remove("show");
+                }
+            }
+        );
+    });
 }
 
 

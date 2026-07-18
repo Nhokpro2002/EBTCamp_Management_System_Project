@@ -4,7 +4,7 @@
 <head>
      <meta charset="UTF-8" />
      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-     <title>Orders</title>
+     <title>Projects</title>
 
      <!-- Bootstrap 5 -->
      <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -13,6 +13,9 @@
      <!-- Bootstrap Icons -->
      <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
 
+     <!-- Project Page CSS -->
+     <link href="../CSS/project.css" rel="stylesheet">
+
      <!-- JQuery 4.0.0-->
      <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
 
@@ -20,8 +23,11 @@
      <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
      <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
 
-     <!-- Order Page CSS -->
-     <link href="../CSS/order.css" rel="stylesheet">
+     <!-- Tom Select -->
+     <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
+     <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
+
+     <style></style>
 
 </head>
 
@@ -50,11 +56,11 @@
                               <i class="bi bi-boxes me-2"></i> Inventory
                          </a>
 
-                         <a class="nav-link" id="orders-link">
+                         <a class="nav-link" href="order.html" id="orders-link">
                               <i class="bi bi-receipt me-2"></i> Orders
                          </a>
 
-                         <a class="nav-link" href="project.html" id="project-link">
+                         <a class="nav-link" id="project-link">
                               <i class="bi bi-tools me-2"></i> Project
                          </a>
 
@@ -98,38 +104,89 @@
 
                </div>
 
-               <!-- Main Content -->
-               <div class="col-lg-10 p-4">
-                    <!-- Header -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                         <div>
-                              <h3 class="fw-bold mb-1">
-                                   Order
-                              </h3>
-                         </div>
-                         <button class="btn btn-success px-4" id="btnNewOrder">
-                              <i class="bi bi-plus-circle me-2"></i>
-                              New Order
-                         </button>
-                    </div>
+               <div class="col-lg-10 p-1">
+                    <div style="min-width: 1212px;">
+                         <div
+                              style="background: var(--card-bg);border: 1px solid var(--border-color);border-radius: 18px;box-shadow: var(--shadow-sm);padding: 22px;">
+                              <!-- Header -->
+                              <div
+                                   class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                                   <div>
+                                        <h1 style="font-size: 24px;font-weight: 700;margin-bottom: 4px;">Projects</h1>
+                                        <p style="font-size: 13px;color: var(--text-muted);margin-bottom: 0;">Manage all
+                                             projects in the system</p>
+                                   </div>
 
-                    <!-- Card -->
+                                   <button class="btn btn-create-project"
+                                        style="background: #15803d;border-color: #15803d;color: #fff;font-weight: 600;border-radius: 10px;padding: 10px 16px;box-shadow: 0 8px 16px rgba(21, 128, 61, 0.2);">
+                                        <i class="bi bi-plus-lg me-2"></i>New Project
+                                   </button>
+                              </div>
 
-                    <div class="card shadow-sm border-0">
-                         <div class="card-body">
-                              <div class="table-responsive">
-                                   <table class="table table-hover align-middle mb-0">
-                                        <thead>
-                                             <tr>
-                                                  <th width="70">#</th>
-                                                  <th>Order ID</th>
-                                                  <th width="220">Created Date</th>
-                                                  <th width="150" class="text-center">Action</th>
-                                             </tr>
-                                        </thead>
+                              <!-- Stats -->
+                              <div class="row g-3 mb-4" id="statsContainer">
+                                   <!-- JS render -->
+                              </div>
 
-                                        <tbody id="orderListTable"></tbody>
-                                   </table>
+                              <!-- Toolbar -->
+                              <div class="row g-3 align-items-center" style="margin-top: 22px;margin-bottom: 18px;">
+                                   <div class="col-lg-6">
+                                        <div style="position: relative;">
+                                             <i class="bi bi-search"
+                                                  style="position: absolute;top: 50%;left: 14px;transform: translateY(-50%);color: #9aa3b2;font-size: 15px;"></i>
+                                             <input type="text" id="searchInput" placeholder="Search projects..."
+                                                  style="padding-left: 40px;border-radius: 12px;height: 44px;border: 1px solid var(--border-color);box-shadow: none;" />
+                                        </div>
+                                   </div>
+
+                                   <div class="col-lg-6">
+                                        <div class="d-flex gap-2 justify-content-lg-end">
+                                             <select class="form-select" id="statusFilter" style="max-width: 220px;">
+                                                  <option value="all">All Status</option>
+                                                  <option value="In Progress">In Progress</option>
+                                                  <option value="Completed">Completed</option>
+                                                  <option value="On Hold">On Hold</option>
+                                                  <option value="Not Started">Not Started</option>
+                                             </select>
+                                        </div>
+                                   </div>
+                              </div>
+
+                              <!-- Table -->
+                              <div
+                                   style="border: 1px solid var(--border-color);border-radius: 16px;overflow: hidden;background: #fff;min-height: 500px;">
+                                   <div class="table-scroll">
+                                        <table class="table projects-table">
+                                             <thead>
+                                                  <tr>
+                                                       <th style="min-width: 180px;">Project Name</th>
+                                                       <th>Start Date</th>
+                                                       <th>End Date</th>
+                                                       <th style="min-width: 220px;">Progress</th>
+                                                       <th>Status</th>
+                                                       <th style="width: 120px;">Actions</th>
+                                                  </tr>
+                                             </thead>
+                                             <tbody id="projectTableBody">
+                                                  <!-- JS render -->
+                                             </tbody>
+                                        </table>
+                                   </div>
+
+                                   <!-- Footer -->
+                                   <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3"
+                                        style="border-top: 1px solid var(--border-color);padding: 16px 18px;background: #fff;">
+                                        <div id="tableInfo"
+                                             style="color: var(--text-muted);font-size: 13px;font-weight: 500;">
+                                             Showing 1 to 5 of 12 projects
+                                        </div>
+
+                                        <nav>
+                                             <ul class="pagination pagination-custom" id="pagination">
+                                                  <!-- JS render -->
+                                             </ul>
+                                        </nav>
+                                   </div>
                               </div>
                          </div>
                     </div>
@@ -137,42 +194,50 @@
           </div>
      </div>
 
-     <!-- New Order Modal -->
-     <div class="modal fade" id="newOrderModal" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-               <div class="modal-content">
-                    <div class="modal-header">
-                         <h5 class="modal-title">
-                              Create New Order
-                         </h5>
-                         <button type="button" class="btn-close" data-bs-dismiss="modal">
-                         </button>
-                    </div>
+     <div id="overlay-create-project" class="overlay-create-project">
+          <div class="popup-create-project">
+               <h2>Create New Project</h2>
 
-                    <div class="modal-body">
-                         <div class="mb-3">
-                              <label class="form-label">
-                                   Order Date
-                              </label>
+               <div class="form-group-create-project">
+                    <label>Project Name</label>
+                    <input type="text" id="project-name" placeholder="Enter project name" required>
+               </div>
 
-                              <input type="date" class="form-control" id="createdDate">
-                         </div>
-                    </div>
-                    <div class="modal-footer">
-                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                              Cancel
-                         </button>
-                         <button type="button" class="btn btn-success" id="btnSaveOrder">
-                              Save
-                         </button>
-                    </div>
+               <div class="form-group-create-project">
+                    <label>Start Date</label>
+                    <input type="date" id="start-date" required>
+               </div>
+
+               <div class="form-group-create-project">
+                    <label>End Date</label>
+                    <input type="date" id="end-date" required>
+               </div>
+
+               <div class="form-group-create-project">
+                    <label>PIC</label>
+                    <select id="pic" required></select>
+               </div>
+
+               <div class="form-group-create-project">
+                    <label>Members</label>
+                    <select id="members" multiple required></select>
+               </div>
+
+               <hr>
+
+               <div class="form-actions-create-project">
+                    <button type="button" class="btn bg-primary bg-gradient btn-save-project">
+                         <i class="bi bi-check2-circle me-1"></i>
+                         Create Project
+                    </button>
+                    <button type="button" class="btn bg-secondary bg-gradient btn-close-project-popup">
+                         Cancel
+                    </button>
                </div>
           </div>
-
      </div>
 
-     <script type="module" src="../Script/order/main.js"></script>
-
+     <script type="module" src="../Script/project/project.js"></script>
 </body>
 
 </html>

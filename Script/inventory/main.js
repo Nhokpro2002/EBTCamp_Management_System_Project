@@ -5,7 +5,6 @@ import * as event from "./event.js";
 import { inventoryVariable } from "./state.js";
 
 
-
 // ==============================
 // CONSTANT
 // ==============================
@@ -20,13 +19,7 @@ $(document).ready(async function () {
 
     if (!checkAuthentication()) return;
 
-
     event.initEvent();
-
-    //ui.changeIconAvatar();
-    //ui.changeTopbarText();
-
-    setupActiveMenu();
 
     await loadInventory();
 });
@@ -100,22 +93,21 @@ function renderCurrentPage() {
 }
 
 
-// ==============================
-// MENU ACTIVE
-// ==============================
-function setupActiveMenu() {
-    const currentPage = window.location.pathname;
-    const map = {
-        inventory: "inventory-link",
-        project: "project-link",
-        user: "user-link",
-        orders: "orders-link"
-    };
+document
+    .getElementById("btnAddSelected")
+    .addEventListener("click", function () {
+        const ids = Array.from(
+            document.querySelectorAll(
+                ".row-checkbox:checked"
+            )
+        )
+            .map(cb => cb.value);
+        window.parent.postMessage(
+            {
+                type: "ADD_ITEMS",
+                ids: ids
+            },
+            "*"
+        );
+    });
 
-    Object.entries(map)
-        .forEach(([key, id]) => {
-            if (currentPage.includes(key)) {
-                document.getElementById(id)?.classList.add("active");
-            }
-        });
-}
