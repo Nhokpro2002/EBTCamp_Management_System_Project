@@ -77,6 +77,41 @@ body {
     font-size: 12px;
 }
 
+/* =======================
+   Back Button
+======================= */
+
+.btn-back {
+    width: 72px;
+    height: 72px;
+
+    border-radius: 18px;
+    border: 2px solid #ffe1e1;
+    background: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all .25s ease;
+}
+
+.btn-back i {
+    font-size: 30px;
+    color: #ef4444;
+}
+
+.btn-back:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    transform: translateX(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, .25);
+}
+
+.btn-back:hover i {
+    color: #fff;
+}
+
 .header-right {
     display: flex;
     gap: 12px;

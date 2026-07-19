@@ -14,6 +14,9 @@
     <!-- Bootstrap Icons -->
     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
 
+    <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
+    <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../CSS/project_items.css">
 </head>
@@ -31,36 +34,34 @@
             <!-- Header -->
 
             <header class="topbar">
+                <div class="d-flex align-items-center">
+                    <!-- Back Button -->
+                    <button id="btnBack" class="btn btn-back me-4">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
 
-                <div>
-
-                    <h2>Project Materials</h2>
-
-                    <p>
-                        Project
-                        <i class="bi bi-chevron-right"></i>
-                        Materials
-                    </p>
-
+                    <!-- Title -->
+                    <div>
+                        <h2>Project Materials</h2>
+                        <p>
+                            Project
+                            <i class="bi bi-chevron-right"></i>
+                            Materials
+                        </p>
+                    </div>
                 </div>
 
-                <div class="header-right">
-
+                <div class="header-right d-flex align-items-center gap-3">
                     <button class="btn btn-light position-relative">
-
                         <i class="bi bi-bell"></i>
-
                         <span class="badge bg-danger notification-badge">
                             3
                         </span>
-
                     </button>
-
                     <button class="btn btn-outline-danger">
                         <i class="bi bi-person-circle"></i>
                         Admin
                     </button>
-
                 </div>
 
             </header>
@@ -74,27 +75,19 @@
                 <div class="project-left">
 
                     <div class="project-icon">
-
                         <i class="bi bi-discord"></i>
-
                     </div>
 
                     <div>
-
                         <h3>Automatic Packaging Machine</h3>
-
                         <div class="project-tags">
-
                             <span class="badge bg-light text-dark">
                                 PRJ-2026-001
                             </span>
-
                             <span class="badge bg-danger">
                                 In Progress
                             </span>
-
                         </div>
-
                     </div>
 
                 </div>
@@ -102,97 +95,66 @@
                 <div class="project-summary">
 
                     <div class="summary-item">
-
                         <h5>Total Materials</h5>
-
                         <span id="totalMaterial">56</span>
-
                     </div>
 
                     <div class="summary-item">
-
                         <h5>Issued</h5>
-
                         <span id="issuedMaterial">32</span>
-
                     </div>
 
                     <div class="summary-item">
-
                         <h5>Remaining</h5>
-
                         <span id="remainingMaterial">24</span>
-
                     </div>
 
                     <div class="summary-item">
-
                         <h5>Total Cost</h5>
-
                         <span>$8,240</span>
-
                     </div>
 
                 </div>
 
             </section>
-
             <!-- =======================
                     TOOLBAR
             ======================== -->
-
             <section class="toolbar">
 
                 <div class="toolbar-left">
 
                     <div class="search-box">
-
                         <i class="bi bi-search"></i>
-
                         <input type="text" id="txtSearch" placeholder="Search material...">
-
                     </div>
 
                     <select id="categoryFilter" class="form-select">
-
                         <option>All Categories</option>
-
                     </select>
 
                     <select id="statusFilter" class="form-select">
-
                         <option>All Status</option>
-
                     </select>
 
                 </div>
 
                 <div class="toolbar-right">
-
                     <button class="btn btn-outline-secondary">
-
                         <i class="bi bi-funnel"></i>
-
                         Filter
-
                     </button>
 
                     <button class="btn btn-danger">
-
                         <i class="bi bi-plus-lg"></i>
-
                         Add Material
-
                     </button>
-
                 </div>
 
             </section>
-
             <!-- =======================
                     TABLE
             ======================== -->
-
             <section class="table-card">
 
                 <div class="table-responsive">
@@ -210,20 +172,18 @@
                                 <th>Model</th>
                                 <th>XCode/QCode</th>
                                 <th>Type</th>
-                                <th>Stock</th>
                                 <th>Order</th>
                                 <th>Unit Price</th>
                                 <th>Total Price</th>
                                 <th>Status</th>
+                                <th>Request Date</th>
+                                <th>Requester</th>
                                 <th width="60"></th>
                             </tr>
-
                         </thead>
 
                         <tbody id="materialTable">
-
                             <!-- Render by JS -->
-
                         </tbody>
 
                     </table>
@@ -235,75 +195,49 @@
             <!-- =======================
                     FOOTER
             ======================== -->
-
             <div class="table-footer">
-
                 <div>
-
                     Showing
-
                     <span id="showingCount">
-
                         1-6
-
                     </span>
-
                     of
-
                     <span id="totalCount">
-
                         56
-
                     </span>
-
                     materials
-
                 </div>
 
                 <nav>
-
                     <ul class="pagination mb-0">
-
                         <li class="page-item">
-
                             <a class="page-link" href="#">
-
                                 <i class="bi bi-chevron-left"></i>
-
                             </a>
-
                         </li>
 
                         <li class="page-item active">
-
                             <a class="page-link" href="#">
                                 1
                             </a>
-
                         </li>
 
                         <li class="page-item">
-
                             <a class="page-link" href="#">
                                 2
                             </a>
-
                         </li>
 
                         <li class="page-item">
-
                             <a class="page-link" href="#">
                                 3
                             </a>
-
                         </li>
 
                         <li class="page-item">
-
                             <a class="page-link" href="#">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
-
                         </li>
 
                     </ul>
@@ -318,6 +252,8 @@
 
 </body>
 
+<script type="module" src="../Script/project_items/project_items.js"></script>
+
 <script>
     // ======================================================
     // Fake Data
@@ -326,64 +262,23 @@
     const materials = [
         {
             id: 1,
-            image: "https://via.placeholder.com/60",
             name: "Mitsubishi PLC FX5U",
+            image: "https://via.placeholder.com/60",
             code: "PLC-001",
-            category: "PLC",
-            unit: "PCS",
-            required: 10,
-            issued: 8
-        },
-        {
-            id: 2,
-            image: "https://via.placeholder.com/60",
-            name: "24V Power Supply",
-            code: "PWR-101",
-            category: "Power",
-            unit: "PCS",
-            required: 12,
-            issued: 12
-        },
-        {
-            id: 3,
-            image: "https://via.placeholder.com/60",
-            name: "LS Contactor MC-18",
-            code: "CTR-023",
-            category: "Contactor",
-            unit: "PCS",
-            required: 20,
-            issued: 9
-        },
-        {
-            id: 4,
-            image: "https://via.placeholder.com/60",
-            name: "Omron Relay MY2N",
-            code: "RLY-120",
-            category: "Relay",
-            unit: "PCS",
-            required: 15,
-            issued: 15
-        },
-        {
-            id: 5,
-            image: "https://via.placeholder.com/60",
-            name: "Servo Motor 750W",
-            code: "SRV-750",
-            category: "Servo",
-            unit: "PCS",
-            required: 6,
-            issued: 2
-        },
-        {
-            id: 6,
-            image: "https://via.placeholder.com/60",
-            name: "Photo Sensor",
-            code: "SNS-555",
-            category: "Sensor",
-            unit: "PCS",
-            required: 30,
-            issued: 30
+            brand: "Misubishi",
+            model: "PLC Misubishi Q-Series",
+            unit_price: 8,
+            type: "PLC",
+            order_quantity: 10,
+            status: "Request Code",
+            requested_date: "2026-07-12",
+            requester: "Nguyen Minh Tuan"
+
+
+
+
         }
+
     ];
 
     let currentData = [...materials];
@@ -402,15 +297,9 @@
     // ======================================================
 
     window.onload = () => {
-
         renderCategory();
-
-        renderStatus();
-
         renderTable(currentData);
-
         updateSummary();
-
     };
 
     // ======================================================
@@ -418,19 +307,14 @@
     // ======================================================
 
     function renderCategory() {
-
         const categories = [...new Set(materials.map(x => x.category))];
-
         categories.forEach(item => {
-
             categoryFilter.innerHTML += `
             <option value="${item}">
                 ${item}
             </option>
         `;
-
         });
-
     }
 
     // ======================================================
@@ -440,13 +324,11 @@
     function renderStatus() {
 
         const arr = [
-
-            "In Stock",
-
-            "Low Stock",
-
+            "Request Code",
+            "Wait Pur Process",
+            "Request PO",
+            "Pending Delivery",
             "Completed"
-
         ];
 
         arr.forEach(item => {
@@ -470,32 +352,9 @@
         tableBody.innerHTML = "";
 
         data.forEach((item, index) => {
-
-            const remain = item.required - item.issued;
-
             let status = "";
 
             let className = "";
-
-            if (remain == 0) {
-
-                status = "Completed";
-
-                className = "instock";
-
-            } else if (remain <= 5) {
-
-                status = "Low Stock";
-
-                className = "low";
-
-            } else {
-
-                status = "In Stock";
-
-                className = "out";
-
-            }
 
             tableBody.innerHTML += `
 
@@ -521,15 +380,10 @@
 
             <td>${item.code}</td>
 
-            <td>${item.category}</td>
+            <td>${item.type}</td>
 
-            <td>${item.unit}</td>
+            <td>${item.unit_price}</td>
 
-            <td>${item.required}</td>
-
-            <td>${item.issued}</td>
-
-            <td>${remain}</td>
 
             <td>
 

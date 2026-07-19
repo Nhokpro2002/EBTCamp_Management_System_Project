@@ -69,26 +69,38 @@ $("#checkAll").on("change", function () {
 // ==========================
 function bindEvents() {
 
-    $("#back-project-page-button").on("click", function () {
-        window.location.href = "project.html";
-    });
-
-    $("#button-export-excel").on("click", function () {
+    // Export Excel
+    document.getElementById("button-export-excel")?.addEventListener("click", () => {
         handleEvent.handleExportExcelProjectItems();
     });
 
-    $("#button-save-project-item").on("click", function () {
+    // Save Project Items
+    document.getElementById("button-save-project-item")?.addEventListener("click", () => {
         handleEvent.handleSaveProjectItems();
     });
 
-    $("#button-delete-project-item").on("click", function () {
+    // Delete Project Items
+    document.getElementById("button-delete-project-item")?.addEventListener("click", () => {
         handleEvent.handleDeleteProjectItems();
     });
 
-    // remove row (nếu còn dùng)
-    $(document).on("click", ".btn-outline-danger", function () {
-        $(this).closest("tr").remove();
-        ui.updateProjectSummary();
+    // Remove row (Event Delegation)
+    document.addEventListener("click", (e) => {
+        const button = e.target.closest(".btn-outline-danger");
+
+        if (!button) return;
+
+        const row = button.closest("tr");
+
+        if (row) {
+            row.remove();
+            ui.updateProjectSummary();
+        }
+    });
+
+    // Back button (nếu dùng id btnBack)
+    document.getElementById("btnBack")?.addEventListener("click", () => {
+        window.location.href = "project.html";
     });
 
     // Tìm kiếm trong inventory list (list  trái)
@@ -118,64 +130,7 @@ function bindEvents() {
         });
     });
 
-    // Tìm kiếm trong project item list (list  phải)
-    // ! Error
-    $(document).on("input", ".js-search-project-item", function () {
-        const keyword = document.getElementsByClassName("js-search-project-item")[0].value.trim().toLowerCase();
-
-        projectItemVariable.filteredProjectItems = projectItemVariable.projectItemList.filter(projectItem => {
-            const matchKeyword = projectItem.model?.toLowerCase().includes(keyword);
-
-            return matchKeyword;
-        });
-
-        const $projectItemBody = $("#project-item-body");
-        $projectItemBody.empty();
-        $.each(projectItemVariable.filteredProjectItems, function (_, item) {
-            /*$projectItemBody.append(`
-                <div class="inventory-item" data-model="${item.model}">
-                    <div title="${item.name}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
-                        ${item.name}
-                    </div>
-                    <div>|</div>
-                    <div title="${item.model}" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
-                        ${item.model}
-                    </div>
-                </div>
-            `);*/
-        });
-    });
 }
-
-// ==========================
-// SORTABLE INVENTORY
-// ==========================
-Sortable.create($("#inventory-list")[0], {
-    group: {
-        name: "inventory",
-        pull: "clone",
-        put: false
-    },
-    sort: false,
-    animation: 150
-});
-
-Sortable.create($("#drop-zone")[0], {
-    group: {
-        name: "inventory",
-        put: true
-    },
-    animation: 150,
-
-    onAdd: function (evt) {
-        const model = $(evt.item).data("model");
-
-        $(evt.item).remove();
-
-        handleEvent.handleAddItemToProjectItems(model);
-        disableInventoryItem(model);
-    }
-});
 
 // ==========================
 // INVENTORY SYNC

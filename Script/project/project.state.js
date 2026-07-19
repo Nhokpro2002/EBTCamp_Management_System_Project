@@ -13,7 +13,6 @@ export let projectElements = {
     statsContainer: null,
     projectTableBody: null,
     pagination: null,
-    tableInfo: null,
     searchInput: null,
     statusFilter: null
 }

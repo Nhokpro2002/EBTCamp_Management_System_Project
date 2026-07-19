@@ -1,8 +1,4 @@
 
-// ==================================================
-// Change user avatar in dropdown
-// ==================================================
-
 import * as utils from "../utils/utils.js";
 import * as handleEvent from "./project.handle.event.js";
 import * as api from "../services/generic.api.js";
@@ -13,9 +9,15 @@ const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "Users";
 const COLLECTION_PROJECTS = "Projects"
 
+// ==================================================
+// User Information
+// ==================================================
 
+/**
+ * Update the user avatar displayed in the top-right dropdown.
+ * Avatar information is retrieved from localStorage.
+ */
 export function changeIconAvatar() {
-
     const $dropdownAvatar = $(".dropdown img");
     const userData = JSON.parse(localStorage.getItem("user"));
 
@@ -24,79 +26,22 @@ export function changeIconAvatar() {
     const avatarUrl =
         `${POCKETBASE_URL}/api/files/users/${userData.id}/${userData.avatar}?t=${Date.now()}`;
 
-
     $dropdownAvatar.attr("src", avatarUrl);
-}
-
-// ==================================================
-// Change topbar welcome text
-// ==================================================
-export function changeTopbarText() {
-
-    const $topbarText = $(".topbar .text-muted");
-    const userData = JSON.parse(localStorage.getItem("user"));
-
-    if (!$topbarText.length || !userData) return;
-
-
-    $topbarText.text(
-        `Welcome back, ${userData.employee_id} 👋`
-    );
 }
 
 // ==================================================
 // Render project option list
 // ==================================================
 
-export function getStats(data) {
-    return {
-        total: data.length,
-        inProgress: data.filter(p => p.status === "In Progress").length,
-        completed: data.filter(p => p.status === "Completed").length,
-        onHold: data.filter(p => p.status === "On Hold").length
-    };
-}
-
-export function renderStats(data, container) {
-    const stats = getStats(data);
-
-    const statItems = [
-        {
-            label: "Total Projects",
-            value: stats.total,
-            dotClass: "dot-blue"
-        },
-        {
-            label: "In Progress",
-            value: stats.inProgress,
-            dotClass: "dot-blue"
-        },
-        {
-            label: "Completed",
-            value: stats.completed,
-            dotClass: "dot-green"
-        },
-        {
-            label: "On Hold",
-            value: stats.onHold,
-            dotClass: "dot-orange"
-        }
-    ];
-
-    container.innerHTML = statItems.map(item => `
-            <div class="col-md-6 col-xl-3">
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <span class="stat-dot ${item.dotClass}"></span>
-                        <span>${item.label}</span>
-                    </div>
-                    <div class="stat-value">${item.value}</div>
-                </div>
-            </div>
-        `).join("");
-}
-
-export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
+/**
+ * Render the current page of projects into the table body.
+ *
+ * @param {Array} data - Complete project list.
+ * @param {number} currentPage - Current page number.
+ * @param {number} pageSize - Number of rows per page.
+ * @param {HTMLElement} tableBody - Target table body element.
+ */
+export function renderTable(data, currentPage, pageSize, tableBody) {
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     const pageData = data.slice(start, end);
@@ -109,7 +54,7 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
                     </td>
                 </tr>
             `;
-        tableInfo.textContent = "Showing 0 to 0 of 0 projects";
+
         return;
     }
 
@@ -124,7 +69,7 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
                     <div class="progress-percent">${project.progress}%</div>
                     <div class="custom-progress">
                         <div
-                            class="progress-bar ${getProgressBarClass(project.status)}"
+                            class="progress-bar ${getProgressBarClass(project.progress)}"
                             style="width: ${project.progress}%"
                         ></div>
                     </div>
@@ -164,9 +109,11 @@ export function renderTable(data, currentPage, pageSize, tableBody, tableInfo) {
 
     const from = start + 1;
     const to = Math.min(end, data.length);
-    tableInfo.textContent = `Showing ${from} to ${to} of ${data.length} projects`;
 }
 
+/**
+ * Render pagination buttons based on total project count.
+ */
 export function renderPagination(totalItems, currentPage, pageSize, paginationContainer) {
 
     const totalPages = Math.ceil(totalItems / pageSize);
@@ -205,6 +152,9 @@ export function renderPagination(totalItems, currentPage, pageSize, paginationCo
     paginationContainer.innerHTML = html;
 }
 
+/**
+ * Change current page and refresh project list.
+ */
 export function handlePageChange(page) {
     const totalPages = Math.ceil(variableGlobal.filteredProjects.length / variableGlobal.pageSize);
 
@@ -214,8 +164,10 @@ export function handlePageChange(page) {
     renderProjectPage();
 }
 
+/**
+ * Render project table and pagination using current application state.
+ */
 export function renderProjectPage() {
-    renderStats(variableGlobal.filteredProjects, projectElements.statsContainer);
     renderTable(
         variableGlobal.filteredProjects,
         variableGlobal.currentPage,
@@ -232,21 +184,27 @@ export function renderProjectPage() {
 }
 
 
-export function getProgressBarClass(status) {
-    if (status === "Completed") return "progress-green";
-    if (status === "On Hold") return "progress-orange";
-    if (status === "Not Started") return "progress-red";
-    return "progress-blue";
-}
+// ==================================================
+// Project Status Helpers
+// ==================================================
 
+/**
+ * Return Bootstrap progress bar color class based on project status.
+ */
+export function getProgressBarClass(progress) {
+    if (progress == 100) return "progress-green";
+    if (progress > 0 && progress < 100) return "progress-orange";
+    return "progress-red";
+}
+/**
+ * Return CSS badge class corresponding to project status.
+ */
 export function getStatusClass(status) {
     switch (status) {
         case "In Progress":
             return "status-in-progress";
         case "Completed":
             return "status-completed";
-        case "On Hold":
-            return "status-on-hold";
         case "Not Started":
             return "status-not-started";
         default:
@@ -254,6 +212,13 @@ export function getStatusClass(status) {
     }
 }
 
+// ==================================================
+// Create Project Popup
+// ==================================================
+
+/**
+ * Open the Create Project popup and initialize member selectors.
+ */
 export function openCreateProjectPopup() {
     document.getElementById("overlay-create-project").style.display = "flex";
     document.body.style.overflow = "hidden";
@@ -261,12 +226,18 @@ export function openCreateProjectPopup() {
     renderMembersSelect("members");
 }
 
+/**
+ * Close the Create Project popup and reset all form fields.
+ */
 export function closeCreateProjectPopup() {
     document.getElementById("overlay-create-project").style.display = "none";
     document.body.style.overflow = "auto";
     resetCreateProjectForm();
 }
 
+/**
+ * Clear all inputs and selections in the Create Project form.
+ */
 function resetCreateProjectForm() {
     $("#project-name, #start-date, #end-date").val("");
     $("#pic, #members").empty();
@@ -274,7 +245,12 @@ function resetCreateProjectForm() {
     variableGlobal.tomSelectInstances?.members?.clear(true);
 }
 
-function renderMembersSelect(type) {  // type: "pic", "members", "handler"
+/**
+ * Render or refresh the TomSelect dropdown for project members.
+ *
+ * @param {"pic"|"members"} type
+ */
+function renderMembersSelect(type) {
 
     const $select = $(`#${type}`);
     if (!$select.length) return;
@@ -323,6 +299,14 @@ function renderMembersSelect(type) {  // type: "pic", "members", "handler"
     }
 }
 
+// ==================================================
+// Inline Project Editing
+// ==================================================
+
+/**
+ * Enable inline editing mode for a project row.
+ * Replace display elements with editable form controls.
+ */
 export function enableProjectEditMode(tr, projectID) {
     if (!tr) return;
 
@@ -342,67 +326,45 @@ export function enableProjectEditMode(tr, projectID) {
     const progress = tr.querySelector(".progress-percent").innerText.replace("%", "");
     const status = tr.querySelector(".status-badge").innerText.trim();
 
-    // =========================
-    // NAME INPUT
-    // =========================
+    // NAME INPUT 
     nameTd.innerHTML = `
     <input class="form-control form-control-sm js-edit-name" value="${name}">
   `;
 
-    // =========================
     // START DATE
-    // =========================
     startTd.innerHTML = `
     <input type="date" class="form-control form-control-sm js-edit-start" value="${(start)}">
   `;
 
-    // =========================
     // END DATE
-    // =========================
     endTd.innerHTML = `
     <input type="date" class="form-control form-control-sm js-edit-end" value="${(end)}">
   `;
 
-    // =========================
     // PROGRESS
-    // =========================
     progressTd.innerHTML = `
     <input type="number" min="0" max="100"
       class="form-control form-control-sm js-edit-progress"
       value="${progress}">
   `;
-
-    // =========================
-    // STATUS
-    // =========================
-    statusTd.innerHTML = `
-    <select class="form-select form-select-sm js-edit-status">
-      <option value="Not Started" ${status == "Not Started" ? "selected" : ""}>Not Started</option>
-      <option value="In Progress" ${status == "In Progress" ? "selected" : ""}>In Progress</option>
-      <option value="On Hold" ${status == "On Hold" ? "selected" : ""}>On Hold</option>
-      <option value="Completed" ${status == "Completed" ? "selected" : ""}>Completed</option>
-    </select>
-  `;
-
 }
 
-
+/**
+ * Exit inline editing mode.
+ * Save changes to the server if any field has been modified.
+ */
 export async function disableProjectEditMode(tr, projectID) {
     if (!tr) return;
 
     try {
-        // =========================
         // 1. KHÔNG THAY ĐỔI
-        // =========================
         const hasChanges = hasProjectChanged(tr);
         if (!hasChanges) {
             renderProjectPage();
             return;
         }
 
-        // =========================
         // 2. CÓ THAY ĐỔI → CALL API UPDATE
-        // =========================
         const updatedData = buildProjectUpdatePayload(tr);
         const response = await api.updateRecord(
             COLLECTION_PROJECTS,
@@ -426,7 +388,11 @@ export async function disableProjectEditMode(tr, projectID) {
     }
 }
 
-
+/**
+ * Compare original row values with current editing values.
+ *
+ * @returns {boolean} True if any field has changed.
+ */
 function hasProjectChanged(tr) {
     if (!tr) return false;
 
@@ -449,14 +415,33 @@ function hasProjectChanged(tr) {
     return JSON.stringify(original) !== JSON.stringify(current);
 }
 
+/**
+ * Build request payload from edited project row.
+ *
+ * @returns {Object} Project update payload.
+ */
 function buildProjectUpdatePayload(tr) {
     if (!tr) return null;
+
+    const progress = Number(
+        tr.querySelector(".js-edit-progress")?.value || 0
+    );
+
+    let status;
+
+    if (progress === 0) {
+        status = "Not Started";
+    } else if (progress === 100) {
+        status = "Completed";
+    } else {
+        status = "In Progress";
+    }
 
     return {
         name: tr.querySelector(".js-edit-name")?.value?.trim(),
         start_date: tr.querySelector(".js-edit-start")?.value?.trim(),
         end_date: tr.querySelector(".js-edit-end")?.value?.trim(),
-        progress: Number(tr.querySelector(".js-edit-progress")?.value || 0),
-        status: tr.querySelector(".js-edit-status")?.value?.trim(),
+        progress,
+        status,
     };
 }

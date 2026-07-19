@@ -181,7 +181,6 @@ export async function handleDeleteProject(deleteButton) {
                 EDIT PROJECT
 ===========================================
 */
-
 export function handleEditProject(e, editButton) {
     const tr = editButton.closest("tr");
     const projectID = editButton.dataset.id;

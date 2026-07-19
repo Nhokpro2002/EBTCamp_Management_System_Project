@@ -7,11 +7,9 @@ import { orderDetailPageData } from "./state.js";
 async function init() {
     try {
         const params = new URLSearchParams(window.location.search);
-        const orderID = params.get("orderID");
 
         await Promise.all([
             service.loadInventoryItemList(),
-            service.loadOrderItemList(orderID),
             service.loadUserList(),
             service.loadProjectList()
         ]);

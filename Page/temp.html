@@ -27,7 +27,376 @@
      <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
      <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
 
-     <style></style>
+     <style>
+          :root {
+               --page-bg: #f6f7fb;
+               --card-bg: #ffffff;
+               --border-color: #eceef3;
+               --text-main: #1f2937;
+               --text-muted: #8a94a6;
+               --green: #16a34a;
+               --blue: #3b82f6;
+               --orange: #f59e0b;
+               --red: #ef4444;
+               --shadow-sm: 0 6px 20px rgba(15, 23, 42, 0.05);
+          }
+
+          body {
+               background: #f5f5f5;
+               font-family: "Inter", sans-serif;
+               font-size: 15px;
+               color: #333;
+          }
+
+          /* ===== Header ===== */
+          .btn-create-project:hover {
+               background: #166534;
+               border-color: #166534;
+               color: #fff;
+          }
+
+          /* ===== Stat cards ===== */
+          .stat-card {
+               background: #fff;
+               border: 1px solid var(--border-color);
+               border-radius: 14px;
+               padding: 16px 18px;
+               height: 100%;
+               transition: all 0.2s ease;
+          }
+
+          .stat-card:hover {
+               transform: translateY(-2px);
+               box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+          }
+
+          .stat-top {
+               display: flex;
+               align-items: center;
+               gap: 8px;
+               margin-bottom: 10px;
+               font-size: 13px;
+               color: var(--text-muted);
+               font-weight: 600;
+          }
+
+          .stat-dot {
+               width: 10px;
+               height: 10px;
+               border-radius: 50%;
+               display: inline-block;
+          }
+
+          .dot-blue {
+               background: var(--blue);
+          }
+
+          .dot-green {
+               background: var(--green);
+          }
+
+          .dot-orange {
+               background: var(--orange);
+          }
+
+          .dot-red {
+               background: var(--red);
+          }
+
+          .stat-value {
+               font-size: 32px;
+               line-height: 1;
+               font-weight: 700;
+               color: var(--text-main);
+          }
+
+          /* ===== Table ===== */
+
+          .projects-table {
+               margin-bottom: 0;
+               vertical-align: middle;
+          }
+
+          .projects-table thead th {
+               background: #fafbfc;
+               color: #7b8797;
+               font-size: 13px;
+               font-weight: 700;
+               border-bottom: 1px solid var(--border-color);
+               padding: 14px 18px;
+               white-space: nowrap;
+          }
+
+          .projects-table tbody td {
+               padding: 18px;
+               border-bottom: 1px solid #f0f2f6;
+               font-size: 14px;
+          }
+
+          .projects-table tbody tr:last-child td {
+               border-bottom: none;
+          }
+
+          .project-name {
+               font-weight: 700;
+               color: #111827;
+          }
+
+          .date-text {
+               color: #4b5563;
+               font-weight: 500;
+          }
+
+          /* ===== Progress ===== */
+          .progress-cell {
+               min-width: 180px;
+          }
+
+          .progress-percent {
+               font-size: 13px;
+               font-weight: 700;
+               color: #4b5563;
+               margin-bottom: 8px;
+          }
+
+          .custom-progress {
+               height: 8px;
+               background: #edf1f7;
+               border-radius: 999px;
+               overflow: hidden;
+
+          }
+
+          .custom-progress .progress-bar {
+               border-radius: 999px;
+               height: 8px;
+          }
+
+          .progress-blue {
+               background: var(--blue);
+          }
+
+          .progress-green {
+               background: var(--green);
+          }
+
+          .progress-orange {
+               background: var(--orange);
+          }
+
+          .progress-red {
+               background: var(--red);
+          }
+
+          /* ===== Status badge ===== */
+          .status-badge {
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               min-width: 110px;
+               padding: 7px 12px;
+               border-radius: 999px;
+               font-size: 12px;
+               font-weight: 700;
+               border: 1px solid transparent;
+          }
+
+          .status-in-progress {
+               color: #2563eb;
+               background: #eff6ff;
+               border-color: #dbeafe;
+          }
+
+          .status-completed {
+               color: #15803d;
+               background: #ecfdf3;
+               border-color: #d1fae5;
+          }
+
+          .status-on-hold {
+               color: #d97706;
+               background: #fff7ed;
+               border-color: #fed7aa;
+          }
+
+          .status-not-started {
+               color: #dc2626;
+               background: #fef2f2;
+               border-color: #fecaca;
+          }
+
+          /* ===== Action buttons ===== */
+          .action-group {
+               display: flex;
+               align-items: center;
+               gap: 8px;
+          }
+
+          .icon-action {
+               width: 34px;
+               height: 34px;
+               border-radius: 10px;
+               border: 1px solid var(--border-color);
+               background: #19c2a4;
+               color: white;
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               transition: 0.2s ease;
+          }
+
+          .icon-action:hover {
+               background: #f9fafb;
+               color: #111827;
+               transform: translateY(-1px);
+          }
+
+          /* ===== Footer / Pagination ===== */
+          .pagination-custom {
+               gap: 8px;
+               margin: 0;
+          }
+
+          .pagination-custom .page-link {
+               width: 36px;
+               height: 36px;
+               padding: 0;
+               border-radius: 10px !important;
+               border: 1px solid var(--border-color);
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               color: #4b5563;
+               background: #fff;
+          }
+
+          .pagination-custom .page-item.active .page-link {
+               background: #2563eb;
+               border-color: #2563eb;
+               color: #fff;
+          }
+
+          .pagination-custom .page-link:hover {
+               background: #f8fafc;
+               color: #111827;
+          }
+
+          .pagination-custom .page-item.active .page-link:hover {
+               background: #2563eb;
+               color: #fff;
+          }
+
+          /* ===== Responsive ===== */
+          @media (max-width: 992px) {
+               .projects-table {
+                    min-width: 950px;
+               }
+
+               .table-scroll {
+                    overflow-x: auto;
+               }
+          }
+
+          .nav-link {
+               color: #333;
+               margin-bottom: 10px;
+               padding: 13px 15px;
+               border: 1px solid transparent;
+               border-radius: 8px;
+               transition: .25s;
+          }
+
+          .nav-link:hover {
+               background: #fff1f3;
+               border-color: #e60012;
+               color: #222;
+          }
+
+          .nav-link.active {
+               background: #ffffff;
+               border-color: #e60012;
+               color: #333;
+          }
+
+          .overlay-create-project {
+               position: fixed;
+               top: 0;
+               left: 0;
+               right: 0;
+               bottom: 0;
+               background: rgba(0, 0, 0, 0.5);
+               display: none;
+               justify-content: center;
+               align-items: center;
+               z-index: 1000;
+          }
+
+          .popup-create-project {
+               background: #fff;
+               padding: 30px;
+               border-radius: 10px;
+               width: 600px;
+               max-height: 90%;
+               overflow-y: auto;
+               font-family: Arial, sans-serif;
+          }
+
+          .form-group-create-project {
+               margin-bottom: 15px;
+               display: flex;
+               flex-direction: column;
+          }
+
+          .form-group-create-project label {
+               margin-bottom: 5px;
+               font-weight: bold;
+          }
+
+          .form-group-create-project input,
+          .form-group-create-project select {
+               padding: 8px 10px;
+               border-radius: 5px;
+               border: 1px solid #ccc;
+          }
+
+          .form-actions-create-project {
+               display: flex;
+               justify-content: flex-end;
+               gap: 10px;
+               margin-top: 20px;
+          }
+
+          .form-actions-create-project button {
+               padding: 8px 15px;
+               border-radius: 5px;
+               border: none;
+               cursor: pointer;
+          }
+
+          .action-menu {
+               position: absolute;
+               right: 5px;
+               min-width: 120px;
+               background: #fff;
+               border: 1px solid #ddd;
+               border-radius: 6px;
+               box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+               display: none;
+               z-index: 1000;
+               top: -15px;
+          }
+
+          .action-menu.show {
+               display: block;
+          }
+
+          .action-item {
+               padding: 6px 10px;
+               cursor: pointer;
+               display: flex;
+               align-items: center;
+          }
+     </style>
 
 </head>
 
