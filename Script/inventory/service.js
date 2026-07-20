@@ -43,3 +43,16 @@ export async function saveItem(data) {
     }
 }
 
+export async function deleteItem(IDList) {
+    try {
+        for (const id of IDList) {
+            await api.deleteRecord(COLLECTION_INVENTORY_ITEMS, id);
+        }
+
+        utils.showSuccess(inventoryItemPageMessage.deleteSuccess);
+    } catch (error) {
+        console.error(error);
+        utils.showError(inventoryItemPageMessage.deleteFailed);
+    }
+}
+

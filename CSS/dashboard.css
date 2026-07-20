@@ -1,0 +1,808 @@
+/* =========================
+   Global
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+
+    background: #f5f7fb;
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color: #1f2937;
+
+}
+
+
+
+/* =========================
+   Sidebar
+========================= */
+
+
+.sidebar {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 260px;
+
+    height: 100vh;
+
+    background:
+        linear-gradient(180deg,
+            #111827,
+            #1f2937);
+
+    color: white;
+
+    padding: 25px 18px;
+
+    z-index: 1000;
+
+}
+
+
+
+/* Logo */
+
+.logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    margin-bottom: 40px;
+
+}
+
+
+.logo i {
+
+    font-size: 32px;
+
+    color: #60a5fa;
+
+}
+
+
+
+
+/* Menu */
+
+
+.menu {
+
+    list-style: none;
+
+    padding: 0;
+
+}
+
+
+
+.menu li {
+
+    margin-bottom: 8px;
+
+}
+
+
+
+.menu a {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 13px 15px;
+
+    color: #cbd5e1;
+
+    text-decoration: none;
+
+    border-radius: 12px;
+
+    transition: .25s;
+
+}
+
+
+
+.menu a i {
+
+    font-size: 20px;
+
+}
+
+
+
+.menu a:hover {
+
+    background:
+        rgba(255, 255, 255, .1);
+
+    color: white;
+
+    transform:
+        translateX(5px);
+
+}
+
+
+
+.menu .active a {
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+
+
+/* =========================
+   Main
+========================= */
+
+
+.main {
+
+    margin-left: 260px;
+
+    padding: 30px;
+
+}
+
+
+
+/* =========================
+   Topbar
+========================= */
+
+
+.topbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+
+}
+
+
+
+.topbar h2 {
+
+    font-weight: 700;
+
+    margin-bottom: 5px;
+
+}
+
+
+
+.topbar small {
+
+    color: #64748b;
+
+}
+
+
+
+/* =========================
+   Statistic Cards
+========================= */
+
+
+.stat-card {
+
+
+    border: none;
+
+    border-radius: 20px;
+
+    background: white;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, .06);
+
+
+    transition: .3s;
+
+
+}
+
+
+
+.stat-card:hover {
+
+
+    transform:
+        translateY(-8px);
+
+
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, .12);
+
+
+}
+
+
+
+.stat-card .card-body {
+
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 25px;
+
+}
+
+
+
+.stat-card h6 {
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    margin-bottom: 8px;
+
+}
+
+
+
+.stat-card h2 {
+
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+    margin: 0;
+
+}
+
+
+
+.card-icon {
+
+
+    width: 65px;
+
+    height: 65px;
+
+
+    border-radius: 18px;
+
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+
+    color: white;
+
+
+    font-size: 30px;
+
+
+}
+
+
+
+.bg-primary {
+
+    background:
+        linear-gradient(135deg,
+            #2563eb,
+            #60a5fa) !important;
+
+}
+
+
+
+.bg-success {
+
+    background:
+        linear-gradient(135deg,
+            #059669,
+            #34d399) !important;
+
+}
+
+
+
+.bg-warning {
+
+    background:
+        linear-gradient(135deg,
+            #d97706,
+            #fbbf24) !important;
+
+}
+
+
+
+.bg-danger {
+
+    background:
+        linear-gradient(135deg,
+            #dc2626,
+            #fb7185) !important;
+
+}
+
+
+
+/* =========================
+   Chart Cards
+========================= */
+
+
+.dashboard-card {
+
+
+    border: none;
+
+    border-radius: 20px;
+
+    background: white;
+
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, .06);
+
+
+    overflow: hidden;
+
+
+}
+
+
+
+.dashboard-card:hover {
+
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, .1);
+
+
+}
+
+
+
+.dashboard-card .card-header {
+
+
+    background: white;
+
+
+    border: none;
+
+
+    font-size: 18px;
+
+
+    font-weight: 700;
+
+
+    padding: 20px 25px;
+
+
+}
+
+
+
+.dashboard-card .card-body {
+
+
+    padding: 25px;
+
+
+}
+
+
+
+canvas {
+
+    max-height: 350px;
+
+}
+
+
+
+/* =========================
+   Table
+========================= */
+
+
+.table {
+
+
+    margin: 0;
+
+}
+
+
+
+.table thead {
+
+
+    background: #f8fafc;
+
+
+}
+
+
+
+.table th {
+
+
+    color: #64748b;
+
+
+    font-size: 14px;
+
+
+    font-weight: 600;
+
+
+}
+
+
+
+.table td {
+
+
+    vertical-align: middle;
+
+
+}
+
+
+
+.table tbody tr {
+
+
+    transition: .2s;
+
+
+}
+
+
+
+.table tbody tr:hover {
+
+
+    background: #f1f5f9;
+
+
+    transform: scale(1.01);
+
+
+}
+
+
+
+/* =========================
+   Badge
+========================= */
+
+
+.badge {
+
+
+    padding: 8px 12px;
+
+    border-radius: 20px;
+
+    font-weight: 500;
+
+}
+
+
+
+/* =========================
+   Low Stock
+========================= */
+
+
+.stock-item {
+
+
+    margin-bottom: 20px;
+
+
+}
+
+
+
+.stock-header {
+
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+
+
+    font-size: 14px;
+
+
+}
+
+
+
+.progress {
+
+
+    height: 10px;
+
+    border-radius: 20px;
+
+    background: #e5e7eb;
+
+
+}
+
+
+
+.progress-bar {
+
+
+    border-radius: 20px;
+
+
+}
+
+
+
+/* =========================
+   Button
+========================= */
+
+
+.btn-primary {
+
+
+    border: none;
+
+
+    border-radius: 12px;
+
+
+    padding:
+        12px 20px;
+
+
+    background: #2563eb;
+
+
+    transition: .25s;
+
+
+}
+
+
+
+.btn-primary:hover {
+
+
+    background: #1d4ed8;
+
+
+    transform:
+        translateY(-2px);
+
+
+}
+
+
+
+/* =========================
+   Scrollbar
+========================= */
+
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+}
+
+
+
+::-webkit-scrollbar-thumb {
+
+
+    background: #94a3b8;
+
+
+    border-radius: 10px;
+
+
+}
+
+
+
+/* =========================
+   Responsive
+========================= */
+
+
+@media(max-width:992px) {
+
+
+    .sidebar {
+
+        width: 80px;
+
+        padding: 20px 10px;
+
+    }
+
+
+    .logo span {
+
+
+        display: none;
+
+
+    }
+
+
+
+    .menu a {
+
+
+        justify-content: center;
+
+
+    }
+
+
+
+    .menu a i {
+
+
+        font-size: 22px;
+
+
+    }
+
+
+
+    .menu a {
+
+
+        font-size: 0;
+
+
+    }
+
+
+
+    .main {
+
+
+        margin-left: 80px;
+
+        padding: 20px;
+
+    }
+
+
+}
+
+
+
+@media(max-width:576px) {
+
+
+    .topbar {
+
+
+        flex-direction: column;
+
+
+        align-items: flex-start;
+
+
+        gap: 20px;
+
+
+    }
+
+
+    .main {
+
+
+        padding: 15px;
+
+
+    }
+
+
+}
+
+
+
+/* =========================
+   Animation
+========================= */
+
+
+@keyframes fadeUp {
+
+
+    from {
+
+
+        opacity: 0;
+
+
+        transform:
+            translateY(20px);
+
+
+    }
+
+
+    to {
+
+
+        opacity: 1;
+
+
+        transform:
+            translateY(0);
+
+
+    }
+
+
+}
+
+
+
+.stat-card,
+.dashboard-card {
+
+
+    animation:
+        fadeUp .5s ease;
+
+
+}

@@ -6,6 +6,7 @@ import { projectItemVariable } from "./project_item_variable.js";
 
 const COLLECTION_PROJECT_ITEMS = "Project_Items"
 const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
+const COLLECTION_ORDER_ITEMS = "Order_Items";
 
 export async function renderInventoryItem() {
     try {
@@ -37,7 +38,7 @@ export async function renderInventoryItem() {
 export async function renderProjectTable(projectID) {
     try {
         const response = await api.getRecordsFilter(
-            COLLECTION_PROJECT_ITEMS,
+            COLLECTION_ORDER_ITEMS,
             "project",
             projectID
         );
@@ -62,11 +63,6 @@ export async function renderProjectTable(projectID) {
     }
 }
 
-export function processDropItem(item) {
-    $("#project-item-body").append(createProjectItemRow(item));
-    initLastPopover();
-    updateProjectSummary();
-}
 
 function createProjectItemRow(item) {
     const descriptionHtml = (item.description ?? "").replace(/\n/g, "<br>");

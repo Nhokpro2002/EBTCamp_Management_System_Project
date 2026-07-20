@@ -40,7 +40,6 @@ export function handleAddItemToProjectItems(model) {  // Cái này là id của 
 
     projectItemVariable.projectItemList.push(item);
 
-    ui.processDropItem(newItem);
 }
 
 export async function handleExportExcelProjectItems() {

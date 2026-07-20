@@ -3,10 +3,10 @@
 ========================================================== */
 :root {
     --primary: #ef4444;
-    --primary-dark: #dc2626;
+    --primary-dark: #ff0000;
     --primary-light: #fee2e2;
     --success: #16a34a;
-    --warning: #f59e0b;
+    --warning: #ffa000;
     --blue: #004f98;
     --danger: #ef4444;
     --text: #222;
@@ -462,7 +462,7 @@ body {
 }
 
 .status-in-progress {
-    color: #d97706;
+    color: #ff8900;
     background: #fff7ed;
     border-color: #fed7aa;
 }
@@ -474,7 +474,7 @@ body {
 }
 
 .status-not-started {
-    color: #dc2626;
+    color: #ff0000;
     background: #fef2f2;
     border-color: #fecaca;
 }

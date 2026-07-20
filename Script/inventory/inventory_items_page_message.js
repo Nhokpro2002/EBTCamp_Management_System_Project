@@ -1,4 +1,7 @@
 export const inventoryItemPageMessage = {
     saveSuccess: "Save new item successfully",
-    saveFailed: "Failed to save new item"
+    saveFailed: "Failed to save new item",
+
+    deleteSuccess: "Delete items successfully",
+    deleteFailed: "Failed to delete items",
 }

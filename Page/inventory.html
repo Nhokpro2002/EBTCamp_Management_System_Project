@@ -39,7 +39,7 @@
 
             <ul class="menu">
                 <li>
-                    <a href="#">
+                    <a href="dashboard.html">
                         <i class="bi bi-grid"></i>
                         Dashboard
                     </a>
@@ -181,7 +181,8 @@
                         Filter
                     </button>
 
-                    <button class="btn btn-danger" data-bs-target="#addProductModal">
+                    <button class="btn btn-danger" id="openAddProductBtn" data-bs-toggle="modal"
+                        data-bs-target="#addProductModal">
                         <i class="bi bi-plus-lg"></i>
                         Add Material
                     </button>
@@ -389,7 +390,11 @@
     <div id="selectionBar" class="selection-bar d-flex justify-content-center gap-3">
         <button id="btnAddSelected" class="btn btn-success">
             <i class="bi bi-plus-lg me-1"></i>
-            Add Selected
+            Add Order
+        </button>
+        <button id="btnDeleteSelected" class="btn btn-danger">
+            <i class="bi bi-trash me-1"></i>
+            Delete
         </button>
     </div>
 

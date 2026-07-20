@@ -9,6 +9,23 @@ import { workflowData, projectData } from "./states.js";
 const COLLECTION_STAGES = "Stages";
 const COLLECTION_TASKS = "Tasks";
 const COLLECTION_USERS = "Users";
+const COLLECTION_TASK_INFORMATION = "Task_Information";
+
+function createNewTaskInformation(data) {
+    try {
+        const response = await api.createRecord(COLLECTION_TASK_INFORMATION, data);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function updateTaskInformation(id, data) {
+    try {
+        const response = await api.updateRecord(COLLECTION_TASK_INFORMATION, id, data);
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 export async function createNewTask() {
     try {
@@ -23,7 +40,17 @@ export async function createNewTask() {
         }
         if (!payload.name || !payload.start_date || !payload.duration) return;
 
-        return await api.createRecord(COLLECTION_TASKS, payload);
+        const response = await api.createRecord(COLLECTION_TASKS, payload);
+        if (response) {
+            const taskInformationData = {
+                name: payload.name,
+                stage: payload.stage,
+                start_date: payload.start_date,
+                duration_before: payload.duration
+            }
+
+            await createNewTaskInformation(taskInformationData);
+        }
     } catch (error) {
         console.log(error);
         utils.showError(workflowPageMessage.createFailed);
@@ -33,6 +60,8 @@ export async function createNewTask() {
 export async function updateTask(id, data) {
     try {
         return await api.updateRecord(COLLECTION_TASKS, id, data);
+
+        // Call api to update Task information collection
     } catch (error) {
         console.log(error);
         utils.showError(workflowPageMessage.updateFailed);

@@ -10,9 +10,6 @@ import * as ui from "./project_items.ui.js";
 import { projectItemVariable } from "./project_item_variable.js";
 
 const projectID = new URLSearchParams(location.search).get("projectID");
-document.querySelector(".project-info").textContent =
-    localStorage.getItem("projectName") || "";
-console.log(localStorage.getItem("projectName"));
 
 // ==========================
 // INIT

@@ -43,12 +43,36 @@ export function initEvent() {
             service.saveItem(inventoryItemData);
         });
 
-    document
-        .getElementById("addProductModal")
-        .addEventListener("hidden.bs.modal", () => {
-            ui.resetProductForm();
-        });
 
-    //document.querySelector(".container-fluid").style.display = "block";
+    document.getElementById("addProductModal").addEventListener("hidden.bs.modal", function () {
+        ui.resetProductForm();
+    });
+
+    const btnDeleteSelected = document.getElementById("btnDeleteSelected");
+
+    document.getElementById("btnDeleteSelected").addEventListener("click", async () => {
+        const IDList = Array.from(
+            document.querySelectorAll(".row-checkbox:checked")
+        ).map(checkbox => checkbox.value);
+
+        if (IDList.length === 0) {
+            alert("Please select at least one item.");
+            return;
+        }
+
+        const confirmed = confirm(`Delete ${IDList.length} selected item(s)?`);
+        if (!confirmed) return;
+
+        await service.deleteItem(IDList);
+
+
+        inventoryVariable.inventoryItemFiltered =
+            inventoryVariable.inventoryItemFiltered.filter(
+                item => !IDList.includes(item.id)
+            );
+
+        ui.renderTable(inventoryVariable.inventoryItemFiltered);
+    });
+
 
 }

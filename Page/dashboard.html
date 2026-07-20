@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap Icons -->
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="../Libs/Chart/chart.umd.min.js"></script>
+
+    <link href="../CSS/dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ================= Sidebar ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <i class="bi bi-box-seam"></i>
+            <span>Inventory</span>
+        </div>
+
+        <ul class="menu">
+
+            <li class="active">
+                <a href="#">
+                    <i class="bi bi-speedometer2"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-box"></i>
+                    Products
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-cart"></i>
+                    Orders
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-building"></i>
+                    Warehouses
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-truck"></i>
+                    Suppliers
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-gear"></i>
+                    Settings
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- ================= Main ================= -->
+
+    <main class="main">
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h2>Inventory Dashboard</h2>
+
+                <small>
+                    Welcome back Admin
+                </small>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <button class="btn btn-primary">
+
+                    <i class="bi bi-download"></i>
+
+                    Export Report
+
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- KPI -->
+
+        <section class="row g-4 mb-4">
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="card-icon bg-primary">
+                            <i class="bi bi-box"></i>
+                        </div>
+
+                        <div>
+
+                            <h6>Total Products</h6>
+
+                            <h2 id="productCounter">0</h2>
+
+                            <span class="text-success">
+                                ↑ 12%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="card-icon bg-success">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+
+                        <div>
+
+                            <h6>Revenue</h6>
+
+                            <h2 id="revenueCounter">0</h2>
+
+                            <span class="text-success">
+                                ↑ 8%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="card-icon bg-warning">
+                            <i class="bi bi-cart"></i>
+                        </div>
+
+                        <div>
+
+                            <h6>Orders</h6>
+
+                            <h2 id="orderCounter">0</h2>
+
+                            <span class="text-success">
+                                ↑ 15%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="card-icon bg-danger">
+                            <i class="bi bi-exclamation-circle"></i>
+                        </div>
+
+                        <div>
+
+                            <h6>Low Stock</h6>
+
+                            <h2 id="stockCounter">0</h2>
+
+                            <span class="text-danger">
+                                Need Restock
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Charts -->
+
+        <section class="row g-4">
+
+            <div class="col-lg-8">
+
+                <div class="card dashboard-card">
+
+                    <div class="card-header">
+
+                        Revenue By Month
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <canvas id="revenueChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="card dashboard-card">
+
+                    <div class="card-header">
+
+                        Product Categories
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <canvas id="categoryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="card dashboard-card">
+
+                    <div class="card-header">
+
+                        Top Selling Products
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <canvas id="topProductChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="card dashboard-card">
+
+                    <div class="card-header">
+
+                        Warehouse Performance
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <canvas id="warehouseChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Bottom -->
+
+        <section class="row mt-4">
+
+            <!-- Recent Orders -->
+
+            <div class="col-lg-8">
+
+                <div class="card dashboard-card">
+
+                    <div class="card-header">
+
+                        Recent Orders
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table table-hover">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>ID</th>
+
+                                    <th>Customer</th>
+
+                                    <th>Total</th>
+
+                                    <th>Status</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="recentOrderTable">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Low Stock -->
+
+            <div class="col-lg-4">
+
+                <div class="card dashboard-card">
+
+                    <div class="card-header">
+
+                        Low Stock Products
+
+                    </div>
+
+                    <div class="card-body" id="lowStockList">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="../Script/dashboard/dashboard.js"></script>
+
+</body>
+
+</html>
