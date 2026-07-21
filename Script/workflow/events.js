@@ -173,9 +173,9 @@ export function bindUIEvents() {
     // -------------------------
     // Zoom
     // -------------------------
-    //document.querySelector("#btnDay")?.addEventListener("click", () => setZoom("day"));
-    //document.querySelector("#btnWeek")?.addEventListener("click", () => setZoom("week"));
-    //document.querySelector("#btnMonth")?.addEventListener("click", () => setZoom("month"));
+    document.querySelector("#btnDay")?.addEventListener("click", () => setZoom("day"));
+    document.querySelector("#btnWeek")?.addEventListener("click", () => setZoom("week"));
+    document.querySelector("#btnMonth")?.addEventListener("click", () => setZoom("month"));
 
     // -------------------------
     // Add Task → dùng Lightbox mặc định
@@ -243,7 +243,80 @@ export function bindUIEvents() {
         }
     });
 
+    const buttons = {
+        day: document.getElementById("btnDay"),
+        week: document.getElementById("btnWeek"),
+        month: document.getElementById("btnMonth")
+    };
+
+    function activeZoom(level) {
+        Object.values(buttons).forEach(btn => {
+            btn.classList.remove("active-day", "active-week", "active-month");
+        });
+
+        buttons[level].classList.add(`active-${level}`);
+    }
+
+    buttons.day.addEventListener("click", () => {
+        activeZoom("day");
+        setZoom("day");
+    });
+
+    buttons.week.addEventListener("click", () => {
+        activeZoom("week");
+        setZoom("week");
+    });
+
+    buttons.month.addEventListener("click", () => {
+        activeZoom("month");
+        setZoom("month");
+    });
+
 
 }
+
+gantt.ext.zoom.init({
+    levels: [
+        {
+            name: "day",
+            scale_height: 60,
+            min_column_width: 50,
+            scales: [
+                { unit: "month", step: 1, format: "%F %Y" },
+                { unit: "day", step: 1, format: "%d" }
+            ]
+        },
+        {
+            name: "week",
+            scale_height: 60,
+            min_column_width: 70,
+            scales: [
+                { unit: "month", step: 1, format: "%F %Y" },
+                {
+                    unit: "week",
+                    step: 1,
+                    format(date) {
+                        const end = gantt.date.add(date, 6, "day");
+                        return `${gantt.date.date_to_str("%d/%m")(date)} - ${gantt.date.date_to_str("%d/%m")(end)}`;
+                    }
+                }
+            ]
+        },
+        {
+            name: "month",
+            scale_height: 60,
+            min_column_width: 80,
+            scales: [
+                { unit: "year", step: 1, format: "%Y" },
+                { unit: "month", step: 1, format: "%F" }
+            ]
+        }
+    ]
+});
+
+function setZoom(level) {
+    gantt.ext.zoom.setLevel(level);
+}
+
 
 

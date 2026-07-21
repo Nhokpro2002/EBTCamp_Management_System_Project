@@ -11,17 +11,10 @@ const COLLECTION_TASKS = "Tasks";
 const COLLECTION_USERS = "Users";
 const COLLECTION_TASK_INFORMATION = "Task_Information";
 
-function createNewTaskInformation(data) {
+
+async function createTaskInformation(data) {
     try {
         const response = await api.createRecord(COLLECTION_TASK_INFORMATION, data);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-function updateTaskInformation(id, data) {
-    try {
-        const response = await api.updateRecord(COLLECTION_TASK_INFORMATION, id, data);
     } catch (error) {
         console.log(error);
     }
@@ -42,14 +35,7 @@ export async function createNewTask() {
 
         const response = await api.createRecord(COLLECTION_TASKS, payload);
         if (response) {
-            const taskInformationData = {
-                name: payload.name,
-                stage: payload.stage,
-                start_date: payload.start_date,
-                duration_before: payload.duration
-            }
-
-            await createNewTaskInformation(taskInformationData);
+            utils.showSuccess(workflowPageMessage.createSuccess);
         }
     } catch (error) {
         console.log(error);
@@ -59,9 +45,13 @@ export async function createNewTask() {
 
 export async function updateTask(id, data) {
     try {
-        return await api.updateRecord(COLLECTION_TASKS, id, data);
+        const response = await api.updateRecord(COLLECTION_TASKS, id, data);
+        if (response) {
+            // call để tạo một record
 
-        // Call api to update Task information collection
+        }
+
+
     } catch (error) {
         console.log(error);
         utils.showError(workflowPageMessage.updateFailed);

@@ -371,3 +371,43 @@ body {
 .task-disabled {
     pointer-events: none;
 }
+
+.zoom-toolbar .btn {
+    min-width: 110px;
+    height: 42px;
+    font-weight: 600;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    background: #fff;
+    transition: all .25s ease;
+}
+
+.zoom-toolbar .btn i {
+    font-size: 1rem;
+}
+
+.zoom-toolbar .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .3rem .6rem rgba(0, 0, 0, .15);
+}
+
+/* Day */
+.zoom-toolbar .active-day {
+    background: #198754;
+    color: #fff;
+    border-color: #198754;
+}
+
+/* Week */
+.zoom-toolbar .active-week {
+    background: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+}
+
+/* Month */
+.zoom-toolbar .active-month {
+    background: #fd7e14;
+    color: #fff;
+    border-color: #fd7e14;
+}
