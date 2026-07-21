@@ -792,4 +792,21 @@ function renderLowStock() {
 
     `).join("");
 
+    /*
+    lập trình website chạy local với sự giúp đỡ của các công cụ ai, bên cạnh đó là sử dụng thư viện hỗ trợ xây dựng giao diện và vẽ biểu đồ 
+    2. tận dụng tính năng datarealtime của thư viện để thông báo cho user các thay đổi của dự án
+    trang web hỗ trợ thêm sửa xóa data => các thành viên dễ quản lý tiến độ 
+
+    viết lại đoạn này để trả lời các câu hỏi sau 
+    1. Giải thích ý tưởng cải tiến 
+    + mong muốn tháo gỡ khó khăn bằng ai như nào 
+    + điểm mấu chốt cần cải tiến
+    + process hiện tại có điểm nào chưa tối ưu và đưa ra ý tưởng cải tiến 
+    + cải tiến giúp nâng cao hiệu quả định lương (hay định tính)
+    ứng dụng ai nào hỗ tợ 
+    tự động hóa công việc / phân tích / thiết bị như nào 
+    sử dụng công cụ gì 
+    time line kế hoạch
+     */
+
 }
