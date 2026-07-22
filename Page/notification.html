@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>System Activities</title>
+
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- CSS ở phần 1 đặt tại đây -->
+    <link href="../CSS/notification.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <!-- ===========================
+                SIDEBAR
+        ============================ -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../Image/lg_display_logo_web.png" alt="Logo LG">
+            </div>
+
+            <ul class="menu">
+                <li>
+                    <a href="dashboard.html">
+                        <i class="bi bi-grid"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="inventory.html">
+                        <i class="bi bi-box"></i>
+                        Inventory
+                    </a>
+                </li>
+
+                <li>
+                    <a href="order.html">
+                        <i class="bi bi-receipt"></i>
+                        Order
+                    </a>
+                </li>
+
+                <li>
+                    <a href="project.html">
+                        <i class="bi bi-kanban"></i>
+                        Project
+                    </a>
+                </li>
+
+                <li>
+                    <a href="user.html">
+                        <i class="bi bi-people"></i>
+                        User
+                    </a>
+                </li>
+
+                <li class="active">
+                    <a href="notification.html">
+                        <i class="bi bi-bell"></i>
+                        Notification
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="bi bi-gear"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <img src="https://i.pravatar.cc/80?img=12">
+                <div>
+                    <small>Engineer</small>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===========================
+                CONTENT
+        ============================ -->
+        <main class="content" style="width: 100%;">
+
+            <div class="activity-panel">
+
+                <div class="activity-header">
+
+                    <i class="bi bi-bell-fill"></i>
+
+                    <span>
+                        System Activities
+                    </span>
+
+                </div>
+
+                <div id="activity-list">
+
+                    <!--
+                Notification sẽ được render bằng JavaScript.
+
+                Mỗi notification có dạng:
+
+                ---------------------------------------
+                🔔 Task Updated
+                Task ABC has been updated.
+
+                Stage        [Execution]
+                Duration     5 → 8 days
+                Progress     40% → 70%
+                Updated by   Admin
+
+                                10:20
+                             24/07/2026
+                ---------------------------------------
+            -->
+
+                </div>
+
+            </div>
+
+
+        </main>
+
+    </div>
+
+
+
+    <!-- PocketBase SDK -->
+    <script src="../Libs/PocketbaseSDK/pocketbase.umd.js"></script>
+
+    <!-- Script ở phần 3 đặt tại đây -->
+    <script type="module" src="../Script/notification/main.js"></script>
+
+</body>
+
+</html>
