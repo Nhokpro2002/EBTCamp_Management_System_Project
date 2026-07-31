@@ -13,8 +13,6 @@ const COLLECTION_STAGES = "Stages";
 const COLLECTION_TASKS = "Tasks";
 const COLLECTION_NOTIFICATIONS = "Notifications";
 
-
-
 // =====================================================
 // NOTIFICATION
 // =====================================================
@@ -39,13 +37,16 @@ async function createNotification(data) {
  * So sánh dữ liệu trước và sau update
  */
 function createPayloadData(beforeUpdateTask, updatedTask) {
+
+    if (!beforeUpdateTask || !updatedTask)
+        return null;
+
     const stageName =
         workflowData.stages.find(
             stage => stage.id === beforeUpdateTask.stage
         )?.name ?? "";
 
     return {
-
         name: updatedTask.name,
 
         stage: stageName,
@@ -78,37 +79,64 @@ function createPayloadData(beforeUpdateTask, updatedTask) {
  * Tạo task mới
  */
 export async function createNewTask() {
+
     try {
-        const user = JSON.parse(localStorage.getItem("user"));
 
-        const payload = {
-            name:
-                document.getElementById("task-name").value,
-            start_date:
-                document.getElementById("start-date").value,
-            duration:
-                parseInt(
-                    document.getElementById("duration").value
-                ),
-            stage:
-                workflowData.currentStageID,
-            css:
-                document.getElementById("stage-name")
-                    .value
-                    .toLowerCase(),
-            progress:
-                0,
-            createdBy:
-                user?.employee_name ?? ""
+        const user =
+            JSON.parse(localStorage.getItem("user"));
 
-        };
+        const name =
+            document
+                .getElementById("task-name")
+                ?.value
+                ?.trim();
+
+        const startDate =
+            document
+                .getElementById("start-date")
+                ?.value;
+
+        const duration =
+            parseInt(
+                document
+                    .getElementById("duration")
+                    ?.value,
+                10
+            );
 
         if (
-            !payload.name ||
-            !payload.start_date ||
-            !payload.duration
-        )
+            !name ||
+            !startDate ||
+            Number.isNaN(duration) ||
+            duration <= 0
+        ) {
+            utils.showError("Invalid task data.");
             return;
+        }
+
+        const payload = {
+
+            name,
+
+            start_date:
+                startDate,
+
+            duration,
+
+            stage:
+                workflowData.currentStageID,
+
+            css:
+                document
+                    .getElementById("stage-name")
+                    ?.value
+                    ?.toLowerCase(),
+
+            progress: 0,
+
+            createdBy:
+                user?.employee_name ?? ""
+        };
 
         const response =
             await api.createRecord(
@@ -120,10 +148,17 @@ export async function createNewTask() {
             utils.showSuccess(
                 workflowPageMessage.createSuccess
             );
+            return response;
         }
+
+        return null;
+
+
     }
     catch (error) {
-        console.log(error);
+
+        console.error(error);
+
         utils.showError(
             workflowPageMessage.createFailed
         );
@@ -140,38 +175,57 @@ export async function createNewTask() {
  * 4. Update state local
  */
 export async function updateTask(id, data, projectID) {
-    try {
-        const beforeUpdateTask =
-            workflowData.tasks.find(task => task.id === id);
 
-        const response = await api.updateRecord(
-            COLLECTION_TASKS,
-            id,
-            data
-        );
+    try {
+
+        const beforeUpdateTask =
+            workflowData.tasks.find(
+                task => task.id === id
+            );
+
+        if (!beforeUpdateTask) {
+
+            utils.showError("Task not found.");
+
+            return false;
+        }
+
+        const updatedTask = {
+            ...beforeUpdateTask,
+            ...data
+        };
+
+        const response =
+            await api.updateRecord(
+                COLLECTION_TASKS,
+                id,
+                data
+            );
 
         if (!response)
             return false;
 
-        await createNotification(
-            createPayloadData(beforeUpdateTask, data)
-        );
+        const notification =
+            createPayloadData(
+                beforeUpdateTask,
+                updatedTask
+            );
 
-        await updateFollowingTasks({
-            ...beforeUpdateTask,
-            ...data
-        });
+        if (notification)
+            await createNotification(notification);
 
-        // đồng bộ lại toàn bộ dữ liệu
+        await updateFollowingTasks(updatedTask);
+
         await loadStageData(projectID);
 
         mappingData();
 
         return true;
 
-    } catch (error) {
+    }
+    catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         utils.showError(
             workflowPageMessage.updateFailed
@@ -363,6 +417,7 @@ export function mappingData() {
  * sau task cuối cùng trong stage
  */
 export function getMinStartDate(stageID) {
+
     const stageTasks =
         workflowData.tasks.filter(
             task => task.stage == stageID
@@ -374,46 +429,102 @@ export function getMinStartDate(stageID) {
     let latestEndDate = null;
 
     stageTasks.forEach(task => {
-        const endDate = new Date(task.start_date);
-        endDate.setDate(endDate.getDate() + task.duration - 1);
 
-        if (!latestEndDate || endDate > latestEndDate)
+        const endDate =
+            new Date(task.start_date);
+
+        endDate.setDate(
+            endDate.getDate() +
+            task.duration -
+            1
+        );
+
+        if (
+            !latestEndDate ||
+            endDate > latestEndDate
+        ) {
             latestEndDate = endDate;
+        }
+
     });
 
-    latestEndDate.setDate(latestEndDate.getDate() + 1);
+    latestEndDate.setDate(
+        latestEndDate.getDate() + 1
+    );
 
-    return latestEndDate
-        .toISOString()
-        .split("T")[0];
+    const yyyy =
+        latestEndDate.getFullYear();
+
+    const mm =
+        String(
+            latestEndDate.getMonth() + 1
+        ).padStart(2, "0");
+
+    const dd =
+        String(
+            latestEndDate.getDate()
+        ).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
 }
 
 
 async function updateFollowingTasks(updatedTask) {
 
-    const stageTasks = workflowData.tasks.filter(
-        task => task.stage === updatedTask.stage
-    );
+    const stageTasks =
+        workflowData.tasks
+            .filter(
+                task =>
+                    task.stage === updatedTask.stage
+            )
+            .sort(
+                (a, b) =>
+                    new Date(a.start_date) -
+                    new Date(b.start_date)
+            );
 
-    const currentIndex = stageTasks.findIndex(
-        task => task.id === updatedTask.id
-    );
+    const currentIndex =
+        stageTasks.findIndex(
+            task => task.id === updatedTask.id
+        );
 
     if (currentIndex === -1)
         return;
 
-    let nextStart = new Date(updatedTask.start_date);
+    let nextStart =
+        new Date(updatedTask.start_date);
+
     nextStart.setHours(0, 0, 0, 0);
+
     nextStart.setDate(
-        nextStart.getDate() + updatedTask.duration
+        nextStart.getDate() +
+        updatedTask.duration
     );
 
-    for (let i = currentIndex + 1; i < stageTasks.length; i++) {
+    for (
+        let i = currentIndex + 1;
+        i < stageTasks.length;
+        i++
+    ) {
 
-        const task = stageTasks[i];
+        const task =
+            stageTasks[i];
+
+        const yyyy =
+            nextStart.getFullYear();
+
+        const mm =
+            String(
+                nextStart.getMonth() + 1
+            ).padStart(2, "0");
+
+        const dd =
+            String(
+                nextStart.getDate()
+            ).padStart(2, "0");
 
         const startDate =
-            nextStart.toISOString().split("T")[0];
+            `${yyyy}-${mm}-${dd}`;
 
         if (task.start_date !== startDate) {
 
@@ -421,13 +532,15 @@ async function updateFollowingTasks(updatedTask) {
                 COLLECTION_TASKS,
                 task.id,
                 {
-                    start_date: startDate
+                    start_date:
+                        startDate
                 }
             );
         }
 
         nextStart.setDate(
-            nextStart.getDate() + task.duration
+            nextStart.getDate() +
+            task.duration
         );
     }
 }

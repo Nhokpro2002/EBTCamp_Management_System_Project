@@ -123,7 +123,10 @@ export function bindGanttEvents() {
 
         await saveTask(id);
 
-        gantt.parse(projectData);
+        gantt.batchUpdate(() => {
+            gantt.clearAll();
+            gantt.parse(projectData);
+        });
     });
 
     // -------------------------

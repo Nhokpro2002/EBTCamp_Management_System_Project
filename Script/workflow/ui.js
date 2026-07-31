@@ -137,6 +137,7 @@ export async function submitTask() {
         }
 
         // 5. render lại gantt
+        gantt.clearAll();
         gantt.parse(projectData);
     }
 
