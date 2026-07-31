@@ -1,9 +1,4 @@
 
-// change name task and save database
-// drag task bar moving new position => save change to database
-// change task progress => save database
-// change project name on the header
-// design ideal to delete task
 
 import { workflowData, projectData } from "./states.js";
 import * as service from "./service.js";

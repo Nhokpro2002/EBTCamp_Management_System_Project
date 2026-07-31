@@ -1,11 +1,37 @@
 import * as ui from "./ui.js";
 import * as api from "./service.js";
-import { workflowData } from "./states.js";
+import { workflowData, projectData } from "./states.js";
 
-//
 // =========================================================
 // GANTT EVENTS
 // =========================================================
+
+async function saveTask(id) {
+
+    const task = gantt.getTask(id);
+
+    const success = await api.updateTask(
+        id,
+        {
+            name: task.text,
+            start_date: task.start_date,
+            duration: task.duration,
+            progress: task.progress,
+            updatedBy:
+                JSON.parse(localStorage.getItem("user"))
+                    ?.employee_name ?? ""
+        },
+        workflowData.currentProjectID
+    );
+
+
+
+    if (!success)
+        return;
+
+}
+
+
 export function bindGanttEvents() {
 
     // -------------------------
@@ -20,7 +46,7 @@ export function bindGanttEvents() {
     // Click Task (optional - debug only)
     // -------------------------
     gantt.attachEvent("onTaskClick", function (id) {
-        // const task = gantt.getTask(id);
+
         return true;
     });
 
@@ -64,41 +90,6 @@ export function bindGanttEvents() {
         return true;
     });
 
-    // -------------------------
-    // Update Task
-    // -------------------------
-    gantt.attachEvent(
-        "onAfterTaskUpdate",
-        async function (id, task) {
-
-            const updatedTaskData = {
-                name: task.text,
-                start_date: task.start_date,
-                duration: task.duration,
-                progress: task.progress,
-                updatedBy:
-                    JSON.parse(localStorage.getItem("user"))
-                        .employee_name
-            };
-
-            await api.updateTask(id, updatedTaskData);
-            // refresh trạng thái disable
-            gantt.render();
-        });
-
-    gantt.attachEvent("onLightboxSave", async function (id, task) {
-
-        const updatedTaskData = {
-            name: task.text,
-            start_date: task.start_date,
-            duration: task.duration,
-            progress: task.progress,
-            updatedBy: JSON.parse(localStorage.getItem("user")).employee_name
-        };
-
-        const result = await api.updateTask(id, updatedTaskData);
-        return true;
-    });
 
     // -------------------------
     // Delete Task
@@ -128,9 +119,11 @@ export function bindGanttEvents() {
         }
     );
 
-    gantt.attachEvent("onAfterTaskDrag", function () {
-        // dùng để trigger autosave nếu cần
-        return true;
+    gantt.attachEvent("onAfterTaskDrag", async function (id) {
+
+        await saveTask(id);
+
+        gantt.parse(projectData);
     });
 
     // -------------------------

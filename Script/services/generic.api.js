@@ -11,16 +11,12 @@ export async function createRecord(collection, data) {
     };
 
     if (isFormData) {
-
         // Upload file
         options.body = data;
-
     } else {
-
         // JSON bình thường
         options.headers["Content-Type"] = "application/json";
         options.body = JSON.stringify(data);
-
     }
 
     const res = await fetch(

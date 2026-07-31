@@ -18,26 +18,19 @@ const COLLECTION_NOTIFICATIONS = "Notifications";
 // =====================================================
 // NOTIFICATION
 // =====================================================
-
 /**
  * Tạo notification khi task thay đổi
  */
 async function createNotification(data) {
-
     try {
-
         await api.createRecord(
             COLLECTION_NOTIFICATIONS,
             data
         );
-
     }
     catch (error) {
-
         console.log(error);
-
     }
-
 }
 
 
@@ -46,13 +39,10 @@ async function createNotification(data) {
  * So sánh dữ liệu trước và sau update
  */
 function createPayloadData(beforeUpdateTask, updatedTask) {
-
-
     const stageName =
         workflowData.stages.find(
             stage => stage.id === beforeUpdateTask.stage
         )?.name ?? "";
-
 
     return {
 
@@ -75,11 +65,8 @@ function createPayloadData(beforeUpdateTask, updatedTask) {
         updated_by:
             JSON.parse(localStorage.getItem("user"))
                 ?.employee_name ?? ""
-
     };
-
 }
-
 
 
 // =====================================================
@@ -91,52 +78,30 @@ function createPayloadData(beforeUpdateTask, updatedTask) {
  * Tạo task mới
  */
 export async function createNewTask() {
-
-
     try {
-
-
-        const user =
-            JSON.parse(localStorage.getItem("user"));
-
+        const user = JSON.parse(localStorage.getItem("user"));
 
         const payload = {
-
-
             name:
                 document.getElementById("task-name").value,
-
-
             start_date:
                 document.getElementById("start-date").value,
-
-
             duration:
                 parseInt(
                     document.getElementById("duration").value
                 ),
-
-
             stage:
                 workflowData.currentStageID,
-
-
             css:
                 document.getElementById("stage-name")
                     .value
                     .toLowerCase(),
-
-
             progress:
                 0,
-
-
             createdBy:
                 user?.employee_name ?? ""
 
         };
-
-
 
         if (
             !payload.name ||
@@ -145,39 +110,25 @@ export async function createNewTask() {
         )
             return;
 
-
-
         const response =
             await api.createRecord(
                 COLLECTION_TASKS,
                 payload
             );
 
-
-
         if (response) {
-
             utils.showSuccess(
                 workflowPageMessage.createSuccess
             );
-
         }
-
-
     }
     catch (error) {
-
         console.log(error);
-
         utils.showError(
             workflowPageMessage.createFailed
         );
-
     }
-
 }
-
-
 
 /**
  * Update task
@@ -188,80 +139,46 @@ export async function createNewTask() {
  * 3. Tạo notification
  * 4. Update state local
  */
-export async function updateTask(id, data) {
-
-
+export async function updateTask(id, data, projectID) {
     try {
-
-
         const beforeUpdateTask =
-            workflowData.tasks.find(
-                task => task.id === id
-            );
+            workflowData.tasks.find(task => task.id === id);
 
+        const response = await api.updateRecord(
+            COLLECTION_TASKS,
+            id,
+            data
+        );
 
+        if (!response)
+            return false;
 
-        const response =
-            await api.updateRecord(
-                COLLECTION_TASKS,
-                id,
-                data
-            );
+        await createNotification(
+            createPayloadData(beforeUpdateTask, data)
+        );
 
+        await updateFollowingTasks({
+            ...beforeUpdateTask,
+            ...data
+        });
 
+        // đồng bộ lại toàn bộ dữ liệu
+        await loadStageData(projectID);
 
-        if (response) {
+        mappingData();
 
+        return true;
 
-            // Tạo notification
-            const payload =
-                createPayloadData(
-                    beforeUpdateTask,
-                    data
-                );
-
-
-            createNotification(payload);
-
-
-
-            // Update state local
-            const index =
-                workflowData.tasks.findIndex(
-                    task => task.id === id
-                );
-
-
-            if (index !== -1) {
-
-
-                workflowData.tasks[index] = {
-
-                    ...workflowData.tasks[index],
-
-                    ...data
-
-                };
-
-            }
-
-
-        }
-
-
-    }
-    catch (error) {
-
+    } catch (error) {
 
         console.log(error);
-
 
         utils.showError(
             workflowPageMessage.updateFailed
         );
 
+        return false;
     }
-
 }
 
 
@@ -270,26 +187,18 @@ export async function updateTask(id, data) {
  * Delete task
  */
 export async function deleteTask(id) {
-
-
     try {
-
         return await api.deleteRecord(
             COLLECTION_TASKS,
             id
         );
-
     }
     catch (error) {
-
         console.log(error);
-
         utils.showError(
             workflowPageMessage.deleteFailed
         );
-
     }
-
 }
 
 
@@ -321,50 +230,28 @@ export async function loadStageData(projectID) {
             );
 
         stages.sort((a, b) =>
-
-
-            (ORDER[a.css?.toLowerCase()] ?? 999)
-
-            -
-
-            (ORDER[b.css?.toLowerCase()] ?? 999)
+            (ORDER[a.css?.toLowerCase()] ?? 999) - (ORDER[b.css?.toLowerCase()] ?? 999)
 
         );
 
-
-
-        workflowData.stages =
-            stages ?? [];
-
-
+        workflowData.stages = stages ?? [];
 
         workflowData.tasks = [];
-
-
 
         if (!workflowData.stages.length)
             return;
 
-
-
         // Load task theo stage
-
         const taskResults =
             await Promise.all(
-
                 workflowData.stages.map(stage =>
-
                     api.getRecordsFilter(
                         COLLECTION_TASKS,
                         "stage",
                         stage.id
                     )
-
                 )
-
             );
-
-
 
         // Flatten array
 
@@ -372,22 +259,14 @@ export async function loadStageData(projectID) {
             taskResults.flat();
 
 
-
     }
     catch (error) {
-
-
         console.error(error);
-
-
         utils.showError(
             workflowPageMessage.loadStageListError
         );
-
     }
-
 }
-
 
 
 // =====================================================
@@ -408,37 +287,14 @@ export function mappingData() {
     // -------------------------
     workflowData.stages.forEach(stage => {
         projectData.data.push({
-
-            id:
-                stage.id,
-
-            text:
-                stage.name,
-
-            start_date:
-                stage.start_date,
-
-
-            duration:
-                stage.duration ?? 0,
-
-
-            progress:
-                stage.progress ?? 0,
-
-
-            open:
-                true,
-
-
-            type:
-                gantt.config.types.project,
-
-
-            css:
-                stage.css
-
-
+            id: stage.id,
+            text: stage.name,
+            start_date: stage.start_date,
+            duration: stage.duration ?? 0,
+            progress: stage.progress ?? 0,
+            open: true,
+            type: gantt.config.types.project,
+            css: stage.css
         });
     });
 
@@ -448,26 +304,13 @@ export function mappingData() {
     // -------------------------
     workflowData.tasks.forEach(task => {
         projectData.data.push({
-            id:
-                task.id,
-
-            parent:
-                task.stage,
-
-            text:
-                task.name,
-
-            start_date:
-                task.start_date,
-
-            duration:
-                task.duration ?? 0,
-
-            progress:
-                task.progress ?? 0,
-
-            css:
-                task.css
+            id: task.id,
+            parent: task.stage,
+            text: task.name,
+            start_date: task.start_date,
+            duration: task.duration ?? 0,
+            progress: task.progress ?? 0,
+            css: task.css
         });
     });
 
@@ -492,10 +335,7 @@ export function mappingData() {
     Object.values(workflowData.taskGroups)
         .forEach(tasks => {
             tasks.sort(
-                (a, b) =>
-                    new Date(a.start_date)
-                    -
-                    new Date(b.start_date)
+                (a, b) => new Date(a.start_date) - new Date(b.start_date)
             );
 
             for (let i = 0; i < tasks.length - 1; i++) {
@@ -514,11 +354,9 @@ export function mappingData() {
 }
 
 
-
 // =====================================================
 // DATE HELPER
 // =====================================================
-
 
 /**
  * Lấy ngày bắt đầu task mới
@@ -536,36 +374,63 @@ export function getMinStartDate(stageID) {
     let latestEndDate = null;
 
     stageTasks.forEach(task => {
-        const endDate =
-            new Date(task.start_date);
+        const endDate = new Date(task.start_date);
+        endDate.setDate(endDate.getDate() + task.duration - 1);
 
-        endDate.setDate(
-            endDate.getDate()
-            +
-            task.duration
-            -
-            1
-        );
-
-        if (
-            !latestEndDate ||
-            endDate > latestEndDate
-        )
+        if (!latestEndDate || endDate > latestEndDate)
             latestEndDate = endDate;
-
     });
 
-    latestEndDate.setDate(
-        latestEndDate.getDate() + 1
-    );
+    latestEndDate.setDate(latestEndDate.getDate() + 1);
 
     return latestEndDate
         .toISOString()
         .split("T")[0];
-
 }
 
 
+async function updateFollowingTasks(updatedTask) {
+
+    const stageTasks = workflowData.tasks.filter(
+        task => task.stage === updatedTask.stage
+    );
+
+    const currentIndex = stageTasks.findIndex(
+        task => task.id === updatedTask.id
+    );
+
+    if (currentIndex === -1)
+        return;
+
+    let nextStart = new Date(updatedTask.start_date);
+    nextStart.setHours(0, 0, 0, 0);
+    nextStart.setDate(
+        nextStart.getDate() + updatedTask.duration
+    );
+
+    for (let i = currentIndex + 1; i < stageTasks.length; i++) {
+
+        const task = stageTasks[i];
+
+        const startDate =
+            nextStart.toISOString().split("T")[0];
+
+        if (task.start_date !== startDate) {
+
+            await api.updateRecord(
+                COLLECTION_TASKS,
+                task.id,
+                {
+                    start_date: startDate
+                }
+            );
+        }
+
+        nextStart.setDate(
+            nextStart.getDate() + task.duration
+        );
+    }
+}
 
 // =====================================================
 // GANTT ZOOM
@@ -586,7 +451,6 @@ export function setZoom(mode) {
                 }
             ];
             break;
-
 
         case "week":
             gantt.config.scales = [

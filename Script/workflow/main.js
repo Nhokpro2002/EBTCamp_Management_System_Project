@@ -180,6 +180,8 @@ async function initPage() {
 
     const projectID = new URLSearchParams(location.search).get("projectID");
 
+    workflowData.projectID = projectID
+
     await service.loadStageData(projectID);
 
     service.mappingData();
