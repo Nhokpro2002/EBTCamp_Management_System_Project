@@ -149,18 +149,27 @@ export function closeTaskModal() {
 }
 
 export function isTaskLocked(taskId) {
+
     const links = gantt.getLinks();
-    // tìm các task trước nó
+
     const parentLinks = links.filter(
         link => link.target == taskId
     );
 
     for (const link of parentLinks) {
-        const parentTask = gantt.getTask(link.source);
-        // task trước chưa hoàn thành
+
+        const parentTask =
+            gantt.getTask(link.source);
+
+        // task chưa load xong
+        if (!parentTask) {
+            continue;
+        }
+
         if (parentTask.progress < 1) {
             return true;
         }
     }
+
     return false;
 }

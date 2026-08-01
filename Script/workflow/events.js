@@ -21,10 +21,8 @@ async function saveTask(id) {
                 JSON.parse(localStorage.getItem("user"))
                     ?.employee_name ?? ""
         },
-        workflowData.currentProjectID
+        workflowData.projectID
     );
-
-
 
     if (!success)
         return;
@@ -120,7 +118,6 @@ export function bindGanttEvents() {
     );
 
     gantt.attachEvent("onAfterTaskDrag", async function (id) {
-
         await saveTask(id);
 
         gantt.batchUpdate(() => {

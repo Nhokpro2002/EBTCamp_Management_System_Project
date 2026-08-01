@@ -127,13 +127,20 @@ gantt.config.editable_columns = true;
 // Task Color
 // =====================================================
 gantt.templates.task_class = function (start, end, task) {
+
     let classes = [];
+
     if (task.css) {
         classes.push(task.css);
     }
-    if (ui.isTaskLocked(task.id)) {
+
+    if (
+        task.type !== gantt.config.types.project &&
+        ui.isTaskLocked(task.id)
+    ) {
         classes.push("task-disabled");
     }
+
     return classes.join(" ");
 };
 
