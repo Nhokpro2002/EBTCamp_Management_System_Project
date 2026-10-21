@@ -13,8 +13,6 @@ import * as utils from "../utils/utils.js";
 // CONSTANTS
 // =========================
 const COLLECTION_PROJECTS = "Projects";
-const COLLECTION_STAGES = "Stages";
-const COLLECTION_TASKS = "Tasks";
 const COLLECTION_USERS = "Users";
 
 // =========================

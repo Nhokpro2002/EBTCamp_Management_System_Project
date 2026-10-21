@@ -1,32 +1,42 @@
 import * as ui from "./ui.js";
 import * as api from "./service.js";
+import * as service from "./service.js";
 import { workflowData, projectData } from "./states.js";
+
+const modal = document.getElementById("issueModal");
 
 // =========================================================
 // GANTT EVENTS
 // =========================================================
 
-async function saveTask(id) {
+async function saveTask(id, task = null) {
 
-    const task = gantt.getTask(id);
+    // Nếu không truyền task thì lấy từ Gantt
+    if (!task) {
+        task = gantt.getTask(id);
+    }
+
+    const formatDate = gantt.date.date_to_str("%Y-%m-%d");
+
+    const taskData = {
+        name: task.text,
+        start_date: formatDate(task.start_date),
+        duration: task.duration,
+        progress: task.progress,
+        updatedBy:
+            JSON.parse(localStorage.getItem("user"))
+                ?.employee_name ?? ""
+    };
+
+    console.log("SAVE TASK:", taskData);
 
     const success = await api.updateTask(
         id,
-        {
-            name: task.text,
-            start_date: task.start_date,
-            duration: task.duration,
-            progress: task.progress,
-            updatedBy:
-                JSON.parse(localStorage.getItem("user"))
-                    ?.employee_name ?? ""
-        },
+        taskData,
         workflowData.projectID
     );
 
-    if (!success)
-        return;
-
+    return success;
 }
 
 
@@ -40,78 +50,32 @@ export function bindGanttEvents() {
         return true;
     });
 
+
     // -------------------------
-    // Click Task (optional - debug only)
+    // Double click → Lightbox
     // -------------------------
-    gantt.attachEvent("onTaskClick", function (id) {
+    gantt.config.details_on_dblclick = true;
+
+    gantt.attachEvent("onTaskDblClick", function (id) {
+
+        /*if (ui.isTaskLocked(id)) {
+            return false;
+        }*/
 
         return true;
     });
 
+
     // -------------------------
-    // Double click → dùng Lightbox mặc định
+    // Prevent update locked task
     // -------------------------
-    gantt.config.details_on_dblclick = true;
-
-    gantt.attachEvent(
-        "onTaskDblClick",
-        function (id) {
-
-            if (ui.isTaskLocked(id)) {
-                return false;
-            }
-
-            return true;
-        }
-    );
-
-    // Chặn thay đổi progress nếu task đang bị khóa
     gantt.attachEvent(
         "onBeforeTaskUpdate",
         function (id, task) {
 
-            if (ui.isTaskLocked(id)) {
+            /*if (ui.isTaskLocked(id)) {
                 return false;
-            }
-
-
-            return true;
-        }
-    );
-
-    // -------------------------
-    // Add Task
-    // -------------------------
-    gantt.attachEvent("onAfterTaskAdd", function (id, task) {
-        // Nếu có DataProcessor thì KHÔNG cần gọi API ở đây
-        // save handled automatically or via dp
-        return true;
-    });
-
-
-    // -------------------------
-    // Delete Task
-    // -------------------------
-    gantt.attachEvent("onAfterTaskDelete", async function (id) {
-        // Call api delete task
-        const result = await api.deleteTask(id);
-
-        if (workflowData.currentTaskID === id) {
-            workflowData.currentTaskID = null;
-        }
-        return true;
-    });
-
-    // -------------------------
-    // Drag
-    // -------------------------
-    gantt.attachEvent(
-        "onBeforeTaskDrag",
-        function (id) {
-
-            if (ui.isTaskLocked(id)) {
-                return false;
-            }
+            }*/
 
             return true;
         }
@@ -119,7 +83,6 @@ export function bindGanttEvents() {
 
     gantt.attachEvent("onAfterTaskDrag", async function (id) {
         await saveTask(id);
-
         gantt.batchUpdate(() => {
             gantt.clearAll();
             gantt.parse(projectData);
@@ -127,11 +90,63 @@ export function bindGanttEvents() {
     });
 
     // -------------------------
-    // Links (dependency)
+    // Lightbox Save
     // -------------------------
-    gantt.attachEvent("onAfterLinkAdd", function (id, link) {
+    gantt.attachEvent(
+        "onLightboxSave",
+        async function (id, task) {
+
+            /*if (ui.isTaskLocked(id)) {
+                return false;
+            }*/
+
+            console.log("NEW START:", task.start_date);
+            console.log("NEW DURATION:", task.duration);
+
+            const success = await saveTask(id, task);
+
+            if (!success) {
+                return false;
+            }
+
+            return true;
+        }
+    );
+
+
+    // -------------------------
+    // Add Task
+    // -------------------------
+    gantt.attachEvent("onAfterTaskAdd", function (id, task) {
         return true;
     });
+
+
+    // -------------------------
+    // Delete Task
+    // -------------------------
+    gantt.attachEvent(
+        "onAfterTaskDelete",
+        async function (id) {
+
+            await api.deleteTask(id);
+
+            if (workflowData.currentTaskID === id) {
+                workflowData.currentTaskID = null;
+            }
+
+            return true;
+        }
+    );
+
+
+    // -------------------------
+    // Disable drag move / resize
+    // -------------------------
+    gantt.config.drag_progress = true;
+    gantt.config.drag_move = false;
+    gantt.config.drag_resize = false;
+
 
     // -------------------------
     // Task styling
@@ -149,12 +164,15 @@ export function bindGanttEvents() {
         ui.renderTodayLine();
     });
 
-    gantt.config.auto_scheduling = true;
+
+    // -------------------------
+    // Auto scheduling
+    // -------------------------
+    /*gantt.config.auto_scheduling = true;
 
     gantt.plugins({
         auto_scheduling: true
-    });
-
+    });*/
 }
 
 //
@@ -266,6 +284,32 @@ export function bindUIEvents() {
     });
 
 
+
+    document.getElementById("selectAll").addEventListener("change", event => {
+        document.querySelectorAll(".row-check")
+            .forEach(check => check.checked = event.target.checked);
+    });
+
+    document.getElementById("addIssueBtn").addEventListener("click", () => {
+        modal.classList.remove("hidden");
+        renderSelect(
+            "related-task",
+            workflowData.tasks,
+            "-- Chọn task liên quan --"
+        );
+
+        renderSelect(
+            "related-stage",
+            workflowData.stages,
+            "-- Chọn stage --"
+        );
+    });
+
+
+    document.getElementById("closeModal").addEventListener("click", closeModal);
+    document.getElementById("cancelModal").addEventListener("click", closeModal);
+
+
 }
 
 gantt.ext.zoom.init({
@@ -311,5 +355,27 @@ function setZoom(level) {
     gantt.ext.zoom.setLevel(level);
 }
 
+// =====================================================
+// HELPER FUNCTION
+// =====================================================
+function closeModal() {
+    modal.classList.add("hidden");
+}
 
+function renderSelect(selectName, data, placeholder) {
+    const select = document.querySelector(`select[name="${selectName}"]`);
+    if (!select) return;
+    select.innerHTML = `
+        <option value="" disabled selected>
+            ${placeholder}
+        </option>
+    `;
+    data.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        select.appendChild(option);
+    });
+
+}
 

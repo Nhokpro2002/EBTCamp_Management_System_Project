@@ -1,5 +1,4 @@
 
-
 import { workflowData, projectData } from "./states.js";
 import * as service from "./service.js";
 import * as utils from "../utils/utils.js";
@@ -148,7 +147,7 @@ export function closeTaskModal() {
     document.getElementById("taskModal").classList.remove("open");
 }
 
-export function isTaskLocked(taskId) {
+/*export function isTaskLocked(taskId) {
 
     const links = gantt.getLinks();
 
@@ -172,4 +171,24 @@ export function isTaskLocked(taskId) {
     }
 
     return false;
+}*/
+
+export function updateProgress(progress) {
+    // Đảm bảo nằm trong khoảng 0 -> 100
+    progress = Math.max(0, Math.min(100, progress));
+    const circle =
+        document.getElementById("progress-circle");
+    const text =
+        document.getElementById("project-progress");
+    // Chu vi circle
+    const circumference = 2 * Math.PI * 18;
+    // Tính phần chưa được vẽ
+    const offset =
+        circumference -
+        (progress / 100) * circumference;
+    // Vẽ vòng
+    circle.style.strokeDashoffset = offset;
+    // Hiển thị %
+    text.textContent =
+        `${Math.round(progress)}%`;
 }

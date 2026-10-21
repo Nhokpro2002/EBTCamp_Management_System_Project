@@ -1,270 +1,602 @@
+import * as service from "./service.js";
+import * as ui from "./ui.js";
+import { warningRecord } from "./state.js";
 
 const pb = new PocketBase("http://127.0.0.1:8090");
 
 const panel = document.querySelector("#activity-list");
+const dateInput = document.querySelector("#filter-date");
+const badgeCount = document.querySelector("#badge-count");
+
+service.loadProjects();
 
 // =====================================================
-// Start
+// 1. State
 // =====================================================
 
-await loadNotifications();
-
-subscribeNotifications();
+let newNotification = 0;
 
 
 // =====================================================
-// Load history
+// 2. Initialization
 // =====================================================
-async function loadNotifications() {
+
+const todayStr = new Date().toLocaleDateString("sv-SE");
+
+dateInput.value = todayStr;
+
+// =====================================================
+// Deadline Drawer Events
+// =====================================================
+
+const deadlineButton =
+    document.getElementById("btn-deadline");
+
+const deadlineDrawer =
+    document.getElementById("deadline-drawer");
+
+const deadlineOverlay =
+    document.getElementById("deadline-overlay");
+
+const closeButton =
+    document.getElementById("btn-close-deadline");
+
+deadlineButton?.addEventListener("click", async () => {
+
+    console.log("CLICK DEADLINE");
+
+    deadlineDrawer.classList.add("active");
+    deadlineOverlay.classList.add("active");
+
+    await loadDeadlineWarnings();
+});
+
+closeButton?.addEventListener("click", () => {
+
+    deadlineDrawer.classList.remove("active");
+    deadlineOverlay.classList.remove("active");
+
+});
+
+// =====================================================
+// Load initial data
+// =====================================================
+
+await loadActivity(todayStr);
+
+subscribeRealtime();
+
+dateInput.addEventListener("change", async (event) => {
+    await loadActivity(event.target.value);
+});
+
+// =====================================================
+// 3. Load Activity History
+// =====================================================
+
+async function loadActivity(selectedDate) {
+
     try {
-        const result = await pb.collection("Notifications").getList(1, 50, {
-            sort: "-created"
-        });
-        result.items
-            .reverse()
-            .forEach(renderNotification);
-    }
-    catch (error) {
-        console.error(error);
-    }
-}
 
+        panel.innerHTML = "";
 
-// =====================================================
-// Realtime
-// =====================================================
-function subscribeNotifications() {
-    pb.collection("Notifications").subscribe("*", (e) => {
-        if (e.action !== "create")
+        if (!selectedDate) {
             return;
-        renderNotification(e.record);
-    });
+        }
+
+        const {
+            startOfDay,
+            endOfDay
+        } = getDateRange(selectedDate);
+
+
+        // ---------------------------------------------
+        // Load Notifications + Issues cùng lúc
+        // ---------------------------------------------
+
+        const [notifications, issues] = await Promise.all([
+
+            pb.collection("Notifications").getList(1, 100, {
+                sort: "-created",
+
+                filter: `
+                    created >= "${startOfDay}"
+                    &&
+                    created <= "${endOfDay}"
+                `
+            }),
+
+            pb.collection("Issues").getList(1, 100, {
+                sort: "-created_date",
+
+                filter: `
+                    created_date >= "${startOfDay}"
+                    &&
+                    created_date <= "${endOfDay}"
+                `
+            })
+
+        ]);
+
+
+        // ---------------------------------------------
+        // Gộp thành một danh sách Activity
+        // ---------------------------------------------
+
+        const activities = [
+
+            ...notifications.items.map(notification => ({
+                type: "notification",
+                data: notification,
+                date: new Date(notification.created)
+            })),
+
+            ...issues.items.map(issue => ({
+                type: "issue",
+                data: issue,
+                date: new Date(issue.created_date)
+            }))
+
+        ];
+
+
+        // ---------------------------------------------
+        // Sort mới nhất -> cũ nhất
+        // ---------------------------------------------
+
+        activities.sort(
+            (a, b) => b.date - a.date
+        );
+
+
+        // ---------------------------------------------
+        // Render
+        // ---------------------------------------------
+
+        activities.forEach(activity => {
+
+            if (activity.type === "notification") {
+                ui.renderNotification(activity.data);
+            }
+
+            else if (activity.type === "issue") {
+                ui.renderIssue(activity.data);
+            }
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Lỗi khi tải lịch sử thông báo:",
+            error
+        );
+
+    }
 }
 
 
 // =====================================================
-// Render Notification
+// 4. Realtime
 // =====================================================
-function renderNotification(notification) {
-    const created = new Date(notification.created);
-    const time = created.toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit"
+
+function subscribeRealtime() {
+    subscribeCollection("Notifications");
+    subscribeCollection("Issues");
+}
+
+
+function subscribeCollection(collectionName) {
+    pb.collection(collectionName).subscribe("*", event => {
+
+        if (event.action !== "create") {
+            return;
+        }
+
+        // ---------------------------------------------
+        // Notification counter
+        // ---------------------------------------------
+        increaseNotificationCount();
+
+        // ---------------------------------------------
+        // Kiểm tra record có thuộc ngày đang chọn không
+        // ---------------------------------------------
+        const recordDate = getRecordDate(
+            collectionName,
+            event.record
+        );
+
+        const selectedDate = dateInput.value;
+
+        if (recordDate !== selectedDate) {
+            return;
+        }
+
+
+        // ---------------------------------------------
+        // Render record mới
+        // ---------------------------------------------
+        if (collectionName === "Notifications") {
+            ui.renderNotification(event.record);
+        }
+
+        else if (collectionName === "Issues") {
+            ui.renderIssue(event.record);
+        }
     });
-    const date = created.toLocaleDateString("vi-VN");
-
-    // -------------------------
-    // Changed fields
-    // -------------------------
-    const durationChanged =
-        Number(notification.duration_before) !==
-        Number(notification.duration_updated);
-
-    const progressChanged =
-        Number(notification.progress_before) !==
-        Number(notification.progress_updated);
+}
 
 
-    // -------------------------
-    // Duration
-    // -------------------------
-    let durationHtml = "";
-    if (durationChanged) {
-        const css =
-            Number(notification.duration_updated) >
-                Number(notification.duration_before)
-                ? "change-up"
-                : "change-down";
+function increaseNotificationCount() {
+    newNotification++;
+    badgeCount.textContent =
+        newNotification > 99
+            ? "99+"
+            : newNotification;
+    badgeCount.classList.remove("d-none");
+}
 
-        durationHtml = `
 
-                <div class="field-name">
-                    Duration
-                </div>
+function getRecordDate(collectionName, record) {
+    const field =
+        collectionName === "Notifications"
+            ? record.created
+            : record.created_date;
+    return new Date(field)
+        .toLocaleDateString("sv-SE");
+}
 
-                <div class="field-value">
+// =====================================================
+// 8. Helpers - Date / Time
+// =====================================================
 
-                    <span class="change-before">
-                        ${notification.duration_before}
-                    </span>
+function getDateRange(selectedDate) {
 
-                    <i class="bi bi-arrow-right change-arrow"></i>
+    const startOfDay =
+        new Date(
+            `${selectedDate}T00:00:00+07:00`
+        );
 
-                    <span class="${css}">
-                        ${notification.duration_updated}
-                    </span>
+    const endOfDay =
+        new Date(
+            `${selectedDate}T23:59:59.999+07:00`
+        );
 
-                    days
 
-                </div>
+    return {
+        startOfDay: startOfDay.toISOString(),
+        endOfDay: endOfDay.toISOString()
+    };
 
-            `;
+}
+
+
+const deadlineWarningList =
+    document.getElementById("deadline-warning-list");
+
+const deadlineEmpty =
+    document.getElementById("deadline-empty");
+
+const deadlineWarningCount =
+    document.getElementById("deadline-warning-count");
+
+function openDeadlineDrawer() {
+    deadlineDrawer.classList.add("active");
+    deadlineOverlay.classList.add("active");
+    console.log("open");
+    loadDeadlineWarnings();
+}
+
+
+function closeDeadlineDrawer() {
+
+    deadlineDrawer.classList.remove("active");
+    deadlineOverlay.classList.remove("active");
+}
+
+async function loadDeadlineWarnings() {
+
+    deadlineWarningList.innerHTML = `
+        <div class="deadline-loading">
+            <div class="spinner-border" role="status"></div>
+            Checking task deadlines...
+        </div>
+    `;
+
+    deadlineEmpty.style.display = "none";
+
+    try {
+
+        await service.loadTaskNotDone();
+
+        const warnings =
+            warningRecord.warnings || [];
+
+        renderDeadlineWarnings(warnings);
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load deadline warnings:",
+            error
+        );
+
+        deadlineWarningList.innerHTML = `
+            <div class="alert alert-danger">
+                Failed to load deadline warnings.
+            </div>
+        `;
+    }
+}
+
+function renderDeadlineWarnings(warnings) {
+
+    deadlineWarningList.innerHTML = "";
+
+    deadlineWarningCount.textContent =
+        `${warnings.length} warning${warnings.length !== 1 ? "s" : ""}`;
+
+    // Update sidebar count
+    const countElement =
+        document.querySelector(".count-system");
+
+    if (countElement) {
+        countElement.textContent = warnings.length;
     }
 
 
-    // -------------------------
-    // Progress
-    // -------------------------
+    // Không có warning
+    if (!warnings.length) {
 
-    let progressHtml = "";
+        deadlineEmpty.style.display = "flex";
 
-    if (progressChanged) {
-
-        const css =
-            Number(notification.progress_updated) >
-                Number(notification.progress_before)
-                ? "change-up"
-                : "change-down";
-
-        progressHtml = `
-
-                <div class="field-name">
-                    Progress
-                </div>
-
-                <div class="field-value">
-
-                    <span class="change-before">
-                        ${formatProgress(notification.progress_before)}
-                    </span>
-
-                    <i class="bi bi-arrow-right change-arrow"></i>
-
-                    <span class="${css}">
-                        ${formatProgress(notification.progress_updated)}
-                    </span>
-
-                </div>
-
-            `;
+        return;
     }
 
 
-    // -------------------------
-    // HTML
-    // -------------------------
-
-    const html = `
-
-            <div class="activity-item">
-
-                <div class="activity-left">
-
-                    <div class="activity-icon">
-                        <i class="bi bi-pencil-square"></i>
-                    </div>
+    deadlineEmpty.style.display = "none";
 
 
-                    <div class="activity-content">
+    // Sort:
+    // Level 3 -> Level 2 -> Level 1
 
-                        <div class="activity-title">
-                            Task Updated
-                        </div>
-
-                        <div class="activity-desc">
-
-                            <strong>
-                                ${notification.name}
-                            </strong>
-
-                            has been updated.
-
-                        </div>
+    const sortedWarnings = [...warnings].sort(
+        (a, b) => Number(b.level) - Number(a.level)
+    );
 
 
-                        <div class="activity-fields">
+    for (const warning of sortedWarnings) {
 
-                            <div class="field-name">
-                                Stage
-                            </div>
+        const card =
+            createDeadlineWarningCard(warning);
 
-                            <div class="field-value">
-                                <span class="stage-badge ${getStageClass(notification.stage)}">
-                                    ${notification.stage ?? "-"}
-                                </span>
-                            </div>
+        deadlineWarningList.appendChild(card);
+    }
+}
 
 
-                            ${durationHtml}
+function createDeadlineWarningCard(warning) {
 
-                            ${progressHtml}
+    const card = document.createElement("div");
 
-                            <div class="field-name">
-                                Updated by
-                            </div>
+    const level = Number(warning.level);
 
-                            <div class="field-value">
-                                <span class="updated-by">
-                                    ${notification.updated_by ?? "Unknown"}
-                                </span>
-                            </div>
+    const levelText = {
+        1: "Notice",
+        2: "Warning",
+        3: "Critical"
+    }[level] || "Warning";
 
-                        </div>
+    const levelIcon = {
+        1: "bi-info-circle",
+        2: "bi-exclamation-triangle",
+        3: "bi-exclamation-octagon"
+    }[level] || "bi-exclamation-triangle";
 
-                    </div>
 
+    const progress =
+        Number(warning.progress || 0);
+
+    const timeUsed =
+        Number(warning.time_used_percent || 0);
+
+    const gap =
+        Number(warning.gap || 0);
+
+    const remainingHours =
+        Number(warning.remaining_hours || 0);
+
+    const severity =
+        warning.severity || "Normal";
+
+    const status =
+        warning.status || "open";
+
+    const project =
+        warning.project || "Unknown Project";
+
+    const handler =
+        warning.handler || "Unassigned";
+
+
+    card.className =
+        `deadline-warning level-${level}`;
+
+
+    card.innerHTML = `
+
+        <!-- HEADER -->
+        <div class="warning-card-header">
+
+            <div class="warning-title-wrapper">
+
+                <div class="warning-icon">
+                    <i class="bi ${levelIcon}"></i>
                 </div>
 
+                <div class="warning-title-content">
 
-                <div class="activity-right">
+                    <h6 class="warning-task-name">
+                        ${ui.escapeHtml(
+        warning.task_name || "Unknown Task"
+    )}
+                    </h6>
 
-                    <div class="activity-time">
-                        ${time}
-                    </div>
-
-                    <div class="activity-date">
-                        ${date}
+                    <div class="warning-project">
+                        <i class="bi bi-kanban"></i>
+                        ${ui.escapeHtml(project)}
                     </div>
 
                 </div>
 
             </div>
 
-        `;
 
-    panel.insertAdjacentHTML(
-        "afterbegin",
-        html
-    );
+            <span class="warning-level level-${level}">
+                ${ui.escapeHtml(
+        warning.warning_level || levelText
+    )}
+            </span>
 
+        </div>
+
+
+        <!-- DESCRIPTION -->
+        <div class="warning-description">
+
+            <i class="bi bi-chat-left-text"></i>
+
+            <span>
+                ${ui.escapeHtml(
+        warning.description || ""
+    )}
+            </span>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+        <div class="warning-stats">
+
+
+            <!-- PROGRESS -->
+            <div class="warning-stat">
+
+                <div class="warning-stat-label">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    Progress
+                </div>
+
+                <div class="warning-stat-value">
+                    ${progress.toFixed(1)}%
+                </div>
+
+            </div>
+
+
+            <!-- TIME USED -->
+            <div class="warning-stat">
+
+                <div class="warning-stat-label">
+                    <i class="bi bi-clock-history"></i>
+                    Time Used
+                </div>
+
+                <div class="warning-stat-value">
+                    ${timeUsed.toFixed(1)}%
+                </div>
+
+            </div>
+
+
+            <!-- GAP -->
+            <div class="warning-stat">
+
+                <div class="warning-stat-label">
+                    <i class="bi bi-activity"></i>
+                    Gap
+                </div>
+
+                <div class="
+                    warning-stat-value
+                    ${gap > 0 ? "negative" : "positive"}
+                ">
+                    ${gap.toFixed(1)}%
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="warning-footer">
+
+            <!-- REMAINING -->
+            <div class="warning-footer-item">
+
+                <div class="warning-footer-icon">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+
+                <div>
+
+                    <span class="warning-footer-label">
+                        Remaining
+                    </span>
+
+                    <strong>
+                        ${formatRemainingTime(
+        remainingHours
+    )}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <!-- HANDLER -->
+            <div class="warning-footer-item">
+
+                <div class="warning-footer-icon">
+                    <i class="bi bi-person"></i>
+                </div>
+
+                <div>
+
+                    <span class="warning-footer-label">
+                        Handler
+                    </span>
+
+                    <strong title="${ui.escapeHtml(handler)}">
+                        ${ui.escapeHtml(handler)}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    return card;
 }
 
 
-// =====================================================
-// Helpers
-// =====================================================
 
-function formatProgress(value) {
-    if (value === null || value === undefined)
-        return "-";
-    value = Number(value);
-    if (value <= 1)
-        return Math.round(value * 100) + "%";
-    return value + "%";
-}
-
-
-function getStageClass(stage) {
-    switch (stage?.toLowerCase()) {
-        case "design":
-            return "stage-badge-design";
-
-        case "mechanical":
-            return "stage-badge-mechanical";
-
-        case "assembly":
-            return "stage-badge-assembly";
-
-        case "electric":
-            return "stage-badge-electric";
-
-        case "program":
-            return "stage-badge-program";
-
-        default:
-            return "stage-badge-default";
+function formatRemainingTime(hours) {
+    if (hours <= 0) {
+        return "Deadline exceeded";
     }
+    if (hours < 1) {
+        return "Less than 1 hour remaining";
+    }
+    if (hours < 24) {
+        return `${hours.toFixed(1)} hours remaining`;
+    }
+    const days = hours / 24;
+    return `${days.toFixed(1)} days remaining`;
 }
-
-
 

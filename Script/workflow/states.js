@@ -9,6 +9,13 @@ export const workflowData = {
 
 export const projectData = { // mapping from stages and tasks
     data: [],
-    links: []
+    links: [],
+    startDate: "",
+    endDate: "",
+    projectName: ""
+}
+
+export const issueData = { // mapping from stages and tasks
+    issue: []
 }
 

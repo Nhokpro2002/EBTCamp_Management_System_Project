@@ -2,7 +2,7 @@ import * as api from "../services/generic.api.js";
 import * as utils from "../utils/utils.js";
 
 import { workflowPageMessage } from "./messages.js";
-import { workflowData, projectData } from "./states.js";
+import { workflowData, projectData, issueData } from "./states.js";
 
 
 // =====================================================
@@ -12,6 +12,29 @@ import { workflowData, projectData } from "./states.js";
 const COLLECTION_STAGES = "Stages";
 const COLLECTION_TASKS = "Tasks";
 const COLLECTION_NOTIFICATIONS = "Notifications";
+const COLLECTION_PROJECTS = "Projects";
+const COLLECTION_ISSUES = "Issues";
+
+// =====================================================
+// PROJECT
+// =====================================================
+
+export async function loadProjectData(projectID) {
+    try {
+        const result = await api.getRecordsFilter(
+            COLLECTION_PROJECTS,
+            "id",
+            projectID
+        );
+
+        projectData.startDate = result[0]?.start_date;
+        projectData.endDate = result[0]?.end_date;
+        projectData.projectName = result[0]?.name;
+
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 // =====================================================
 // NOTIFICATION
@@ -31,47 +54,8 @@ async function createNotification(data) {
     }
 }
 
-
-/**
- * Chuẩn hóa dữ liệu notification
- * So sánh dữ liệu trước và sau update
- */
-function createPayloadData(beforeUpdateTask, updatedTask) {
-
-    if (!beforeUpdateTask || !updatedTask)
-        return null;
-
-    const stageName =
-        workflowData.stages.find(
-            stage => stage.id === beforeUpdateTask.stage
-        )?.name ?? "";
-
-    return {
-        name: updatedTask.name,
-
-        stage: stageName,
-
-        duration_before:
-            beforeUpdateTask.duration,
-
-        duration_updated:
-            updatedTask.duration,
-
-        progress_before:
-            beforeUpdateTask.progress,
-
-        progress_updated:
-            updatedTask.progress,
-
-        updated_by:
-            JSON.parse(localStorage.getItem("user"))
-                ?.employee_name ?? ""
-    };
-}
-
-
 // =====================================================
-// TASK CRUD
+// CRUD
 // =====================================================
 
 
@@ -135,7 +119,9 @@ export async function createNewTask() {
             progress: 0,
 
             createdBy:
-                user?.employee_name ?? ""
+                user?.employee_name ?? "",
+
+            project_name: projectData.projectName
         };
 
         const response =
@@ -165,106 +151,6 @@ export async function createNewTask() {
     }
 }
 
-/**
- * Update task
- * 
- * Flow:
- * 1. Lưu dữ liệu cũ
- * 2. Update database
- * 3. Tạo notification
- * 4. Update state local
- */
-export async function updateTask(id, data, projectID) {
-
-    try {
-
-        const beforeUpdateTask =
-            workflowData.tasks.find(
-                task => task.id === id
-            );
-
-        if (!beforeUpdateTask) {
-
-            utils.showError("Task not found.");
-
-            return false;
-        }
-
-        const updatedTask = {
-            ...beforeUpdateTask,
-            ...data
-        };
-
-        const response =
-            await api.updateRecord(
-                COLLECTION_TASKS,
-                id,
-                data
-            );
-
-        if (!response)
-            return false;
-
-        const notification =
-            createPayloadData(
-                beforeUpdateTask,
-                updatedTask
-            );
-
-        if (notification)
-            await createNotification(notification);
-
-        await updateFollowingTasks(updatedTask);
-
-        await loadStageData(projectID);
-
-        mappingData();
-
-        return true;
-
-    }
-    catch (error) {
-
-        console.error(error);
-
-        utils.showError(
-            workflowPageMessage.updateFailed
-        );
-
-        return false;
-    }
-}
-
-
-
-/**
- * Delete task
- */
-export async function deleteTask(id) {
-    try {
-        return await api.deleteRecord(
-            COLLECTION_TASKS,
-            id
-        );
-    }
-    catch (error) {
-        console.log(error);
-        utils.showError(
-            workflowPageMessage.deleteFailed
-        );
-    }
-}
-
-
-
-// =====================================================
-// LOAD DATA
-// =====================================================
-
-
-/**
- * Load stages và tasks của project
- */
 export async function loadStageData(projectID) {
     try {
         const ORDER = {
@@ -322,11 +208,243 @@ export async function loadStageData(projectID) {
     }
 }
 
+export async function loadIssueData(projectID) {
+    try {
+        const result = await api.getRecordsFilter(
+            COLLECTION_ISSUES,
+            "project",
+            projectID
+        );
+        issueData.issue = result;
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function makeIssue() {
+    const form = document.getElementById("issueForm");
+    if (!form) return;
+    const formData = new FormData(form);
+    // Project ID từ URL
+    const projectID = new URLSearchParams(
+        window.location.search
+    ).get("projectID");
+    // Stage được chọn
+    const stageSelect = form.querySelector(
+        'select[name="related-stage"]'
+    );
+    const relatedStage =
+        stageSelect.options[stageSelect.selectedIndex].text;
+    // Task được chọn
+    const taskSelect = form.querySelector(
+        'select[name="related-task"]'
+    );
+    const relatedTask =
+        taskSelect.options[taskSelect.selectedIndex].text;
+    // User hiện tại
+    const user = JSON.parse(
+        localStorage.getItem("user")
+    );
+    const issueData = {
+        title: formData.get("title"),
+        description: formData.get("description"),
+        project: projectID,
+        project_name: projectData.projectName,
+        related_stage: relatedStage,
+        related_task: relatedTask,
+        reporter: user.employee_name,
+        createdDate: new Date().toISOString()
+    };
+
+    console.log("Issue data:", issueData);
+    try {
+        const result = await api.createRecord(
+            "Issues",
+            issueData
+        );
+        console.log("Issue created:", result);
+        alert("Issue created successfully!");
+        form.reset();
+        document
+            .getElementById("issueModal")
+            ?.classList.remove("show");
+        return result;
+
+    } catch (error) {
+        console.error("Failed to create issue:", error);
+        alert("Failed to create issue!");
+        throw error;
+    }
+}
+
+async function updateFollowingTasks(updatedTask) {
+
+    const stageTasks =
+        workflowData.tasks
+            .filter(
+                task =>
+                    task.stage === updatedTask.stage
+            )
+            .sort(
+                (a, b) =>
+                    new Date(a.start_date) -
+                    new Date(b.start_date)
+            );
+
+    const currentIndex =
+        stageTasks.findIndex(
+            task => task.id === updatedTask.id
+        );
+
+    if (currentIndex === -1)
+        return;
+
+    let nextStart =
+        new Date(updatedTask.start_date);
+
+    nextStart.setHours(0, 0, 0, 0);
+
+    nextStart.setDate(
+        nextStart.getDate() +
+        updatedTask.duration
+    );
+
+    for (
+        let i = currentIndex + 1;
+        i < stageTasks.length;
+        i++
+    ) {
+
+        const task =
+            stageTasks[i];
+
+        const yyyy =
+            nextStart.getFullYear();
+
+        const mm =
+            String(
+                nextStart.getMonth() + 1
+            ).padStart(2, "0");
+
+        const dd =
+            String(
+                nextStart.getDate()
+            ).padStart(2, "0");
+
+        const startDate =
+            `${yyyy}-${mm}-${dd}`;
+
+        if (task.start_date !== startDate) {
+
+            await api.updateRecord(
+                COLLECTION_TASKS,
+                task.id,
+                {
+                    start_date:
+                        startDate
+                }
+            );
+        }
+
+        nextStart.setDate(
+            nextStart.getDate() +
+            task.duration
+        );
+    }
+}
+
+/**
+ * Update task
+ * 
+ * Flow:
+ * 1. Lưu dữ liệu cũ
+ * 2. Update database
+ * 3. Tạo notification
+ * 4. Update state local
+ */
+export async function updateTask(id, data, projectID) {
+
+    try {
+
+        const beforeUpdateTask =
+            workflowData.tasks.find(
+                task => task.id === id
+            );
+
+        if (!beforeUpdateTask) {
+
+            utils.showError("Task not found.");
+
+            return false;
+        }
+
+        const updatedTask = {
+            ...beforeUpdateTask,
+            ...data
+        };
+
+        const response =
+            await api.updateRecord(
+                COLLECTION_TASKS,
+                id,
+                data
+            );
+
+        if (!response)
+            return false;
+
+        const notification =
+            createPayloadData(
+                beforeUpdateTask,
+                updatedTask
+            );
+
+        if (notification)
+            await createNotification(notification);
+
+        //await updateFollowingTasks(updatedTask);
+
+        await loadStageData(projectID);
+
+        mappingData();
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        utils.showError(
+            workflowPageMessage.updateFailed
+        );
+
+        return false;
+    }
+}
+
+/**
+ * Delete task
+ */
+export async function deleteTask(id) {
+    try {
+        return await api.deleteRecord(
+            COLLECTION_TASKS,
+            id
+        );
+    }
+    catch (error) {
+        console.log(error);
+        utils.showError(
+            workflowPageMessage.deleteFailed
+        );
+    }
+}
 
 // =====================================================
 // MAP DATA TO GANTT
 // =====================================================
-
 
 /**
  * Convert data từ PocketBase
@@ -469,82 +587,6 @@ export function getMinStartDate(stageID) {
 }
 
 
-async function updateFollowingTasks(updatedTask) {
-
-    const stageTasks =
-        workflowData.tasks
-            .filter(
-                task =>
-                    task.stage === updatedTask.stage
-            )
-            .sort(
-                (a, b) =>
-                    new Date(a.start_date) -
-                    new Date(b.start_date)
-            );
-
-    const currentIndex =
-        stageTasks.findIndex(
-            task => task.id === updatedTask.id
-        );
-
-    if (currentIndex === -1)
-        return;
-
-    let nextStart =
-        new Date(updatedTask.start_date);
-
-    nextStart.setHours(0, 0, 0, 0);
-
-    nextStart.setDate(
-        nextStart.getDate() +
-        updatedTask.duration
-    );
-
-    for (
-        let i = currentIndex + 1;
-        i < stageTasks.length;
-        i++
-    ) {
-
-        const task =
-            stageTasks[i];
-
-        const yyyy =
-            nextStart.getFullYear();
-
-        const mm =
-            String(
-                nextStart.getMonth() + 1
-            ).padStart(2, "0");
-
-        const dd =
-            String(
-                nextStart.getDate()
-            ).padStart(2, "0");
-
-        const startDate =
-            `${yyyy}-${mm}-${dd}`;
-
-        if (task.start_date !== startDate) {
-
-            await api.updateRecord(
-                COLLECTION_TASKS,
-                task.id,
-                {
-                    start_date:
-                        startDate
-                }
-            );
-        }
-
-        nextStart.setDate(
-            nextStart.getDate() +
-            task.duration
-        );
-    }
-}
-
 // =====================================================
 // GANTT ZOOM
 // =====================================================
@@ -597,4 +639,92 @@ export function setZoom(mode) {
             break;
     }
     gantt.render();
+}
+
+export function renderRelatedTasks() {
+    const select = document.querySelector('select[name="related-task"]');
+
+    if (!select) return;
+
+    // Xóa option cũ
+    select.innerHTML = "";
+
+    // Option mặc định
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "-- Chọn task liên quan --";
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+
+    select.appendChild(defaultOption);
+
+    // Render tasks
+    workflowData.tasks.forEach(task => {
+        const option = document.createElement("option");
+
+        option.value = task.id;
+        option.textContent = task.name;
+
+        select.appendChild(option);
+    });
+}
+
+// =====================================================
+// HELPER FUNCTION
+// =====================================================
+export function getStageClass(stage) {
+    switch (stage?.toLowerCase()) {
+        case "design":
+            return "design";
+        case "mechanical":
+            return "mechanical";
+        case "assembly":
+            return "assembly";
+        case "electric":
+            return "electric";
+        case "program":
+            return "program";
+        default:
+            return "default";
+    }
+}
+
+/**
+ * Chuẩn hóa dữ liệu notification
+ * So sánh dữ liệu trước và sau update
+ */
+function createPayloadData(beforeUpdateTask, updatedTask) {
+    if (!beforeUpdateTask || !updatedTask)
+        return null;
+    const stageName =
+        workflowData.stages.find(
+            stage => stage.id === beforeUpdateTask.stage
+        )?.name ?? "";
+    return {
+        name: updatedTask.name,
+        stage: stageName,
+        duration_before:
+            beforeUpdateTask.duration,
+        duration_updated:
+            updatedTask.duration,
+        progress_before:
+            beforeUpdateTask.progress,
+        progress_updated:
+            updatedTask.progress,
+        updated_by:
+            JSON.parse(localStorage.getItem("user"))
+                ?.employee_name ?? "",
+
+        project_name: localStorage.getItem("projectName")
+    };
+}
+
+export function escapeHtml(value) {
+    return value.replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    }[char]));
 }

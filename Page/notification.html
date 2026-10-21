@@ -2,145 +2,235 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Activities - Notifications</title>
 
-    <title>System Activities</title>
-
+    <!-- Bootstrap & Icons -->
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
-
     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- CSS ở phần 1 đặt tại đây -->
+    <!-- CSS tùy chỉnh -->
     <link href="../CSS/notification.css" rel="stylesheet">
-
 </head>
 
 <body>
 
     <div class="wrapper">
 
-        <!-- ===========================
-                SIDEBAR
-        ============================ -->
+        <!-- ========================================================
+                SIDEBAR (THANH MENU BÊN TRÁI)
+        ========================================================= -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="../Image/lg_display_logo_web.png" alt="Logo LG">
+                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
             </div>
 
             <ul class="menu">
                 <li>
                     <a href="dashboard.html">
-                        <i class="bi bi-grid"></i>
-                        Dashboard
+                        <i class="bi bi-grid"></i> Dashboard
                     </a>
                 </li>
-
                 <li>
                     <a href="inventory.html">
-                        <i class="bi bi-box"></i>
-                        Inventory
+                        <i class="bi bi-box"></i> Inventory
                     </a>
                 </li>
-
                 <li>
                     <a href="order.html">
-                        <i class="bi bi-receipt"></i>
-                        Order
+                        <i class="bi bi-receipt"></i> Order
                     </a>
                 </li>
-
                 <li>
                     <a href="project.html">
-                        <i class="bi bi-kanban"></i>
-                        Project
+                        <i class="bi bi-kanban"></i> Project
                     </a>
                 </li>
-
-                <li>
-                    <a href="user.html">
-                        <i class="bi bi-people"></i>
-                        User
-                    </a>
-                </li>
-
                 <li class="active">
                     <a href="notification.html">
-                        <i class="bi bi-bell"></i>
+                        <span class="notification-icon" style="position: relative; display: inline-block;">
+                            <i class="bi bi-bell"></i>
+                            <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none"
+                                style="position: absolute; top: -6px; right: -8px; font-size: 0.75rem; padding: 0.25em 0.45em; font-weight: bold;">0</span>
+                        </span>
                         Notification
                     </a>
                 </li>
-
                 <li>
                     <a href="#">
-                        <i class="bi bi-gear"></i>
-                        Settings
+                        <i class="bi bi-gear"></i> Settings
                     </a>
                 </li>
             </ul>
 
             <div class="sidebar-user">
-                <img src="https://i.pravatar.cc/80?img=12">
-                <div>
-                    <small>Engineer</small>
+                <img src="https://i.pravatar.cc/80?img=12" alt="Avatar">
+                <div class="user-info">
+                    <h6 class="user-name">Nguyen Minh Tuan</h6>
+                    <small class="user-role">Engineer</small>
                 </div>
             </div>
         </aside>
 
-        <!-- ===========================
-                CONTENT
-        ============================ -->
-        <main class="content" style="width: 100%;">
+        <!-- ========================================================
+                MAIN CONTENT (VÙNG HIỂN THỊ CHÍNH BÊN PHẢI)
+        ========================================================= -->
+        <main class="content">
 
-            <div class="activity-panel">
-
-                <div class="activity-header">
-
-                    <i class="bi bi-bell-fill"></i>
-
-                    <span>
-                        System Activities
-                    </span>
-
+            <!-- Đầu trang: Tiêu đề và Thanh công cụ chức năng -->
+            <div class="content-header">
+                <div>
+                    <h2 class="page-title">Notifications</h2>
+                    <p class="page-subtitle">All system activities and updates</p>
                 </div>
+                <div class="header-tools">
+                    <div class="search-box">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control" id="search-notifications"
+                            placeholder="Search notifications...">
+                        <span class="search-shortcut">/</span>
+                    </div>
 
-                <div id="activity-list">
+                    <select id="projectSelect" class="project-select" style="pointer-events: none; opacity: 0.5;">
+                        <option value="" selected>Select your project</option>
+                    </select>
 
-                    <!--
-                Notification sẽ được render bằng JavaScript.
-
-                Mỗi notification có dạng:
-
-                ---------------------------------------
-                🔔 Task Updated
-                Task ABC has been updated.
-
-                Stage        [Execution]
-                Duration     5 → 8 days
-                Progress     40% → 70%
-                Updated by   Admin
-
-                                10:20
-                             24/07/2026
-                ---------------------------------------
-            -->
-
+                    <!-- Hộp chọn ngày công cụ ở góc cuối cùng -->
+                    <div class="date-picker-box">
+                        <i class="bi bi-calendar3 calendar-icon"></i>
+                        <input type="date" id="filter-date" class="form-control">
+                    </div>
                 </div>
-
             </div>
 
 
-        </main>
+            <!-- Thanh Tabs lọc các nhóm thông báo -->
+            <div class="filter-tabs">
+                <button class="tab-item" data-tab="project">
+                    <span style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #dbeafe;
+        color: #2563eb;
+        margin-right: 8px;
+    ">
+                        <i class="bi bi-kanban"></i>
+                    </span>
+                    Project <span class="tab-count count-project">0</span>
+                </button>
 
+                <button class="tab-item" data-tab="issue">
+                    <span style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #ffedd5;
+        color: #ea580c;
+        margin-right: 8px;
+    ">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </span>
+                    Issue <span class="tab-count count-issue">0</span>
+                </button>
+
+                <button class="tab-item" id="btn-deadline">
+                    <span style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #f3e8ff;
+        color: #9333ea;
+        margin-right: 8px;
+    ">
+                        <i class="bi bi-hourglass-split"></i>
+                    </span>
+
+                    Deadline
+                    <span class="tab-count count-system">0</span>
+                </button>
+            </div>
+
+            <!-- Bảng danh sách thông báo -->
+            <div class="activity-panel">
+                <!-- Tiêu đề cột -->
+                <div class="panel-columns-header">
+                    <div class="col-activity">Activity</div>
+                    <div class="col-related">Related To</div>
+                    <div class="col-time">Time</div>
+                    <div class="col-action">Action</div>
+                </div>
+
+                <!-- Danh sách chứa các thẻ thông báo render từ JS -->
+                <div id="activity-list">
+                    <!-- Các dữ liệu thông báo tự động đẩy vào từ file main.js -->
+                </div>
+
+
+            </div>
+
+        </main>
     </div>
 
+    <!-- Deadline Drawer -->
+    <div id="deadline-overlay" class="deadline-overlay"></div>
 
+    <aside id="deadline-drawer" class="deadline-drawer">
+
+        <!-- Header -->
+        <div class="deadline-header">
+
+            <div class="deadline-title">
+                <div>
+                    <h5>Deadline Warnings</h5>
+                    <span id="deadline-warning-count">
+                        0 warnings
+                    </span>
+                </div>
+            </div>
+
+            <button type="button" class="deadline-close-btn" id="btn-close-deadline">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+
+        <!-- Content -->
+        <div class="deadline-content">
+
+            <div id="deadline-warning-list">
+                <!-- Warning items render here -->
+            </div>
+
+            <!-- Empty state -->
+            <div id="deadline-empty" class="deadline-empty" style="display: none;">
+                <i class="bi bi-check-circle"></i>
+
+                <h6>No deadline warnings</h6>
+
+                <p>
+                    All tasks are currently on schedule.
+                </p>
+            </div>
+
+        </div>
+
+    </aside>
 
     <!-- PocketBase SDK -->
     <script src="../Libs/PocketbaseSDK/pocketbase.umd.js"></script>
-
-    <!-- Script ở phần 3 đặt tại đây -->
     <script type="module" src="../Script/notification/main.js"></script>
 
 </body>

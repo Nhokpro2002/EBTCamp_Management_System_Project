@@ -38,64 +38,32 @@
         ============================ -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="../Image/lg_display_logo_web.png" alt="Logo LG">
+                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
             </div>
 
             <ul class="menu">
-                <li>
-                    <a href="dashboard.html">
-                        <i class="bi bi-grid"></i>
-                        Dashboard
-                    </a>
-                </li>
-
-                <li>
-                    <a href="inventory.html">
-                        <i class="bi bi-box"></i>
-                        Inventory
-                    </a>
-                </li>
-
-                <li>
-                    <a href="order.html">
-                        <i class="bi bi-receipt"></i>
-                        Order
-                    </a>
-                </li>
-
-                <li class="active">
-                    <a href="#">
-                        <i class="bi bi-kanban"></i>
-                        Project
-                    </a>
-                </li>
-
-                <li>
-                    <a href="user.html">
-                        <i class="bi bi-people"></i>
-                        User
-                    </a>
-                </li>
-
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a></li>
+                <li><a href="inventory.html"><i class="bi bi-box"></i> Inventory</a></li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Order</a></li>
+                <li class="active"><a href="project.html"><i class="bi bi-kanban"></i> Project</a></li>
+                <li><a href="user.html"><i class="bi bi-people"></i> User</a></li>
                 <li>
                     <a href="notification.html">
-                        <i class="bi bi-bell"></i>
+                        <span class="notification-icon">
+                            <i class="bi bi-bell"></i>
+                            <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
+                        </span>
                         Notification
                     </a>
                 </li>
-
-                <li>
-                    <a href="#">
-                        <i class="bi bi-gear"></i>
-                        Settings
-                    </a>
-                </li>
+                <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
             </ul>
 
             <div class="sidebar-user">
-                <img src="https://i.pravatar.cc/80?img=12">
-                <div>
-                    <small>Engineer</small>
+                <img src="https://i.pravatar.cc/80?img=12" alt="Avatar">
+                <div class="user-info">
+                    <h6 class="user-name">Nguyen Minh Tuan</h6>
+                    <small class="user-role">Engineer</small>
                 </div>
             </div>
         </aside>
@@ -104,9 +72,7 @@
                 CONTENT
         ============================ -->
         <main class="content">
-
             <div class="project-card">
-
                 <div class="toolbar">
                     <div class="toolbar-left">
                         <div class="search-box">
@@ -132,7 +98,6 @@
 
 
                 <!-- Table -->
-
                 <div class="table-responsive">
                     <table class="table align-middle project-table">
                         <thead>

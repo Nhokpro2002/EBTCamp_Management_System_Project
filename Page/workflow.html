@@ -4,88 +4,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machine Setup Workflow</title>
-
-    <!-- Bootstrap -->
+    <title>Machine Setup Workflow</title> <!-- Bootstrap -->
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Bootstrap Icons -->
-    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- DHTMLX Gantt -->
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap Icons -->
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet"> <!-- DHTMLX Gantt -->
     <link href="../Libs/Grantt/dhtmlxgantt.css" rel="stylesheet">
     <script src="../Libs/Grantt/dhtmlxgantt.js"></script>
-
-    <link href="../CSS/workflow.css" rel="stylesheet">
-
-    <!-- JQuery 4.0.0 -->
-    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
-
-    <!-- Tom Select -->
+    <link href="../CSS/workflow.css" rel="stylesheet"> <!-- JQuery 4.0.0 -->
+    <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script> <!-- Tom Select -->
     <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
-    <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
-
-    <!-- Sweet Alert -->
+    <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script> <!-- Sweet Alert -->
     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
     <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
-
-    <style>
-
-    </style>
+    <style> </style>
 </head>
 
 <body>
-    <div class="wrapper">
-        <!-- ================= Header ================= -->
-        <div class="top-header shadow-sm">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="project-info">
-                        <i class="bi bi-folder-fill"></i>
-                        <span>Project :</span>
-                        <span class="project-info-name fw-semibold">
-                            MES System Setup
-                        </span>
+
+    <div class="workflow-page">
+
+        <!-- ================= HEADER ================= -->
+        <header class="workflow-header">
+
+            <div class="project-selector">
+                <div class="project-icon">
+                    <i class="bi bi-folder-fill"></i>
+                </div>
+
+                <div class="project-text">
+                    <span>Project</span>
+                    <strong class="project-info-name">MES System Setup</strong>
+                </div>
+
+                <i class="bi bi-chevron-down project-arrow"></i>
+            </div>
+
+            <button type="button" class="back-button" id="back-project-page-button">
+
+                <i class="bi bi-arrow-left"></i>
+                <span>Back</span>
+
+            </button>
+
+        </header>
+
+
+        <!-- ================= DASHBOARD ================= -->
+        <section class="workflow-toolbar">
+
+            <!-- Summary -->
+            <div class="summary-area">
+
+                <div class="summary-card">
+                    <div class="summary-icon purple">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+
+                    <div>
+                        <span>Start Date</span>
+                        <strong id="project-start-date">
+
+                        </strong>
                     </div>
                 </div>
 
-                <div>
-                    <button type="button" class="btn btn-outline-secondary" id="back-project-page-button">
-                        <i class="bi bi-arrow-left"></i>
-                        Back
-                    </button>
+
+                <div class="summary-card">
+                    <div class="summary-icon green">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+
+                    <div>
+                        <span>End Date</span>
+                        <strong id="project-end-date">
+
+                        </strong>
+                    </div>
                 </div>
+
+
+                <div class="summary-card">
+                    <div class="summary-icon blue">
+                        <i class="bi bi-clipboard2-check"></i>
+                    </div>
+
+                    <div>
+                        <span>Total Tasks</span>
+                        <strong id="total-task-count">
+                            7
+                        </strong>
+                    </div>
+                </div>
+
+
+                <div class="summary-card progress-card">
+
+                    <div>
+                        <span>Progress</span>
+                    </div>
+
+                    <div class="circular-progress">
+
+                        <svg viewBox="0 0 44 44">
+
+                            <!-- Background -->
+                            <circle class="progress-bg" cx="22" cy="22" r="18">
+                            </circle>
+
+                            <!-- Progress -->
+                            <circle id="progress-circle" class="progress-value" cx="22" cy="22" r="18">
+                            </circle>
+
+                        </svg>
+
+                        <strong id="project-progress">
+                            0%
+                        </strong>
+
+                    </div>
+
+                </div>
+
             </div>
-        </div>
-
-        <div class="zoom-toolbar btn-group shadow-sm" role="group">
-            <button id="btnDay" class="btn btn-light zoom-btn active-day">
-                <i class="bi bi-calendar-day me-1"></i>
-                Day
-            </button>
-
-            <button id="btnWeek" class="btn btn-light zoom-btn">
-                <i class="bi bi-calendar-week me-1"></i>
-                Week
-            </button>
-
-            <button id="btnMonth" class="btn btn-light zoom-btn">
-                <i class="bi bi-calendar-month me-1"></i>
-                Month
-            </button>
-        </div>
 
 
-        <!-- ================= Gantt ================= -->
-        <div class="gantt-card shadow">
+            <!-- Gantt controls -->
+            <div class="gantt-controls">
+
+                <div class="view-switch">
+
+                    <button id="btnDay" class="view-button active">
+
+                        Day
+
+                    </button>
+
+                    <button id="btnWeek" class="view-button">
+
+                        Week
+
+                    </button>
+
+                    <button id="btnMonth" class="view-button">
+
+                        Month
+
+                    </button>
+
+                </div>
+
+
+                <button class="control-button" id="btnToday">
+                    Today
+                </button>
+
+                <button class="icon-button" id="btnCalendar">
+                    <i class="bi bi-calendar3"></i>
+                </button>
+
+                <button class="icon-button" id="btnZoomOut">
+                    <i class="bi bi-zoom-out"></i>
+                </button>
+
+                <button class="icon-button" id="btnZoomIn">
+                    <i class="bi bi-zoom-in"></i>
+                </button>
+
+                <button class="control-button" id="btnFit">
+                    Fit
+                </button>
+
+                <button class="icon-button" id="btnSettings">
+                    <i class="bi bi-gear"></i>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= GANTT ================= -->
+        <section class="gantt-card">
+
             <div id="gantt_here"></div>
-        </div>
+
+        </section>
+
+
+        <!-- ================= FOOTER ================= -->
+        <footer class="workflow-footer">
+
+            <div class="stage-legend">
+
+                <div class="legend-item">
+                    <span class="legend-color design"></span>
+                    Design
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-color mechanical"></span>
+                    Mechanical
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-color assembly"></span>
+                    Assembly
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-color electric"></span>
+                    Electric
+                </div>
+
+                <div class="legend-item">
+                    <span class="legend-color program"></span>
+                    Program
+                </div>
+
+            </div>
+
+
+            <div class="status-legend">
+
+                <div class="status-item">
+                    <span class="status-circle not-started"></span>
+                    Not started
+                </div>
+
+                <div class="status-item">
+                    <span class="status-circle progress"></span>
+                    In progress
+                </div>
+
+                <div class="status-item">
+                    <span class="status-circle completed">
+                        ✓
+                    </span>
+                    Completed
+                </div>
+
+            </div>
+
+        </footer>
 
     </div>
 
+
+    <!-- ================= TASK MODAL ================= -->
+
     <div id="taskModal" class="task-modal">
-        <div class="task-modal-overlay" onclick="closeTaskModal()"></div>
+
+        <div class="task-modal-overlay" onclick="closeTaskModal()">
+        </div>
 
         <div class="task-modal-content">
 
@@ -95,34 +265,140 @@
 
             <div class="task-modal-body">
 
-                <!-- Stage (readonly) -->
                 <label>Stage</label>
                 <input id="stage-name" type="text" disabled />
 
-                <!-- Task name -->
                 <label>Task name</label>
                 <input id="task-name" type="text" placeholder="Enter task name" />
 
-                <!-- Start date -->
                 <label>Start date</label>
                 <input id="start-date" type="date" />
 
-                <!-- Duration -->
                 <label>Duration (days)</label>
                 <input id="duration" type="number" min="1" placeholder="Days" />
 
             </div>
 
             <div class="task-modal-footer">
-                <button id="btnCancel" class="btn-cancel">Cancel</button>
-                <button id="btnCreate" class="btn-create">Create</button>
+
+                <button id="btnCancel" class="btn-cancel">
+                    Cancel
+                </button>
+
+                <button id="btnCreate" class="btn-create">
+                    Create
+                </button>
+
             </div>
 
         </div>
+
     </div>
 
-</body>
+    <section class="issues-panel">
+        <div class="issues-header">
+            <div>
+                <div class="title-row">
+                    <span class="title-icon">⚠</span>
+                    <h2>Issues <span class="issue-count"></span></h2>
+                </div>
+                <p>Các vấn đề phát sinh trong dự án, theo dõi và xử lý kịp thời.</p>
+            </div>
 
-<script type="module" src="../Script/workflow/main.js"></script>
+            <div class="issue-toolbar">
+                <select id="stageFilter">
+                    <option value="all">Tất cả giai đoạn</option>
+                    <option value="Design">Design</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Assembly">Assembly</option>
+                    <option value="Electric">Electric</option>
+                    <option value="Program">Program</option>
+                </select>
+
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input id="searchInput" type="search" placeholder="Tìm kiếm issue...">
+                </div>
+
+                <button class="btn-primary" id="addIssueBtn">＋ Tạo issue</button>
+            </div>
+        </div>
+
+        <div class="issues-content">
+            <aside class="issue-summary">
+                <div class="summary-stage">
+                    <h4>Theo giai đoạn</h4>
+                    <div class="stage-stat"><span><i class="dot design"></i>Design</span><b>0</b></div>
+                    <div class="stage-stat"><span><i class="dot mechanical"></i>Mechanical</span><b>0</b></div>
+                    <div class="stage-stat"><span><i class="dot assembly"></i>Assembly</span><b>0</b></div>
+                    <div class="stage-stat"><span><i class="dot electric"></i>Electric</span><b>0</b></div>
+                    <div class="stage-stat"><span><i class="dot program"></i>Program</span><b>0</b></div>
+                </div>
+            </aside>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="check"><input type="checkbox" id="selectAll"></th>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Stage</th>
+                            <th>Related Task</th>
+                            <th>Reporter</th> <!--Là người tạo issue-->
+                            <th>Created Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="issueTableBody"></tbody>
+                </table>
+
+                <div id="emptyState" class="empty-state hidden">
+                    <div>⌕</div>
+                    <h3>Issue not found</h3>
+                    <p>Try changing the filters or search keywords.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal hidden" id="issueModal">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3>Make Issue</h3>
+                <button id="closeModal">×</button>
+            </div>
+            <form id="issueForm">
+                <label>Title
+                    <input name="title" required placeholder="Example: Motor broken">
+                </label>
+                <label>Description
+                    <textarea name="description" rows="3" placeholder="Describe the problem..."></textarea>
+                </label>
+                <div class="form-grid">
+                    <label>Select Stage
+                        <select name="related-stage">
+                        </select>
+                    </label>
+                    <label>Related Task
+                        <select name="related-task">
+                            <!--Lấy từ data trên workflow-->
+                        </select>
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelModal">Cancel</button>
+                    <button class="btn-primary" type="submit">Make Issue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script type="module" src="../Script/workflow/main.js">
+    </script>
+
+</body>
 
 </html>
