@@ -2,7 +2,7 @@ import * as ui from "./project.ui.js";
 import * as api from "../services/generic.api.js";
 import * as utils from "../utils/utils.js";
 
-import { variableGlobal, projectElements } from "./project.state.js";
+import { variableGlobal } from "./project.state.js";
 import { projectPageMessage } from "./project_page_message.js";
 
 // =========================
@@ -18,15 +18,13 @@ const COLLECTION_STAGES = "Stages";
 */
 
 export function validateProjectForm(data) {
-    const { projectName, startDate, endDate, pic, members } = data;
+    const { projectName, startDate, endDate, pic } = data;
 
     const isValid =
         projectName &&
         startDate &&
         endDate &&
-        pic &&
-        Array.isArray(members) &&
-        members.length > 0;
+        pic;
 
     if (!isValid) {
         utils.showPopup("Error", projectPageMessage.requiredFields, "error");
@@ -52,26 +50,6 @@ export function removeProjectFromState(projectID) {
 
 /*
 ===========================================
-                FILTER
-===========================================
-*/
-export function handleFilterChange() {
-    const keyword = projectElements.searchInput.value.trim().toLowerCase();
-    const selectedStatus = projectElements.statusFilter.value;
-
-    variableGlobal.filteredProjects = variableGlobal.projectList.filter(project => {
-        const matchKeyword = project.name?.toLowerCase().includes(keyword);
-        const matchStatus = selectedStatus === "all" || project.status === selectedStatus;
-
-        return matchKeyword && matchStatus;
-    });
-
-    variableGlobal.currentPage = 1;
-    ui.renderProjectPage();
-}
-
-/*
-===========================================
                 CREATE PROJECT
 ===========================================
 */
@@ -81,9 +59,7 @@ function getCreateProjectFormData() {
         startDate: document.getElementById("start-date")?.value,
         endDate: document.getElementById("end-date")?.value,
         pic: document.getElementById("pic")?.value,
-        members: Array.from(
-            document.getElementById("members")?.selectedOptions || []
-        ).map(o => o.value)
+        imageProject: document.getElementById("image-project")?.files?.[0] || null
     };
 }
 
@@ -93,7 +69,6 @@ export function buildProjectPayload(data) {
         start_date: data.startDate,
         end_date: data.endDate,
         pic: data.pic,
-        members: data.members,
         status: "Not Started"
     };
 }
@@ -103,7 +78,13 @@ export async function handleSubmitFormCreateProject() {
 
     if (!validateProjectForm(formData)) return;
 
-    const payload = buildProjectPayload(formData);
+    const payload = new FormData();
+    Object.entries(buildProjectPayload(formData)).forEach(([key, value]) => {
+        payload.append(key, value);
+    });
+    if (formData.imageProject) {
+        payload.append("image_project", formData.imageProject);
+    }
 
     try {
         // Tạo project
@@ -133,6 +114,10 @@ export async function handleSubmitFormCreateProject() {
         );
 
         variableGlobal.projectList.push(project);
+        variableGlobal.filteredProjects.push(project);
+        variableGlobal.currentPage = Math.ceil(
+            variableGlobal.filteredProjects.length / variableGlobal.pageSize
+        );
 
         utils.showSuccess(projectPageMessage.createSuccess);
 
@@ -150,6 +135,7 @@ export async function handleSubmitFormCreateProject() {
 ===========================================
 */
 
+/*
 export async function handleDeleteProject(deleteButton) {
     const projectID = deleteButton.dataset.id;
 
@@ -175,12 +161,14 @@ export async function handleDeleteProject(deleteButton) {
         utils.showError(projectPageMessage.deleteFailed);
     }
 }
+    */
 
 /*
 ===========================================
                 EDIT PROJECT
 ===========================================
 */
+/*
 export function handleEditProject(e, editButton) {
     const tr = editButton.closest("tr");
     const projectID = editButton.dataset.id;
@@ -196,3 +184,4 @@ export function handleEditProject(e, editButton) {
     editButton.classList.add("active");
     ui.enableProjectEditMode(tr, projectID);
 }
+    */

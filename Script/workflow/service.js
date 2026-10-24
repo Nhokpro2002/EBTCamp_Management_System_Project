@@ -16,24 +16,24 @@ const COLLECTION_PROJECTS = "Projects";
 const COLLECTION_ISSUES = "Issues";
 
 // =====================================================
-// PROJECT
+// PROJECT DATA
 // =====================================================
 
 export async function loadProjectData(projectID) {
-    try {
-        const result = await api.getRecordsFilter(
-            COLLECTION_PROJECTS,
-            "id",
-            projectID
-        );
+    const result = await api.getRecordsFilter(
+        COLLECTION_PROJECTS,
+        "id",
+        projectID
+    );
+    const project = result[0];
 
-        projectData.startDate = result[0]?.start_date;
-        projectData.endDate = result[0]?.end_date;
-        projectData.projectName = result[0]?.name;
-
-    } catch (error) {
-        console.error(error);
+    if (!project) {
+        throw new Error(`Project not found: ${projectID}`);
     }
+
+    projectData.startDate = project.start_date;
+    projectData.endDate = project.end_date;
+    projectData.projectName = project.name;
 }
 
 // =====================================================
@@ -202,9 +202,7 @@ export async function loadStageData(projectID) {
     }
     catch (error) {
         console.error(error);
-        utils.showError(
-            workflowPageMessage.loadStageListError
-        );
+        throw error;
     }
 }
 
@@ -219,6 +217,7 @@ export async function loadIssueData(projectID) {
 
     } catch (error) {
         console.error(error);
+        throw error;
     }
 }
 

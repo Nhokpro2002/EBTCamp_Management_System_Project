@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Project</title>
 
     <!-- Bootstrap -->
@@ -18,7 +17,7 @@
     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
     <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
 
-    <!-- Sweet Alert 2 -->
+    <!-- Tom Select -->
     <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
     <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
 
@@ -30,12 +29,8 @@
 </head>
 
 <body>
-
     <div class="wrapper">
-
-        <!-- ===========================
-                SIDEBAR
-        ============================ -->
+        <!-- SIDEBAR: giữ nguyên cấu trúc hiện tại -->
         <aside class="sidebar">
             <div class="logo">
                 <img src="../Image/lg_display_logo_web.png" alt="LG Display">
@@ -46,7 +41,6 @@
                 <li><a href="inventory.html"><i class="bi bi-box"></i> Inventory</a></li>
                 <li><a href="order.html"><i class="bi bi-receipt"></i> Order</a></li>
                 <li class="active"><a href="project.html"><i class="bi bi-kanban"></i> Project</a></li>
-                <li><a href="user.html"><i class="bi bi-people"></i> User</a></li>
                 <li>
                     <a href="notification.html">
                         <span class="notification-icon">
@@ -59,158 +53,112 @@
                 <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
             </ul>
 
-            <div class="sidebar-user">
-                <img src="https://i.pravatar.cc/80?img=12" alt="Avatar">
-                <div class="user-info">
-                    <h6 class="user-name">Nguyen Minh Tuan</h6>
-                    <small class="user-role">Engineer</small>
-                </div>
-            </div>
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+                <span class="user-info">
+                    <h6 class="user-name">User</h6>
+                    <small class="user-role">Profile</small>
+                </span>
+            </a>
         </aside>
 
-        <!-- ===========================
-                CONTENT
-        ============================ -->
+
+        <!-- MAIN CONTENT -->
         <main class="content">
-            <div class="project-card">
+            <div class="project-page">
+
                 <div class="toolbar">
-                    <div class="toolbar-left">
-                        <div class="search-box">
-                            <i class="bi bi-search"></i>
-                            <input type="text" id="searchInput" placeholder="Search projects...">
-                        </div>
-
-                        <select id="statusFilter" class="form-select status-filter">
-                            <option value="all">All Status</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                            <option value="On Hold">On Hold</option>
-                            <option value="Not Started">Not Started</option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-create-project bg-primary">
-                        <i class="bi bi-plus-lg"></i>
+                    <button type="button" class="btn btn-create-project">
                         Add Project
                     </button>
-
                 </div>
 
+                <!-- Project grid: chỉ chứa các project card -->
+                <section id="projectGrid" class="project-grid"></section>
 
-                <!-- Table -->
-                <div class="table-responsive">
-                    <table class="table align-middle project-table">
-                        <thead>
-                            <tr>
-                                <th>Project Name</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th style="width:220px">Progress</th>
-                                <th>Status</th>
-                                <th width="80">Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="projectTableBody">
-                            <tr>
-                                <td>
-                                    <i class="bi bi-building me-2"></i>
-                                    <span>LG Factory Upgrade</span>
-                                </td>
-                                <td>15/04/2025</td>
-                                <td>15/08/2025</td>
-                                <td>
-                                    <div class="progress-number">
-                                        75%
-                                    </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-danger" style="width:75%">
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <span class="status status-progress">
-                                        In Progress
-                                    </span>
-                                </td>
-
-                                <td>
-
-                                    <button class="action-btn">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-
-                                </td>
-
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Empty state: nằm ngoài project grid -->
+                <div id="emptyState" class="empty-state">
+                    <i class="bi bi-search"></i>
+                    <h5>Không tìm thấy dự án</h5>
+                    <p>Thử tìm kiếm bằng một tên dự án khác.</p>
                 </div>
+                <ul id="pagination" class="pagination" aria-label="Project pages"></ul>
 
             </div>
+
+            <!-- Detail modal: nằm ngoài project grid -->
+            <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel"
+                aria-hidden="true">
+
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailModalLabel">
+                                Chi tiết dự án
+                            </h5>
+
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng">
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p id="detailProjectName" class="mb-0"></p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </main>
+
+
     </div>
 
-
-    <div class="table-footer">
-        <div class="pagination">
-            <nav>
-                <ul class="pagination pagination-custom" id="pagination">
-                    <!-- JS render -->
-                </ul>
-            </nav>
-        </div>
-    </div>
-
-
+    <!-- Create project popup -->
     <div id="overlay-create-project" class="overlay-create-project">
         <div class="popup-create-project">
             <h2>Create New Project</h2>
 
             <div class="form-group-create-project">
-                <label>Project Name</label>
+                <label for="project-name">Project Name</label>
                 <input type="text" id="project-name" placeholder="Enter project name" required>
             </div>
 
             <div class="form-group-create-project">
-                <label>Start Date</label>
+                <label for="start-date">Start Date</label>
                 <input type="date" id="start-date" required>
             </div>
 
             <div class="form-group-create-project">
-                <label>End Date</label>
+                <label for="end-date">End Date</label>
                 <input type="date" id="end-date" required>
             </div>
 
             <div class="form-group-create-project">
-                <label>PIC</label>
+                <label for="pic">PIC</label>
                 <select id="pic" required></select>
             </div>
 
             <div class="form-group-create-project">
-                <label>Members</label>
-                <select id="members" multiple required></select>
+                <label for="image-project">Project Image</label>
+                <input type="file" id="image-project" accept="image/*">
             </div>
 
             <hr>
 
             <div class="form-actions-create-project">
-                <button type="button" class="btn bg-primary bg-gradient btn-save-project">
-                    <i class="bi bi-check2-circle me-1"></i>
+                <button type="button" class="btn btn-save-project">
                     Create Project
                 </button>
-                <button type="button" class="btn bg-secondary bg-gradient btn-close-project-popup">
+                <button type="button" class="btn btn-close-project-popup">
                     Cancel
                 </button>
             </div>
         </div>
     </div>
 
-
-
+    <script type="module" src="../Script/project/project.js"></script>
+    <script type="module" src="../Script/user/main.js"></script>
 </body>
-
-<script type="module" src="../Script/project/project.js"></script>
 
 </html>

@@ -67,7 +67,7 @@ body {
 ========================= */
 .login-title {
     text-align: center;
-    color: #A50034;
+    color: #2563eb;
     font-size: 32px;
     font-weight: 800;
     letter-spacing: .5px;
@@ -77,7 +77,7 @@ body {
     text-align: center;
     margin-top: 10px;
     margin-bottom: 35px;
-    color: #777;
+    color: #64748b;
     font-size: 15px;
 }
 
@@ -85,7 +85,7 @@ body {
    FORM
 ========================= */
 .form-label {
-    color: #333;
+    color: #1f2937;
     font-weight: 700;
     margin-bottom: 8px;
 }
@@ -93,20 +93,20 @@ body {
 .form-control {
     height: 48px;
     border-radius: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #e2e8f0;
     background: #fff;
-    color: #333;
+    color: #1f2937;
     padding-left: 15px;
 }
 
 .form-control::placeholder {
-    color: #aaa;
+    color: #94a3b8;
 }
 
 .form-control:focus {
-    border-color: #A50034;
+    border-color: #2563eb;
     box-shadow:
-        0 0 0 .2rem rgba(165, 0, 52, .15);
+        0 0 0 .2rem rgba(37, 99, 235, .15);
 }
 
 /* =========================
@@ -118,7 +118,7 @@ body {
     margin-top: 10px;
     border: none;
     border-radius: 10px;
-    background: #A50034;
+    background: #2563eb;
     color: white;
     font-size: 16px;
     font-weight: 700;
@@ -127,7 +127,7 @@ body {
 }
 
 .login-btn:hover {
-    background: #85002a;
+    background: #1d4ed8;
     transform: translateY(-1px);
 }
 
@@ -137,12 +137,12 @@ body {
 .footer-text {
     text-align: center;
     margin-top: 28px;
-    color: #777;
+    color: #64748b;
     font-size: 14px;
 }
 
 .footer-text a {
-    color: #A50034;
+    color: #2563eb;
     text-decoration: none;
     font-weight: 700;
 }

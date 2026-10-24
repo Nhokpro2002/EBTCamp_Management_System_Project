@@ -114,9 +114,9 @@ export function renderDurationChange(notification) {
 // 6. Render Issue
 // =====================================================
 
-export function renderIssue(issue) {
+export function renderIssue(issue, prepend = false) {
 
-    const created = new Date(issue.created_date);
+    const created = new Date(issue.created_date || issue.createdDate || issue.created);
 
     const time = formatTime(created);
     const date = formatDate(created);
@@ -124,7 +124,7 @@ export function renderIssue(issue) {
 
     const html = `
 
-        <div class="activity-item">
+        <div class="activity-item" data-type="issue" data-project-id="${escapeHtml(issue.project ?? "")}">
 
             <!-- Activity -->
             <div class="col-activity">
@@ -204,7 +204,7 @@ export function renderIssue(issue) {
             <!-- Related -->
             <div class="col-related">
                 <div class="activity-relation">
-                    <span class="relation-badge badge-issue">
+                    <span class="relation-badge badge-project">
                     ${escapeHtml(issue.project_name || "")}
                     </span>
                 </div>
@@ -222,22 +222,12 @@ export function renderIssue(issue) {
                 </div>
             </div>
 
-            <!-- Action -->
-            <div class="col-action">
-                <button class="activity-action-btn">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </button>
-            </div>
-
         </div>
 
     `;
 
 
-    panel.insertAdjacentHTML(
-        "beforeend",
-        html
-    );
+    panel.insertAdjacentHTML(prepend ? "afterbegin" : "beforeend", html);
 
 }
 
@@ -246,7 +236,7 @@ export function renderIssue(issue) {
 // 5. Render Notification
 // =====================================================
 
-export function renderNotification(notification) {
+export function renderNotification(notification, prepend = false) {
 
     const created = new Date(notification.created);
 
@@ -274,14 +264,9 @@ export function renderNotification(notification) {
     // Project / type
     // ---------------------------------------------
 
-    const type =
-        (notification.project_name || "project")
-            .toLowerCase();
-
-
     const html = `
 
-        <div class="activity-item">
+        <div class="activity-item" data-type="project" data-project-id="${escapeHtml(notification.project ?? "")}">
 
             <!-- Activity -->
             <div class="col-activity">
@@ -358,8 +343,8 @@ export function renderNotification(notification) {
             <div class="col-related">
 
                 <div class="activity-relation">
-                    <span class="relation-badge badge-${type}">
-                        ${capitalize(type)}
+                    <span class="relation-badge badge-project">
+                        ${escapeHtml(notification.project_name || "Project")}
                     </span>
                 </div>
 
@@ -384,31 +369,18 @@ export function renderNotification(notification) {
             </div>
 
 
-            <!-- Action -->
-            <div class="col-action">
-
-                <button class="activity-action-btn">
-
-                    <i class="bi bi-three-dots-vertical"></i>
-
-                </button>
-
-            </div>
-
         </div>
 
     `;
 
 
-    panel.insertAdjacentHTML(
-        "beforeend",
-        html
-    );
+    panel.insertAdjacentHTML(prepend ? "afterbegin" : "beforeend", html);
 
 }
 
 function formatTime(date) {
     return date.toLocaleTimeString("vi-VN", {
+        timeZone: "Asia/Ho_Chi_Minh",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false
@@ -416,7 +388,9 @@ function formatTime(date) {
 }
 
 function formatDate(date) {
-    return date.toLocaleDateString("vi-VN");
+    return date.toLocaleDateString("vi-VN", {
+        timeZone: "Asia/Ho_Chi_Minh"
+    });
 }
 
 // =====================================================
@@ -475,12 +449,4 @@ function getStageClass(stage) {
         default:
             return "stage-badge-default";
     }
-}
-
-function capitalize(value) {
-    if (!value) {
-        return "";
-    }
-    return value.charAt(0).toUpperCase()
-        + value.slice(1);
 }

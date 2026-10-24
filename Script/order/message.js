@@ -7,11 +7,14 @@ export const orderPageMessage = {
     deleteFailed: "Failed to delete items.",
 
     itemNotExist: "This item is deleted in the inventory or not exist.",
-    itemExistInOrder: "This item already exists in the order..",
+    itemExistInOrder: "This item already exists in the order.",
 
     deleteConfirm: "Are you sure you want to delete the selected items?",
 
     loadProjectFailed: "Failed to load project",
+    loadOrderFailed: "Failed to load order items.",
+    loadDataFailed: "Failed to load order data.",
+    noItemsSelected: "Select at least one item first.",
 
     projectNotSelected: "Please select a project"
 }

@@ -2,17 +2,18 @@
     Global
 =========================== */
 body {
-     background: #0f1722;
-     color: #e9ecef;
+     background: #f5f7fb;
+     color: #1f2937;
      font-family: "Segoe UI", sans-serif;
-     overflow: hidden;
+     min-height: 100vh;
+     overflow-x: hidden;
 }
 
 .card {
-     background: #17212d;
-     border: 1px solid #263445;
+     background: #ffffff;
+     border: 1px solid #e2e8f0;
      border-radius: 14px;
-     box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+     box-shadow: 0 8px 30px rgba(15, 23, 42, .06);
 }
 
 .card-body {
@@ -20,33 +21,34 @@ body {
 }
 
 .card-body-1 {
-     max-height: 350px;
-     min-height: 350px;
+     min-height: 200px;
+     padding: 12px;
 }
 
 /* ===========================
     Inventory
 =========================== */
 #inventoryItemList {
-     max-height: 210px;
+     max-height: 260px;
      overflow-y: auto;
      display: grid;
      grid-template-columns: repeat(6, 1fr);
      gap: 12px;
      padding-right: 5px;
      scrollbar-gutter: stable;
+     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .inventory-card h5 {
-     color: #16e0c6;
+     color: #2563eb;
      font-weight: 600;
 }
 
 .inventory-item {
-     background: #1b2634;
-     border: 1px solid #2a394b;
+     background: #ffffff;
+     border: 1px solid #e2e8f0;
      border-radius: 12px;
-     padding: 0px 5px;
+     padding: 8px;
      cursor: pointer;
      transition: .25s;
      align-self: start;
@@ -61,8 +63,12 @@ body {
 
 .inventory-item:hover {
      transform: translateY(-4px);
-     border-color: #16e0c6;
-     box-shadow: 0 10px 25px rgba(0, 0, 0, .35);
+     border-color: #2563eb;
+     box-shadow: 0 10px 25px rgba(15, 23, 42, .08);
+}
+
+.inventory-item button {
+     flex-shrink: 0;
 }
 
 .item-image {
@@ -75,7 +81,7 @@ body {
 }
 
 .inventory-item h6 {
-     color: white;
+     color: #1f2937;
      font-size: 15px;
      white-space: nowrap;
      overflow: hidden;
@@ -90,7 +96,7 @@ body {
 
 .inventory-item .text-muted {
      font-size: 13px;
-     color: #9aa6b2 !important;
+     color: #64748b !important;
      margin-bottom: 8px;
 }
 
@@ -107,29 +113,29 @@ body {
 
 .input-group-text,
 .form-control {
-     background: #182330;
-     border: 1px solid #314050;
-     color: white;
+     background: #ffffff;
+     border: 1px solid #e2e8f0;
+     color: #1f2937;
 }
 
 .form-control::placeholder {
-     color: #8d98a4;
+     color: #94a3b8;
 }
 
 .form-control:focus {
-     background: #182330;
-     color: white;
-     border-color: #16e0c6;
+     background: #ffffff;
+     color: #1f2937;
+     border-color: #2563eb;
      box-shadow: none;
 }
 
 .btn-outline-secondary {
-     border-color: #3a495b;
-     color: #d9d9d9;
+     border-color: #cbd5e1;
+     color: #475569;
 }
 
 .btn-outline-secondary:hover {
-     background: #263445;
+     background: #f1f5f9;
 }
 
 
@@ -137,8 +143,8 @@ body {
     Drop Zone
 =========================== */
 .drop-zone {
-     border-top: 2px dashed #16e0c6;
-     color: #16e0c6;
+     border-top: 2px dashed #2563eb;
+     color: #2563eb;
      text-align: center;
      opacity: .9;
 }
@@ -154,13 +160,13 @@ body {
     Header
 =========================== */
 label {
-     color: #9ba9b7;
+     color: #64748b;
      font-size: 14px;
      margin-bottom: 4px;
 }
 
 .badge.bg-primary {
-     background: #1d83ff !important;
+     background: #2563eb !important;
 }
 
 
@@ -168,31 +174,31 @@ label {
     Table
 =========================== */
 .table {
-     --bs-table-bg: #17212d;
-     --bs-table-color: #e9ecef;
-     --bs-table-border-color: #2d3c4d;
-     --bs-table-hover-bg: #202c39;
+     --bs-table-bg: #ffffff;
+     --bs-table-color: #1f2937;
+     --bs-table-border-color: #e2e8f0;
+     --bs-table-hover-bg: #f5f7fb;
 }
 
 .table thead {
-     background: #1d2836;
+     background: #f8fafc;
 }
 
 .table thead th {
-     color: white;
+     color: #1f2937;
      border: none;
      padding: 5px;
      font-weight: 600;
 }
 
 .table tbody td {
-     border-color: #2d3c4d;
+     border-color: #e2e8f0;
      vertical-align: middle;
      padding: 5px;
 }
 
 .table tbody tr:hover {
-     background: #202c39;
+     background: #f5f7fb;
 }
 
 .table-image {
@@ -210,14 +216,14 @@ label {
 =========================== */
 .table input[type=number] {
      width: 110px;
-     background: #182330;
-     border: 1px solid #344456;
-     color: white;
+     background: #ffffff;
+     border: 1px solid #cbd5e1;
+     color: #1f2937;
      text-align: center;
 }
 
 .table input[type=number]:focus {
-     border-color: #16e0c6;
+     border-color: #2563eb;
      box-shadow: none;
 }
 
@@ -226,32 +232,37 @@ label {
     Total
 =========================== */
 .text-success {
-     color: #1be58b !important;
+     color: #059669 !important;
 }
 
 #totalQty {
-     color: #bdeee0;
+     color: #047857;
 }
 
 /* ===========================
     Buttons
 =========================== */
 .btn-success {
-     background: #18c58d;
+     background: #059669;
      border: none;
 }
 
 .btn-success:hover {
-     background: #11b37f;
+     background: #047857;
+}
+
+.btn:disabled {
+     opacity: .55;
+     cursor: not-allowed;
 }
 
 .btn-outline-success {
-     color: #18d89d;
-     border-color: #18d89d;
+     color: #059669;
+     border-color: #059669;
 }
 
 .btn-outline-success:hover {
-     background: #18d89d;
+     background: #059669;
      color: white;
 }
 
@@ -275,16 +286,16 @@ label {
 }
 
 ::-webkit-scrollbar-track {
-     background: #17212d;
+     background: #f5f7fb;
 }
 
 ::-webkit-scrollbar-thumb {
-     background: #3b4d60;
+     background: #cbd5e1;
      border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-     background: #5b7288;
+     background: #94a3b8;
 }
 
 
@@ -297,7 +308,7 @@ label {
      }
 
      .table {
-          min-width: 1000px;
+          min-width: 900px;
      }
 
 }
@@ -316,31 +327,39 @@ label {
           font-size: 14px;
      }
 
+     .input-group {
+          width: 100% !important;
+     }
+
+     #projectFilter {
+          width: 100%;
+     }
+
 }
 
 .filter-card {
-     background: #1f2937;
-     border: 1px solid #334155;
+     background: #ffffff;
+     border: 1px solid #e2e8f0;
      border-radius: 14px;
      padding: 24px;
 }
 
 .filter-card .form-label {
-     color: #dbe3ec;
+     color: #1f2937;
      font-weight: 600;
 }
 
 .filter-card .form-select {
-     background: #182330;
-     color: #fff;
-     border: 1px solid #334155;
+     background: #ffffff;
+     color: #1f2937;
+     border: 1px solid #e2e8f0;
      height: 46px;
 }
 
 .filter-card .form-select:focus {
-     background: #182330;
-     color: #fff;
-     border-color: #22c55e;
+     background: #ffffff;
+     color: #1f2937;
+     border-color: #2563eb;
      box-shadow: none;
 }
 

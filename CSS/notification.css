@@ -2,18 +2,18 @@
    GLOBAL VARIABLES & RESET
 ========================================================== */
 :root {
-    --primary: #e60044;
+    --primary: #2563eb;
     /* Đỏ thương hiệu LG */
-    --primary-light: #fff0f3;
-    --bg-gray: #f8f9fa;
+    --primary-light: #eff6ff;
+    --bg-gray: #f5f7fb;
     /* Màu nền tổng thể sáng nhạt */
-    --border-color: #e9ecef;
-    --text-main: #1a1c1e;
-    --text-muted: #74777f;
+    --border-color: #e2e8f0;
+    --text-main: #1f2937;
+    --text-muted: #64748b;
 
     /* Dải màu danh mục hệ thống */
     --cls-project: #1e70e4;
-    --cls-project-bg: #e8f3ff;
+    --cls-project-bg: #eff6ff;
     --cls-issue: #f59e0b;
     --cls-issue-bg: #fffbeb;
     --cls-order: #10b981;
@@ -46,14 +46,15 @@ body {
 ========================================================== */
 .sidebar {
     width: 232px;
-    background: #ffffff;
-    border-right: 1px solid var(--border-color);
+    background: linear-gradient(180deg, #111827, #1f2937);
+    border-right: 1px solid rgba(255, 255, 255, .12);
     display: flex;
     flex-direction: column;
     position: sticky;
     top: 0;
     height: 100vh;
     z-index: 100;
+    color: #ffffff;
 }
 
 .logo {
@@ -61,7 +62,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
 }
 
 .logo img {
@@ -87,7 +88,7 @@ body {
     padding: 12px 16px;
     border-radius: 8px;
     text-decoration: none;
-    color: #43474e;
+    color: #cbd5e1;
     font-weight: 500;
     font-size: 14px;
     transition: all 0.2s;
@@ -98,8 +99,8 @@ body {
 }
 
 .menu a:hover {
-    background: #f1f3f5;
-    color: var(--text-main);
+    background: rgba(255, 255, 255, .1);
+    color: #ffffff;
 }
 
 /* Menu active chuyển nền đỏ giống ảnh */
@@ -113,10 +114,22 @@ body {
 .sidebar-user {
     padding: 16px;
     margin: 16px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(255, 255, 255, .12);
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.sidebar-user-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.sidebar-user-link:hover,
+.sidebar-user-link:focus-visible {
+    color: inherit;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 10px;
 }
 
 .sidebar-user img {
@@ -135,12 +148,12 @@ body {
     font-size: 13px;
     font-weight: 600;
     margin: 0;
-    color: var(--text-main);
+    color: #ffffff;
 }
 
 .user-role {
     font-size: 11px;
-    color: var(--text-muted);
+    color: #cbd5e1;
 }
 
 /* ==========================================================
@@ -149,7 +162,7 @@ body {
 .content {
     flex: 1;
     padding: 32px 40px;
-    background-color: #fafbfc;
+    background-color: #f5f7fb;
 }
 
 /* Phần tiêu đề và bộ lọc tìm kiếm phía trên */
@@ -192,7 +205,7 @@ body {
     padding-left: 36px;
     padding-right: 28px;
     font-size: 13px;
-    border: 1px solid #ced4da;
+    border: 1px solid #e2e8f0;
     border-radius: 6px;
     background-color: #fff;
 }
@@ -200,7 +213,7 @@ body {
 .search-icon {
     position: absolute;
     left: 12px;
-    color: #adb5bd;
+    color: #94a3b8;
     font-size: 14px;
 }
 
@@ -208,16 +221,16 @@ body {
     position: absolute;
     right: 12px;
     font-size: 11px;
-    color: #adb5bd;
-    background: #f1f3f5;
+    color: #94a3b8;
+    background: #f1f5f9;
     padding: 1px 5px;
     border-radius: 3px;
 }
 
 .btn-outline-custom {
     background: #fff;
-    border: 1px solid #ced4da;
-    color: #495057;
+    border: 1px solid #e2e8f0;
+    color: #475569;
     font-size: 13px;
     font-weight: 500;
     height: 38px;
@@ -229,9 +242,9 @@ body {
 }
 
 .btn-outline-custom:hover {
-    background: #f8f9fa;
-    border-color: #bec3c9;
-    color: #212529;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #1f2937;
 }
 
 /* Định dạng khối hộp chọn ngày */
@@ -250,8 +263,8 @@ body {
     padding-right: 12px;
     font-size: 13px;
     font-weight: 500;
-    color: #495057;
-    border: 1px solid #ced4da;
+    color: #475569;
+    border: 1px solid #e2e8f0;
     border-radius: 6px;
     background-color: #fff;
     cursor: pointer;
@@ -259,7 +272,7 @@ body {
 
 /* Đổi màu viền khi người dùng click chọn ngày */
 .date-picker-box .form-control:focus {
-    border-color: #bec3c9;
+    border-color: #cbd5e1;
     box-shadow: none;
 }
 
@@ -267,7 +280,7 @@ body {
 .calendar-icon {
     position: absolute;
     left: 12px;
-    color: #495057;
+    color: #475569;
     font-size: 14px;
     pointer-events: none;
     /* Giúp click xuyên qua icon vào ô chọn ngày */
@@ -300,7 +313,7 @@ body {
     padding: 8px 16px;
     font-size: 13px;
     font-weight: 500;
-    color: #4a5568;
+    color: #475569;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -349,7 +362,7 @@ body {
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    background: #fafbfc;
+    background: #f8fafc;
     border-bottom: 1px solid var(--border-color);
     font-size: 12px;
     font-weight: 600;
@@ -371,22 +384,23 @@ body {
     width: 120px;
 }
 
-.col-action {
-    width: 60px;
-    text-align: right;
-}
+
 
 /* Thêm thuộc tính căn đều vào cấu trúc item cũ của bạn */
 .activity-item {
     display: flex;
     align-items: center;
     padding: 16px 20px;
-    border-bottom: 1px solid #f1f3f5;
+    border-bottom: 1px solid #e2e8f0;
     background: #fff;
 }
 
+.activity-item[hidden] {
+    display: none;
+}
+
 .activity-item:hover {
-    background-color: #fafbfc;
+    background-color: #f5f7fb;
 }
 
 .activity-main {
@@ -437,7 +451,7 @@ body {
 .activity-title {
     font-weight: 700;
     font-size: 14px;
-    color: #1a1c1e;
+    color: #1f2937;
 }
 
 /* Dấu chấm đỏ biểu thị thông báo mới đồng bộ LG */
@@ -452,12 +466,12 @@ body {
 /* Nội dung mô tả chính */
 .activity-desc {
     font-size: 14px;
-    color: #43474e;
+    color: #475569;
     margin-bottom: 6px;
 }
 
 .activity-desc strong {
-    color: #1a1c1e;
+    color: #1f2937;
     font-weight: 600;
 }
 
@@ -468,20 +482,20 @@ body {
     flex-wrap: wrap;
     gap: 6px;
     font-size: 12px;
-    color: #74777f;
+    color: #64748b;
 }
 
 .field-label {
-    color: #74777f;
+    color: #64748b;
 }
 
 .field-value {
-    color: #1a1c1e;
+    color: #1f2937;
     font-weight: 500;
 }
 
 .field-separator {
-    color: #c4c6cf;
+    color: #cbd5e1;
     margin: 0 2px;
 }
 
@@ -497,8 +511,8 @@ body {
 ===================================================== */
 
 .stage-badge-design {
-    background-color: #eaf2ff;
-    color: #2878e8;
+    background-color: #eff6ff;
+    color: #2563eb;
 }
 
 .stage-badge-mechanical {
@@ -517,8 +531,8 @@ body {
 }
 
 .stage-badge-program {
-    background-color: #f1e9fb;
-    color: #7835cc;
+    background-color: #eff6ff;
+    color: #1d4ed8;
 }
 
 .field-change {
@@ -540,7 +554,7 @@ body {
 }
 
 .updated-by {
-    color: #1a1c1e;
+    color: #1f2937;
     font-weight: 500;
 }
 
@@ -568,14 +582,14 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background: #fff;
-    color: #374151;
+    color: #1f2937;
     font-size: 14px;
     cursor: pointer;
 }
 
 .project-select:focus {
     outline: none;
-    border-color: #3475df;
+    border-color: #2563eb;
 }
 
 .badge-project {
@@ -600,7 +614,7 @@ body {
 
 .relation-id {
     font-size: 13px;
-    color: #43474e;
+    color: #475569;
 }
 
 /* Căn lại dữ liệu thời gian */
@@ -613,29 +627,13 @@ body {
 .activity-time {
     font-weight: 700;
     font-size: 13px;
-    color: #1a1c1e;
+    color: #1f2937;
 }
 
 .activity-date {
     font-size: 11px;
-    color: #74777f;
+    color: #64748b;
     margin-top: 2px;
-}
-
-/* Nút tùy chọn 3 chấm */
-.activity-action-btn {
-    background: none;
-    border: none;
-    color: #74777f;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
-    border-radius: 4px;
-}
-
-.activity-action-btn:hover {
-    background-color: #f1f3f4;
-    color: #1a1c1e;
 }
 
 /* ==========================================================PANEL FOOTER (THANH PHÂN TRANG PHÍA DƯỚI THIẾT KẾ)========================================================== */
@@ -671,7 +669,7 @@ body {
     width: 65px;
     padding: 4px 20px 4px 8px;
     font-size: 13px;
-    border: 1px solid #ced4da;
+    border: 1px solid #e2e8f0;
     border-radius: 4px;
     appearance: none;
     background-color: #fff;
@@ -682,19 +680,19 @@ body {
     position: absolute;
     right: 8px;
     font-size: 10px;
-    color: #74777f;
+    color: #64748b;
     pointer-events: none;
 }
 
 .issue-icon {
-    color: #ef4444;
+    color: #dc2626;
     font-size: 14px;
     margin-right: 6px;
     vertical-align: -1px;
 }
 
 .progress-icon {
-    color: #2878e8;
+    color: #2563eb;
     font-size: 13px;
     margin-right: 5px;
 }
@@ -717,13 +715,13 @@ body {
     justify-content: center;
     border-radius: 4px;
     font-size: 13px;
-    color: #495057;
+    color: #475569;
     cursor: pointer;
 }
 
 .page-num-btn:hover,
 .page-nav-btn:hover:not(:disabled) {
-    background: #f1f3f5;
+    background: #f1f5f9;
 }
 
 .page-num-btn.active {
@@ -733,12 +731,12 @@ body {
 }
 
 .page-nav-btn:disabled {
-    color: #ced4da;
+    color: #cbd5e1;
     cursor: not-allowed;
 }
 
 .page-dots {
-    color: #adb5bd;
+    color: #94a3b8;
     padding: 0 4px;
 }
 
@@ -1424,6 +1422,103 @@ body {
 
 @media (max-width: 700px) {
 
+    .wrapper {
+        display: block;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .logo {
+        justify-content: center;
+    }
+
+    .menu {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 8px 12px;
+    }
+
+    .menu li {
+        flex-shrink: 0;
+        margin-bottom: 0;
+    }
+
+    .menu a {
+        padding: 9px 12px;
+        white-space: nowrap;
+    }
+
+    .sidebar-user {
+        display: none;
+    }
+
+    .content {
+        padding: 22px 16px;
+    }
+
+    .content-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .header-tools {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .search-box {
+        flex: 1 1 100%;
+    }
+
+    .search-box .form-control {
+        width: 100%;
+    }
+
+    .project-select {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .filter-tabs {
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+
+    .tab-item {
+        flex-shrink: 0;
+        padding: 7px 10px;
+    }
+
+    .panel-columns-header {
+        display: none;
+    }
+
+    .activity-item {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .col-activity {
+        flex-basis: 100%;
+    }
+
+    .col-related,
+    .col-time {
+        width: auto;
+        padding-left: 0;
+    }
+
+    .activity-state {
+        padding: 24px 14px;
+    }
+
     .warning-stats {
         grid-template-columns: 1fr;
     }
@@ -1432,4 +1527,42 @@ body {
         grid-template-columns: 1fr;
     }
 
+}
+
+.activity-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 36px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+    text-align: center;
+}
+
+.activity-retry-btn {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--primary);
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.activity-retry-btn:hover {
+    background: var(--primary-light);
+}
+
+.activity-state .spinner-border {
+    color: var(--primary);
+}
+
+.deadline-error {
+    color: #b91c1c;
+}
+
+.deadline-overlay.active {
+    cursor: pointer;
 }

@@ -6,13 +6,11 @@ export let variableGlobal = {
     pageSize: 5,
     currentPage: 1,
 
-    tomSelectInstances: {}
+    picSelectInstance: null
 };
 
 export let projectElements = {
-    statsContainer: null,
-    projectTableBody: null,
-    pagination: null,
-    searchInput: null,
-    statusFilter: null
-}
+    projectGrid: null,
+    emptyState: null,
+    pagination: null
+};

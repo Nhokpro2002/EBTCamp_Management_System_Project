@@ -18,12 +18,9 @@ const COLLECTION_USERS = "Users";
 // =========================
 // DOM INIT
 // =========================
-projectElements.statsContainer = document.getElementById("statsContainer");
-projectElements.projectTableBody = document.getElementById("projectTableBody");
+projectElements.projectGrid = document.getElementById("projectGrid");
+projectElements.emptyState = document.getElementById("emptyState");
 projectElements.pagination = document.getElementById("pagination");
-projectElements.tableInfo = document.getElementById("tableInfo");
-projectElements.searchInput = document.getElementById("searchInput");
-projectElements.statusFilter = document.getElementById("statusFilter");
 
 // =========================
 // INIT APP
@@ -70,21 +67,12 @@ async function initProjectPage() {
 
         variableGlobal.filteredProjects = [...projects];
 
-        bindProjectEvents();
         ui.renderProjectPage();
 
     } catch (error) {
         console.error(error);
         utils.showError(projectPageMessage.loadError);
     }
-}
-
-// =========================
-// EVENTS BINDING
-// =========================
-function bindProjectEvents() {
-    projectElements.searchInput?.addEventListener("input", handlerEvent.handleFilterChange);
-    projectElements.statusFilter?.addEventListener("change", handlerEvent.handleFilterChange);
 }
 
 // =========================
@@ -98,38 +86,18 @@ $(document).on("click", ".js-page", function () {
 });
 
 // =========================
-// GLOBAL CLICK HANDLER (MENU + ACTIONS)
+// GLOBAL CLICK HANDLER (PROJECT ACTIONS)
 // =========================
 document.addEventListener("click", function (e) {
-    const toggleBtn = e.target.closest(".js-menu-toggle");
-    const menu = e.target.closest(".action-menu");
-    const editItem = e.target.closest(".btn-edit-project");
     const viewMoreItem = e.target.closest(".btn-view-more-project");
-    const workflowItem = e.target.closest(".btn-workflow-project");
-    const deleteItem = e.target.closest(".btn-delete-project");
-
-    const openMenus = document.querySelectorAll(".action-menu.show");
-
-    // =========================
-    // TOGGLE MENU
-    // =========================
-    if (toggleBtn) {
-        const row = toggleBtn.closest("tr");
-        const currentMenu = row.querySelector(".action-menu");
-
-        openMenus.forEach(m => {
-            if (m !== currentMenu) m.classList.remove("show");
-        });
-
-        currentMenu.classList.toggle("show");
-        return;
-    }
+    const workflowItem = e.target.closest(".btn-view-progress");
 
     // =========================
     // VIEW MORE
     // =========================
     if (viewMoreItem) {
         const projectID = viewMoreItem.dataset.id;
+        if (!projectID) return;
 
         // Tìm project theo id
         const project = variableGlobal.projectList.find(
@@ -150,6 +118,7 @@ document.addEventListener("click", function (e) {
     // =========================
     if (workflowItem) {
         const projectID = workflowItem.dataset.id;
+        if (!projectID) return;
 
         // Tìm project theo id
         const project = variableGlobal.projectList.find(
@@ -161,38 +130,10 @@ document.addEventListener("click", function (e) {
             localStorage.setItem("projectName", project.name);
         }
 
-        window.location.href = `workflow.html?projectID=${projectID}`;
+        window.location.href = `workflow.html?projectID=${encodeURIComponent(projectID)}`;
         return;
     }
 
-    // =========================
-    // EDIT
-    // =========================
-    if (editItem) {
-        const row = editItem.closest("tr");
-        row.querySelector(".action-menu")?.classList.add("show");
-
-        handlerEvent.handleEditProject(e, editItem);
-        return;
-    }
-
-    // =========================
-    // DELETE
-    // =========================
-    if (deleteItem) {
-        handlerEvent.handleDeleteProject(deleteItem);
-        return;
-    }
-
-    // =========================
-    // CLICK INSIDE MENU (IGNORE)
-    // =========================
-    if (menu) return;
-
-    // =========================
-    // CLICK OUTSIDE → CLOSE ALL
-    // =========================
-    openMenus.forEach(m => m.classList.remove("show"));
 });
 
 // =========================

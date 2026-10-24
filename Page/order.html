@@ -72,13 +72,6 @@
                 </li>
 
                 <li>
-                    <a href="user.html">
-                        <i class="bi bi-people"></i>
-                        User
-                    </a>
-                </li>
-
-                <li>
                     <a href="notification.html">
                         <i class="bi bi-bell"></i>
                         Notification
@@ -93,12 +86,13 @@
                 </li>
             </ul>
 
-            <div class="sidebar-user">
-                <img src="https://i.pravatar.cc/80?img=12">
-                <div>
-                    <small>Engineer</small>
-                </div>
-            </div>
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+                <span class="user-info">
+                    <h6 class="user-name">User</h6>
+                    <small class="user-role">Profile</small>
+                </span>
+            </a>
         </aside>
 
         <!-- ===========================
@@ -178,13 +172,15 @@
                         <option value="MCCB">MCCB</option>
                     </select>
 
-                    <select id="projectFilter" class="form-select"></select>
+                    <select id="projectFilter" class="form-select" aria-label="Select project">
+                        <option value="">Select Project</option>
+                    </select>
 
 
                 </div>
 
                 <div class="toolbar-right">
-                    <button id="btnAddMaterial" class="btn btn-success">
+                    <button id="btnAddMaterial" class="btn btn-success" disabled>
                         <i class="bi bi-plus-lg"></i>
                         Add Material
                     </button>
@@ -201,7 +197,7 @@
                             <tr>
                                 <!-- Fixed -->
                                 <th class="fixed-col" width="40">
-                                    <input type="checkbox" id="checkAll">
+                                    <input type="checkbox" id="checkAll" aria-label="Select all order items">
                                 </th>
                                 <th>Name</th>
                                 <th>Model</th>
@@ -234,29 +230,29 @@
 
     </div>
 
-    <div id="inventoryModal">
+    <div id="inventoryModal" role="dialog" aria-modal="true" aria-label="Select inventory materials">
         <div class="modal-content">
             <button id="btnCloseInventory" class="close-btn" aria-label="Close">
                 &times;
             </button>
 
-            <iframe id="inventoryFrame" src="inventory.html"></iframe>
+            <iframe id="inventoryFrame" src="inventory.html" title="Inventory materials"></iframe>
         </div>
     </div>
 
-    <div id="selectionBar" class="selection-bar d-flex justify-content-center gap-3">
+    <div id="selectionBar" class="selection-bar d-flex justify-content-center gap-3" aria-label="Selected order actions">
 
-        <button id="saveSelected" class="btn btn-primary">
+        <button id="saveSelected" class="btn btn-primary" disabled>
             <i class="bi bi-download me-1"></i>
             Save
         </button>
 
-        <button id="exportExcelSelected" class="btn btn-success">
+        <button id="exportExcelSelected" class="btn btn-success" disabled>
             <i class="bi bi-file-earmark-spreadsheet me-1"></i>
             Export Excel
         </button>
 
-        <button id="deleteSelected" class="btn btn-danger">
+        <button id="deleteSelected" class="btn btn-danger" disabled>
             <i class="bi bi-trash me-1"></i>
             Delete
         </button>
@@ -266,5 +262,6 @@
 </body>
 
 <script type="module" src="../Script/order/main.js"></script>
+<script type="module" src="../Script/user/main.js"></script>
 
 </html>

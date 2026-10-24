@@ -1,13 +1,12 @@
 export const orderDetailPageData = {
     inventoryItemList: [],
-    inventoryItemFilter: [],
     orderItemList: [],
     orderItemFilter: [],
-
     userList: [],
     projectList: [],
-
     searchKeyword: "",
     selectedBrand: "",
-    selectedType: ""
-}
+    selectedType: "",
+    currentPage: 1,
+    pageSize: 10
+};

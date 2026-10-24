@@ -5,71 +5,73 @@ import * as utils from "../utils/utils.js";
 import { orderDetailPageData } from "./state.js";
 import { orderPageMessage } from "./message.js";
 
-
-export function handleAddItemToProjectItems(itemID) {
-    const item = orderDetailPageData.inventoryItemList.find(x => x.id === itemID);
-    if (!item) {
-        utils.showError(orderPageMessage.itemNotExist);
-        return;
-    }
-
-    if (orderDetailPageData.orderItemList.some(x => x.id === itemID)) {
-        utils.showError(orderPageMessage.itemExistInOrder);
-        return;
-    }
-    const newItem = { ...item };
-    delete newItem.id;
-    orderDetailPageData.orderItemList.push(item);
-    utils.showSuccess(orderPageMessage.addItemSuccess);
-}
-
 export function initOrderItemEvents() {
-
     const searchInput = document.getElementById("searchInput");
-    searchInput.addEventListener("input", () => {
-        orderDetailPageData.searchKeyword =
-            searchInput.value.trim().toLowerCase();
+    searchInput?.addEventListener("input", () => {
+        orderDetailPageData.searchKeyword = searchInput.value.trim().toLowerCase();
         ui.applyFilter();
     });
 
     const brandFilter = document.getElementById("brandFilter");
-    brandFilter.addEventListener("change", () => {
+    brandFilter?.addEventListener("change", () => {
         orderDetailPageData.selectedBrand = brandFilter.value;
         ui.applyFilter();
     });
 
     const typeFilter = document.getElementById("typeFilter");
-    typeFilter.addEventListener("change", () => {
+    typeFilter?.addEventListener("change", () => {
         orderDetailPageData.selectedType = typeFilter.value;
         ui.applyFilter();
     });
 
-    const exportExcelSelected = document.getElementById("exportExcelSelected");
-    exportExcelSelected.addEventListener("click", async () => {
+    document.getElementById("exportExcelSelected")?.addEventListener("click", () => {
         service.exportExcel();
     });
 
-    const saveSelectedButton = document.getElementById("saveSelected");
-    saveSelectedButton.addEventListener("click", async () => {
-        const orderItemList = ui.getSelectedItems();
-        service.saveOrderItem(orderItemList);
-    })
+    document.getElementById("saveSelected")?.addEventListener("click", async () => {
+        const projectID = document.getElementById("projectFilter")?.value;
+        const selectedItems = ui.getSelectedItems();
 
-    const deleteSelected = document.getElementById("deleteSelected");
-    deleteSelected.addEventListener("click", async () => {
-        const orderItemList = ui.getSelectedItems();
-        service.deleteOrderItem(orderItemList);
-    })
+        if (!selectedItems.length) {
+            utils.showWarning(orderPageMessage.noItemsSelected);
+            return;
+        }
+        if (!projectID) {
+            utils.showWarning(orderPageMessage.projectNotSelected);
+            return;
+        }
+        await service.saveOrderItem(selectedItems, projectID);
+        if (document.getElementById("projectFilter")?.value === projectID) {
+            document.getElementById("projectFilter").dispatchEvent(new Event("change"));
+        }
+    });
 
+    document.getElementById("deleteSelected")?.addEventListener("click", async () => {
+        const projectID = document.getElementById("projectFilter")?.value;
+        const selectedItems = ui.getSelectedItems();
+        if (!selectedItems.length) {
+            utils.showWarning(orderPageMessage.noItemsSelected);
+            return;
+        }
+        if (!projectID) {
+            utils.showWarning(orderPageMessage.projectNotSelected);
+            return;
+        }
+
+        const confirmation = await Swal.fire({
+            icon: "warning",
+            title: "Delete selected items?",
+            text: orderPageMessage.deleteConfirm,
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#dc2626"
+        });
+        if (!confirmation.isConfirmed) return;
+
+        await service.deleteOrderItem(selectedItems, projectID);
+        if (document.getElementById("projectFilter")?.value === projectID) {
+            document.getElementById("projectFilter").dispatchEvent(new Event("change"));
+        }
+    });
 }
-
-
-
-
-
-
-
-
-
-
-

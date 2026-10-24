@@ -69,7 +69,7 @@ a:hover {
 
 .register-title {
 
-    color: #A50034;
+    color: #2563eb;
 
     font-size: 32px;
 
@@ -109,7 +109,7 @@ a:hover {
 
 .form-label {
 
-    color: #333;
+    color: #1f2937;
 
     font-weight: 700;
 
@@ -133,10 +133,10 @@ a:hover {
 
 .form-control:focus {
 
-    border-color: #A50034;
+    border-color: #2563eb;
 
     box-shadow:
-        0 0 0 .2rem rgba(165, 0, 52, .15);
+        0 0 0 .2rem rgba(37, 99, 235, .15);
 
 }
 
@@ -199,14 +199,14 @@ input.is-valid {
     height: 45px;
     border: none;
     border-radius: 10px;
-    background: #A50034;
+    background: #2563eb;
     color: white;
     font-weight: 700;
     transition: .2s;
 }
 
 #register-btn:hover {
-    background: #85002a;
+    background: #1d4ed8;
     transform: translateY(-1px);
 }
 
@@ -216,11 +216,11 @@ input.is-valid {
 .footer-text {
     text-align: center;
     margin-top: 20px;
-    color: #777;
+    color: #64748b;
 }
 
 .footer-text a {
-    color: #A50034;
+    color: #2563eb;
     font-weight: 700;
     text-decoration: none;
 }

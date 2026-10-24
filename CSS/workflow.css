@@ -8,7 +8,7 @@
 
 body {
     margin: 0;
-    background: #f3f6fa;
+    background: #f5f7fb;
     font-family:
         "Segoe UI",
         Tahoma,
@@ -80,9 +80,9 @@ body {
     align-items: center;
     justify-content: center;
 
-    background: #eee9ff;
+    background: #eff6ff;
 
-    color: #6537d8;
+    color: #2563eb;
 
     font-size: 23px;
 }
@@ -228,8 +228,8 @@ body {
 }
 
 .summary-icon.purple {
-    color: #7347e8;
-    background: #eee9ff;
+    color: #2563eb;
+    background: #eff6ff;
 }
 
 .summary-icon.green {
@@ -294,7 +294,7 @@ body {
    Progress
 --------------------------------------------------------- */
 .progress-value {
-    stroke: #2674e8;
+    stroke: #2563eb;
     stroke-width: 5;
     stroke-linecap: round;
     stroke-dasharray: 113.1;
@@ -365,10 +365,10 @@ body {
 .view-button.active {
     background: #ffffff;
 
-    color: #1967e8;
+    color: #2563eb;
 
     box-shadow:
-        inset 0 0 0 1px #1967e8;
+        inset 0 0 0 1px #2563eb;
 }
 
 
@@ -445,11 +445,11 @@ body {
 ========================================================= */
 
 .gantt_grid_head_cell {
-    background: #233247 !important;
+    background: #111827 !important;
 
     color: white !important;
 
-    border-color: #33445a !important;
+    border-color: #334155 !important;
 
     font-size: 14px;
 
@@ -490,7 +490,7 @@ body {
 ========================================================= */
 
 .gantt_today {
-    background: rgba(37, 99, 235, .035) !important;
+    background: rgba(37, 99, 235, .04) !important;
 }
 
 
@@ -499,7 +499,7 @@ body {
 
     width: 1px;
 
-    background: #3478ee;
+    background: #2563eb;
 
     opacity: .8;
 
@@ -613,151 +613,6 @@ body {
     color: #2563eb;
 
     transform: scale(1.15);
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.workflow-footer {
-    min-height: 58px;
-
-    background: white;
-
-    border-radius: 12px;
-
-    padding: 10px 20px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    box-shadow:
-        0 3px 12px rgba(0, 0, 0, .06);
-}
-
-
-/* Stage legend */
-
-.stage-legend {
-    display: flex;
-
-    align-items: center;
-
-    gap: 26px;
-}
-
-
-.legend-item {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    font-size: 13px;
-
-    color: #344054;
-}
-
-
-.legend-color {
-    width: 13px;
-    height: 13px;
-
-    border-radius: 3px;
-}
-
-
-.legend-color.design {
-    background: #2878e8;
-}
-
-.legend-color.mechanical {
-    background: #14b8a6;
-}
-
-.legend-color.assembly {
-    background: #35b65b;
-}
-
-.legend-color.electric {
-    background: #fb8c00;
-}
-
-.legend-color.program {
-    background: #7835cc;
-}
-
-
-/* =========================================================
-   STATUS LEGEND
-========================================================= */
-
-.status-legend {
-    display: flex;
-
-    gap: 20px;
-
-    align-items: center;
-}
-
-
-.status-item {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    font-size: 13px;
-
-    color: #475467;
-}
-
-
-.status-circle {
-    width: 17px;
-    height: 17px;
-
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-
-.not-started {
-    border: 2px solid #cbd5e1;
-
-    background: #f8fafc;
-}
-
-
-.status-circle.progress {
-    border: 2px solid #2878e8;
-
-    background:
-        repeating-linear-gradient(135deg,
-            #2878e8 0,
-            #2878e8 2px,
-            transparent 2px,
-            transparent 4px);
-}
-
-
-.status-circle.completed {
-    border: 2px solid #22a955;
-
-    color: #22a955;
-
-    font-size: 11px;
-
-    font-weight: 700;
 }
 
 
@@ -940,9 +795,7 @@ body {
         min-width: 135px;
     }
 
-    .stage-legend {
-        gap: 14px;
-    }
+
 
     .footer-progress {
         min-width: 250px;
@@ -966,27 +819,24 @@ body {
         justify-content: flex-end;
     }
 
-    .workflow-footer {
-        overflow-x: auto;
-    }
 
 }
 
 
 :root {
-    --navy: #182a40;
-    --blue: #2877e8;
-    --border: #e4e9f0;
-    --muted: #718096;
-    --text: #26364d;
-    --bg: #f4f7fb;
+    --navy: #111827;
+    --blue: #2563eb;
+    --border: #e2e8f0;
+    --muted: #64748b;
+    --text: #1f2937;
+    --bg: #f5f7fb;
 }
 
 .issues-panel {
     max-width: 1490px;
     margin: auto;
     background: #fff;
-    border: 1px solid #e8edf4;
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
     box-shadow: 0 8px 28px rgba(35, 56, 84, .07);
     overflow: hidden;

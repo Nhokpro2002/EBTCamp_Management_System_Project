@@ -2,10 +2,10 @@
 import * as utils from "../utils/utils.js";
 import * as handleEvent from "./project.handle.event.js";
 import * as api from "../services/generic.api.js";
+import { URL_LOCAL } from "../config.js";
 import { variableGlobal, projectElements } from "./project.state.js";
 import { projectPageMessage } from "./project_page_message.js";
 
-const POCKETBASE_URL = "http://127.0.0.1:8090";
 const COLLECTION_USERS = "Users";
 const COLLECTION_PROJECTS = "Projects"
 
@@ -24,7 +24,7 @@ export function changeIconAvatar() {
     if (!$dropdownAvatar.length || !userData) return;
 
     const avatarUrl =
-        `${POCKETBASE_URL}/api/files/users/${userData.id}/${userData.avatar}?t=${Date.now()}`;
+        `${URL_LOCAL}/api/files/users/${userData.id}/${userData.avatar}?t=${Date.now()}`;
 
     $dropdownAvatar.attr("src", avatarUrl);
 }
@@ -34,87 +34,108 @@ export function changeIconAvatar() {
 // ==================================================
 
 /**
- * Render the current page of projects into the table body.
+ * Render the current page of projects into the project grid.
  *
  * @param {Array} data - Complete project list.
  * @param {number} currentPage - Current page number.
  * @param {number} pageSize - Number of rows per page.
- * @param {HTMLElement} tableBody - Target table body element.
+ * @param {HTMLElement} projectGrid - Target project grid.
+ * @param {HTMLElement} emptyState - Empty-state element shown when there are no projects.
  */
-export function renderTable(data, currentPage, pageSize, tableBody) {
+export function renderProjectCards(data, currentPage, pageSize, projectGrid, emptyState) {
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     const pageData = data.slice(start, end);
 
     if (!pageData.length) {
-        tableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center py-5 text-muted fw-semibold">
-                        No projects found.
-                    </td>
-                </tr>
-            `;
-
+        projectGrid.innerHTML = "";
+        emptyState.style.display = "block";
         return;
     }
 
-    tableBody.innerHTML = pageData.map(project => `
-            <tr>
-                <td>
-                    <div class="project-name">${project.name}</div>
-                </td>
-                <td><span class="date-text">${utils.formatDateDisplay(project.start_date)}</span></td>
-                <td><span class="date-text">${utils.formatDateDisplay(project.end_date)}</span></td>
-                <td class="progress-cell">
-                    <div class="progress-percent">${project.progress}%</div>
-                    <div class="custom-progress">
-                        <div
-                            class="progress-bar ${getProgressBarClass(project.progress)}"
-                            style="width: ${project.progress}%"
-                        ></div>
+    emptyState.style.display = "none";
+    projectGrid.innerHTML = pageData.map(project => `
+        <article class="project-card" data-name="${project.name}">
+
+            <div class="project-image-wrap">
+                <img
+                    class="project-image"
+                    src="${project.image_project
+                        ? `${URL_LOCAL}/api/files/Projects/${project.id}/${encodeURIComponent(project.image_project)}`
+                        : "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1000&q=85"}"
+                    alt="${project.name}"
+                    loading="lazy"
+                >
+            </div>
+
+            <div class="project-body">
+
+                <div class="project-title-row">
+                    <div class="project-icon">
+                        <i class="bi bi-robot"></i>
                     </div>
-                </td>
-                <td>
-                    <span class="status-badge ${getStatusClass(project.status)}">
-                        ${project.status}
-                    </span>
-                </td>
-                <td class="action-cell position-relative">
 
-  <button type="button" class="btn btn-sm btn-light border js-menu-toggle">
-    <i class="bi bi-three-dots"></i>
-  </button>
+                    <div>
+                        <h2 class="project-name">${project.name}</h2>
+                    </div>
+                </div>
 
-  <div class="action-menu">
-    <div class="action-item btn-view-more-project text-primary" data-id=${project.id}>
-      <i class="bi bi-box-seam me-2"></i></i> Materials
-    </div>
+                <div class="project-dates">
 
-    <div class="action-item btn-workflow-project text-info" data-id=${project.id}>
-      <i class="bi bi-calendar2-range me-2"></i> Workflow
-    </div>
+                    <div class="date-item">
+                        <i class="bi bi-calendar3 date-icon"></i>
+                        <div>
+                            <div class="date-label">Ngày bắt đầu</div>
+                            <div class="date-value">
+                                ${utils.formatDateDisplay(project.start_date)}
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="action-item btn-edit-project text-warning" data-id=${project.id}>
-      <i class="bi bi-pencil-square me-2"></i> Edit
-    </div>
+                    <div class="date-item">
+                        <i class="bi bi-calendar-check date-icon"></i>
+                        <div>
+                            <div class="date-label">Ngày kết thúc</div>
+                            <div class="date-value">
+                                ${utils.formatDateDisplay(project.end_date)}
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="action-item btn-delete-project text-danger" data-id=${project.id}>
-      <i class="bi bi-trash me-2"></i> Delete
-    </div>
-  </div>
+                </div>
 
-</td>
-            </tr>
-        `).join("");
+                <div class="project-footer">
 
-    const from = start + 1;
-    const to = Math.min(end, data.length);
+                    <button
+                        type="button"
+                        class="btn-view-progress btn-workflow-project"
+                        data-id="${project.id}"
+                    >
+                        <i class="bi bi-eye"></i>
+                        Progress
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-view-matherial btn-view-more-project"
+                        data-id="${project.id}"
+                    >
+                        <i class="bi bi-eye"></i>
+                        Material
+                    </button>
+
+                </div>
+
+            </div>
+        </article>
+    `).join("");
 }
 
 /**
  * Render pagination buttons based on total project count.
  */
 export function renderPagination(totalItems, currentPage, pageSize, paginationContainer) {
+    if (!paginationContainer) return;
 
     const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -165,15 +186,15 @@ export function handlePageChange(page) {
 }
 
 /**
- * Render project table and pagination using current application state.
+ * Render project cards and pagination using current application state.
  */
 export function renderProjectPage() {
-    renderTable(
+    renderProjectCards(
         variableGlobal.filteredProjects,
         variableGlobal.currentPage,
         variableGlobal.pageSize,
-        projectElements.projectTableBody,
-        projectElements.tableInfo
+        projectElements.projectGrid,
+        projectElements.emptyState
     );
     renderPagination(
         variableGlobal.filteredProjects.length,
@@ -217,13 +238,12 @@ export function getStatusClass(status) {
 // ==================================================
 
 /**
- * Open the Create Project popup and initialize member selectors.
+ * Open the Create Project popup and initialize the PIC selector.
  */
 export function openCreateProjectPopup() {
     document.getElementById("overlay-create-project").style.display = "flex";
     document.body.style.overflow = "hidden";
-    renderMembersSelect("pic");
-    renderMembersSelect("members");
+    renderPicSelect();
 }
 
 /**
@@ -239,20 +259,17 @@ export function closeCreateProjectPopup() {
  * Clear all inputs and selections in the Create Project form.
  */
 function resetCreateProjectForm() {
-    $("#project-name, #start-date, #end-date").val("");
-    $("#pic, #members").empty();
-    variableGlobal.tomSelectInstances?.pic?.clear(true);
-    variableGlobal.tomSelectInstances?.members?.clear(true);
+    $("#project-name, #start-date, #end-date, #image-project").val("");
+    $("#pic").empty();
+    variableGlobal.picSelectInstance?.clear(true);
 }
 
 /**
- * Render or refresh the TomSelect dropdown for project members.
- *
- * @param {"pic"|"members"} type
+ * Render or refresh the TomSelect dropdown for the project PIC.
  */
-function renderMembersSelect(type) {
+function renderPicSelect() {
 
-    const $select = $(`#${type}`);
+    const $select = $("#pic");
     if (!$select.length) return;
 
     // Xoá option cũ
@@ -269,22 +286,19 @@ function renderMembersSelect(type) {
     });
 
     // Nếu chưa có instance TomSelect thì tạo mới
-    if (!variableGlobal.tomSelectInstances[type]) {
+    if (!variableGlobal.picSelectInstance) {
 
-        variableGlobal.tomSelectInstances[type] = new TomSelect(`#${type}`, {
+        variableGlobal.picSelectInstance = new TomSelect("#pic", {
             plugins: ['remove_button'],
             hideSelected: true,
             create: false,
-            placeholder:
-                type === "pic" ? "Select PIC" :
-                    type === "members" ? "Select Members" :
-                        "Select Handler",
+            placeholder: "Select PIC",
         });
 
     } else {
 
         // Nếu đã có instance thì refresh options
-        const instance = variableGlobal.tomSelectInstances[type];
+        const instance = variableGlobal.picSelectInstance;
 
         instance.clearOptions();
 

@@ -65,13 +65,13 @@
                 </li>
             </ul>
 
-            <div class="sidebar-user">
-                <img src="https://i.pravatar.cc/80?img=12" alt="Avatar">
-                <div class="user-info">
-                    <h6 class="user-name">Nguyen Minh Tuan</h6>
-                    <small class="user-role">Engineer</small>
-                </div>
-            </div>
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+                <span class="user-info">
+                    <h6 class="user-name">User</h6>
+                    <small class="user-role">Profile</small>
+                </span>
+            </a>
         </aside>
 
         <!-- ========================================================
@@ -89,26 +89,29 @@
                     <div class="search-box">
                         <i class="bi bi-search search-icon"></i>
                         <input type="text" class="form-control" id="search-notifications"
-                            placeholder="Search notifications...">
+                            placeholder="Search notifications..." aria-label="Search notifications">
                         <span class="search-shortcut">/</span>
                     </div>
 
-                    <select id="projectSelect" class="project-select" style="pointer-events: none; opacity: 0.5;">
-                        <option value="" selected>Select your project</option>
+                    <select id="projectSelect" class="project-select" aria-label="Filter by project">
+                        <option value="" selected>All projects</option>
                     </select>
 
                     <!-- Hộp chọn ngày công cụ ở góc cuối cùng -->
                     <div class="date-picker-box">
                         <i class="bi bi-calendar3 calendar-icon"></i>
-                        <input type="date" id="filter-date" class="form-control">
+                        <input type="date" id="filter-date" class="form-control" aria-label="Filter activities by date">
                     </div>
                 </div>
             </div>
 
 
             <!-- Thanh Tabs lọc các nhóm thông báo -->
-            <div class="filter-tabs">
-                <button class="tab-item" data-tab="project">
+            <div class="filter-tabs" role="tablist" aria-label="Filter activity type">
+                <button type="button" class="tab-item active" data-tab="all" role="tab" aria-selected="true">
+                    All <span class="tab-count count-all">0</span>
+                </button>
+                <button type="button" class="tab-item" data-tab="project" role="tab" aria-selected="false">
                     <span style="
         display: inline-flex;
         align-items: center;
@@ -125,7 +128,7 @@
                     Project <span class="tab-count count-project">0</span>
                 </button>
 
-                <button class="tab-item" data-tab="issue">
+                <button type="button" class="tab-item" data-tab="issue" role="tab" aria-selected="false">
                     <span style="
         display: inline-flex;
         align-items: center;
@@ -142,7 +145,7 @@
                     Issue <span class="tab-count count-issue">0</span>
                 </button>
 
-                <button class="tab-item" id="btn-deadline">
+                <button type="button" class="tab-item" id="btn-deadline" aria-expanded="false" aria-controls="deadline-drawer">
                     <span style="
         display: inline-flex;
         align-items: center;
@@ -169,7 +172,6 @@
                     <div class="col-activity">Activity</div>
                     <div class="col-related">Related To</div>
                     <div class="col-time">Time</div>
-                    <div class="col-action">Action</div>
                 </div>
 
                 <!-- Danh sách chứa các thẻ thông báo render từ JS -->
@@ -186,14 +188,15 @@
     <!-- Deadline Drawer -->
     <div id="deadline-overlay" class="deadline-overlay"></div>
 
-    <aside id="deadline-drawer" class="deadline-drawer">
+    <aside id="deadline-drawer" class="deadline-drawer" role="dialog" aria-modal="true"
+        aria-labelledby="deadline-drawer-title" aria-hidden="true">
 
         <!-- Header -->
         <div class="deadline-header">
 
             <div class="deadline-title">
                 <div>
-                    <h5>Deadline Warnings</h5>
+                    <h5 id="deadline-drawer-title">Deadline Warnings</h5>
                     <span id="deadline-warning-count">
                         0 warnings
                     </span>
@@ -232,6 +235,7 @@
     <!-- PocketBase SDK -->
     <script src="../Libs/PocketbaseSDK/pocketbase.umd.js"></script>
     <script type="module" src="../Script/notification/main.js"></script>
+    <script type="module" src="../Script/user/main.js"></script>
 
 </body>
 

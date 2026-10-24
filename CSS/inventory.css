@@ -2,18 +2,18 @@
    GLOBAL
 ========================================================== */
 :root {
-    --primary: #ef4444;
-    --primary-dark: #dc2626;
-    --primary-light: #fee2e2;
-    --success: #16a34a;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --text: #222;
-    --text-light: #666;
-    --border: #e6e8eb;
-    --bg: #f6f7fb;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --text: #1f2937;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --bg: #f5f7fb;
     --card: #fff;
-    --border-color: #e9ecef;
+    --border-color: #e2e8f0;
 }
 
 * {
@@ -41,7 +41,7 @@ body {
     flex: 1;
     min-width: 0;
     padding: 28px 40px;
-    background: #fafbfc;
+    background: var(--bg);
 }
 
 
@@ -51,14 +51,15 @@ body {
 
 .sidebar {
     width: 232px;
-    background: #ffffff;
-    border-right: 1px solid var(--border-color);
+    background: linear-gradient(180deg, #111827, #1f2937);
+    border-right: 1px solid rgba(255, 255, 255, .12);
     display: flex;
     flex-direction: column;
     position: sticky;
     top: 0;
     height: 100vh;
     z-index: 100;
+    color: #ffffff;
 }
 
 .logo {
@@ -66,7 +67,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
 }
 
 .logo img {
@@ -92,7 +93,7 @@ body {
     padding: 12px 16px;
     border-radius: 8px;
     text-decoration: none;
-    color: #43474e;
+    color: #cbd5e1;
     font-weight: 500;
     font-size: 14px;
     transition: all 0.2s;
@@ -103,8 +104,8 @@ body {
 }
 
 .menu a:hover {
-    background: #f1f3f5;
-    color: var(--text-main);
+    background: rgba(255, 255, 255, .1);
+    color: #ffffff;
 }
 
 /* Menu active chuyển nền đỏ giống ảnh */
@@ -118,10 +119,22 @@ body {
 .sidebar-user {
     padding: 16px;
     margin: 16px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(255, 255, 255, .12);
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.sidebar-user-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.sidebar-user-link:hover,
+.sidebar-user-link:focus-visible {
+    color: inherit;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 10px;
 }
 
 .sidebar-user img {
@@ -140,12 +153,12 @@ body {
     font-size: 13px;
     font-weight: 600;
     margin: 0;
-    color: var(--text-main);
+    color: #ffffff;
 }
 
 .user-role {
     font-size: 11px;
-    color: var(--text-muted);
+    color: #cbd5e1;
 }
 
 .notification-icon {
@@ -182,7 +195,7 @@ body {
 }
 
 .topbar p {
-    color: #777;
+    color: #64748b;
     margin: 0;
 }
 
@@ -242,13 +255,13 @@ body {
 }
 
 .search-box:focus-within {
-    border-color: #cfd4da;
+    border-color: #cbd5e1;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, .03);
 }
 
 .search-box i {
     padding: 0 15px;
-    color: #999;
+    color: #94a3b8;
 }
 
 .search-box input {
@@ -293,14 +306,14 @@ body {
 }
 
 .table thead {
-    background: #fff8f8;
+    background: #f8fafc;
 }
 
 .table thead th {
     color: var(--primary);
     font-size: 14px;
     font-weight: 700;
-    border-bottom: 2px solid #ffe3e3;
+    border-bottom: 2px solid #e2e8f0;
     padding: 15px 17px;
     white-space: nowrap;
 }
@@ -308,7 +321,7 @@ body {
 .table tbody td {
     vertical-align: middle;
     padding: 13px 17px;
-    border-color: #f0f0f0;
+    border-color: #e2e8f0;
     white-space: nowrap;
 }
 
@@ -317,7 +330,7 @@ body {
 }
 
 .table tbody tr:hover {
-    background: #fff8f8;
+    background: #f5f7fb;
 }
 
 .table img {
@@ -325,7 +338,7 @@ body {
     height: 52px;
     object-fit: contain;
     border-radius: 9px;
-    border: 1px solid #eee;
+    border: 1px solid #e2e8f0;
     background: #fff;
     padding: 5px;
 }
@@ -417,8 +430,8 @@ body {
 .pagination .page-link {
     border-radius: 7px;
     margin-left: 4px;
-    border-color: #e5e7eb;
-    color: #555;
+    border-color: #e2e8f0;
+    color: #475569;
 }
 
 .pagination .page-item.active .page-link {
@@ -437,7 +450,7 @@ body {
     left: 0;
     right: 0;
     background: #fff;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #e2e8f0;
     padding: 12px 20px;
     display: flex;
     justify-content: flex-end;

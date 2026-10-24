@@ -11,10 +11,6 @@ import { workflowData, projectData, issueData } from "./states.js";
 
 
 
-document.querySelector(".project-info-name").textContent =
-    localStorage.getItem("projectName");
-
-
 // =====================================================
 // 2. Gantt Configuration
 // =====================================================
@@ -229,46 +225,54 @@ gantt.templates.tooltip_text = function (start, end, task) {
 // =====================================================
 
 async function initPage() {
-
-    // ---------- Init Gantt ----------
-    gantt.init("gantt_here");
-
-
     // ---------- Get Project ID ----------
     const projectID =
         new URLSearchParams(location.search).get("projectID");
 
+    if (!projectID) {
+        utils.showError("Project ID is missing from the workflow URL.");
+        return;
+    }
+
     workflowData.projectID = projectID;
 
+    try {
+        // ---------- Init Gantt ----------
+        gantt.init("gantt_here");
 
-    // ---------- Load Project ----------
-    await service.loadProjectData(projectID);
+        // ---------- Load Project ----------
+        await service.loadProjectData(projectID);
 
+        document.querySelector(".project-info-name").textContent =
+            projectData.projectName || localStorage.getItem("projectName") || "";
 
-    // ---------- Project Date ----------
-    document.getElementById("project-start-date").textContent =
-        utils.formatDateDisplay(projectData.startDate);
+        // ---------- Project Date ----------
+        document.getElementById("project-start-date").textContent =
+            utils.formatDateDisplay(projectData.startDate);
 
-    document.getElementById("project-end-date").textContent =
-        utils.formatDateDisplay(projectData.endDate);
+        document.getElementById("project-end-date").textContent =
+            utils.formatDateDisplay(projectData.endDate);
 
+        // ---------- Load Stages ----------
+        await service.loadStageData(projectID);
 
-    // ---------- Load Stages ----------
-    await service.loadStageData(projectID);
+        service.mappingData();
 
-    service.mappingData();
+        gantt.parse(projectData);
 
-    gantt.parse(projectData);
+        updateProjectStatistics();
 
-    updateProjectStatistics();
+        await service.loadIssueData(projectID);
 
-    await service.loadIssueData(projectID);
+        document.querySelector(".issue-count").textContent = `(${issueData.issue.length})`;
 
-    document.querySelector(".issue-count").textContent = `(${issueData.issue.length})`;
+        renderIssues();
 
-    renderIssues();
-
-    service.setZoom();
+        service.setZoom();
+    } catch (error) {
+        console.error(error);
+        utils.showError("Failed to load workflow data.");
+    }
 }
 
 

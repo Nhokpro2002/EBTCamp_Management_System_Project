@@ -7,8 +7,16 @@ const pb = new PocketBase("http://127.0.0.1:8090");
 const panel = document.querySelector("#activity-list");
 const dateInput = document.querySelector("#filter-date");
 const badgeCount = document.querySelector("#badge-count");
+const searchInput = document.querySelector("#search-notifications");
+const projectSelect = document.querySelector("#projectSelect");
+const tabButtons = [...document.querySelectorAll("[data-tab]")];
+let activeActivityTab = "all";
+let activityLoadSequence = 0;
 
-service.loadProjects();
+const token = localStorage.getItem("token");
+if (token) {
+    pb.authStore.save(token);
+}
 
 // =====================================================
 // 1. State
@@ -21,9 +29,15 @@ let newNotification = 0;
 // 2. Initialization
 // =====================================================
 
-const todayStr = new Date().toLocaleDateString("sv-SE");
+const todayStr = getBusinessDate(new Date());
 
 dateInput.value = todayStr;
+
+try {
+    await service.loadProjects();
+} catch (error) {
+    console.error("Failed to initialize project filter:", error);
+}
 
 // =====================================================
 // Deadline Drawer Events
@@ -41,21 +55,13 @@ const deadlineOverlay =
 const closeButton =
     document.getElementById("btn-close-deadline");
 
-deadlineButton?.addEventListener("click", async () => {
-
-    console.log("CLICK DEADLINE");
-
-    deadlineDrawer.classList.add("active");
-    deadlineOverlay.classList.add("active");
-
-    await loadDeadlineWarnings();
-});
-
-closeButton?.addEventListener("click", () => {
-
-    deadlineDrawer.classList.remove("active");
-    deadlineOverlay.classList.remove("active");
-
+deadlineButton?.addEventListener("click", openDeadlineDrawer);
+closeButton?.addEventListener("click", closeDeadlineDrawer);
+deadlineOverlay?.addEventListener("click", closeDeadlineDrawer);
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && deadlineDrawer?.classList.contains("active")) {
+        closeDeadlineDrawer();
+    }
 });
 
 // =====================================================
@@ -70,113 +76,196 @@ dateInput.addEventListener("change", async (event) => {
     await loadActivity(event.target.value);
 });
 
+searchInput?.addEventListener("input", applyActivityFilters);
+projectSelect?.addEventListener("change", applyActivityFilters);
+
+tabButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        activeActivityTab = button.dataset.tab;
+        tabButtons.forEach(tab => {
+            const isActive = tab === button;
+            tab.classList.toggle("active", isActive);
+            tab.setAttribute("aria-selected", String(isActive));
+        });
+        applyActivityFilters();
+    });
+});
+
+document.addEventListener("keydown", event => {
+    const target = event.target;
+    const isTypingTarget =
+        target instanceof HTMLElement &&
+        (target.matches("input, textarea, select") || target.isContentEditable);
+    if (event.key === "/" && !isTypingTarget) {
+        event.preventDefault();
+        searchInput?.focus();
+    } else if (event.key === "Escape" && event.target === searchInput) {
+        searchInput.value = "";
+        applyActivityFilters();
+        searchInput.blur();
+    }
+});
+
+panel.addEventListener("click", event => {
+    if (event.target.closest("[data-retry-activity]")) {
+        loadActivity(dateInput.value);
+    }
+});
+
 // =====================================================
 // 3. Load Activity History
 // =====================================================
 
 async function loadActivity(selectedDate) {
-
+    const loadSequence = ++activityLoadSequence;
+    panel.setAttribute("aria-busy", "true");
+    panel.innerHTML = '<div class="activity-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Loading activities...</div>';
+    updateActivityCounts();
     try {
-
-        panel.innerHTML = "";
-
         if (!selectedDate) {
+            showActivityState("Choose a date to view activities.");
             return;
         }
 
-        const {
-            startOfDay,
-            endOfDay
-        } = getDateRange(selectedDate);
-
-
-        // ---------------------------------------------
-        // Load Notifications + Issues cùng lúc
-        // ---------------------------------------------
-
+        const { startOfDay, endOfDay } = getDateRange(selectedDate);
+        const dateFilter = `created >= "${startOfDay}" && created <= "${endOfDay}"`;
         const [notifications, issues] = await Promise.all([
-
-            pb.collection("Notifications").getList(1, 100, {
+            getAllActivityRecords("Notifications", {
                 sort: "-created",
-
-                filter: `
-                    created >= "${startOfDay}"
-                    &&
-                    created <= "${endOfDay}"
-                `
+                filter: dateFilter
             }),
-
-            pb.collection("Issues").getList(1, 100, {
-                sort: "-created_date",
-
-                filter: `
-                    created_date >= "${startOfDay}"
-                    &&
-                    created_date <= "${endOfDay}"
-                `
-            })
-
+            loadIssuesForDate(startOfDay, endOfDay)
         ]);
-
-
-        // ---------------------------------------------
-        // Gộp thành một danh sách Activity
-        // ---------------------------------------------
-
+        if (loadSequence !== activityLoadSequence) {
+            return;
+        }
         const activities = [
-
             ...notifications.items.map(notification => ({
-                type: "notification",
+                type: "project",
                 data: notification,
                 date: new Date(notification.created)
             })),
-
             ...issues.items.map(issue => ({
                 type: "issue",
                 data: issue,
-                date: new Date(issue.created_date)
+                date: getActivityDate(issue)
             }))
-
         ];
 
-
-        // ---------------------------------------------
-        // Sort mới nhất -> cũ nhất
-        // ---------------------------------------------
-
-        activities.sort(
-            (a, b) => b.date - a.date
-        );
-
-
-        // ---------------------------------------------
-        // Render
-        // ---------------------------------------------
-
+        activities.sort((a, b) => a.date - b.date);
+        panel.innerHTML = "";
         activities.forEach(activity => {
-
-            if (activity.type === "notification") {
-                ui.renderNotification(activity.data);
+            if (activity.type === "project") {
+                ui.renderNotification(activity.data, true);
             }
-
-            else if (activity.type === "issue") {
-                ui.renderIssue(activity.data);
+            else {
+                ui.renderIssue(activity.data, true);
             }
-
         });
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Lỗi khi tải lịch sử thông báo:",
-            error
+        if (!activities.length) {
+            showActivityState("No activities found for this date.");
+        }
+        updateActivityCounts();
+        applyActivityFilters();
+    } catch (error) {
+        if (loadSequence !== activityLoadSequence) {
+            return;
+        }
+        console.error("Failed to load activity history:", error);
+        showActivityState(
+            "Failed to load activities. Please try again.",
+            true
         );
-
+    } finally {
+        if (loadSequence === activityLoadSequence) {
+            panel.setAttribute("aria-busy", "false");
+        }
     }
 }
 
+async function getAllActivityRecords(collection, options) {
+    const firstPage = await pb.collection(collection).getList(1, 100, options);
+    const remainingPages = await Promise.all(
+        Array.from(
+            { length: Math.max(0, firstPage.totalPages - 1) },
+            (_, index) => pb.collection(collection).getList(index + 2, 100, options)
+        )
+    );
+    return {
+        items: [
+            ...firstPage.items,
+            ...remainingPages.flatMap(page => page.items)
+        ]
+    };
+}
+
+async function loadIssuesForDate(startOfDay, endOfDay) {
+    try {
+        return await getAllActivityRecords("Issues", {
+            sort: "-created_date",
+            filter: `created_date >= "${startOfDay}" && created_date <= "${endOfDay}"`
+        });
+    } catch (customDateError) {
+        try {
+            return await getAllActivityRecords("Issues", {
+                sort: "-created",
+                filter: `created >= "${startOfDay}" && created <= "${endOfDay}"`
+            });
+        } catch (fallbackError) {
+            console.warn("Issue date-field query failed:", customDateError);
+            throw fallbackError;
+        }
+    }
+}
+
+function showActivityState(message, retry = false) {
+    panel.innerHTML = `
+        <div class="activity-state" role="${retry ? "alert" : "status"}">
+            <span>${message}</span>
+            ${retry ? '<button type="button" class="activity-retry-btn" data-retry-activity>Try again</button>' : ""}
+        </div>
+    `;
+}
+
+function updateActivityCounts() {
+    const projectCount =
+        panel.querySelectorAll('.activity-item[data-type="project"]').length;
+    const issueCount =
+        panel.querySelectorAll('.activity-item[data-type="issue"]').length;
+    document.querySelector(".count-project").textContent = projectCount;
+    document.querySelector(".count-issue").textContent = issueCount;
+    document.querySelector(".count-all").textContent =
+        projectCount + issueCount;
+}
+
+function applyActivityFilters() {
+    const query = searchInput?.value.trim().toLocaleLowerCase() || "";
+    const projectId = projectSelect?.value || "";
+    let visibleCount = 0;
+
+    panel.querySelectorAll(".activity-item").forEach(item => {
+        const matchesTab =
+            activeActivityTab === "all" ||
+            item.dataset.type === activeActivityTab;
+        const matchesProject =
+            !projectId || item.dataset.projectId === projectId;
+        const matchesSearch =
+            !query || item.textContent.toLocaleLowerCase().includes(query);
+        const isVisible = matchesTab && matchesProject && matchesSearch;
+
+        item.hidden = !isVisible;
+        if (isVisible) visibleCount++;
+    });
+
+    panel.querySelector("#activity-filter-empty")?.remove();
+    if (panel.querySelector(".activity-item") && visibleCount === 0) {
+        const emptyState = document.createElement("div");
+        emptyState.id = "activity-filter-empty";
+        emptyState.className = "activity-state";
+        emptyState.textContent = "No activities match the selected filters.";
+        panel.appendChild(emptyState);
+    }
+}
 
 // =====================================================
 // 4. Realtime
@@ -190,41 +279,23 @@ function subscribeRealtime() {
 
 function subscribeCollection(collectionName) {
     pb.collection(collectionName).subscribe("*", event => {
-
         if (event.action !== "create") {
             return;
         }
 
-        // ---------------------------------------------
-        // Notification counter
-        // ---------------------------------------------
         increaseNotificationCount();
-
-        // ---------------------------------------------
-        // Kiểm tra record có thuộc ngày đang chọn không
-        // ---------------------------------------------
-        const recordDate = getRecordDate(
-            collectionName,
-            event.record
-        );
-
-        const selectedDate = dateInput.value;
-
-        if (recordDate !== selectedDate) {
+        if (getRecordDate(collectionName, event.record) !== dateInput.value) {
             return;
         }
 
-
-        // ---------------------------------------------
-        // Render record mới
-        // ---------------------------------------------
         if (collectionName === "Notifications") {
-            ui.renderNotification(event.record);
+            ui.renderNotification(event.record, true);
         }
-
-        else if (collectionName === "Issues") {
-            ui.renderIssue(event.record);
+        else {
+            ui.renderIssue(event.record, true);
         }
+        updateActivityCounts();
+        applyActivityFilters();
     });
 }
 
@@ -240,12 +311,25 @@ function increaseNotificationCount() {
 
 
 function getRecordDate(collectionName, record) {
-    const field =
-        collectionName === "Notifications"
-            ? record.created
-            : record.created_date;
-    return new Date(field)
-        .toLocaleDateString("sv-SE");
+    const date = collectionName === "Notifications"
+        ? new Date(record.created)
+        : getActivityDate(record);
+    return getBusinessDate(date);
+}
+
+function getActivityDate(record) {
+    return new Date(record.created_date || record.createdDate || record.created);
+}
+
+function getBusinessDate(date) {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(date);
+    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+    return `${values.year}-${values.month}-${values.day}`;
 }
 
 // =====================================================
@@ -285,15 +369,19 @@ const deadlineWarningCount =
 function openDeadlineDrawer() {
     deadlineDrawer.classList.add("active");
     deadlineOverlay.classList.add("active");
-    console.log("open");
-    loadDeadlineWarnings();
+    deadlineDrawer.setAttribute("aria-hidden", "false");
+    deadlineButton?.setAttribute("aria-expanded", "true");
+    closeButton?.focus();
+    return loadDeadlineWarnings();
 }
 
 
 function closeDeadlineDrawer() {
-
     deadlineDrawer.classList.remove("active");
     deadlineOverlay.classList.remove("active");
+    deadlineDrawer.setAttribute("aria-hidden", "true");
+    deadlineButton?.setAttribute("aria-expanded", "false");
+    deadlineButton?.focus();
 }
 
 async function loadDeadlineWarnings() {
@@ -317,15 +405,16 @@ async function loadDeadlineWarnings() {
         renderDeadlineWarnings(warnings);
 
     } catch (error) {
-
-        console.error(
-            "Failed to load deadline warnings:",
-            error
-        );
-
+        console.error("Failed to load deadline warnings:", error);
+        deadlineWarningCount.textContent = "Unable to load warnings";
+        const countElement = document.querySelector(".count-system");
+        if (countElement) {
+            countElement.textContent = "!";
+            countElement.title = "Unable to load deadline warnings";
+        }
         deadlineWarningList.innerHTML = `
-            <div class="alert alert-danger">
-                Failed to load deadline warnings.
+            <div class="activity-state deadline-error" role="alert">
+                Failed to load deadline warnings. Please try again.
             </div>
         `;
     }
@@ -344,6 +433,7 @@ function renderDeadlineWarnings(warnings) {
 
     if (countElement) {
         countElement.textContent = warnings.length;
+        countElement.removeAttribute("title");
     }
 
 
@@ -599,4 +689,3 @@ function formatRemainingTime(hours) {
     const days = hours / 24;
     return `${days.toFixed(1)} days remaining`;
 }
-

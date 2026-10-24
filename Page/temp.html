@@ -1,612 +1,1008 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
-     <meta charset="UTF-8" />
-     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-     <title>Projects</title>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Quản lý dự án | EBTCamp</title>
 
      <!-- Bootstrap 5 -->
-     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
-     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
      <!-- Bootstrap Icons -->
-     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
-
-     <!-- Project Page CSS -->
-     <link href="../CSS/project.css" rel="stylesheet">
-
-     <!-- JQuery 4.0.0-->
-     <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script>
-
-     <!-- Sweet Alert-->
-     <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
-     <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
-
-     <!-- Tom Select -->
-     <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
-     <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
      <style>
           :root {
-               --page-bg: #f6f7fb;
-               --card-bg: #ffffff;
-               --border-color: #eceef3;
-               --text-main: #1f2937;
-               --text-muted: #8a94a6;
-               --green: #16a34a;
-               --blue: #3b82f6;
-               --orange: #f59e0b;
-               --red: #ef4444;
-               --shadow-sm: 0 6px 20px rgba(15, 23, 42, 0.05);
+               --primary: #ed1c35;
+               --primary-dark: #cf1028;
+               --primary-light: #fff0f2;
+               --text: #202938;
+               --muted: #788397;
+               --border: #e9edf2;
+               --surface: #ffffff;
+               --page-bg: #f7f8fa;
+          }
+
+          * {
+               box-sizing: border-box;
           }
 
           body {
-               background: #f5f5f5;
-               font-family: "Inter", sans-serif;
-               font-size: 15px;
-               color: #333;
-          }
-
-          /* ===== Header ===== */
-          .btn-create-project:hover {
-               background: #166534;
-               border-color: #166534;
-               color: #fff;
-          }
-
-          /* ===== Stat cards ===== */
-          .stat-card {
-               background: #fff;
-               border: 1px solid var(--border-color);
-               border-radius: 14px;
-               padding: 16px 18px;
-               height: 100%;
-               transition: all 0.2s ease;
-          }
-
-          .stat-card:hover {
-               transform: translateY(-2px);
-               box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-          }
-
-          .stat-top {
-               display: flex;
-               align-items: center;
-               gap: 8px;
-               margin-bottom: 10px;
-               font-size: 13px;
-               color: var(--text-muted);
-               font-weight: 600;
-          }
-
-          .stat-dot {
-               width: 10px;
-               height: 10px;
-               border-radius: 50%;
-               display: inline-block;
-          }
-
-          .dot-blue {
-               background: var(--blue);
-          }
-
-          .dot-green {
-               background: var(--green);
-          }
-
-          .dot-orange {
-               background: var(--orange);
-          }
-
-          .dot-red {
-               background: var(--red);
-          }
-
-          .stat-value {
-               font-size: 32px;
-               line-height: 1;
-               font-weight: 700;
-               color: var(--text-main);
-          }
-
-          /* ===== Table ===== */
-
-          .projects-table {
-               margin-bottom: 0;
-               vertical-align: middle;
-          }
-
-          .projects-table thead th {
-               background: #fafbfc;
-               color: #7b8797;
-               font-size: 13px;
-               font-weight: 700;
-               border-bottom: 1px solid var(--border-color);
-               padding: 14px 18px;
-               white-space: nowrap;
-          }
-
-          .projects-table tbody td {
-               padding: 18px;
-               border-bottom: 1px solid #f0f2f6;
+               margin: 0;
+               background: var(--page-bg);
+               color: var(--text);
+               font-family: Inter, "Segoe UI", Arial, sans-serif;
                font-size: 14px;
           }
 
-          .projects-table tbody tr:last-child td {
-               border-bottom: none;
+          button,
+          input {
+               font: inherit;
+          }
+
+          .page-container {
+               max-width: 1600px;
+               margin: 0 auto;
+               padding: 32px 36px 48px;
+          }
+
+          /* Header */
+
+          .page-header {
+               display: flex;
+               justify-content: space-between;
+               align-items: center;
+               flex-wrap: wrap;
+               gap: 20px;
+               margin-bottom: 28px;
+          }
+
+          .page-heading {
+               display: flex;
+               align-items: center;
+               gap: 15px;
+          }
+
+          .heading-icon {
+               width: 52px;
+               height: 52px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               border-radius: 15px;
+               color: var(--primary);
+               background: var(--primary-light);
+               font-size: 25px;
+          }
+
+          .page-title {
+               margin: 0 0 5px;
+               font-size: 27px;
+               font-weight: 750;
+               letter-spacing: -0.7px;
+          }
+
+          .page-subtitle {
+               margin: 0;
+               color: var(--muted);
+               font-size: 13px;
+          }
+
+          .header-actions {
+               display: flex;
+               align-items: center;
+               gap: 12px;
+          }
+
+          .search-box {
+               position: relative;
+               width: 250px;
+          }
+
+          .search-box i {
+               position: absolute;
+               left: 14px;
+               top: 50%;
+               transform: translateY(-50%);
+               color: var(--muted);
+               font-size: 16px;
+          }
+
+          .search-input {
+               width: 100%;
+               height: 43px;
+               padding: 0 14px 0 40px;
+               border: 1px solid var(--border);
+               border-radius: 11px;
+               background: white;
+               outline: none;
+               transition: border-color .2s, box-shadow .2s;
+          }
+
+          .search-input:focus {
+               border-color: #f08a98;
+               box-shadow: 0 0 0 3px rgba(237, 28, 53, .08);
+          }
+
+          .btn-add {
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               gap: 8px;
+               height: 43px;
+               padding: 0 18px;
+               border: 1px solid var(--primary);
+               border-radius: 11px;
+               background: var(--primary);
+               color: white;
+               font-weight: 600;
+               white-space: nowrap;
+               transition: .2s;
+          }
+
+          .btn-add:hover {
+               background: var(--primary-dark);
+               border-color: var(--primary-dark);
+               color: white;
+               transform: translateY(-1px);
+               box-shadow: 0 5px 14px rgba(237, 28, 53, .18);
+          }
+
+          /* Project grid */
+
+          .project-grid {
+               display: grid;
+               grid-template-columns: repeat(3, minmax(0, 1fr));
+               gap: 24px;
+          }
+
+          .project-card {
+               min-width: 0;
+               overflow: hidden;
+               border: 1px solid #eceff3;
+               border-radius: 15px;
+               background: var(--surface);
+               box-shadow: 0 4px 18px rgba(27, 39, 56, .045);
+               transition: transform .22s ease, box-shadow .22s ease;
+          }
+
+          .project-card:hover {
+               transform: translateY(-4px);
+               box-shadow: 0 12px 30px rgba(27, 39, 56, .09);
+          }
+
+          /* Machine image */
+
+          .project-image-wrap {
+               position: relative;
+               height: 190px;
+               overflow: hidden;
+               background: #eef1f5;
+          }
+
+          .project-image {
+               width: 100%;
+               height: 100%;
+               object-fit: cover;
+               display: block;
+               transition: transform .4s ease;
+          }
+
+          .project-card:hover .project-image {
+               transform: scale(1.035);
+          }
+
+          .project-menu {
+               position: absolute;
+               top: 12px;
+               right: 12px;
+          }
+
+          .menu-button {
+               width: 35px;
+               height: 35px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               border: 1px solid rgba(255, 255, 255, .65);
+               border-radius: 10px;
+               background: rgba(255, 255, 255, .94);
+               color: #354052;
+               font-size: 19px;
+               box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+          }
+
+          .menu-button:hover {
+               background: white;
+               color: var(--primary);
+          }
+
+          .dropdown-menu {
+               border: 1px solid var(--border);
+               border-radius: 10px;
+               padding: 6px;
+               box-shadow: 0 8px 25px rgba(0, 0, 0, .10);
+          }
+
+          .dropdown-item {
+               padding: 9px 12px;
+               border-radius: 6px;
+               font-size: 13px;
+          }
+
+          .dropdown-item i {
+               margin-right: 8px;
+          }
+
+          /* Card body */
+
+          .project-body {
+               padding: 20px;
+          }
+
+          .project-title-row {
+               display: flex;
+               align-items: flex-start;
+               gap: 12px;
+               margin-bottom: 23px;
+          }
+
+          .project-icon {
+               flex-shrink: 0;
+               width: 42px;
+               height: 42px;
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               border-radius: 12px;
+               background: var(--primary-light);
+               color: var(--primary);
+               font-size: 21px;
           }
 
           .project-name {
+               margin: 1px 0 5px;
+               font-size: 16px;
+               line-height: 1.4;
                font-weight: 700;
-               color: #111827;
+               overflow-wrap: anywhere;
           }
 
-          .date-text {
-               color: #4b5563;
-               font-weight: 500;
-          }
-
-          /* ===== Progress ===== */
-          .progress-cell {
-               min-width: 180px;
-          }
-
-          .progress-percent {
-               font-size: 13px;
-               font-weight: 700;
-               color: #4b5563;
-               margin-bottom: 8px;
-          }
-
-          .custom-progress {
-               height: 8px;
-               background: #edf1f7;
-               border-radius: 999px;
-               overflow: hidden;
-
-          }
-
-          .custom-progress .progress-bar {
-               border-radius: 999px;
-               height: 8px;
-          }
-
-          .progress-blue {
-               background: var(--blue);
-          }
-
-          .progress-green {
-               background: var(--green);
-          }
-
-          .progress-orange {
-               background: var(--orange);
-          }
-
-          .progress-red {
-               background: var(--red);
-          }
-
-          /* ===== Status badge ===== */
-          .status-badge {
-               display: inline-flex;
-               align-items: center;
-               justify-content: center;
-               min-width: 110px;
-               padding: 7px 12px;
-               border-radius: 999px;
-               font-size: 12px;
-               font-weight: 700;
-               border: 1px solid transparent;
-          }
-
-          .status-in-progress {
-               color: #2563eb;
-               background: #eff6ff;
-               border-color: #dbeafe;
-          }
-
-          .status-completed {
-               color: #15803d;
-               background: #ecfdf3;
-               border-color: #d1fae5;
-          }
-
-          .status-on-hold {
-               color: #d97706;
-               background: #fff7ed;
-               border-color: #fed7aa;
-          }
-
-          .status-not-started {
-               color: #dc2626;
-               background: #fef2f2;
-               border-color: #fecaca;
-          }
-
-          /* ===== Action buttons ===== */
-          .action-group {
-               display: flex;
-               align-items: center;
-               gap: 8px;
-          }
-
-          .icon-action {
-               width: 34px;
-               height: 34px;
-               border-radius: 10px;
-               border: 1px solid var(--border-color);
-               background: #19c2a4;
-               color: white;
-               display: inline-flex;
-               align-items: center;
-               justify-content: center;
-               transition: 0.2s ease;
-          }
-
-          .icon-action:hover {
-               background: #f9fafb;
-               color: #111827;
-               transform: translateY(-1px);
-          }
-
-          /* ===== Footer / Pagination ===== */
-          .pagination-custom {
-               gap: 8px;
+          .project-description {
                margin: 0;
+               color: var(--muted);
+               font-size: 12px;
+               line-height: 1.5;
           }
 
-          .pagination-custom .page-link {
-               width: 36px;
-               height: 36px;
-               padding: 0;
-               border-radius: 10px !important;
-               border: 1px solid var(--border-color);
+          /* Dates */
+
+          .project-dates {
+               display: grid;
+               grid-template-columns: 1fr 1fr;
+               gap: 12px;
+               padding: 16px 0;
+               border-top: 1px solid #f0f2f5;
+               border-bottom: 1px solid #f0f2f5;
+          }
+
+          .date-item {
                display: flex;
-               align-items: center;
-               justify-content: center;
-               color: #4b5563;
-               background: #fff;
+               align-items: flex-start;
+               gap: 9px;
+               min-width: 0;
           }
 
-          .pagination-custom .page-item.active .page-link {
-               background: #2563eb;
-               border-color: #2563eb;
-               color: #fff;
+          .date-icon {
+               margin-top: 1px;
+               color: var(--primary);
+               font-size: 17px;
           }
 
-          .pagination-custom .page-link:hover {
-               background: #f8fafc;
-               color: #111827;
-          }
-
-          .pagination-custom .page-item.active .page-link:hover {
-               background: #2563eb;
-               color: #fff;
-          }
-
-          /* ===== Responsive ===== */
-          @media (max-width: 992px) {
-               .projects-table {
-                    min-width: 950px;
-               }
-
-               .table-scroll {
-                    overflow-x: auto;
-               }
-          }
-
-          .nav-link {
-               color: #333;
-               margin-bottom: 10px;
-               padding: 13px 15px;
-               border: 1px solid transparent;
-               border-radius: 8px;
-               transition: .25s;
-          }
-
-          .nav-link:hover {
-               background: #fff1f3;
-               border-color: #e60012;
-               color: #222;
-          }
-
-          .nav-link.active {
-               background: #ffffff;
-               border-color: #e60012;
-               color: #333;
-          }
-
-          .overlay-create-project {
-               position: fixed;
-               top: 0;
-               left: 0;
-               right: 0;
-               bottom: 0;
-               background: rgba(0, 0, 0, 0.5);
-               display: none;
-               justify-content: center;
-               align-items: center;
-               z-index: 1000;
-          }
-
-          .popup-create-project {
-               background: #fff;
-               padding: 30px;
-               border-radius: 10px;
-               width: 600px;
-               max-height: 90%;
-               overflow-y: auto;
-               font-family: Arial, sans-serif;
-          }
-
-          .form-group-create-project {
-               margin-bottom: 15px;
-               display: flex;
-               flex-direction: column;
-          }
-
-          .form-group-create-project label {
+          .date-label {
                margin-bottom: 5px;
-               font-weight: bold;
+               color: var(--muted);
+               font-size: 12px;
           }
 
-          .form-group-create-project input,
-          .form-group-create-project select {
-               padding: 8px 10px;
-               border-radius: 5px;
-               border: 1px solid #ccc;
+          .date-value {
+               color: #303b4c;
+               font-size: 12px;
+               font-weight: 650;
+               white-space: nowrap;
           }
 
-          .form-actions-create-project {
+          /* Card footer */
+
+          .project-footer {
                display: flex;
-               justify-content: flex-end;
-               gap: 10px;
-               margin-top: 20px;
+               justify-content: space-between;
+               align-items: center;
+               gap: 12px;
+               padding-top: 17px;
           }
 
-          .form-actions-create-project button {
-               padding: 8px 15px;
-               border-radius: 5px;
-               border: none;
-               cursor: pointer;
-          }
-
-          .action-menu {
-               position: absolute;
-               right: 5px;
-               min-width: 120px;
-               background: #fff;
-               border: 1px solid #ddd;
-               border-radius: 6px;
-               box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-               display: none;
-               z-index: 1000;
-               top: -15px;
-          }
-
-          .action-menu.show {
-               display: block;
-          }
-
-          .action-item {
-               padding: 6px 10px;
-               cursor: pointer;
+          .status-wrap {
                display: flex;
                align-items: center;
+               gap: 7px;
+               color: #687487;
+               font-size: 12px;
+          }
+
+          .status-dot {
+               width: 8px;
+               height: 8px;
+               flex-shrink: 0;
+               border-radius: 50%;
+               background: #9aa3b2;
+          }
+
+          .status-active .status-dot {
+               background: #10a37f;
+          }
+
+          .status-pending .status-dot {
+               background: #ed1c35;
+          }
+
+          .status-paused .status-dot {
+               background: #f59e0b;
+          }
+
+          .status-completed .status-dot {
+               background: #8b5cf6;
+          }
+
+          .btn-detail {
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               gap: 7px;
+               min-height: 37px;
+               padding: 0 13px;
+               border: 1px solid #ffc5cd;
+               border-radius: 9px;
+               background: white;
+               color: var(--primary-dark);
+               font-size: 12px;
+               font-weight: 650;
+               white-space: nowrap;
+               transition: .2s;
+          }
+
+          .btn-detail:hover {
+               background: var(--primary);
+               border-color: var(--primary);
+               color: white;
+          }
+
+          /* Empty state */
+
+          .empty-state {
+               display: none;
+               padding: 65px 20px;
+               text-align: center;
+               border: 1px dashed #dce1e8;
+               border-radius: 15px;
+               background: white;
+          }
+
+          .empty-state i {
+               display: block;
+               margin-bottom: 12px;
+               color: #c2c9d4;
+               font-size: 42px;
+          }
+
+          .empty-state h5 {
+               font-size: 16px;
+               font-weight: 700;
+          }
+
+          .empty-state p {
+               color: var(--muted);
+          }
+
+          /* Modal */
+
+          .modal-content {
+               border: none;
+               border-radius: 16px;
+               box-shadow: 0 15px 50px rgba(0, 0, 0, .15);
+          }
+
+          .modal-header {
+               padding: 20px 24px;
+               border-bottom: 1px solid var(--border);
+          }
+
+          .modal-title {
+               font-weight: 700;
+          }
+
+          .modal-body {
+               padding: 24px;
+          }
+
+          .form-label {
+               margin-bottom: 7px;
+               color: #394457;
+               font-size: 13px;
+               font-weight: 600;
+          }
+
+          .form-control {
+               min-height: 42px;
+               border-color: #e2e6ed;
+               border-radius: 9px;
+               font-size: 13px;
+          }
+
+          .form-control:focus {
+               border-color: #f08a98;
+               box-shadow: 0 0 0 3px rgba(237, 28, 53, .08);
+          }
+
+          /* Responsive */
+
+          @media (max-width: 1100px) {
+               .page-container {
+                    padding: 25px 24px 40px;
+               }
+
+               .project-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 20px;
+               }
+
+               .project-image-wrap {
+                    height: 175px;
+               }
+          }
+
+          @media (max-width: 650px) {
+               .page-container {
+                    padding: 20px 14px 32px;
+               }
+
+               .page-header {
+                    align-items: stretch;
+                    margin-bottom: 20px;
+               }
+
+               .page-title {
+                    font-size: 23px;
+               }
+
+               .header-actions {
+                    display: grid;
+                    grid-template-columns: 1fr auto;
+                    width: 100%;
+               }
+
+               .search-box {
+                    width: 100%;
+               }
+
+               .btn-add {
+                    padding: 0 12px;
+               }
+
+               .project-grid {
+                    grid-template-columns: 1fr;
+                    gap: 16px;
+               }
+
+               .project-image-wrap {
+                    height: 195px;
+               }
           }
      </style>
-
 </head>
 
 <body>
-     <div class="container-fluid">
-          <div class="row">
-               <!-- Sidebar -->
-               <div class="col-lg-2 d-flex flex-column p-4 sticky-top" style="
-              height: 100vh;
-                background-color: #ffffff;
-                color: #222222;
-              border-right: 1px solid #e5e5e5;
-                  ">
 
-                    <!-- LOGO -->
-                    <div class="text-center mb-4">
-                         <img src="../Image/lg_display_logo_web.png" alt="Logo" style="
-                width: 140px;
-                height: auto;
-                object-fit: contain;
-             ">
+     <main class="page-container">
+
+          <!-- Project cards -->
+          <section id="projectGrid" class="project-grid">
+
+               <!-- Project 1 -->
+               <article class="project-card" data-name="project 1 máy gắp nhả hàng tự động">
+                    <div class="project-image-wrap">
+                         <img class="project-image"
+                              src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1000&q=85"
+                              alt="Máy gắp nhả hàng tự động" loading="lazy">
+
+                         <div class="project-menu dropdown">
+                              <button class="menu-button" data-bs-toggle="dropdown" aria-label="Tùy chọn project 1">
+                                   <i class="bi bi-three-dots"></i>
+                              </button>
+
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                   <li>
+                                        <button class="dropdown-item" onclick="viewProject('project 1')">
+                                             <i class="bi bi-eye"></i>Xem chi tiết
+                                        </button>
+                                   </li>
+                                   <li>
+                                        <button class="dropdown-item" onclick="copyProjectName('project 1')">
+                                             <i class="bi bi-copy"></i>Sao chép tên dự án
+                                        </button>
+                                   </li>
+                              </ul>
+                         </div>
                     </div>
 
-                    <nav class="nav flex-column">
-                         <a class="nav-link" href="inventory.html" id="inventory-link">
-                              <i class="bi bi-boxes me-2"></i> Inventory
-                         </a>
-
-                         <a class="nav-link" href="order.html" id="orders-link">
-                              <i class="bi bi-receipt me-2"></i> Orders
-                         </a>
-
-                         <a class="nav-link" id="project-link">
-                              <i class="bi bi-tools me-2"></i> Project
-                         </a>
-
-                         <a class="nav-link" href="information.html" id="information-link">
-                              <i class="bi bi-info-square-fill me-2"></i> Information
-                         </a>
-
-                         <a class="nav-link" href="user.html" id="user-link">
-                              <i class="bi bi-people me-2"></i> User
-                         </a>
-                    </nav>
-
-                    <!-- User Info -->
-                    <div class="mt-auto pt-3 d-flex align-items-center" style="
-                       border-top:1px solid #eeeeee;
-                   ">
-
-                         <img src="../Images/avatar.png" alt="Avatar" class="rounded-circle" width="45" height="45"
-                              style="
-                           border:2px solid #e60012;
-                       ">
-
-                         <div class="ms-3">
-
-                              <div class="fw-semibold" id="user-name" style="
-                color:#222;
-             ">
-                                   Nguyễn Văn A
+                    <div class="project-body">
+                         <div class="project-title-row">
+                              <div class="project-icon">
+                                   <i class="bi bi-robot"></i>
                               </div>
 
-
-                              <small id="user-role" style="
-                color:#888;
-             ">
-                                   Engineer
-                              </small>
-
+                              <div>
+                                   <h2 class="project-name">project 1</h2>
+                                   <p class="project-description">
+                                        Máy gắp - nhả hàng tự động
+                                   </p>
+                              </div>
                          </div>
 
-                    </div>
-
-               </div>
-
-               <div class="col-lg-10 p-1">
-                    <div style="min-width: 1212px;">
-                         <div
-                              style="background: var(--card-bg);border: 1px solid var(--border-color);border-radius: 18px;box-shadow: var(--shadow-sm);padding: 22px;">
-                              <!-- Header -->
-                              <div
-                                   class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                         <div class="project-dates">
+                              <div class="date-item">
+                                   <i class="bi bi-calendar3 date-icon"></i>
                                    <div>
-                                        <h1 style="font-size: 24px;font-weight: 700;margin-bottom: 4px;">Projects</h1>
-                                        <p style="font-size: 13px;color: var(--text-muted);margin-bottom: 0;">Manage all
-                                             projects in the system</p>
-                                   </div>
-
-                                   <button class="btn btn-create-project"
-                                        style="background: #15803d;border-color: #15803d;color: #fff;font-weight: 600;border-radius: 10px;padding: 10px 16px;box-shadow: 0 8px 16px rgba(21, 128, 61, 0.2);">
-                                        <i class="bi bi-plus-lg me-2"></i>New Project
-                                   </button>
-                              </div>
-
-                              <!-- Stats -->
-                              <div class="row g-3 mb-4" id="statsContainer">
-                                   <!-- JS render -->
-                              </div>
-
-                              <!-- Toolbar -->
-                              <div class="row g-3 align-items-center" style="margin-top: 22px;margin-bottom: 18px;">
-                                   <div class="col-lg-6">
-                                        <div style="position: relative;">
-                                             <i class="bi bi-search"
-                                                  style="position: absolute;top: 50%;left: 14px;transform: translateY(-50%);color: #9aa3b2;font-size: 15px;"></i>
-                                             <input type="text" id="searchInput" placeholder="Search projects..."
-                                                  style="padding-left: 40px;border-radius: 12px;height: 44px;border: 1px solid var(--border-color);box-shadow: none;" />
-                                        </div>
-                                   </div>
-
-                                   <div class="col-lg-6">
-                                        <div class="d-flex gap-2 justify-content-lg-end">
-                                             <select class="form-select" id="statusFilter" style="max-width: 220px;">
-                                                  <option value="all">All Status</option>
-                                                  <option value="In Progress">In Progress</option>
-                                                  <option value="Completed">Completed</option>
-                                                  <option value="On Hold">On Hold</option>
-                                                  <option value="Not Started">Not Started</option>
-                                             </select>
-                                        </div>
+                                        <div class="date-label">Ngày bắt đầu</div>
+                                        <div class="date-value">15/09/2026</div>
                                    </div>
                               </div>
 
-                              <!-- Table -->
-                              <div
-                                   style="border: 1px solid var(--border-color);border-radius: 16px;overflow: hidden;background: #fff;min-height: 500px;">
-                                   <div class="table-scroll">
-                                        <table class="table projects-table">
-                                             <thead>
-                                                  <tr>
-                                                       <th style="min-width: 180px;">Project Name</th>
-                                                       <th>Start Date</th>
-                                                       <th>End Date</th>
-                                                       <th style="min-width: 220px;">Progress</th>
-                                                       <th>Status</th>
-                                                       <th style="width: 120px;">Actions</th>
-                                                  </tr>
-                                             </thead>
-                                             <tbody id="projectTableBody">
-                                                  <!-- JS render -->
-                                             </tbody>
-                                        </table>
-                                   </div>
-
-                                   <!-- Footer -->
-                                   <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3"
-                                        style="border-top: 1px solid var(--border-color);padding: 16px 18px;background: #fff;">
-                                        <div id="tableInfo"
-                                             style="color: var(--text-muted);font-size: 13px;font-weight: 500;">
-                                             Showing 1 to 5 of 12 projects
-                                        </div>
-
-                                        <nav>
-                                             <ul class="pagination pagination-custom" id="pagination">
-                                                  <!-- JS render -->
-                                             </ul>
-                                        </nav>
+                              <div class="date-item">
+                                   <i class="bi bi-calendar-check date-icon"></i>
+                                   <div>
+                                        <div class="date-label">Ngày kết thúc</div>
+                                        <div class="date-value">30/09/2026</div>
                                    </div>
                               </div>
                          </div>
+
+                         <div class="project-footer">
+                              <div class="status-wrap status-pending">
+                                   <span class="status-dot"></span>
+                                   <span>Chưa bắt đầu</span>
+                              </div>
+
+                              <button class="btn-detail" onclick="viewProject('project 1')">
+                                   <i class="bi bi-eye"></i>
+                                   Xem chi tiết
+                              </button>
+                         </div>
+                    </div>
+               </article>
+
+               <!-- Project 2 -->
+               <article class="project-card" data-name="project 2 máy đóng gói tự động">
+                    <div class="project-image-wrap">
+                         <img class="project-image"
+                              src="https://images.unsplash.com/photo-1567789884554-0b844b597180?auto=format&fit=crop&w=1000&q=85"
+                              alt="Máy đóng gói tự động" loading="lazy">
+
+                         <div class="project-menu dropdown">
+                              <button class="menu-button" data-bs-toggle="dropdown" aria-label="Tùy chọn project 2">
+                                   <i class="bi bi-three-dots"></i>
+                              </button>
+
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                   <li>
+                                        <button class="dropdown-item" onclick="viewProject('project 2')">
+                                             <i class="bi bi-eye"></i>Xem chi tiết
+                                        </button>
+                                   </li>
+                                   <li>
+                                        <button class="dropdown-item" onclick="copyProjectName('project 2')">
+                                             <i class="bi bi-copy"></i>Sao chép tên dự án
+                                        </button>
+                                   </li>
+                              </ul>
+                         </div>
+                    </div>
+
+                    <div class="project-body">
+                         <div class="project-title-row">
+                              <div class="project-icon">
+                                   <i class="bi bi-robot"></i>
+                              </div>
+
+                              <div>
+                                   <h2 class="project-name">project 2</h2>
+                                   <p class="project-description">
+                                        Máy đóng gói tự động
+                                   </p>
+                              </div>
+                         </div>
+
+                         <div class="project-dates">
+                              <div class="date-item">
+                                   <i class="bi bi-calendar3 date-icon"></i>
+                                   <div>
+                                        <div class="date-label">Ngày bắt đầu</div>
+                                        <div class="date-value">01/10/2026</div>
+                                   </div>
+                              </div>
+
+                              <div class="date-item">
+                                   <i class="bi bi-calendar-check date-icon"></i>
+                                   <div>
+                                        <div class="date-label">Ngày kết thúc</div>
+                                        <div class="date-value">20/10/2026</div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div class="project-footer">
+                              <div class="status-wrap status-active">
+                                   <span class="status-dot"></span>
+                                   <span>Đang thực hiện</span>
+                              </div>
+
+                              <button class="btn-detail" onclick="viewProject('project 2')">
+                                   <i class="bi bi-eye"></i>
+                                   Xem chi tiết
+                              </button>
+                         </div>
+                    </div>
+               </article>
+
+               <!-- Project 3 -->
+               <article class="project-card" data-name="project 3 máy lắp ráp tự động">
+                    <div class="project-image-wrap">
+                         <img class="project-image"
+                              src="https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=1000&q=85"
+                              alt="Máy lắp ráp tự động" loading="lazy">
+
+                         <div class="project-menu dropdown">
+                              <button class="menu-button" data-bs-toggle="dropdown" aria-label="Tùy chọn project 3">
+                                   <i class="bi bi-three-dots"></i>
+                              </button>
+
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                   <li>
+                                        <button class="dropdown-item" onclick="viewProject('project 3')">
+                                             <i class="bi bi-eye"></i>Xem chi tiết
+                                        </button>
+                                   </li>
+                                   <li>
+                                        <button class="dropdown-item" onclick="copyProjectName('project 3')">
+                                             <i class="bi bi-copy"></i>Sao chép tên dự án
+                                        </button>
+                                   </li>
+                              </ul>
+                         </div>
+                    </div>
+
+                    <div class="project-body">
+                         <div class="project-title-row">
+                              <div class="project-icon">
+                                   <i class="bi bi-robot"></i>
+                              </div>
+
+                              <div>
+                                   <h2 class="project-name">project 3</h2>
+                                   <p class="project-description">
+                                        Máy lắp ráp tự động
+                                   </p>
+                              </div>
+                         </div>
+
+                         <div class="project-dates">
+                              <div class="date-item">
+                                   <i class="bi bi-calendar3 date-icon"></i>
+                                   <div>
+                                        <div class="date-label">Ngày bắt đầu</div>
+                                        <div class="date-value">10/08/2026</div>
+                                   </div>
+                              </div>
+
+                              <div class="date-item">
+                                   <i class="bi bi-calendar-check date-icon"></i>
+                                   <div>
+                                        <div class="date-label">Ngày kết thúc</div>
+                                        <div class="date-value">15/10/2026</div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div class="project-footer">
+                              <div class="status-wrap status-paused">
+                                   <span class="status-dot"></span>
+                                   <span>Tạm dừng</span>
+                              </div>
+
+                              <button class="btn-detail" onclick="viewProject('project 3')">
+                                   <i class="bi bi-eye"></i>
+                                   Xem chi tiết
+                              </button>
+                         </div>
+                    </div>
+               </article>
+          </section>
+
+          <!-- Search empty state -->
+          <div id="emptyState" class="empty-state">
+               <i class="bi bi-search"></i>
+               <h5>Không tìm thấy dự án</h5>
+               <p>Thử tìm kiếm bằng một tên dự án khác.</p>
+          </div>
+
+     </main>
+
+     <!-- Add project modal -->
+     <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+
+                    <div class="modal-header">
+                         <h5 class="modal-title" id="addProjectModalLabel">
+                              <i class="bi bi-plus-circle me-2 text-danger"></i>
+                              Thêm dự án mới
+                         </h5>
+
+                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+
+                    <form id="addProjectForm">
+                         <div class="modal-body">
+
+                              <div class="mb-3">
+                                   <label for="newProjectName" class="form-label">
+                                        Tên dự án
+                                   </label>
+                                   <input type="text" id="newProjectName" class="form-control"
+                                        placeholder="Nhập tên dự án" required>
+                              </div>
+
+                              <div class="mb-3">
+                                   <label for="newProjectDescription" class="form-label">
+                                        Mô tả
+                                   </label>
+                                   <input type="text" id="newProjectDescription" class="form-control"
+                                        placeholder="Ví dụ: Máy gắp nhả hàng tự động">
+                              </div>
+
+                              <div class="row g-3">
+                                   <div class="col-6">
+                                        <label for="newStartDate" class="form-label">
+                                             Ngày bắt đầu
+                                        </label>
+                                        <input type="date" id="newStartDate" class="form-control" required>
+                                   </div>
+
+                                   <div class="col-6">
+                                        <label for="newEndDate" class="form-label">
+                                             Ngày kết thúc
+                                        </label>
+                                        <input type="date" id="newEndDate" class="form-control" required>
+                                   </div>
+                              </div>
+
+                              <p class="text-secondary mt-3 mb-0" style="font-size:12px">
+                                   Bản demo lưu dự án mới trên giao diện hiện tại.
+                                   Chưa kết nối cơ sở dữ liệu.
+                              </p>
+                         </div>
+
+                         <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">
+                                   Hủy
+                              </button>
+
+                              <button type="submit" class="btn-add">
+                                   <i class="bi bi-check2"></i>
+                                   Tạo dự án
+                              </button>
+                         </div>
+                    </form>
+               </div>
+          </div>
+     </div>
+
+     <!-- Detail modal -->
+     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+                    <div class="modal-header">
+                         <h5 class="modal-title" id="detailModalLabel">
+                              Chi tiết dự án
+                         </h5>
+                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                         <p id="detailProjectName" class="mb-0"></p>
                     </div>
                </div>
           </div>
      </div>
 
-     <div id="overlay-create-project" class="overlay-create-project">
-          <div class="popup-create-project">
-               <h2>Create New Project</h2>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-               <div class="form-group-create-project">
-                    <label>Project Name</label>
-                    <input type="text" id="project-name" placeholder="Enter project name" required>
-               </div>
+     <script>
+          // Search projects by name or description
+          const searchInput = document.getElementById('projectSearch');
+          const projectGrid = document.getElementById('projectGrid');
+          const emptyState = document.getElementById('emptyState');
 
-               <div class="form-group-create-project">
-                    <label>Start Date</label>
-                    <input type="date" id="start-date" required>
-               </div>
+          function filterProjects() {
+               const keyword = searchInput.value
+                    .trim()
+                    .toLocaleLowerCase('vi');
 
-               <div class="form-group-create-project">
-                    <label>End Date</label>
-                    <input type="date" id="end-date" required>
-               </div>
+               const cards = projectGrid.querySelectorAll('.project-card');
+               let visibleCount = 0;
 
-               <div class="form-group-create-project">
-                    <label>PIC</label>
-                    <select id="pic" required></select>
-               </div>
+               cards.forEach(card => {
+                    const searchableText = (
+                         card.dataset.name + ' ' + card.innerText
+                    ).toLocaleLowerCase('vi');
 
-               <div class="form-group-create-project">
-                    <label>Members</label>
-                    <select id="members" multiple required></select>
-               </div>
+                    const matches = searchableText.includes(keyword);
 
-               <hr>
+                    card.style.display = matches ? '' : 'none';
 
-               <div class="form-actions-create-project">
-                    <button type="button" class="btn bg-primary bg-gradient btn-save-project">
-                         <i class="bi bi-check2-circle me-1"></i>
-                         Create Project
-                    </button>
-                    <button type="button" class="btn bg-secondary bg-gradient btn-close-project-popup">
-                         Cancel
-                    </button>
-               </div>
-          </div>
-     </div>
+                    if (matches) visibleCount++;
+               });
 
-     <script type="module" src="../Script/project/project.js"></script>
+               emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+          }
+
+          searchInput.addEventListener('input', filterProjects);
+
+          // View project
+          function viewProject(projectName) {
+               document.getElementById('detailProjectName').textContent =
+                    'Bạn đã chọn dự án: ' + projectName;
+
+               bootstrap.Modal.getOrCreateInstance(
+                    document.getElementById('detailModal')
+               ).show();
+          }
+
+          // Copy project name
+          async function copyProjectName(projectName) {
+               try {
+                    await navigator.clipboard.writeText(projectName);
+                    alert('Đã sao chép tên dự án: ' + projectName);
+               } catch (error) {
+                    alert('Không thể sao chép. Tên dự án: ' + projectName);
+               }
+          }
+
+          // Add a demo project to the current page
+          document.getElementById('addProjectForm')
+               .addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    const name = document.getElementById('newProjectName')
+                         .value.trim();
+
+                    const description =
+                         document.getElementById('newProjectDescription')
+                              .value.trim() || 'Chưa có mô tả';
+
+                    const start = document.getElementById('newStartDate').value;
+                    const end = document.getElementById('newEndDate').value;
+
+                    if (end < start) {
+                         alert('Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.');
+                         return;
+                    }
+
+                    const card = document.createElement('article');
+                    card.className = 'project-card';
+                    card.dataset.name = (name + ' ' + description).toLowerCase();
+
+                    // Build elements safely without inserting user input as HTML.
+                    const imageWrap = document.createElement('div');
+                    imageWrap.className = 'project-image-wrap';
+
+                    const img = document.createElement('img');
+                    img.className = 'project-image';
+                    img.src =
+                         'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1000&q=85';
+                    img.alt = 'Máy tự động hóa';
+                    img.loading = 'lazy';
+
+                    imageWrap.appendChild(img);
+
+                    const body = document.createElement('div');
+                    body.className = 'project-body';
+
+                    const titleRow = document.createElement('div');
+                    titleRow.className = 'project-title-row';
+
+                    const icon = document.createElement('div');
+                    icon.className = 'project-icon';
+                    icon.innerHTML = '<i class="bi bi-robot"></i>';
+
+                    const titleGroup = document.createElement('div');
+                    const title = document.createElement('h2');
+                    title.className = 'project-name';
+                    title.textContent = name;
+
+                    const desc = document.createElement('p');
+                    desc.className = 'project-description';
+                    desc.textContent = description;
+
+                    titleGroup.append(title, desc);
+                    titleRow.append(icon, titleGroup);
+
+                    const dates = document.createElement('div');
+                    dates.className = 'project-dates';
+
+                    function createDate(iconClass, label, value) {
+                         const item = document.createElement('div');
+                         item.className = 'date-item';
+
+                         const dateIcon = document.createElement('i');
+                         dateIcon.className = iconClass + ' date-icon';
+
+                         const content = document.createElement('div');
+                         const dateLabel = document.createElement('div');
+                         dateLabel.className = 'date-label';
+                         dateLabel.textContent = label;
+
+                         const dateValue = document.createElement('div');
+                         dateValue.className = 'date-value';
+                         dateValue.textContent = value.split('-')
+                              .reverse().join('/');
+
+                         content.append(dateLabel, dateValue);
+                         item.append(dateIcon, content);
+
+                         return item;
+                    }
+
+                    dates.append(
+                         createDate('bi bi-calendar3', 'Ngày bắt đầu', start),
+                         createDate('bi bi-calendar-check', 'Ngày kết thúc', end)
+                    );
+
+                    const footer = document.createElement('div');
+                    footer.className = 'project-footer';
+
+                    const status = document.createElement('div');
+                    status.className = 'status-wrap status-pending';
+
+                    const dot = document.createElement('span');
+                    dot.className = 'status-dot';
+
+                    const statusText = document.createElement('span');
+                    statusText.textContent = 'Chưa bắt đầu';
+
+                    status.append(dot, statusText);
+
+                    const detailButton = document.createElement('button');
+                    detailButton.className = 'btn-detail';
+                    detailButton.innerHTML =
+                         '<i class="bi bi-eye"></i> Xem chi tiết';
+                    detailButton.addEventListener('click', () => viewProject(name));
+
+                    footer.append(status, detailButton);
+                    body.append(titleRow, dates, footer);
+                    card.append(imageWrap, body);
+                    projectGrid.prepend(card);
+
+                    this.reset();
+                    bootstrap.Modal.getOrCreateInstance(
+                         document.getElementById('addProjectModal')
+                    ).hide();
+
+                    filterProjects();
+               });
+     </script>
+
 </body>
 
 </html>

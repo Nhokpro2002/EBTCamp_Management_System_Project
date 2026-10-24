@@ -6,8 +6,6 @@ import { URL_LOCAL } from "../config.js";
 // COLLECTIONS
 // =====================================================
 const COLLECTION_PROJECTS = "Projects";
-const COLLECTION_NOTIFICATIONS = "Notifications";
-const COLLECTION_ISSUES = "Issues";
 const COLLECTION_TASKS = "Tasks";
 
 export async function loadProjects() {
@@ -16,10 +14,28 @@ export async function loadProjects() {
     if (!projectSelect) return;
 
     try {
-        const projects = await api.getRecords(COLLECTION_PROJECTS);
+        const firstPage = await api.loadInventoryItemEachPage(
+            COLLECTION_PROJECTS,
+            1,
+            200
+        );
+        const remainingPages = await Promise.all(
+            Array.from(
+                { length: Math.max(0, firstPage.totalPages - 1) },
+                (_, index) => api.loadInventoryItemEachPage(
+                    COLLECTION_PROJECTS,
+                    index + 2,
+                    200
+                )
+            )
+        );
+        const projects = [
+            ...firstPage.items,
+            ...remainingPages.flatMap(page => page.items)
+        ];
 
         projectSelect.innerHTML = `
-            <option value="" selected>Select your project</option>
+            <option value="" selected>All projects</option>
         `;
 
         projects.forEach(project => {
@@ -33,34 +49,11 @@ export async function loadProjects() {
 
     } catch (error) {
         console.error("Failed to load projects:", error);
-    }
-}
-
-export async function loadIssueData(projectID) {
-    try {
-        const result = await api.getRecordsFilter(
-            COLLECTION_ISSUES,
-            "project",
-            projectID
+        projectSelect.replaceChildren(
+            new Option("Unable to load projects", "")
         );
-        issueData.issue = result;
-
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-export async function loadNotificationData(projectID) {
-    try {
-        const result = await api.getRecordsFilter(
-            COLLECTION_NOTIFICATIONS,
-            "project",
-            projectID
-        );
-        issueData.issue = result;
-
-    } catch (error) {
-        console.error(error);
+        projectSelect.disabled = true;
+        throw error;
     }
 }
 
@@ -68,19 +61,29 @@ export async function loadTaskNotDone() {
     try {
         const token = localStorage.getItem("token");
         const filter = encodeURIComponent("progress < 1");
-        const url =
-            `${URL_LOCAL}/api/collections/${COLLECTION_TASKS}/records` +
-            `?filter=${filter}`;
+        const tasks = [];
+        let page = 1;
+        let totalPages = 1;
+
+        do {
+            const url =
+                `${URL_LOCAL}/api/collections/${COLLECTION_TASKS}/records` +
+                `?page=${page}&perPage=200&filter=${filter}`;
         const res = await fetch(url, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        if (!res.ok) {
-            throw new Error("Failed to load tasks");
-        }
-        const data = await res.json();
-        taskData.tasks = data.items || [];
+            if (!res.ok) {
+                throw new Error(`Failed to load tasks (HTTP ${res.status})`);
+            }
+            const data = await res.json();
+            tasks.push(...(data.items || []));
+            totalPages = data.totalPages || 1;
+            page++;
+        } while (page <= totalPages);
+
+        taskData.tasks = tasks;
 
         // Reset warning list
         warningRecord.warnings = [];
@@ -108,12 +111,8 @@ export async function loadTaskNotDone() {
         );
 
     } catch (error) {
-
-        console.error(
-            "loadTaskNotDone error:",
-            error
-        );
-
+        console.error("loadTaskNotDone error:", error);
+        throw error;
     }
 }
 
@@ -318,4 +317,3 @@ function getWarningTitle(level) {
             return "Task Issue";
     }
 }
-

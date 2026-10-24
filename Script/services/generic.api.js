@@ -48,18 +48,36 @@ export async function login(collection, data) {
 
 export async function updateRecord(collection, id, data) {
     const token = localStorage.getItem("token");
+    const isFormData = data instanceof FormData;
+    const headers = {
+        "Authorization": `Bearer ${token}`
+    };
+
+    if (!isFormData) {
+        headers["Content-Type"] = "application/json";
+    }
+
     const res = await fetch(
         `${URL_LOCAL}/api/collections/${collection}/records/${id}`,
         {
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
+            headers,
+            body: isFormData ? data : JSON.stringify(data)
         }
     );
-    if (!res.ok) throw new Error("Update failed");
+
+    if (!res.ok) {
+        const responseText = await res.text();
+        let responseData = null;
+        try {
+            responseData = responseText ? JSON.parse(responseText) : null;
+        } catch {
+            responseData = null;
+        }
+
+        throw new Error(responseData?.message || `Update failed (${res.status})`);
+    }
+
     return await res.json();
 }
 
