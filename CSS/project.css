@@ -35,7 +35,7 @@
 body {
 
     background: var(--bg);
-    font-family: "Segoe UI", sans-serif;
+    font-family: "Times New Roman", Times, serif;
     color: var(--text);
 }
 
@@ -269,7 +269,7 @@ body {
     width: 600px;
     max-height: 90%;
     overflow-y: auto;
-    font-family: Arial, sans-serif;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .form-group-create-project {

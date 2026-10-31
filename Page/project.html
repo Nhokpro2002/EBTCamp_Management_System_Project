@@ -26,6 +26,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../CSS/project.css">
+    <link rel="stylesheet" href="../CSS/report-navigation.css">
 </head>
 
 <body>
@@ -49,6 +50,15 @@
                         </span>
                         Notification
                     </a>
+                </li>
+                <li>
+                    <details class="menu-report">
+                        <summary><i class="bi bi-file-earmark-text"></i> Report <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Daily Report</a></li>
+                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                        </ul>
+                    </details>
                 </li>
                 <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
             </ul>
@@ -157,7 +167,7 @@
         </div>
     </div>
 
-    <script type="module" src="../Script/project/project.js"></script>
+    <script type="module" src="../Script/project/main.js"></script>
     <script type="module" src="../Script/user/main.js"></script>
 </body>
 

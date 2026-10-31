@@ -1,8 +1,7 @@
 import * as api from "../services/generic.api.js";
-import * as utils from "../utils/utils.js";
+import { URL_LOCAL } from "../config.js";
 
-import { workflowPageMessage } from "./messages.js";
-import { workflowData, projectData, issueData } from "./states.js";
+import { workflowData, projectData, issueData } from "./state.js";
 
 
 // =====================================================
@@ -11,12 +10,22 @@ import { workflowData, projectData, issueData } from "./states.js";
 
 const COLLECTION_STAGES = "Stages";
 const COLLECTION_TASKS = "Tasks";
-const COLLECTION_NOTIFICATIONS = "Notifications";
 const COLLECTION_PROJECTS = "Projects";
 const COLLECTION_ISSUES = "Issues";
+const COLLECTION_TASK_DAILY_REPORTS = "TaskDailyReports";
+const COLLECTION_REPORTS = "Reports";
+
+// Thứ tự hiển thị stage
+const STAGE_ORDER = {
+    design: 1,
+    mechanical: 2,
+    assembly: 3,
+    electric: 4,
+    program: 5
+};
 
 // =====================================================
-// PROJECT DATA
+// LOAD DATA
 // =====================================================
 
 export async function loadProjectData(projectID) {
@@ -36,409 +45,102 @@ export async function loadProjectData(projectID) {
     projectData.projectName = project.name;
 }
 
-// =====================================================
-// NOTIFICATION
-// =====================================================
 /**
- * Tạo notification khi task thay đổi
+ * Load stage của project (đã sắp xếp) và toàn bộ task theo stage.
  */
-async function createNotification(data) {
-    try {
-        await api.createRecord(
-            COLLECTION_NOTIFICATIONS,
-            data
-        );
-    }
-    catch (error) {
-        console.log(error);
-    }
-}
-
-// =====================================================
-// CRUD
-// =====================================================
-
-
-/**
- * Tạo task mới
- */
-export async function createNewTask() {
-
-    try {
-
-        const user =
-            JSON.parse(localStorage.getItem("user"));
-
-        const name =
-            document
-                .getElementById("task-name")
-                ?.value
-                ?.trim();
-
-        const startDate =
-            document
-                .getElementById("start-date")
-                ?.value;
-
-        const duration =
-            parseInt(
-                document
-                    .getElementById("duration")
-                    ?.value,
-                10
-            );
-
-        if (
-            !name ||
-            !startDate ||
-            Number.isNaN(duration) ||
-            duration <= 0
-        ) {
-            utils.showError("Invalid task data.");
-            return;
-        }
-
-        const payload = {
-
-            name,
-
-            start_date:
-                startDate,
-
-            duration,
-
-            stage:
-                workflowData.currentStageID,
-
-            css:
-                document
-                    .getElementById("stage-name")
-                    ?.value
-                    ?.toLowerCase(),
-
-            progress: 0,
-
-            createdBy:
-                user?.employee_name ?? "",
-
-            project_name: projectData.projectName
-        };
-
-        const response =
-            await api.createRecord(
-                COLLECTION_TASKS,
-                payload
-            );
-
-        if (response) {
-            utils.showSuccess(
-                workflowPageMessage.createSuccess
-            );
-            return response;
-        }
-
-        return null;
-
-
-    }
-    catch (error) {
-
-        console.error(error);
-
-        utils.showError(
-            workflowPageMessage.createFailed
-        );
-    }
-}
-
 export async function loadStageData(projectID) {
-    try {
-        const ORDER = {
-            design: 1,
-            mechanical: 2,
-            assembly: 3,
-            electric: 4,
-            program: 5
-        };
+    const stages = await api.getRecordsFilter(
+        COLLECTION_STAGES,
+        "project",
+        projectID
+    );
 
-        // Load stages
-        const stages =
-            await api.getRecordsFilter(
-                COLLECTION_STAGES,
-                "project",
-                projectID
-            );
+    stages.sort((a, b) =>
+        (STAGE_ORDER[a.css?.toLowerCase()] ?? 999) -
+        (STAGE_ORDER[b.css?.toLowerCase()] ?? 999)
+    );
 
-        stages.sort((a, b) =>
-            (ORDER[a.css?.toLowerCase()] ?? 999) - (ORDER[b.css?.toLowerCase()] ?? 999)
+    workflowData.stages = stages ?? [];
+    workflowData.tasks = [];
 
-        );
+    if (!workflowData.stages.length)
+        return;
 
-        workflowData.stages = stages ?? [];
+    const taskResults = await Promise.all(
+        workflowData.stages.map(stage =>
+            api.getRecordsFilter(
+                COLLECTION_TASKS,
+                "stage",
+                stage.id
+            )
+        )
+    );
 
-        workflowData.tasks = [];
-
-        if (!workflowData.stages.length)
-            return;
-
-        // Load task theo stage
-        const taskResults =
-            await Promise.all(
-                workflowData.stages.map(stage =>
-                    api.getRecordsFilter(
-                        COLLECTION_TASKS,
-                        "stage",
-                        stage.id
-                    )
-                )
-            );
-
-        // Flatten array
-
-        workflowData.tasks =
-            taskResults.flat();
-
-
-    }
-    catch (error) {
-        console.error(error);
-        throw error;
-    }
+    workflowData.tasks = taskResults.flat();
 }
 
 export async function loadIssueData(projectID) {
-    try {
-        const result = await api.getRecordsFilter(
-            COLLECTION_ISSUES,
-            "project",
-            projectID
-        );
-        issueData.issue = result;
-
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    issueData.issue = await api.getRecordsFilter(
+        COLLECTION_ISSUES,
+        "project",
+        projectID
+    );
 }
 
-export async function makeIssue() {
-    const form = document.getElementById("issueForm");
-    if (!form) return;
-    const formData = new FormData(form);
-    // Project ID từ URL
-    const projectID = new URLSearchParams(
-        window.location.search
-    ).get("projectID");
-    // Stage được chọn
-    const stageSelect = form.querySelector(
-        'select[name="related-stage"]'
-    );
-    const relatedStage =
-        stageSelect.options[stageSelect.selectedIndex].text;
-    // Task được chọn
-    const taskSelect = form.querySelector(
-        'select[name="related-task"]'
-    );
-    const relatedTask =
-        taskSelect.options[taskSelect.selectedIndex].text;
-    // User hiện tại
-    const user = JSON.parse(
-        localStorage.getItem("user")
-    );
-    const issueData = {
-        title: formData.get("title"),
-        description: formData.get("description"),
-        project: projectID,
-        project_name: projectData.projectName,
-        related_stage: relatedStage,
-        related_task: relatedTask,
-        reporter: user.employee_name,
-        createdDate: new Date().toISOString()
-    };
+// =====================================================
+// TASK CRUD
+// =====================================================
 
-    console.log("Issue data:", issueData);
-    try {
-        const result = await api.createRecord(
-            "Issues",
-            issueData
-        );
-        console.log("Issue created:", result);
-        alert("Issue created successfully!");
-        form.reset();
-        document
-            .getElementById("issueModal")
-            ?.classList.remove("show");
-        return result;
-
-    } catch (error) {
-        console.error("Failed to create issue:", error);
-        alert("Failed to create issue!");
-        throw error;
-    }
+export function findTask(id) {
+    return workflowData.tasks.find(task => task.id === id);
 }
 
-async function updateFollowingTasks(updatedTask) {
-
-    const stageTasks =
-        workflowData.tasks
-            .filter(
-                task =>
-                    task.stage === updatedTask.stage
-            )
-            .sort(
-                (a, b) =>
-                    new Date(a.start_date) -
-                    new Date(b.start_date)
-            );
-
-    const currentIndex =
-        stageTasks.findIndex(
-            task => task.id === updatedTask.id
-        );
-
-    if (currentIndex === -1)
-        return;
-
-    let nextStart =
-        new Date(updatedTask.start_date);
-
-    nextStart.setHours(0, 0, 0, 0);
-
-    nextStart.setDate(
-        nextStart.getDate() +
-        updatedTask.duration
-    );
-
-    for (
-        let i = currentIndex + 1;
-        i < stageTasks.length;
-        i++
-    ) {
-
-        const task =
-            stageTasks[i];
-
-        const yyyy =
-            nextStart.getFullYear();
-
-        const mm =
-            String(
-                nextStart.getMonth() + 1
-            ).padStart(2, "0");
-
-        const dd =
-            String(
-                nextStart.getDate()
-            ).padStart(2, "0");
-
-        const startDate =
-            `${yyyy}-${mm}-${dd}`;
-
-        if (task.start_date !== startDate) {
-
-            await api.updateRecord(
-                COLLECTION_TASKS,
-                task.id,
-                {
-                    start_date:
-                        startDate
-                }
-            );
-        }
-
-        nextStart.setDate(
-            nextStart.getDate() +
-            task.duration
-        );
-    }
+export function isValidTaskInput({ name, startDate, duration }) {
+    return Boolean(name && startDate) &&
+        !Number.isNaN(duration) &&
+        duration > 0;
 }
 
 /**
- * Update task
- * 
- * Flow:
- * 1. Lưu dữ liệu cũ
- * 2. Update database
- * 3. Tạo notification
- * 4. Update state local
+ * Tạo task mới trong stage đang chọn.
+ * @returns {Promise<Object>} Task vừa tạo.
+ */
+export function createTask({ name, startDate, duration, stageName }) {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    return api.createRecord(COLLECTION_TASKS, {
+        name,
+        start_date: startDate,
+        duration,
+        stage: workflowData.currentStageID,
+        css: stageName?.toLowerCase(),
+        progress: 0,
+        createdBy: user?.employee_name ?? "",
+        project_name: projectData.projectName
+    });
+}
+
+/**
+ * Update task rồi reload state local + mapping lại gantt.
  */
 export async function updateTask(id, data, projectID) {
+    const response = await api.updateRecord(
+        COLLECTION_TASKS,
+        id,
+        data
+    );
 
-    try {
-
-        const beforeUpdateTask =
-            workflowData.tasks.find(
-                task => task.id === id
-            );
-
-        if (!beforeUpdateTask) {
-
-            utils.showError("Task not found.");
-
-            return false;
-        }
-
-        const updatedTask = {
-            ...beforeUpdateTask,
-            ...data
-        };
-
-        const response =
-            await api.updateRecord(
-                COLLECTION_TASKS,
-                id,
-                data
-            );
-
-        if (!response)
-            return false;
-
-        const notification =
-            createPayloadData(
-                beforeUpdateTask,
-                updatedTask
-            );
-
-        if (notification)
-            await createNotification(notification);
-
-        //await updateFollowingTasks(updatedTask);
-
-        await loadStageData(projectID);
-
-        mappingData();
-
-        return true;
-
-    }
-    catch (error) {
-
-        console.error(error);
-
-        utils.showError(
-            workflowPageMessage.updateFailed
-        );
-
+    if (!response)
         return false;
-    }
+
+    await loadStageData(projectID);
+    mappingData();
+
+    return true;
 }
 
-/**
- * Delete task
- */
-export async function deleteTask(id) {
-    try {
-        return await api.deleteRecord(
-            COLLECTION_TASKS,
-            id
-        );
-    }
-    catch (error) {
-        console.log(error);
-        utils.showError(
-            workflowPageMessage.deleteFailed
-        );
-    }
+export function deleteTask(id) {
+    return api.deleteRecord(COLLECTION_TASKS, id);
 }
 
 // =====================================================
@@ -446,16 +148,13 @@ export async function deleteTask(id) {
 // =====================================================
 
 /**
- * Convert data từ PocketBase
- * sang format DHTMLX Gantt
+ * Convert data từ PocketBase sang format DHTMLX Gantt
  */
 export function mappingData() {
     projectData.data = [];
     projectData.links = [];
 
-    // -------------------------
-    // Stage
-    // -------------------------
+    // ---------- Stage ----------
     workflowData.stages.forEach(stage => {
         projectData.data.push({
             id: stage.id,
@@ -469,76 +168,96 @@ export function mappingData() {
         });
     });
 
-
-    // -------------------------
-    // Tasks
-    // -------------------------
+    // ---------- Tasks ----------
     workflowData.tasks.forEach(task => {
-        projectData.data.push({
-            id: task.id,
-            parent: task.stage,
-            text: task.name,
-            start_date: task.start_date,
-            duration: task.duration ?? 0,
-            progress: task.progress ?? 0,
-            css: task.css
-        });
+        projectData.data.push(toGanttTask(task));
     });
 
-
-    // -------------------------
-    // Generate links
-    // -------------------------
+    // ---------- Links (task nối tiếp nhau trong cùng stage) ----------
     workflowData.taskGroups = {};
 
     workflowData.tasks.forEach(task => {
         if (!workflowData.taskGroups[task.stage]) {
             workflowData.taskGroups[task.stage] = [];
         }
-
-        workflowData.taskGroups[task.stage]
-            .push(task);
-
+        workflowData.taskGroups[task.stage].push(task);
     });
 
     let linkId = 1;
 
-    Object.values(workflowData.taskGroups)
-        .forEach(tasks => {
-            tasks.sort(
-                (a, b) => new Date(a.start_date) - new Date(b.start_date)
-            );
+    Object.values(workflowData.taskGroups).forEach(tasks => {
+        tasks.sort(
+            (a, b) => new Date(a.start_date) - new Date(b.start_date)
+        );
 
-            for (let i = 0; i < tasks.length - 1; i++) {
-                projectData.links.push({
-                    id:
-                        linkId++,
-                    source:
-                        tasks[i].id,
-                    target:
-                        tasks[i + 1].id,
-                    type:
-                        "0"
-                });
-            }
-        });
+        for (let i = 0; i < tasks.length - 1; i++) {
+            projectData.links.push({
+                id: linkId++,
+                source: tasks[i].id,
+                target: tasks[i + 1].id,
+                type: "0"
+            });
+        }
+    });
 }
 
+export function toGanttTask(task) {
+    return {
+        id: task.id,
+        parent: task.stage,
+        text: task.name,
+        start_date: task.start_date,
+        duration: task.duration ?? 0,
+        progress: task.progress ?? 0,
+        css: task.css
+    };
+}
+
+/**
+ * Thêm task vừa tạo vào state + dữ liệu gantt,
+ * nối link từ task cuối cùng trong cùng stage.
+ */
+export function addTaskToState(task) {
+    workflowData.tasks.push(task);
+    projectData.data.push(toGanttTask(task));
+
+    if (!workflowData.taskGroups[task.stage]) {
+        workflowData.taskGroups[task.stage] = [];
+    }
+
+    const stageTasks = workflowData.taskGroups[task.stage];
+
+    // lấy task cuối cùng trong stage (trước khi push)
+    const lastTaskInStage = stageTasks.length
+        ? stageTasks[stageTasks.length - 1]
+        : null;
+
+    stageTasks.push(task);
+
+    if (lastTaskInStage) {
+        projectData.links.push({
+            id: projectData.links.length
+                ? Math.max(...projectData.links.map(l => l.id)) + 1
+                : 1,
+            source: lastTaskInStage.id,
+            target: task.id,
+            type: "0"
+        });
+    }
+}
 
 // =====================================================
 // DATE HELPER
 // =====================================================
 
 /**
- * Lấy ngày bắt đầu task mới
- * sau task cuối cùng trong stage
+ * Lấy ngày bắt đầu nhỏ nhất cho task mới
+ * (ngày sau task kết thúc muộn nhất trong stage)
  */
 export function getMinStartDate(stageID) {
-
-    const stageTasks =
-        workflowData.tasks.filter(
-            task => task.stage == stageID
-        );
+    const stageTasks = workflowData.tasks.filter(
+        task => task.stage == stageID
+    );
 
     if (!stageTasks.length)
         return "";
@@ -546,184 +265,252 @@ export function getMinStartDate(stageID) {
     let latestEndDate = null;
 
     stageTasks.forEach(task => {
+        const endDate = new Date(task.start_date);
+        endDate.setDate(endDate.getDate() + task.duration - 1);
 
-        const endDate =
-            new Date(task.start_date);
-
-        endDate.setDate(
-            endDate.getDate() +
-            task.duration -
-            1
-        );
-
-        if (
-            !latestEndDate ||
-            endDate > latestEndDate
-        ) {
+        if (!latestEndDate || endDate > latestEndDate) {
             latestEndDate = endDate;
         }
-
     });
 
-    latestEndDate.setDate(
-        latestEndDate.getDate() + 1
-    );
+    latestEndDate.setDate(latestEndDate.getDate() + 1);
 
-    const yyyy =
-        latestEndDate.getFullYear();
-
-    const mm =
-        String(
-            latestEndDate.getMonth() + 1
-        ).padStart(2, "0");
-
-    const dd =
-        String(
-            latestEndDate.getDate()
-        ).padStart(2, "0");
+    const yyyy = latestEndDate.getFullYear();
+    const mm = String(latestEndDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(latestEndDate.getDate()).padStart(2, "0");
 
     return `${yyyy}-${mm}-${dd}`;
 }
 
-
 // =====================================================
-// GANTT ZOOM
+// STATISTICS
 // =====================================================
-export function setZoom(mode) {
-    switch (mode) {
-        case "day":
-            gantt.config.scales = [
-                {
-                    unit: "month",
-                    step: 1,
-                    format: "%F %Y"
-                },
-                {
-                    unit: "day",
-                    step: 1,
-                    format: "%d"
-                }
-            ];
-            break;
 
-        case "week":
-            gantt.config.scales = [
-                {
-                    unit: "month",
-                    step: 1,
-                    format: "%F %Y"
-                },
-                {
-                    unit: "week",
-                    step: 1,
-                    format: "Week %W"
-                }
-            ];
-            break;
-
-
-        case "month":
-            gantt.config.scales = [
-                {
-                    unit: "year",
-                    step: 1,
-                    format: "%Y"
-                },
-                {
-                    unit: "month",
-                    step: 1,
-                    format: "%M"
-                }
-            ];
-            break;
-    }
-    gantt.render();
+function getProjectTasks() {
+    return projectData.data.filter(task => task.parent);
 }
 
-export function renderRelatedTasks() {
-    const select = document.querySelector('select[name="related-task"]');
+export function getTotalTaskCount() {
+    return getProjectTasks().length;
+}
 
-    if (!select) return;
+/**
+ * Tổng tiến độ project (%) = trung bình tiến độ của các stage.
+ * Stage chưa có task tính là 0%.
+ * @param {Array<{progress: number}>} stageProgressList - kết quả getStageProgressList()
+ */
+export function getOverallProgress(stageProgressList = getStageProgressList()) {
+    if (!stageProgressList.length) {
+        return 0;
+    }
 
-    // Xóa option cũ
-    select.innerHTML = "";
+    const totalProgress = stageProgressList.reduce(
+        (sum, stage) => sum + stage.progress,
+        0
+    );
 
-    // Option mặc định
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "-- Chọn task liên quan --";
-    defaultOption.disabled = true;
-    defaultOption.selected = true;
+    return totalProgress / stageProgressList.length;
+}
 
-    select.appendChild(defaultOption);
+/**
+ * Tiến độ (%) của từng stage
+ * @returns {Array<{name: string, key: string, progress: number}>}
+ */
+export function getStageProgressList() {
+    return workflowData.stages.map(stage => {
+        const key = String(stage.css || stage.name || "").trim().toLowerCase();
 
-    // Render tasks
-    workflowData.tasks.forEach(task => {
-        const option = document.createElement("option");
+        const stageTasks = workflowData.tasks.filter(task =>
+            (stage.id != null && String(task.stage) === String(stage.id)) ||
+            (key && String(task.css || "").trim().toLowerCase() === key)
+        );
 
-        option.value = task.id;
-        option.textContent = task.name;
+        const progress = stageTasks.length
+            ? stageTasks.reduce((sum, task) => {
+                const value = Number(task.progress) || 0;
+                return sum + Math.max(0, Math.min(1, value));
+            }, 0) / stageTasks.length * 100
+            : 0;
 
-        select.appendChild(option);
+        return {
+            name: stage.name || key,
+            key,
+            progress
+        };
     });
 }
 
 // =====================================================
-// HELPER FUNCTION
+// TASK REPORT HISTORY (from Daily Report)
 // =====================================================
-export function getStageClass(stage) {
-    switch (stage?.toLowerCase()) {
-        case "design":
-            return "design";
-        case "mechanical":
-            return "mechanical";
-        case "assembly":
-            return "assembly";
-        case "electric":
-            return "electric";
-        case "program":
-            return "program";
-        default:
-            return "default";
-    }
+
+export function isTaskDone(task) {
+    return Number(task?.progress || 0) >= 1;
 }
 
 /**
- * Chuẩn hóa dữ liệu notification
- * So sánh dữ liệu trước và sau update
+ * Các lần task được báo cáo ở trang Daily Report, cũ → mới.
+ * TaskDailyReports khớp task theo relation `task` (nếu có), hoặc theo title + stage.
+ * Ngày báo cáo và người báo cáo lấy từ bản ghi Reports chứa nó.
+ *
+ * @returns {Promise<Array<{id, date, reporter, status, workers, detail, evidenceUrls}>>}
  */
-function createPayloadData(beforeUpdateTask, updatedTask) {
-    if (!beforeUpdateTask || !updatedTask)
-        return null;
-    const stageName =
-        workflowData.stages.find(
-            stage => stage.id === beforeUpdateTask.stage
-        )?.name ?? "";
-    return {
-        name: updatedTask.name,
-        stage: stageName,
-        duration_before:
-            beforeUpdateTask.duration,
-        duration_updated:
-            updatedTask.duration,
-        progress_before:
-            beforeUpdateTask.progress,
-        progress_updated:
-            updatedTask.progress,
-        updated_by:
-            JSON.parse(localStorage.getItem("user"))
-                ?.employee_name ?? "",
+export async function loadTaskReportHistory(taskID) {
+    const task = findTask(taskID);
+    if (!task) return [];
 
-        project_name: localStorage.getItem("projectName")
-    };
+    const stageName = workflowData.stages.find(
+        stage => stage.id === task.stage
+    )?.name ?? "";
+
+    const dailyReports = (await api.getRecordsByFilter(
+        COLLECTION_TASK_DAILY_REPORTS,
+        `title = ${api.quoteFilterValue(task.name)}`
+    )).filter(report => report.task
+        ? String(report.task) === String(task.id)
+        : normalizeText(report.stage) === normalizeText(stageName)
+    );
+
+    if (!dailyReports.length) return [];
+
+    const reports = await api.getRecordsByFilter(
+        COLLECTION_REPORTS,
+        dailyReports
+            .map(report => `task_daily_reports ~ ${api.quoteFilterValue(report.id)}`)
+            .join(" || ")
+    );
+
+    return dailyReports
+        .map(dailyReport => {
+            const report = reports.find(item =>
+                toArray(item.task_daily_reports).map(String).includes(dailyReport.id)
+            );
+
+            return {
+                id: dailyReport.id,
+                date: String(report?.report_date || dailyReport.created || "").slice(0, 10),
+                reporter: report?.reporter || "",
+                status: normalizeWorkStatus(dailyReport.work_status),
+                workers: parseWorkers(dailyReport.worker),
+                detail: dailyReport.detail || "",
+                evidenceUrls: toArray(dailyReport.evidence_image).map(fileName =>
+                    `${URL_LOCAL}/api/files/${COLLECTION_TASK_DAILY_REPORTS}/${dailyReport.id}/${encodeURIComponent(fileName)}`
+                )
+            };
+        })
+        .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-export function escapeHtml(value) {
-    return value.replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    }[char]));
+/**
+ * Ảnh evidence cho lần báo cáo cuối; nếu lần cuối không có ảnh
+ * thì lấy ở lần gần nhất có ảnh.
+ */
+export function getLatestEvidenceUrls(history) {
+    for (let i = history.length - 1; i >= 0; i--) {
+        if (history[i].evidenceUrls.length) {
+            return history[i].evidenceUrls;
+        }
+    }
+    return [];
+}
+
+function normalizeWorkStatus(status) {
+    if (status === "Pending") return "Not started";
+    if (status === "In progress") return "Processing";
+    return status || "";
+}
+
+function parseWorkers(value) {
+    try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [String(parsed)];
+    } catch {
+        return value ? [value] : [];
+    }
+}
+
+function toArray(value) {
+    return Array.isArray(value) ? value : value ? [value] : [];
+}
+
+function normalizeText(value) {
+    return String(value || "").trim().toLocaleLowerCase();
+}
+
+// =====================================================
+// ISSUES
+// =====================================================
+
+export function findIssue(id) {
+    return issueData.issue.find(issue => String(issue.id) === String(id));
+}
+
+/**
+ * Lưu solution của issue và cập nhật lại state.
+ * @returns {Promise<Object>} Issue sau khi update.
+ */
+export async function updateIssueSolution(id, solution) {
+    const updated = await api.updateRecord(COLLECTION_ISSUES, id, { solution });
+
+    const issue = findIssue(id);
+    if (issue) {
+        Object.assign(issue, updated);
+    }
+    return updated;
+}
+
+/**
+ * Xóa nhiều issue; issue nào xóa được thì bỏ khỏi state.
+ * @returns {Promise<{deletedIDs: string[], failedIDs: string[]}>}
+ */
+export async function deleteIssues(ids) {
+    const results = await Promise.allSettled(
+        ids.map(id => api.deleteRecord(COLLECTION_ISSUES, id))
+    );
+
+    const deletedIDs = ids.filter((_, index) => results[index].status === "fulfilled");
+    const failedIDs = ids.filter((_, index) => results[index].status === "rejected");
+
+    results
+        .filter(result => result.status === "rejected")
+        .forEach(result => console.error(result.reason));
+
+    const deleted = new Set(deletedIDs.map(String));
+    issueData.issue = issueData.issue.filter(issue => !deleted.has(String(issue.id)));
+
+    return { deletedIDs, failedIDs };
+}
+
+/**
+ * Đếm số issue theo stage (so khớp related_stage, không phân biệt hoa thường).
+ * @returns {Object<string, number>} key là tên stage viết thường
+ */
+export function countIssuesByStage() {
+    return issueData.issue.reduce((counts, issue) => {
+        const key = normalizeText(issue.related_stage);
+        if (key) {
+            counts[key] = (counts[key] || 0) + 1;
+        }
+        return counts;
+    }, {});
+}
+
+export function filterIssues({ keyword, stage }) {
+    return issueData.issue.filter(issue => {
+        const matchesStage =
+            stage === "all" ||
+            normalizeText(issue.related_stage) === normalizeText(stage);
+
+        const haystack = [
+            issue.id,
+            issue.title,
+            issue.related_stage,
+            issue.solution,
+            issue.reporter,
+            issue.created_date
+        ].join(" ").toLowerCase();
+
+        return matchesStage &&
+            (!keyword || haystack.includes(keyword));
+    });
 }

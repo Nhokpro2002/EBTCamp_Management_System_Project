@@ -30,7 +30,7 @@
 
 body {
     background: var(--bg-gray);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Times New Roman", Times, serif;
     color: var(--text-main);
     overflow-x: hidden;
 }
@@ -297,57 +297,6 @@ body {
 }
 
 /* ==========================================================
-    FILTER TABS (THANH TABS CHỌN PHÂN LOẠI)
-========================================================== */
-.filter-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid transparent;
-}
-
-.tab-item {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #475569;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.tab-item i {
-    font-size: 14px;
-}
-
-.tab-count {
-    background: #f1f5f9;
-    color: #64748b;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-/* Trạng thái Tab được kích hoạt */
-.tab-item.active {
-    border-color: #cbd5e1;
-    background: #f8fafc;
-    color: var(--text-main);
-    font-weight: 600;
-}
-
-.tab-item.active .tab-count {
-    background: #e2e8f0;
-    color: #334155;
-}
-
-/* ==========================================================
     ACTIVITY PANEL TABLE (KHUNG BẢNG DANH SÁCH CHÍNH)
 ========================================================== */
 .activity-panel {
@@ -355,6 +304,46 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.activity-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 12px 16px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.page-size-control,
+.pagination-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-size-control .form-select {
+    width: 72px;
+}
+
+.pagination-button {
+    min-height: 32px;
+    padding: 4px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: #fff;
+    color: #475569;
+    font-size: 13px;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background: #f1f5f9;
+}
+
+.pagination-button:disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
 }
 
 /* Dòng tiêu đề cột cố định */
@@ -535,24 +524,6 @@ body {
     color: #1d4ed8;
 }
 
-.field-change {
-    display: inline-flex;
-    align-items: center;
-    font-weight: 600;
-    padding: 1px 4px;
-    border-radius: 4px;
-}
-
-.change-down {
-    color: #de1111;
-    background-color: #ffeedd;
-}
-
-.change-up {
-    color: #2e7d32;
-    background-color: #e8f5e9;
-}
-
 .updated-by {
     color: #1f2937;
     font-weight: 500;
@@ -596,6 +567,7 @@ body {
     background-color: var(--cls-project-bg);
     color: var(--cls-project);
 }
+
 
 .badge-issue {
     background-color: var(--primary-light);
@@ -691,12 +663,6 @@ body {
     vertical-align: -1px;
 }
 
-.progress-icon {
-    color: #2563eb;
-    font-size: 13px;
-    margin-right: 5px;
-}
-
 .pagination-buttons {
     display: flex;
     align-items: center;
@@ -738,681 +704,6 @@ body {
 .page-dots {
     color: #94a3b8;
     padding: 0 4px;
-}
-
-
-/* =========================================================
-   DEADLINE DRAWER
-========================================================= */
-
-.deadline-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.25);
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition:
-        opacity 0.25s ease,
-        visibility 0.25s ease;
-
-    z-index: 1998;
-}
-
-.deadline-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-
-/* ---------------------------------------------------------
-   Drawer
---------------------------------------------------------- */
-
-.deadline-drawer {
-    position: fixed;
-
-    top: 0;
-    right: 0;
-
-    width: 480px;
-    max-width: 90vw;
-    height: 100vh;
-
-    background: #ffffff;
-
-    box-shadow:
-        -8px 0 30px rgba(15, 23, 42, 0.12);
-
-    transform: translateX(100%);
-
-    transition:
-        transform 0.3s ease;
-
-    z-index: 1999;
-
-    display: flex;
-    flex-direction: column;
-}
-
-.deadline-drawer.active {
-    transform: translateX(0);
-}
-
-
-/* ---------------------------------------------------------
-   Header
---------------------------------------------------------- */
-
-.deadline-header {
-    height: 76px;
-
-    padding: 0 22px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    border-bottom: 1px solid #e5e7eb;
-
-    flex-shrink: 0;
-}
-
-.deadline-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.deadline-title h5 {
-    margin: 0;
-
-    font-size: 16px;
-    font-weight: 700;
-
-    color: #172033;
-}
-
-.deadline-title span {
-    display: block;
-
-    margin-top: 2px;
-
-    font-size: 12px;
-    color: #64748b;
-}
-
-
-/* ---------------------------------------------------------
-   Close button
---------------------------------------------------------- */
-
-.deadline-close-btn {
-    width: 36px;
-    height: 36px;
-
-    border: none;
-    border-radius: 8px;
-
-    background: #f1f5f9;
-    color: #64748b;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-
-    transition: all 0.2s ease;
-}
-
-.deadline-close-btn:hover {
-    background: #e2e8f0;
-    color: #1e293b;
-}
-
-
-/* ---------------------------------------------------------
-   Content
---------------------------------------------------------- */
-
-.deadline-content {
-    flex: 1;
-
-    overflow-y: auto;
-
-    padding: 18px;
-}
-
-
-/* ---------------------------------------------------------
-   Warning Card
---------------------------------------------------------- */
-
-.deadline-warning {
-    position: relative;
-
-    padding: 16px;
-
-    margin-bottom: 12px;
-
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-
-    background: #ffffff;
-
-    transition:
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
-}
-
-.deadline-warning:hover {
-    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.08);
-
-    transform: translateY(-1px);
-}
-
-
-/* ---------------------------------------------------------
-   Level colors
---------------------------------------------------------- */
-
-.deadline-warning.level-1 {
-    border-left: 4px solid #22c55e;
-}
-
-.deadline-warning.level-2 {
-    border-left: 4px solid #f97316;
-}
-
-.deadline-warning.level-3 {
-    border-left: 4px solid #ef4444;
-}
-
-
-/* ---------------------------------------------------------
-   Warning header
---------------------------------------------------------- */
-
-.warning-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-
-    gap: 12px;
-
-    margin-bottom: 10px;
-}
-
-.warning-task-name {
-    margin: 0;
-
-    font-size: 14px;
-    font-weight: 700;
-
-    color: #1e293b;
-}
-
-.warning-level {
-    flex-shrink: 0;
-
-    padding: 4px 8px;
-
-    border-radius: 20px;
-
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-
-/* Level badges */
-
-.warning-level.level-1 {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.warning-level.level-2 {
-    background: #ffedd5;
-    color: #c2410c;
-}
-
-.warning-level.level-3 {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-
-/* ---------------------------------------------------------
-   Description
---------------------------------------------------------- */
-
-.warning-description {
-    margin: 0 0 14px;
-
-    font-size: 13px;
-    line-height: 1.5;
-
-    color: #64748b;
-}
-
-
-/* ---------------------------------------------------------
-   Statistics
---------------------------------------------------------- */
-
-.warning-stats {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 8px;
-}
-
-.warning-stat {
-    padding: 9px 10px;
-
-    border-radius: 8px;
-
-    background: #f8fafc;
-}
-
-.warning-stat-label {
-    display: block;
-
-    margin-bottom: 3px;
-
-    font-size: 10px;
-    color: #94a3b8;
-}
-
-.warning-stat-value {
-    font-size: 13px;
-    font-weight: 700;
-
-    color: #334155;
-}
-
-
-/* ---------------------------------------------------------
-   Empty
---------------------------------------------------------- */
-
-.deadline-empty {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #64748b;
-}
-
-.deadline-empty>i {
-    font-size: 42px;
-    margin-bottom: 12px;
-    color: #22c55e;
-}
-
-.deadline-empty h6 {
-    margin: 0 0 5px;
-    color: #334155;
-    font-size: 15px;
-}
-
-.deadline-empty p {
-    margin: 0;
-    font-size: 13px;
-}
-
-
-/* ---------------------------------------------------------
-   Loading
---------------------------------------------------------- */
-.deadline-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 0;
-    color: #64748b;
-    font-size: 13px;
-}
-
-.deadline-loading .spinner-border {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-}
-
-/* =========================================================
-   DEADLINE WARNING CARD - LIGHT THEME
-========================================================= */
-
-.deadline-warning {
-    background: #ffffff;
-    border: 1px solid #dbe2ea;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
-
-    color: #1e293b;
-
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-}
-
-.deadline-warning:hover {
-    transform: translateY(-2px);
-
-    border-color: #b8c4d2;
-
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.10);
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.warning-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.warning-title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-}
-
-
-/* Icon */
-
-.warning-icon {
-    width: 38px;
-    height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    border-radius: 9px;
-
-    background: #f1f5f9;
-
-    color: #64748b;
-
-    font-size: 18px;
-}
-
-
-/* Level icon colors */
-
-.deadline-warning.level-1 .warning-icon {
-    background: #eff6ff;
-    color: #2563eb;
-}
-
-.deadline-warning.level-2 .warning-icon {
-    background: #fffbeb;
-    color: #d97706;
-}
-
-.deadline-warning.level-3 .warning-icon {
-    background: #fef2f2;
-    color: #dc2626;
-}
-
-
-/* Task */
-
-.warning-task-name {
-    margin: 0;
-
-    color: #172033;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    line-height: 1.3;
-}
-
-
-/* Project */
-
-.warning-project {
-    margin-top: 4px;
-
-    color: #64748b;
-
-    font-size: 11px;
-}
-
-.warning-project i {
-    margin-right: 4px;
-    color: #94a3b8;
-}
-
-
-/* =========================================================
-   LEVEL BADGE
-========================================================= */
-
-.warning-level {
-    padding: 5px 10px;
-
-    border-radius: 20px;
-
-    font-size: 10px;
-    font-weight: 600;
-
-    white-space: nowrap;
-}
-
-
-/* Notice */
-
-.warning-level.level-1 {
-    background: #eff6ff;
-    color: #2563eb;
-    border: 1px solid #bfdbfe;
-}
-
-
-/* Warning */
-
-.warning-level.level-2 {
-    background: #fffbeb;
-    color: #d97706;
-    border: 1px solid #fde68a;
-}
-
-
-/* Critical */
-
-.warning-level.level-3 {
-    background: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #fecaca;
-}
-
-
-/* =========================================================
-   DESCRIPTION
-========================================================= */
-
-.warning-description {
-    display: flex;
-    gap: 8px;
-
-    margin: 14px 0;
-
-    padding: 10px 12px;
-
-    border-radius: 8px;
-
-    background: #f8fafc;
-
-    border: 1px solid #e2e8f0;
-
-    color: #475569;
-
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.warning-description i {
-    flex-shrink: 0;
-
-    margin-top: 2px;
-
-    color: #94a3b8;
-}
-
-
-/* =========================================================
-   STATISTICS
-========================================================= */
-
-.warning-stats {
-    display: grid;
-
-    grid-template-columns: repeat(3, 1fr);
-
-    gap: 8px;
-}
-
-.warning-stat {
-    padding: 10px;
-
-    border-radius: 8px;
-
-    background: #f8fafc;
-
-    border: 1px solid #e2e8f0;
-}
-
-
-.warning-stat-label {
-    color: #64748b;
-
-    font-size: 10px;
-}
-
-.warning-stat-label i {
-    margin-right: 4px;
-
-    color: #94a3b8;
-}
-
-
-.warning-stat-value {
-    margin-top: 4px;
-
-    color: #1e293b;
-
-    font-size: 14px;
-    font-weight: 600;
-}
-
-
-.warning-stat-value.negative {
-    color: #dc2626;
-}
-
-.warning-stat-value.positive {
-    color: #16a34a;
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.warning-footer {
-    display: grid;
-
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 8px;
-
-    margin-top: 14px;
-    padding-top: 12px;
-
-    border-top: 1px solid #e2e8f0;
-}
-
-
-.warning-footer-item {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    min-width: 0;
-}
-
-
-.warning-footer-icon {
-    width: 28px;
-    height: 28px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    border-radius: 7px;
-
-    background: #f1f5f9;
-
-    color: #64748b;
-
-    font-size: 12px;
-}
-
-
-.warning-footer-label {
-    display: block;
-
-    color: #94a3b8;
-
-    font-size: 9px;
-
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-
-.warning-footer strong {
-    display: block;
-
-    margin-top: 2px;
-
-    max-width: 150px;
-
-    overflow: hidden;
-
-    color: #334155;
-
-    font-size: 11px;
-    font-weight: 600;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 
@@ -1466,6 +757,13 @@ body {
         gap: 16px;
     }
 
+    .activity-pagination {
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 12px;
+    }
+
     .header-tools {
         flex-wrap: wrap;
         width: 100%;
@@ -1482,16 +780,6 @@ body {
     .project-select {
         flex: 1;
         min-width: 0;
-    }
-
-    .filter-tabs {
-        overflow-x: auto;
-        padding-bottom: 8px;
-    }
-
-    .tab-item {
-        flex-shrink: 0;
-        padding: 7px 10px;
     }
 
     .panel-columns-header {
@@ -1517,14 +805,6 @@ body {
 
     .activity-state {
         padding: 24px 14px;
-    }
-
-    .warning-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .warning-footer {
-        grid-template-columns: 1fr;
     }
 
 }
@@ -1557,12 +837,4 @@ body {
 
 .activity-state .spinner-border {
     color: var(--primary);
-}
-
-.deadline-error {
-    color: #b91c1c;
-}
-
-.deadline-overlay.active {
-    cursor: pointer;
 }

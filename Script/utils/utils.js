@@ -45,6 +45,24 @@ export function showWarning(message) {
     });
 }
 
+/**
+ * Popup xác nhận (OK / Cancel).
+ * @returns {Promise<boolean>} true nếu người dùng xác nhận
+ */
+export async function showConfirm(title, text = "", confirmButtonText = "OK") {
+    const result = await Swal.fire({
+        title,
+        text,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText,
+        confirmButtonColor: "#dc2626",
+        cancelButtonText: "Cancel",
+        focusCancel: true
+    });
+    return result.isConfirmed;
+}
+
 export function showPopup(title, text = "", icon = "info") {
     return Swal.fire({
         title,

@@ -25,7 +25,13 @@ function getUserName(user) {
 }
 
 function getUserPosition(user) {
-    return user?.position || user?.role || user?.user_role || user?.department || "Profile";
+    const position = user?.position;
+
+    if (Array.isArray(position)) {
+        return position.length ? position.join(", ") : user?.role || user?.user_role || user?.department || "Profile";
+    }
+
+    return position || user?.role || user?.user_role || user?.department || "Profile";
 }
 
 function getAvatarUrl(user) {
@@ -72,7 +78,7 @@ function renderUser(user) {
         email: user?.email,
         phone: user?.phone,
         department: user?.department,
-        position: user?.position || user?.role || user?.user_role
+        position: Array.isArray(user?.position) ? user.position.join(", ") : (user?.position || user?.role || user?.user_role)
     };
 
     Object.entries(fields).forEach(([id, value]) => {

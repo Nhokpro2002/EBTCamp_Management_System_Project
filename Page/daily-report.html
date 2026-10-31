@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Report</title>
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+    <link href="../CSS/report-navigation.css" rel="stylesheet">
+    <link href="../CSS/daily-report.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="report-layout">
+        <aside class="report-sidebar">
+            <div class="logo">
+                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
+            </div>
+
+            <ul class="menu">
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a></li>
+                <li><a href="inventory.html"><i class="bi bi-box"></i> Inventory</a></li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Order</a></li>
+                <li><a href="project.html"><i class="bi bi-kanban"></i> Project</a></li>
+                <li><a href="notification.html"><i class="bi bi-bell"></i> Notification</a></li>
+                <li>
+                    <details class="menu-report" open>
+                        <summary>
+                            <i class="bi bi-file-earmark-text"></i>
+                            Report
+                            <i class="bi bi-chevron-down report-chevron"></i>
+                        </summary>
+                        <ul class="report-submenu">
+                            <li><a href="daily-report.html" aria-current="page"><i class="bi bi-calendar-day"></i> Daily
+                                    Report</a></li>
+                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="user.html"><i class="bi bi-gear"></i> Settings</a></li>
+            </ul>
+
+            <a class="sidebar-user" href="user.html">
+                <img src="../Image/LG-Symbol.png" alt="User avatar">
+                <span class="user-info">
+                    <h6 class="user-name">User</h6>
+                    <small class="user-role">Profile</small>
+                </span>
+            </a>
+        </aside>
+
+        <main class="report-content">
+            <header class="report-header report-page-heading">
+                <div>
+                    <span class="report-eyebrow"><i class="bi bi-journal-check"></i> Team workspace</span>
+                    <h1>Daily Report</h1>
+                    <p>Record the progress and evidence for tasks worked on each day.</p>
+                </div>
+            </header>
+
+            <section class="report-controls" aria-label="Report details">
+                <div class="report-control">
+                    <label for="report-project">Project</label>
+                    <select id="report-project" required>
+                        <option value="">Loading projects...</option>
+                    </select>
+                </div>
+                <div class="report-control">
+                    <label for="report-date">Report date</label>
+                    <input id="report-date" type="date" required>
+                </div>
+                <div class="report-control reporter-control">
+                    <label>Reporter</label>
+                    <div class="reporter-display">
+                        <i class="bi bi-person-circle"></i>
+                        <span id="reporter-name">Loading account...</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="report-task-picker">
+                <div>
+                    <h2><i class="bi bi-list-task"></i> Add project tasks</h2>
+                    <p>Select multiple tasks grouped by their project stage.</p>
+                </div>
+                <button id="open-task-picker" class="task-picker-button" type="button" disabled>
+                    <i class="bi bi-plus-lg"></i> Choose tasks
+                </button>
+            </section>
+
+            <section class="report-tasks-section">
+                <div class="report-section-heading">
+                    <div>
+                        <h2>Tasks in this report</h2>
+                        <p>Select one or more system members for each task. Create issues here or open an existing issue
+                            in Workflow. Done tasks require image evidence.</p>
+                    </div>
+                    <span id="task-count" class="task-count">0 tasks</span>
+                </div>
+                <div id="task-report-list" class="task-report-list"></div>
+            </section>
+
+            <div class="report-footer">
+                <p id="report-message" class="report-message" role="status" aria-live="polite" hidden></p>
+                <button id="save-reports" class="save-report-button" type="button">
+                    <i class="bi bi-floppy"></i> Record report
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <dialog id="task-picker-dialog" class="task-picker-dialog" aria-labelledby="task-picker-title">
+        <form method="dialog" class="task-picker-modal">
+            <header class="task-picker-modal-header">
+                <div>
+                    <h2 id="task-picker-title">Choose project tasks</h2>
+                    <p>Select one or more tasks, then add them to this report.</p>
+                </div>
+                <button class="task-picker-close" type="submit" value="cancel" aria-label="Close task picker">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </header>
+            <div id="task-picker-list" class="task-picker-list"></div>
+            <footer class="task-picker-modal-footer">
+                <span id="task-picker-selection-count">0 tasks selected</span>
+                <div>
+                    <button class="task-picker-cancel" type="submit" value="cancel">Cancel</button>
+                    <button id="add-selected-tasks" class="task-picker-confirm" type="button">Add selected
+                        tasks</button>
+                </div>
+            </footer>
+        </form>
+    </dialog>
+
+    <dialog id="issue-create-dialog" class="issue-create-dialog" aria-labelledby="issue-create-title">
+        <form id="issue-create-form" class="issue-create-form">
+            <header class="issue-create-header">
+                <div>
+                    <h2 id="issue-create-title">Create issue</h2>
+                </div>
+                <button id="close-issue-dialog" class="task-picker-close" type="button" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </header>
+            <div class="issue-create-fields">
+                <input id="issue-related-task-id" type="hidden">
+                <label for="issue-title">Issue title</label>
+                <input id="issue-title" name="title" type="text" maxlength="200" required
+                    placeholder="Briefly describe the issue">
+                <label for="issue-type">Issue type</label>
+                <select id="issue-type" name="type" required>
+                    <option value="">Select issue type</option>
+                </select>
+            </div>
+            <footer class="issue-create-footer">
+                <button id="cancel-issue-dialog" class="task-picker-cancel" type="button">Cancel</button>
+                <button id="submit-issue" class="task-picker-confirm" type="submit">
+                    <i class="bi bi-exclamation-triangle"></i> Create issue
+                </button>
+            </footer>
+        </form>
+    </dialog>
+
+    <script type="module" src="../Script/daily-report/main.js"></script>
+</body>
+
+</html>

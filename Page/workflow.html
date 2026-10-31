@@ -10,7 +10,9 @@
     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet"> <!-- DHTMLX Gantt -->
     <link href="../Libs/Grantt/dhtmlxgantt.css" rel="stylesheet">
     <script src="../Libs/Grantt/dhtmlxgantt.js"></script>
-    <link href="../CSS/workflow.css" rel="stylesheet"> <!-- JQuery 4.0.0 -->
+    <link href="../CSS/workflow.css" rel="stylesheet">
+    <link href="../CSS/report-navigation.css" rel="stylesheet">
+    <!-- JQuery 4.0.0 -->
     <script src="../Libs/JQuery/jquery-4.0.0.min.js"></script> <!-- Tom Select -->
     <link href="../Libs/Tom-Select/tom-select.bootstrap5.css" rel="stylesheet">
     <script src="../Libs/Tom-Select/tom-select.complete.min.js"></script> <!-- Sweet Alert -->
@@ -21,33 +23,49 @@
 
 <body>
 
-    <div class="workflow-page">
-
-        <!-- ================= HEADER ================= -->
-        <header class="workflow-header">
-
-            <div class="project-selector">
-                <div class="project-icon">
-                    <i class="bi bi-folder-fill"></i>
-                </div>
-
-                <div class="project-text">
-                    <span>Project</span>
-                    <strong class="project-info-name">MES System Setup</strong>
-                </div>
-
-                <i class="bi bi-chevron-down project-arrow"></i>
+    <div class="workflow-shell">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
             </div>
 
-            <button type="button" class="back-button" id="back-project-page-button">
+            <ul class="menu">
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a></li>
+                <li><a href="inventory.html"><i class="bi bi-box"></i> Inventory</a></li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Order</a></li>
+                <li class="active"><a href="project.html"><i class="bi bi-kanban"></i> Project</a></li>
+                <li>
+                    <a href="notification.html">
+                        <span class="notification-icon">
+                            <i class="bi bi-bell"></i>
+                            <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
+                        </span>
+                        Notification
+                    </a>
+                </li>
+                <li>
+                    <details class="menu-report">
+                        <summary><i class="bi bi-file-earmark-text"></i> Report <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Daily Report</a></li>
+                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+            </ul>
 
-                <i class="bi bi-arrow-left"></i>
-                <span>Back</span>
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+                <span class="user-info">
+                    <h6 class="user-name">User</h6>
+                    <small class="user-role">Profile</small>
+                </span>
+            </a>
+        </aside>
 
-            </button>
-
-        </header>
-
+        <main class="workflow-content">
+            <div class="workflow-page">
 
         <!-- ================= DASHBOARD ================= -->
         <section class="workflow-toolbar">
@@ -68,7 +86,6 @@
                     </div>
                 </div>
 
-
                 <div class="summary-card">
                     <div class="summary-icon green">
                         <i class="bi bi-calendar-check"></i>
@@ -76,12 +93,9 @@
 
                     <div>
                         <span>End Date</span>
-                        <strong id="project-end-date">
-
-                        </strong>
+                        <strong id="project-end-date"></strong>
                     </div>
                 </div>
-
 
                 <div class="summary-card">
                     <div class="summary-icon blue">
@@ -90,40 +104,10 @@
 
                     <div>
                         <span>Total Tasks</span>
-                        <strong id="total-task-count">
-                            7
-                        </strong>
+                        <strong id="total-task-count">0</strong>
                     </div>
                 </div>
 
-
-                <div class="summary-card progress-card">
-
-                    <div>
-                        <span>Progress</span>
-                    </div>
-
-                    <div class="circular-progress">
-
-                        <svg viewBox="0 0 44 44">
-
-                            <!-- Background -->
-                            <circle class="progress-bg" cx="22" cy="22" r="18">
-                            </circle>
-
-                            <!-- Progress -->
-                            <circle id="progress-circle" class="progress-value" cx="22" cy="22" r="18">
-                            </circle>
-
-                        </svg>
-
-                        <strong id="project-progress">
-                            0%
-                        </strong>
-
-                    </div>
-
-                </div>
 
             </div>
 
@@ -182,20 +166,37 @@
 
         </section>
 
+        <section class="workflow-progress-row" aria-label="Project and stage progress">
+            <div class="summary-card progress-card project-progress-card">
+                <div>
+                    <span>Project Progress</span>
+                </div>
+
+                <div class="circular-progress">
+                    <svg viewBox="0 0 44 44">
+                        <circle class="progress-bg" cx="22" cy="22" r="18"></circle>
+                        <circle id="progress-circle" class="progress-value" cx="22" cy="22" r="18"></circle>
+                    </svg>
+                    <strong id="project-progress">0%</strong>
+                </div>
+            </div>
+
+            <div id="stage-progress-grid" class="stage-progress-grid"></div>
+        </section>
 
         <!-- ================= GANTT ================= -->
         <section class="gantt-card">
             <div id="gantt_here"></div>
         </section>
 
-    </div>
+            </div>
 
 
     <!-- ================= TASK MODAL ================= -->
 
     <div id="taskModal" class="task-modal">
 
-        <div class="task-modal-overlay" onclick="closeTaskModal()">
+        <div class="task-modal-overlay">
         </div>
 
         <div class="task-modal-content">
@@ -236,6 +237,20 @@
 
     </div>
 
+    <!-- ================= EVIDENCE IMAGE VIEWER ================= -->
+
+    <dialog id="evidence-viewer" class="evidence-viewer" aria-labelledby="evidence-viewer-title">
+        <div class="evidence-viewer-content">
+            <header class="evidence-viewer-header">
+                <h5 id="evidence-viewer-title"><i class="bi bi-flag-fill"></i> Evidence images</h5>
+                <button type="button" class="evidence-viewer-close" data-close-evidence aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </header>
+            <div id="evidence-viewer-body" class="evidence-viewer-body"></div>
+        </div>
+    </dialog>
+
     <section class="issues-panel">
         <div class="issues-header">
             <div>
@@ -261,7 +276,6 @@
                     <input id="searchInput" type="search" placeholder="Tìm kiếm issue...">
                 </div>
 
-                <button class="btn-primary" id="addIssueBtn">Tạo issue</button>
             </div>
         </div>
 
@@ -269,11 +283,11 @@
             <aside class="issue-summary">
                 <div class="summary-stage">
                     <h4>Theo giai đoạn</h4>
-                    <div class="stage-stat"><span><i class="dot design"></i>Design</span><b>0</b></div>
-                    <div class="stage-stat"><span><i class="dot mechanical"></i>Mechanical</span><b>0</b></div>
-                    <div class="stage-stat"><span><i class="dot assembly"></i>Assembly</span><b>0</b></div>
-                    <div class="stage-stat"><span><i class="dot electric"></i>Electric</span><b>0</b></div>
-                    <div class="stage-stat"><span><i class="dot program"></i>Program</span><b>0</b></div>
+                    <button type="button" class="stage-stat" data-stage="Design"><span><i class="dot design"></i>Design</span><b>0</b></button>
+                    <button type="button" class="stage-stat" data-stage="Mechanical"><span><i class="dot mechanical"></i>Mechanical</span><b>0</b></button>
+                    <button type="button" class="stage-stat" data-stage="Assembly"><span><i class="dot assembly"></i>Assembly</span><b>0</b></button>
+                    <button type="button" class="stage-stat" data-stage="Electric"><span><i class="dot electric"></i>Electric</span><b>0</b></button>
+                    <button type="button" class="stage-stat" data-stage="Program"><span><i class="dot program"></i>Program</span><b>0</b></button>
                 </div>
             </aside>
 
@@ -284,9 +298,8 @@
                             <th class="check"><input type="checkbox" id="selectAll"></th>
                             <th>ID</th>
                             <th>Title</th>
-                            <th>Description</th>
                             <th>Stage</th>
-                            <th>Related Task</th>
+                            <th>Solution</th>
                             <th>Reporter</th> <!--Là người tạo issue-->
                             <th>Created Date</th>
                         </tr>
@@ -303,42 +316,22 @@
         </div>
     </section>
 
-    <div class="modal hidden" id="issueModal">
-        <div class="modal-card">
-            <div class="modal-head">
-                <h3>Make Issue</h3>
-                <button id="closeModal">×</button>
-            </div>
-            <form id="issueForm">
-                <label>Title
-                    <input name="title" required placeholder="Example: Motor broken">
-                </label>
-                <label>Description
-                    <textarea name="description" rows="3" placeholder="Describe the problem..."></textarea>
-                </label>
-                <div class="form-grid">
-                    <label>Select Stage
-                        <select name="related-stage">
-                        </select>
-                    </label>
-                    <label>Related Task
-                        <select name="related-task">
-                            <!--Lấy từ data trên workflow-->
-                        </select>
-                    </label>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="cancelModal">Cancel</button>
-                    <button class="btn-primary" type="submit">Make Issue</button>
-                </div>
-            </form>
-        </div>
+    <!-- ================= ISSUE BULK ACTIONS (hiện khi có row được chọn) ================= -->
+
+    <div id="issueBulkBar" class="issue-bulk-bar" role="region" aria-label="Selected issues" inert>
+        <span id="issueBulkCount" class="issue-bulk-count">0 selected</span>
+        <button type="button" id="btnDeleteIssues" class="btn-delete-issues">
+            <i class="bi bi-trash" aria-hidden="true"></i> Delete
+        </button>
     </div>
 
+        </main>
+    </div>
 
 
     <script type="module" src="../Script/workflow/main.js">
     </script>
+    <script type="module" src="../Script/user/main.js"></script>
 
 </body>
 

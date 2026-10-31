@@ -41,8 +41,8 @@ function checkAuthentication() {
             confirmButtonText: "Go to Login"
         })
             .then(() => {
-                window.location.href =
-                    "http://127.0.0.1:5500/Page/login.html";
+                // Đường dẫn tương đối: chạy được ở cả máy test lẫn server thật
+                window.location.href = "login.html";
 
             });
         return false;
@@ -75,6 +75,7 @@ async function loadInventory() {
     inventoryVariable.currentInventoryPage = 1;
 
     renderCurrentPage();
+    ui.renderMaterialCodeOptions(inventoryVariable.inventoryItemFull);
 }
 
 
@@ -91,23 +92,4 @@ function renderCurrentPage() {
 
     ui.renderPagination?.();
 }
-
-
-document
-    .getElementById("btnAddSelected")
-    .addEventListener("click", function () {
-        const ids = Array.from(
-            document.querySelectorAll(
-                ".row-checkbox:checked"
-            )
-        )
-            .map(cb => cb.value);
-        window.parent.postMessage(
-            {
-                type: "ADD_ITEMS",
-                ids: ids
-            },
-            "*"
-        );
-    });
 

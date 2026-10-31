@@ -19,9 +19,9 @@ body {
     align-items: center;
 
     font-family:
-        "Segoe UI",
-        Arial,
-        sans-serif;
+        "Times New Roman",
+        Times,
+        serif;
 }
 
 a:hover {
@@ -128,7 +128,6 @@ a:hover {
         1px solid #d1d5db;
 
 }
-
 
 
 .form-control:focus {

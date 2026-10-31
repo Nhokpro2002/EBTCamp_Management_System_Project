@@ -19,6 +19,13 @@ export const workflowPageMessage = {
 
     requiredFields: "Please fill in all required fields.",
 
+    deleteIssueConfirm: "Delete the selected issues? This cannot be undone.",
+    deleteIssueSuccess: "Issues deleted successfully.",
+    deleteIssueFailed: "Failed to delete some issues.",
+
+    solutionUpdateSuccess: "Solution saved successfully.",
+    solutionUpdateFailed: "Failed to save solution.",
+
     deleteConfirm: "Are you sure you want to delete the selected tasks?"
 
 }

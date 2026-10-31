@@ -24,7 +24,7 @@
 
 body {
     background: var(--bg);
-    font-family: "Segoe UI", sans-serif;
+    font-family: "Times New Roman", Times, serif;
     color: var(--text);
 }
 

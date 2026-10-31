@@ -1,117 +1,7 @@
 const panel = document.querySelector("#activity-list");
 
-export function renderProgressChange(notification) {
-
-    const before =
-        Number(notification.progress_before);
-
-    const updated =
-        Number(notification.progress_updated);
-
-
-    if (before === updated) {
-        return "";
-    }
-
-
-    const isUp =
-        updated > before;
-
-
-    const cssClass =
-        isUp
-            ? "change-up"
-            : "change-down";
-
-
-    const arrowIcon =
-        isUp
-            ? '<i class="bi bi-arrow-up-short"></i>'
-            : '<i class="bi bi-arrow-down-short"></i>';
-
-
-    return `
-
-        <span class="field-separator">
-            •
-        </span>
-
-        <span class="field-label">
-            Progress:
-        </span>
-
-        <span class="field-value">
-            ${formatProgress(before)}
-        </span>
-
-        <span class="field-change ${cssClass}">
-            ${arrowIcon}
-            ${formatProgress(updated)}
-        </span>
-
-    `;
-}
-
 // =====================================================
-// 7. Notification Changes
-// =====================================================
-
-export function renderDurationChange(notification) {
-
-    const before =
-        Number(notification.duration_before);
-
-    const updated =
-        Number(notification.duration_updated);
-
-
-    if (before === updated) {
-        return "";
-    }
-
-
-    const isUp = updated > before;
-
-    const cssClass =
-        isUp
-            ? "change-up"
-            : "change-down";
-
-
-    const arrowIcon =
-        isUp
-            ? '<i class="bi bi-arrow-up-short"></i>'
-            : '<i class="bi bi-arrow-down-short"></i>';
-
-
-    const difference =
-        Math.abs(updated - before);
-
-
-    return `
-
-        <span class="field-separator">
-            •
-        </span>
-
-        <span class="field-label">
-            Duration:
-        </span>
-
-        <span class="field-value">
-            ${before}
-        </span>
-
-        <span class="field-change ${cssClass}">
-            ${arrowIcon}
-            ${difference} days
-        </span>
-
-    `;
-}
-
-// =====================================================
-// 6. Render Issue
+// Render Issue
 // =====================================================
 
 export function renderIssue(issue, prepend = false) {
@@ -124,7 +14,7 @@ export function renderIssue(issue, prepend = false) {
 
     const html = `
 
-        <div class="activity-item" data-type="issue" data-project-id="${escapeHtml(issue.project ?? "")}">
+        <div class="activity-item" data-type="issue" data-project-id="${escapeHtml(issue.project ?? "")}" data-project-name="${escapeHtml(issue.project_name ?? "")}">
 
             <!-- Activity -->
             <div class="col-activity">
@@ -157,6 +47,17 @@ export function renderIssue(issue, prepend = false) {
 
                         <div class="activity-fields">
 
+                            <span class="field-label">
+                                Type:
+                            </span>
+
+                            <span class="field-value issue-type">
+                                ${escapeHtml(issue.type || "-")}
+                            </span>
+
+                            <span class="field-separator">
+                                •
+                            </span>
 
                             <span class="field-label">
                                 Stage:
@@ -169,20 +70,6 @@ export function renderIssue(issue, prepend = false) {
                             </span>
 
 
-                            <span class="field-separator">
-                                •
-                            </span>
-
-
-                            <span class="field-label">
-                                Task:
-                            </span>
-
-                            <span class="field-value">
-                                ${escapeHtml(
-        issue.related_task ?? "-"
-    )}
-                            </span>
                             <span class="field-separator">
                                 •
                             </span>
@@ -231,153 +118,6 @@ export function renderIssue(issue, prepend = false) {
 
 }
 
-
-// =====================================================
-// 5. Render Notification
-// =====================================================
-
-export function renderNotification(notification, prepend = false) {
-
-    const created = new Date(notification.created);
-
-    const time = formatTime(created);
-    const date = formatDate(created);
-
-
-    // ---------------------------------------------
-    // Duration
-    // ---------------------------------------------
-
-    const durationHtml =
-        renderDurationChange(notification);
-
-
-    // ---------------------------------------------
-    // Progress
-    // ---------------------------------------------
-
-    const progressHtml =
-        renderProgressChange(notification);
-
-
-    // ---------------------------------------------
-    // Project / type
-    // ---------------------------------------------
-
-    const html = `
-
-        <div class="activity-item" data-type="project" data-project-id="${escapeHtml(notification.project ?? "")}">
-
-            <!-- Activity -->
-            <div class="col-activity">
-
-                <div class="activity-main">
-
-                    <div class="activity-content">
-
-                        <div class="activity-header">
-    <span class="activity-title">
-        <i class="bi bi-graph-up progress-icon"></i>
-        Task Updated
-    </span>
-</div>
-
-
-                        <div class="activity-desc">
-
-                            <strong>
-                                ${escapeHtml(
-        notification.name ??
-        "Design task 1"
-    )}
-                            </strong>
-
-                            has been updated.
-
-                        </div>
-
-
-                        <div class="activity-fields">
-
-                            <span class="field-label">
-                                Stage:
-                            </span>
-
-                            <span class="stage-badge ${getStageClass(notification.stage)}">
-                                ${escapeHtml(
-        notification.stage ?? "-"
-    )}
-                            </span>
-
-                            ${durationHtml}
-
-                            ${progressHtml}
-
-
-                            <span class="field-separator">
-                                •
-                            </span>
-
-
-                            <span class="field-label">
-                                Updated by:
-                            </span>
-
-                            <span class="updated-by">
-                                ${escapeHtml(
-        notification.updated_by ??
-        "Unknown"
-    )}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Related -->
-            <div class="col-related">
-
-                <div class="activity-relation">
-                    <span class="relation-badge badge-project">
-                        ${escapeHtml(notification.project_name || "Project")}
-                    </span>
-                </div>
-
-            </div>
-
-
-            <!-- Time -->
-            <div class="col-time">
-
-                <div class="activity-meta">
-
-                    <div class="activity-time">
-                        ${time}
-                    </div>
-
-                    <div class="activity-date">
-                        ${date}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-    `;
-
-
-    panel.insertAdjacentHTML(prepend ? "afterbegin" : "beforeend", html);
-
-}
-
 function formatTime(date) {
     return date.toLocaleTimeString("vi-VN", {
         timeZone: "Asia/Ho_Chi_Minh",
@@ -394,29 +134,7 @@ function formatDate(date) {
 }
 
 // =====================================================
-// 9. Helpers - Format
-// =====================================================
-function formatProgress(value) {
-    if (
-        value === null ||
-        value === undefined ||
-        Number.isNaN(Number(value))
-    ) {
-        return "-";
-    }
-
-    value = Number(value);
-
-    if (value <= 1) {
-        return Math.round(
-            value * 100
-        ) + "%";
-    }
-    return value + "%";
-}
-
-// =====================================================
-// 11. Helpers - Security
+// Helpers - Security
 // =====================================================
 
 export function escapeHtml(value) {
@@ -432,7 +150,7 @@ export function escapeHtml(value) {
 }
 
 // =====================================================
-// 10. Helpers - Stage
+// Helpers - Stage
 // =====================================================
 function getStageClass(stage) {
     switch (stage?.toLowerCase()) {

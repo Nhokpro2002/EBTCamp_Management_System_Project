@@ -13,6 +13,7 @@
 
     <!-- CSS tùy chỉnh -->
     <link href="../CSS/notification.css" rel="stylesheet">
+    <link href="../CSS/report-navigation.css" rel="stylesheet">
 </head>
 
 <body>
@@ -59,10 +60,15 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
-                        <i class="bi bi-gear"></i> Settings
-                    </a>
+                    <details class="menu-report">
+                        <summary><i class="bi bi-file-earmark-text"></i> Report <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Daily Report</a></li>
+                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                        </ul>
+                    </details>
                 </li>
+                <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
             </ul>
 
             <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
@@ -83,7 +89,7 @@
             <div class="content-header">
                 <div>
                     <h2 class="page-title">Notifications</h2>
-                    <p class="page-subtitle">All system activities and updates</p>
+                    <p class="page-subtitle">Issues assigned to your roles</p>
                 </div>
                 <div class="header-tools">
                     <div class="search-box">
@@ -106,65 +112,6 @@
             </div>
 
 
-            <!-- Thanh Tabs lọc các nhóm thông báo -->
-            <div class="filter-tabs" role="tablist" aria-label="Filter activity type">
-                <button type="button" class="tab-item active" data-tab="all" role="tab" aria-selected="true">
-                    All <span class="tab-count count-all">0</span>
-                </button>
-                <button type="button" class="tab-item" data-tab="project" role="tab" aria-selected="false">
-                    <span style="
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: #dbeafe;
-        color: #2563eb;
-        margin-right: 8px;
-    ">
-                        <i class="bi bi-kanban"></i>
-                    </span>
-                    Project <span class="tab-count count-project">0</span>
-                </button>
-
-                <button type="button" class="tab-item" data-tab="issue" role="tab" aria-selected="false">
-                    <span style="
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: #ffedd5;
-        color: #ea580c;
-        margin-right: 8px;
-    ">
-                        <i class="bi bi-exclamation-triangle"></i>
-                    </span>
-                    Issue <span class="tab-count count-issue">0</span>
-                </button>
-
-                <button type="button" class="tab-item" id="btn-deadline" aria-expanded="false" aria-controls="deadline-drawer">
-                    <span style="
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: #f3e8ff;
-        color: #9333ea;
-        margin-right: 8px;
-    ">
-                        <i class="bi bi-hourglass-split"></i>
-                    </span>
-
-                    Deadline
-                    <span class="tab-count count-system">0</span>
-                </button>
-            </div>
-
             <!-- Bảng danh sách thông báo -->
             <div class="activity-panel">
                 <!-- Tiêu đề cột -->
@@ -179,58 +126,26 @@
                     <!-- Các dữ liệu thông báo tự động đẩy vào từ file main.js -->
                 </div>
 
+            </div>
 
+            <div class="activity-pagination" aria-label="Activity pagination">
+                <label class="page-size-control" for="page-size">
+                    Rows per page
+                    <select id="page-size" class="form-select form-select-sm">
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </label>
+                <span id="pagination-info" aria-live="polite">0–0 of 0</span>
+                <div class="pagination-buttons">
+                    <button type="button" id="previous-page" class="pagination-button" disabled>Previous</button>
+                    <button type="button" id="next-page" class="pagination-button" disabled>Next</button>
+                </div>
             </div>
 
         </main>
     </div>
-
-    <!-- Deadline Drawer -->
-    <div id="deadline-overlay" class="deadline-overlay"></div>
-
-    <aside id="deadline-drawer" class="deadline-drawer" role="dialog" aria-modal="true"
-        aria-labelledby="deadline-drawer-title" aria-hidden="true">
-
-        <!-- Header -->
-        <div class="deadline-header">
-
-            <div class="deadline-title">
-                <div>
-                    <h5 id="deadline-drawer-title">Deadline Warnings</h5>
-                    <span id="deadline-warning-count">
-                        0 warnings
-                    </span>
-                </div>
-            </div>
-
-            <button type="button" class="deadline-close-btn" id="btn-close-deadline">
-                <i class="bi bi-x-lg"></i>
-            </button>
-
-        </div>
-
-
-        <!-- Content -->
-        <div class="deadline-content">
-
-            <div id="deadline-warning-list">
-                <!-- Warning items render here -->
-            </div>
-
-            <!-- Empty state -->
-            <div id="deadline-empty" class="deadline-empty" style="display: none;">
-                <i class="bi bi-check-circle"></i>
-
-                <h6>No deadline warnings</h6>
-
-                <p>
-                    All tasks are currently on schedule.
-                </p>
-            </div>
-
-        </div>
-
-    </aside>
 
     <!-- PocketBase SDK -->
     <script src="../Libs/PocketbaseSDK/pocketbase.umd.js"></script>

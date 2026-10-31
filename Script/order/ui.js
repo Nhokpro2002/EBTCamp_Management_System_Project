@@ -191,9 +191,3 @@ export function createOrderItemRow(item) {
         </tr>
     `;
 }
-
-export function updateAddMaterialButton() {
-    const projectFilter = document.getElementById("projectFilter");
-    const button = document.getElementById("btnAddMaterial");
-    if (button && projectFilter) button.disabled = !projectFilter.value;
-}

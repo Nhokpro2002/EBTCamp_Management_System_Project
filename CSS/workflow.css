@@ -26,118 +26,148 @@ body {
    PAGE
 ========================================================= */
 
-.workflow-page {
-    height: 100vh;
-    padding: 18px;
+.workflow-shell {
     display: flex;
-    flex-direction: column;
-    gap: 14px;
+    min-height: 100vh;
 }
 
+.sidebar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex: 0 0 232px;
+    flex-direction: column;
+    width: 232px;
+    height: 100vh;
+    color: #fff;
+    background: linear-gradient(180deg, #111827, #1f2937);
+    border-right: 1px solid rgba(255, 255, 255, .12);
+    z-index: 100;
+}
 
-/* =========================================================
-   HEADER
-========================================================= */
-
-.workflow-header {
-    height: 82px;
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 0 22px;
+.sidebar .logo {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    box-shadow:
-        0 4px 14px rgba(0, 0, 0, .07);
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
 }
 
+.sidebar .logo img {
+    width: auto;
+    height: 55px;
+    object-fit: contain;
+}
 
-/* Project */
+.sidebar .menu {
+    flex: 1;
+    margin: 0;
+    padding: 12px 16px;
+    list-style: none;
+}
 
-.project-selector {
-    height: 60px;
+.sidebar .menu li {
+    margin-bottom: 4px;
+}
+
+.sidebar .menu a {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 6px 14px 6px 8px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: .2s;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background .2s, color .2s;
 }
 
-.project-selector:hover {
-    background: #f7f8fc;
+.sidebar .menu a i {
+    font-size: 18px;
 }
 
+.sidebar .menu a:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, .1);
+}
 
-.project-icon {
-    width: 46px;
-    height: 46px;
+.sidebar .menu .active a {
+    color: #fff;
+    background: #2563eb;
+    font-weight: 600;
+}
 
-    border-radius: 10px;
-
+.sidebar-user {
     display: flex;
     align-items: center;
-    justify-content: center;
-
-    background: #eff6ff;
-
-    color: #2563eb;
-
-    font-size: 23px;
+    gap: 12px;
+    padding: 16px;
+    margin: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .12);
 }
 
+.sidebar-user-link {
+    color: inherit;
+    text-decoration: none;
+}
 
-.project-text {
+.sidebar-user-link:hover,
+.sidebar-user-link:focus-visible {
+    color: inherit;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 10px;
+}
+
+.sidebar-user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
 }
 
-.project-text span {
+.user-name {
+    margin: 0;
+    color: #fff;
     font-size: 13px;
-    color: #6b7280;
-}
-
-.project-text strong {
-    font-size: 16px;
-    color: #182235;
-}
-
-.project-arrow {
-    margin-left: 25px;
-    font-size: 14px;
-}
-
-
-/* Back */
-
-.back-button {
-    height: 48px;
-
-    padding: 0 18px;
-
-    border-radius: 10px;
-
-    background: white;
-
-    border: 1px solid #cbd5e1;
-
-    color: #263449;
-
-    font-size: 15px;
     font-weight: 600;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    transition: .2s;
 }
 
-.back-button:hover {
-    background: #f8fafc;
-    transform: translateY(-1px);
+.user-role {
+    color: #cbd5e1;
+    font-size: 11px;
+}
+
+.notification-icon {
+    position: relative;
+    display: inline-flex;
+}
+
+.notification-icon #badge-count {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    padding: .25em .45em;
+    font-size: .7rem;
+    font-weight: 700;
+}
+
+.workflow-content {
+    flex: 1;
+    min-width: 0;
+    padding: 18px;
+    background: #f5f7fb;
+}
+
+.workflow-page {
+    height: calc(100vh - 36px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 
@@ -251,6 +281,55 @@ body {
     justify-content: space-between;
 }
 
+.workflow-progress-row {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 12px;
+    min-width: 0;
+}
+
+.project-progress-card {
+    height: 82px;
+    min-width: 0;
+}
+
+.stage-progress-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 0;
+}
+
+.stage-progress-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    height: 82px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, .06);
+}
+
+.stage-progress-name {
+    overflow: hidden;
+    color: #253044;
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+}
+
+.stage-circular-progress {
+    width: 52px;
+    height: 52px;
+}
+
+.stage-progress-value {
+    stroke: var(--stage-progress-color, #2563eb);
+}
+
 
 /* ---------------------------------------------------------
    Container
@@ -301,6 +380,10 @@ body {
     stroke-dashoffset: 113.1;
     transition:
         stroke-dashoffset 0.5s ease;
+}
+
+.circular-progress .stage-progress-value {
+    stroke: var(--stage-progress-color, #2563eb);
 }
 
 
@@ -518,10 +601,8 @@ body {
 
     border: none !important;
 
-    height: 32px !important;
-
-    margin-top: 3px;
-
+    /* Chiều cao/vị trí do gantt.config.bar_height quyết định (gantt.js),
+       không ép ở đây để thanh luôn nằm giữa dòng */
     box-shadow: none !important;
 }
 
@@ -531,14 +612,77 @@ body {
 }
 
 
+/* Màu chữ = task.textColor (màu đậm của stage, gán trong ui.setTaskColor),
+   đọc rõ trên phần chưa hoàn thành (nền nhạt). */
 .gantt_task_content {
     font-size: 14px;
 
     font-weight: 600;
 
-    color: white;
+    color: var(--dhx-gantt-task-color, #fff);
 }
 
+/* Bản sao chữ màu trắng phủ đúng vị trí chữ gốc, chỉ hiện trong vùng tiến độ
+   (clip-path do template task_text tính theo % progress, xem gantt.js). */
+.task-text-on-progress {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-top: 1px; /* bằng padding-top của .gantt_task_content */
+    color: var(--task-text-on-progress, #fff);
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   OVERDUE (DELAY) SEGMENT
+========================================================= */
+
+/* Bo góc phải của thanh task để nối liền với phần dôi ra */
+.gantt_task_line.task-delayed {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.gantt_delay_layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* top/height được JS căn theo .gantt_task_line đã render.
+   Cùng tông màu task: sọc chéo nhạt + viền nét đứt màu nhạt. */
+.gantt_task_delay {
+    --delay-stripe-light: color-mix(in srgb, var(--task-progress) 6%, #fff);
+    --delay-stripe-dark: color-mix(in srgb, var(--task-progress) 18%, #fff);
+
+    border: 1.5px dashed color-mix(in srgb, var(--task-progress) 40%, #fff);
+    border-left: 0;
+
+    pointer-events: auto;
+    position: absolute;
+    box-sizing: border-box;
+    padding: 0 6px;
+    overflow: hidden;
+    border-radius: 0 6px 6px 0;
+    background: repeating-linear-gradient(-45deg,
+            var(--delay-stripe-light) 0,
+            var(--delay-stripe-light) 6px,
+            var(--delay-stripe-dark) 6px,
+            var(--delay-stripe-dark) 12px);
+    color: var(--task-text);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    z-index: 1;
+}
 
 /* =========================================================
    TASK HOVER
@@ -582,37 +726,29 @@ body {
 }
 
 
-.stage-add-btn {
-    color: #2563eb;
-
-    text-decoration: none;
-
-    transition: .2s;
-}
-
-
-.stage-add-btn:hover {
-    transform: scale(1.15);
-
-    color: #174ea6;
-}
-
-
-.add-task-icon {
+.stage-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
     cursor: pointer;
-
-    color: #9aa4b2;
-
-    margin-left: 6px;
-
-    transition: .2s;
+    transition: background-color .2s, transform .2s;
 }
 
+.stage-icon-button:hover {
+    background: #eef4ff;
+    transform: scale(1.08);
+}
 
-.add-task-icon:hover {
-    color: #2563eb;
-
-    transform: scale(1.15);
+.stage-icon-button:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
 }
 
 
@@ -801,6 +937,18 @@ body {
         min-width: 250px;
     }
 
+    .workflow-progress-row {
+        grid-template-columns: 155px minmax(0, 1fr);
+    }
+
+    .stage-progress-grid {
+        gap: 8px;
+    }
+
+    .stage-progress-card {
+        padding: 8px;
+    }
+
 }
 
 
@@ -819,6 +967,14 @@ body {
         justify-content: flex-end;
     }
 
+    .workflow-progress-row {
+        grid-template-columns: 1fr;
+    }
+
+    .stage-progress-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
 
 }
 
@@ -830,6 +986,26 @@ body {
     --muted: #64748b;
     --text: #1f2937;
     --bg: #f5f7fb;
+
+    /* Màu stage dùng chung cho Gantt (ui.js đọc các biến này) và bảng Issues.
+       -bg: màu thanh task / nền badge, -fg: màu tiến độ / chữ badge / chấm */
+    --stage-design-bg: #a1d5ff;
+    --stage-design-fg: #073374;
+    --stage-mechanical-bg: #bcf7ff;
+    --stage-mechanical-fg: #00705d;
+    --stage-assembly-bg: #c9fbca;
+    --stage-assembly-fg: #006307;
+    --stage-electric-bg: #ffe3b9;
+    --stage-electric-fg: #923300;
+    --stage-program-bg: #f6c6ff;
+    --stage-program-fg: #2f0168;
+
+    /* Màu chung cho mọi task trên Gantt (ui.js đọc các biến này).
+       Chữ đậm trên nền nhạt ~11:1, chữ trắng trên nền đậm ~7.5:1 → đọc rõ không cần bóng */
+    --task-bg: #cfe0fb;        /* phần chưa hoàn thành */
+    --task-progress: #1e4fa8;  /* phần đã hoàn thành */
+    --task-text: #0f2a5c;      /* chữ trên phần chưa hoàn thành */
+    --task-text-on-progress: #ffffff;
 }
 
 .issues-panel {
@@ -925,19 +1101,6 @@ select {
     font-size: 13px;
 }
 
-.btn-primary {
-    border: 0 !important;
-    background: var(--blue) !important;
-    color: white !important;
-    padding: 0 16px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.btn-primary:hover {
-    filter: brightness(.96);
-}
-
 .issues-content {
     display: flex;
     min-height: 350px;
@@ -961,9 +1124,69 @@ select {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     height: 30px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    font: inherit;
     font-size: 12px;
     color: #667991;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+/* Mỗi dòng dùng màu của stage tương ứng (biến --stage-*-bg/-fg trong :root) */
+.stage-stat[data-stage="Design"] {
+    --stage-bg: var(--stage-design-bg);
+    --stage-fg: var(--stage-design-fg);
+}
+
+.stage-stat[data-stage="Mechanical"] {
+    --stage-bg: var(--stage-mechanical-bg);
+    --stage-fg: var(--stage-mechanical-fg);
+}
+
+.stage-stat[data-stage="Assembly"] {
+    --stage-bg: var(--stage-assembly-bg);
+    --stage-fg: var(--stage-assembly-fg);
+}
+
+.stage-stat[data-stage="Electric"] {
+    --stage-bg: var(--stage-electric-bg);
+    --stage-fg: var(--stage-electric-fg);
+}
+
+.stage-stat[data-stage="Program"] {
+    --stage-bg: var(--stage-program-bg);
+    --stage-fg: var(--stage-program-fg);
+}
+
+.stage-stat[data-stage] {
+    color: var(--stage-fg);
+}
+
+.stage-stat[data-stage] b {
+    min-width: 24px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--stage-bg);
+    color: var(--stage-fg);
+    text-align: center;
+}
+
+.stage-stat[data-stage]:hover {
+    background: color-mix(in srgb, var(--stage-bg) 35%, transparent);
+}
+
+.stage-stat[data-stage].active {
+    background: var(--stage-bg);
+    font-weight: 600;
+}
+
+.stage-stat[data-stage].active b {
+    background: #fff;
 }
 
 .stage-stat span {
@@ -979,23 +1202,23 @@ select {
 }
 
 .dot.design {
-    background: #4887ed;
+    background: var(--stage-design-fg);
 }
 
 .dot.mechanical {
-    background: #55c8d3;
+    background: var(--stage-mechanical-fg);
 }
 
 .dot.assembly {
-    background: #70cf68;
+    background: var(--stage-assembly-fg);
 }
 
 .dot.electric {
-    background: #8e63e7;
+    background: var(--stage-electric-fg);
 }
 
 .dot.program {
-    background: #df5bd4;
+    background: var(--stage-program-fg);
 }
 
 .table-wrap {
@@ -1056,10 +1279,97 @@ input[type="checkbox"] {
     font-weight: 600;
 }
 
-.description {
-    max-width: 180px;
+.solution {
+    min-width: 200px;
+    max-width: 280px;
+}
+
+.solution-view {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.solution-text,
+.solution-empty {
+    flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.solution-empty {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.solution-action {
+    flex-shrink: 0;
+    padding: 3px 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.solution-action:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.solution-editor {
+    display: grid;
+    gap: 6px;
+}
+
+.solution-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 12px;
+    resize: vertical;
+}
+
+.solution-input:focus {
+    border-color: #78aaf5;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.solution-editor-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.solution-save,
+.solution-cancel {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.solution-save {
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #fff;
+}
+
+.solution-cancel {
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #475569;
+}
+
+.solution-save:disabled,
+.solution-cancel:disabled {
+    opacity: .6;
+    cursor: wait;
 }
 
 .stage-badge,
@@ -1075,28 +1385,28 @@ input[type="checkbox"] {
 }
 
 .stage-badge.design {
-    background: #e9f1ff;
-    color: #1163e6;
+    background: var(--stage-design-bg);
+    color: var(--stage-design-fg);
 }
 
 .stage-badge.assembly {
-    background: #fff4d9;
-    color: #eea00f;
+    background: var(--stage-assembly-bg);
+    color: var(--stage-assembly-fg);
 }
 
 .stage-badge.electric {
-    background: #f0e9ff;
-    color: #7234ec;
+    background: var(--stage-electric-bg);
+    color: var(--stage-electric-fg);
 }
 
 .stage-badge.program {
-    background: #fdeaff;
-    color: #d325cd;
+    background: var(--stage-program-bg);
+    color: var(--stage-program-fg);
 }
 
 .stage-badge.mechanical {
-    background: #e6fbfc;
-    color: #19bbca;
+    background: var(--stage-mechanical-bg);
+    color: var(--stage-mechanical-fg);
 }
 
 .priority.high {
@@ -1167,89 +1477,6 @@ input[type="checkbox"] {
     display: none !important;
 }
 
-.modal {
-    position: fixed;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    background: rgba(18, 34, 53, .38);
-    padding: 20px;
-}
-
-.modal-card {
-    width: min(500px, 100%);
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 20px 60px rgba(20, 40, 65, .22);
-    padding: 20px;
-}
-
-.modal-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-}
-
-.modal-head h3 {
-    margin: 0;
-}
-
-.modal-head button {
-    border: 0;
-    background: transparent;
-    font-size: 27px;
-    color: #7a899c;
-    cursor: pointer;
-}
-
-form label {
-    display: block;
-    margin-bottom: 14px;
-    color: #53657c;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-form input,
-form textarea,
-form select {
-    width: 100%;
-    margin-top: 6px;
-    border: 1px solid #dce3ec;
-    border-radius: 8px;
-    padding: 10px;
-    outline: none;
-    font: inherit;
-}
-
-form textarea {
-    resize: vertical;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.btn-secondary {
-    height: 38px;
-    padding: 0 16px;
-    border: 1px solid #dce3ec;
-    border-radius: 8px;
-    background: #fff;
-    color: #5c6c81;
-    cursor: pointer;
-}
-
 @media (max-width: 1050px) {
     body {
         padding: 12px;
@@ -1261,5 +1488,286 @@ form textarea {
 
     .issue-toolbar {
         justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+    }
+
+    .workflow-shell {
+        display: block;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+    }
+
+    .sidebar .logo {
+        padding: 8px 16px;
+    }
+
+    .sidebar .logo img {
+        height: 36px;
+    }
+
+    .sidebar .menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 8px;
+    }
+
+    .sidebar .menu li {
+        margin: 0;
+    }
+
+    .sidebar .menu a {
+        padding: 8px 10px;
+    }
+
+    .sidebar-user {
+        display: none;
+    }
+
+    .workflow-content {
+        padding: 12px;
+    }
+
+    .workflow-page {
+        height: calc(100vh - 24px);
+    }
+}
+/* =========================================================
+   TASK POPUP: REPORT HISTORY
+========================================================= */
+
+.gantt_section_report_history {
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 4px 2px;
+}
+
+.report-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.report-history-item {
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.report-history-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.report-history-date {
+    color: #172033;
+    font-weight: 700;
+}
+
+.report-history-status {
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.report-history-status.is-done {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.report-history-status.is-processing {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.report-history-status.is-not-started {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.report-history-reporter,
+.report-history-workers {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.report-history-workers {
+    margin-top: 4px;
+}
+
+.report-history-detail {
+    margin: 6px 0 0;
+    color: #334155;
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+
+.report-history-no-detail,
+.report-history-empty {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.report-history-empty {
+    margin: 4px 0;
+}
+
+.report-history-flag {
+    margin-left: auto;
+    padding: 2px 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #16a34a;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.report-history-flag:hover,
+.report-history-flag:focus-visible {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* =========================================================
+   EVIDENCE IMAGE VIEWER
+========================================================= */
+
+.evidence-viewer {
+    width: min(760px, calc(100% - 32px));
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, .25);
+}
+
+.evidence-viewer::backdrop {
+    background: rgba(15, 23, 42, .45);
+}
+
+.evidence-viewer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.evidence-viewer-header h5 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.evidence-viewer-header h5 i {
+    color: #16a34a;
+}
+
+.evidence-viewer-close {
+    border: 0;
+    background: transparent;
+    color: #64748b;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.evidence-viewer-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 18px;
+}
+
+.evidence-viewer-body img {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+}
+
+/* =========================================================
+   ISSUE BULK ACTIONS (thanh Delete trượt từ dưới lên)
+========================================================= */
+
+.issue-bulk-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 12px 10px 18px;
+    border-radius: 12px;
+    background: #111827;
+    color: #fff;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, .3);
+    opacity: 0;
+    transform: translate(-50%, calc(100% + 32px));
+    transition: transform .25s ease, opacity .25s ease;
+    pointer-events: none;
+}
+
+.issue-bulk-bar.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+}
+
+.issue-bulk-count {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-delete-issues {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.btn-delete-issues:hover {
+    background: #b91c1c;
+}
+
+.btn-delete-issues:disabled {
+    opacity: .7;
+    cursor: wait;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .issue-bulk-bar {
+        transition: none;
     }
 }

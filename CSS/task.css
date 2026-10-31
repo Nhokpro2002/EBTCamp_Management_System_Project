@@ -1,6 +1,6 @@
 body {
     background: #f5f7fb;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .sidebar {
@@ -225,7 +225,7 @@ button {
     width: 600px;
     max-height: 90%;
     overflow-y: auto;
-    font-family: Arial, sans-serif;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .popup-create-stage h2,

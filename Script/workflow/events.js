@@ -1,23 +1,288 @@
-import * as ui from "./ui.js";
-import * as api from "./service.js";
 import * as service from "./service.js";
-import { workflowData, projectData } from "./states.js";
+import * as ui from "./ui.js";
+import * as utils from "../utils/utils.js";
 
-const modal = document.getElementById("issueModal");
+import { setZoom } from "./gantt.js";
+import { workflowData, projectData, issueData } from "./state.js";
+import { workflowPageMessage } from "./messages.js";
 
 // =========================================================
 // GANTT EVENTS
 // =========================================================
+export function bindGanttEvents() {
 
-async function saveTask(id, task = null) {
+    // ---------- Select Task ----------
+    gantt.attachEvent("onTaskSelected", function (id) {
+        workflowData.currentTaskID = id;
+        return true;
+    });
 
-    // Nếu không truyền task thì lấy từ Gantt
-    if (!task) {
-        task = gantt.getTask(id);
+    // ---------- Drag (drag đang tắt trong config) ----------
+    gantt.attachEvent("onAfterTaskDrag", async function (id) {
+        const success = await saveTask(id);
+        if (success) {
+            renderStageProgress();
+        }
+        gantt.batchUpdate(() => {
+            gantt.clearAll();
+            gantt.parse(projectData);
+        });
+    });
+
+    // ---------- Lightbox Save ----------
+    gantt.attachEvent("onLightboxSave", async function (id, task) {
+        const success = await saveTask(id, task);
+        if (!success) {
+            return false;
+        }
+
+        renderStageProgress();
+        return true;
+    });
+
+    // ---------- Lightbox opened → load lịch sử báo cáo ----------
+    gantt.attachEvent("onLightbox", function (id) {
+        loadReportHistory(id);
+        return true;
+    });
+
+    // ---------- Delete Task ----------
+    gantt.attachEvent("onAfterTaskDelete", async function (id) {
+        try {
+            await service.deleteTask(id);
+        } catch (error) {
+            console.log(error);
+            utils.showError(workflowPageMessage.deleteFailed);
+        }
+
+        if (workflowData.currentTaskID === id) {
+            workflowData.currentTaskID = null;
+        }
+        return true;
+    });
+
+    // ---------- Task styling ----------
+    gantt.attachEvent("onTaskLoading", function (task) {
+        ui.setTaskColor(task);
+        return true;
+    });
+
+    // ---------- Today line ----------
+    gantt.attachEvent("onScroll", ui.renderTodayLine);
+    gantt.attachEvent("onTaskDrag", ui.renderTodayLine);
+    gantt.attachEvent("onGanttRender", ui.renderTodayLine);
+
+    // ---------- Overdue segment ----------
+    gantt.attachEvent("onBeforeGanttRender", ui.fitScaleToDelays);
+    gantt.attachEvent("onGanttRender", ui.renderDelaySegments);
+    gantt.attachEvent("onDataRender", ui.renderDelaySegments);
+}
+
+// =========================================================
+// UI EVENTS (Toolbar + Buttons)
+// =========================================================
+export function bindUIEvents() {
+
+    // ---------- Zoom ----------
+    Object.entries({ day: "btnDay", week: "btnWeek", month: "btnMonth" })
+        .forEach(([level, buttonID]) => {
+            document.getElementById(buttonID).addEventListener("click", () => {
+                ui.setActiveZoomButton(level);
+                setZoom(level);
+            });
+        });
+
+    // ---------- Stage icon → mở modal tạo task ----------
+    document.addEventListener("click", function (e) {
+        const icon = e.target.closest(".stage-icon-button");
+        if (!icon) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        openCreateTaskModal(icon.dataset.id, icon.dataset.name);
+    });
+
+    // ---------- Modal buttons ----------
+    document.addEventListener("click", function (e) {
+        const id = e.target.id;
+        if (id === "btnCancel") {
+            ui.closeTaskModal();
+        }
+        if (id === "btnCreate") {
+            handleCreateTask();
+        }
+    });
+
+    document.querySelector(".task-modal-overlay")
+        ?.addEventListener("click", ui.closeTaskModal);
+
+    // ---------- Report history flag → xem ảnh evidence ----------
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest(".report-history-flag")) return;
+
+        e.preventDefault();
+        ui.openEvidenceViewer(
+            service.getLatestEvidenceUrls(workflowData.reportHistory)
+        );
+    });
+
+    const evidenceViewer = ui.getEvidenceViewer();
+    evidenceViewer.addEventListener("click", e => {
+        // click nút đóng hoặc vùng nền ngoài khung ảnh
+        if (e.target === evidenceViewer || e.target.closest("[data-close-evidence]")) {
+            ui.closeEvidenceViewer();
+        }
+    });
+
+    // ---------- Issues table ----------
+    ui.getSelectAllCheckbox().addEventListener("change", event => {
+        ui.setAllIssueRowsChecked(event.target.checked);
+        ui.updateIssueSelection();
+    });
+
+    ui.getIssueTableBody().addEventListener("change", e => {
+        if (e.target.matches(".row-check")) {
+            ui.updateIssueSelection();
+        }
+    });
+
+    ui.getDeleteIssuesButton().addEventListener("click", handleDeleteIssues);
+
+    ui.getIssueFilterInputs()
+        .forEach(el => el.addEventListener("input", renderIssues));
+
+    // ---------- Cột trái: bấm stage để lọc, bấm lại để bỏ lọc ----------
+    ui.getStageStatButtons().forEach(button => {
+        button.addEventListener("click", () => {
+            const { stage } = ui.getIssueFilters();
+            ui.setStageFilter(stage === button.dataset.stage ? "all" : button.dataset.stage);
+            renderIssues();
+        });
+    });
+
+    // ---------- Solution: sửa trực tiếp trong bảng ----------
+    const issueTableBody = ui.getIssueTableBody();
+
+    issueTableBody.addEventListener("click", e => {
+        const cell = e.target.closest("td.solution");
+        if (!cell) return;
+
+        if (e.target.closest("[data-edit-solution]")) {
+            ui.showSolutionEditor(cell, getIssueSolution(cell));
+        } else if (e.target.closest("[data-save-solution]")) {
+            saveIssueSolution(cell);
+        } else if (e.target.closest("[data-cancel-solution]")) {
+            ui.showSolutionView(cell, getIssueSolution(cell));
+        }
+    });
+
+    issueTableBody.addEventListener("keydown", e => {
+        if (!e.target.matches(".solution-input")) return;
+        const cell = e.target.closest("td.solution");
+
+        if (e.key === "Escape") {
+            ui.showSolutionView(cell, getIssueSolution(cell));
+        } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            saveIssueSolution(cell);
+        }
+    });
+}
+
+// =========================================================
+// DELETE ISSUES
+// =========================================================
+async function handleDeleteIssues() {
+    const ids = ui.getSelectedIssueIDs();
+    if (!ids.length) return;
+
+    const confirmed = await utils.showConfirm(
+        `Delete ${ids.length} issue${ids.length === 1 ? "" : "s"}?`,
+        workflowPageMessage.deleteIssueConfirm,
+        "Delete"
+    );
+    if (!confirmed) return;
+
+    ui.setDeleteIssuesSaving(true);
+    try {
+        const { failedIDs } = await service.deleteIssues(ids);
+
+        ui.renderIssueCount(issueData.issue.length);
+        renderIssues();
+
+        if (failedIDs.length) {
+            utils.showError(workflowPageMessage.deleteIssueFailed);
+        } else {
+            utils.showSuccess(workflowPageMessage.deleteIssueSuccess);
+        }
+    } finally {
+        ui.setDeleteIssuesSaving(false);
+    }
+}
+
+// =========================================================
+// ISSUE SOLUTION HANDLERS
+// =========================================================
+function getIssueSolution(cell) {
+    return service.findIssue(cell.dataset.issueId)?.solution || "";
+}
+
+async function saveIssueSolution(cell) {
+    const issueID = cell.dataset.issueId;
+    const solution = ui.getSolutionInputValue(cell);
+
+    // Không thay đổi thì chỉ đóng editor
+    if (solution === getIssueSolution(cell)) {
+        ui.showSolutionView(cell, solution);
+        return;
+    }
+
+    ui.setSolutionSaving(cell, true);
+    try {
+        await service.updateIssueSolution(issueID, solution);
+        ui.showSolutionView(cell, getIssueSolution(cell));
+        utils.showSuccess(workflowPageMessage.solutionUpdateSuccess);
+    } catch (error) {
+        console.error(error);
+        ui.setSolutionSaving(cell, false);
+        utils.showError(workflowPageMessage.solutionUpdateFailed);
+    }
+}
+
+// =========================================================
+// RENDER HELPERS
+// =========================================================
+export function renderIssues() {
+    const filters = ui.getIssueFilters();
+    ui.renderIssueTable(service.filterIssues(filters));
+    ui.renderStageIssueCounts(service.countIssuesByStage());
+    ui.highlightStageStat(filters.stage);
+}
+
+/**
+ * Vẽ tiến độ từng stage và tổng tiến độ project (trung bình các stage).
+ */
+export function renderStageProgress() {
+    const stageProgressList = service.getStageProgressList();
+    ui.renderStageProgressCards(stageProgressList);
+    ui.updateProgress(service.getOverallProgress(stageProgressList));
+}
+
+// =========================================================
+// TASK HANDLERS
+// =========================================================
+
+/**
+ * Lưu task đang sửa trên gantt về database.
+ * @returns {Promise<boolean>}
+ */
+async function saveTask(id, task = gantt.getTask(id)) {
+    if (!service.findTask(id)) {
+        utils.showError("Task not found.");
+        return false;
     }
 
     const formatDate = gantt.date.date_to_str("%Y-%m-%d");
-
     const taskData = {
         name: task.text,
         start_date: formatDate(task.start_date),
@@ -28,354 +293,76 @@ async function saveTask(id, task = null) {
                 ?.employee_name ?? ""
     };
 
-    console.log("SAVE TASK:", taskData);
-
-    const success = await api.updateTask(
-        id,
-        taskData,
-        workflowData.projectID
-    );
-
-    return success;
+    try {
+        return await service.updateTask(id, taskData, workflowData.projectID);
+    } catch (error) {
+        console.error(error);
+        utils.showError(workflowPageMessage.updateFailed);
+        return false;
+    }
 }
 
+/**
+ * Load và render lịch sử báo cáo vào popup của task.
+ * Bỏ qua kết quả nếu người dùng đã đóng/chuyển sang popup khác.
+ */
+async function loadReportHistory(taskID) {
+    const node = ui.getReportHistoryNode();
+    if (!node) return;
 
-export function bindGanttEvents() {
+    workflowData.reportHistory = [];
+    ui.renderReportHistoryMessage(node, "Loading reports...");
 
-    // -------------------------
-    // Select Task
-    // -------------------------
-    gantt.attachEvent("onTaskSelected", function (id) {
-        workflowData.currentTaskID = id;
-        return true;
-    });
+    const isCurrentLightbox = () => gantt.getState().lightbox == taskID;
 
+    try {
+        const history = await service.loadTaskReportHistory(taskID);
+        if (!isCurrentLightbox()) return;
 
-    // -------------------------
-    // Double click → Lightbox
-    // -------------------------
-    gantt.config.details_on_dblclick = true;
-
-    gantt.attachEvent("onTaskDblClick", function (id) {
-
-        /*if (ui.isTaskLocked(id)) {
-            return false;
-        }*/
-
-        return true;
-    });
-
-
-    // -------------------------
-    // Prevent update locked task
-    // -------------------------
-    gantt.attachEvent(
-        "onBeforeTaskUpdate",
-        function (id, task) {
-
-            /*if (ui.isTaskLocked(id)) {
-                return false;
-            }*/
-
-            return true;
+        workflowData.reportHistory = history;
+        ui.renderReportHistory(
+            node,
+            history,
+            service.isTaskDone(service.findTask(taskID))
+        );
+    } catch (error) {
+        console.error(error);
+        if (isCurrentLightbox()) {
+            ui.renderReportHistoryMessage(node, "Could not load report history.");
         }
-    );
-
-    gantt.attachEvent("onAfterTaskDrag", async function (id) {
-        await saveTask(id);
-        gantt.batchUpdate(() => {
-            gantt.clearAll();
-            gantt.parse(projectData);
-        });
-    });
-
-    // -------------------------
-    // Lightbox Save
-    // -------------------------
-    gantt.attachEvent(
-        "onLightboxSave",
-        async function (id, task) {
-
-            /*if (ui.isTaskLocked(id)) {
-                return false;
-            }*/
-
-            console.log("NEW START:", task.start_date);
-            console.log("NEW DURATION:", task.duration);
-
-            const success = await saveTask(id, task);
-
-            if (!success) {
-                return false;
-            }
-
-            return true;
-        }
-    );
-
-
-    // -------------------------
-    // Add Task
-    // -------------------------
-    gantt.attachEvent("onAfterTaskAdd", function (id, task) {
-        return true;
-    });
-
-
-    // -------------------------
-    // Delete Task
-    // -------------------------
-    gantt.attachEvent(
-        "onAfterTaskDelete",
-        async function (id) {
-
-            await api.deleteTask(id);
-
-            if (workflowData.currentTaskID === id) {
-                workflowData.currentTaskID = null;
-            }
-
-            return true;
-        }
-    );
-
-
-    // -------------------------
-    // Disable drag move / resize
-    // -------------------------
-    gantt.config.drag_progress = true;
-    gantt.config.drag_move = false;
-    gantt.config.drag_resize = false;
-
-
-    // -------------------------
-    // Task styling
-    // -------------------------
-    gantt.attachEvent("onTaskLoading", function (task) {
-        ui.setTaskColor(task);
-        return true;
-    });
-
-    gantt.attachEvent("onScroll", ui.renderTodayLine);
-
-    gantt.attachEvent("onTaskDrag", ui.renderTodayLine);
-
-    gantt.attachEvent("onGanttRender", function () {
-        ui.renderTodayLine();
-    });
-
-
-    // -------------------------
-    // Auto scheduling
-    // -------------------------
-    /*gantt.config.auto_scheduling = true;
-
-    gantt.plugins({
-        auto_scheduling: true
-    });*/
+    }
 }
 
-//
-// =========================================================
-// UI EVENTS (Toolbar + Buttons)
-// =========================================================
-export function bindUIEvents() {
+function openCreateTaskModal(stageID, stageName) {
+    workflowData.currentStageID = stageID;
+    ui.openTaskModal(stageName, service.getMinStartDate(stageID));
+}
 
-    // -------------------------
-    // Zoom
-    // -------------------------
-    document.querySelector("#btnDay")?.addEventListener("click", () => setZoom("day"));
-    document.querySelector("#btnWeek")?.addEventListener("click", () => setZoom("week"));
-    document.querySelector("#btnMonth")?.addEventListener("click", () => setZoom("month"));
+async function handleCreateTask() {
+    const formData = ui.getTaskFormData();
 
-    // -------------------------
-    // Add Task → dùng Lightbox mặc định
-    // -------------------------
-    document.querySelector("#btnAddTask")?.addEventListener("click", function () {
-        gantt.createTask(); // chuẩn DHTMLX
-    });
-
-    // -------------------------
-    // Delete Task
-    // -------------------------
-    document.querySelector("#btnDeleteTask")?.addEventListener("click", function () {
-        const id = gantt.getSelectedId();
-        if (!id) return;
-
-        gantt.deleteTask(id);
-    });
-
-    // -------------------------
-    // Export
-    // -------------------------
-    document.querySelector("#btnExport")?.addEventListener("click", function () {
-        const data = gantt.serialize();
-        console.log(data);
-    });
-
-    // -------------------------
-    // Collapse All
-    // -------------------------
-    document.querySelector("#btnCollapse")?.addEventListener("click", function () {
-        gantt.batchUpdate(() => {
-            gantt.eachTask(task => task.$open = false);
-        });
-        gantt.render();
-    });
-
-    // -------------------------
-    // Expand All
-    // -------------------------
-    document.querySelector("#btnExpand")?.addEventListener("click", function () {
-        gantt.batchUpdate(() => {
-            gantt.eachTask(task => task.$open = true);
-        });
-        gantt.render();
-    });
-
-    document.querySelector("#back-project-page-button")?.addEventListener("click", function () {
-        window.location.href = "project.html";
-    })
-
-    document.addEventListener("click", function (e) {
-        const icon = e.target.closest(".add-task-icon");
-        if (!icon) return;
-
-        ui.openAddTaskModal(icon.dataset.id, icon.dataset.name);
-    });
-
-    document.addEventListener("click", function (e) {
-        const id = e.target.id;
-        if (id === "btnCancel") {
-            ui.closeTaskModal();
-        }
-        if (id === "btnCreate") {
-            ui.submitTask();
-        }
-    });
-
-    const buttons = {
-        day: document.getElementById("btnDay"),
-        week: document.getElementById("btnWeek"),
-        month: document.getElementById("btnMonth")
-    };
-
-    function activeZoom(level) {
-        Object.values(buttons).forEach(btn => {
-            btn.classList.remove("active-day", "active-week", "active-month");
-        });
-
-        buttons[level].classList.add(`active-${level}`);
+    if (!service.isValidTaskInput(formData)) {
+        utils.showError("Invalid task data.");
+        ui.closeTaskModal();
+        return;
     }
 
-    buttons.day.addEventListener("click", () => {
-        activeZoom("day");
-        setZoom("day");
-    });
+    try {
+        const task = await service.createTask(formData);
 
-    buttons.week.addEventListener("click", () => {
-        activeZoom("week");
-        setZoom("week");
-    });
+        if (task) {
+            utils.showSuccess(workflowPageMessage.createSuccess);
 
-    buttons.month.addEventListener("click", () => {
-        activeZoom("month");
-        setZoom("month");
-    });
+            service.addTaskToState(task);
 
-
-
-    document.getElementById("selectAll").addEventListener("change", event => {
-        document.querySelectorAll(".row-check")
-            .forEach(check => check.checked = event.target.checked);
-    });
-
-    document.getElementById("addIssueBtn").addEventListener("click", () => {
-        modal.classList.remove("hidden");
-        renderSelect(
-            "related-task",
-            workflowData.tasks,
-            "-- Chọn task liên quan --"
-        );
-
-        renderSelect(
-            "related-stage",
-            workflowData.stages,
-            "-- Chọn stage --"
-        );
-    });
-
-
-    document.getElementById("closeModal").addEventListener("click", closeModal);
-    document.getElementById("cancelModal").addEventListener("click", closeModal);
-
-
-}
-
-gantt.ext.zoom.init({
-    levels: [
-        {
-            name: "day",
-            scale_height: 60,
-            min_column_width: 50,
-            scales: [
-                { unit: "month", step: 1, format: "%F %Y" },
-                { unit: "day", step: 1, format: "%d" }
-            ]
-        },
-        {
-            name: "week",
-            scale_height: 60,
-            min_column_width: 70,
-            scales: [
-                { unit: "month", step: 1, format: "%F %Y" },
-                {
-                    unit: "week",
-                    step: 1,
-                    format(date) {
-                        const end = gantt.date.add(date, 6, "day");
-                        return `${gantt.date.date_to_str("%d/%m")(date)} - ${gantt.date.date_to_str("%d/%m")(end)}`;
-                    }
-                }
-            ]
-        },
-        {
-            name: "month",
-            scale_height: 60,
-            min_column_width: 80,
-            scales: [
-                { unit: "year", step: 1, format: "%Y" },
-                { unit: "month", step: 1, format: "%F" }
-            ]
+            gantt.clearAll();
+            gantt.parse(projectData);
+            renderStageProgress();
         }
-    ]
-});
+    } catch (error) {
+        console.error(error);
+        utils.showError(workflowPageMessage.createFailed);
+    }
 
-function setZoom(level) {
-    gantt.ext.zoom.setLevel(level);
+    ui.closeTaskModal();
 }
-
-// =====================================================
-// HELPER FUNCTION
-// =====================================================
-function closeModal() {
-    modal.classList.add("hidden");
-}
-
-function renderSelect(selectName, data, placeholder) {
-    const select = document.querySelector(`select[name="${selectName}"]`);
-    if (!select) return;
-    select.innerHTML = `
-        <option value="" disabled selected>
-            ${placeholder}
-        </option>
-    `;
-    data.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.id;
-        option.textContent = item.name;
-        select.appendChild(option);
-    });
-
-}
-

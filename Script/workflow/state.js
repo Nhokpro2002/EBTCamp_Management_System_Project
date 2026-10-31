@@ -4,6 +4,7 @@ export const workflowData = {
     tasks: [],
     currentTaskID: null,
     currentStageID: null,
+    reportHistory: [], // lịch sử báo cáo của task đang mở popup
     taskGroups: {}
 };
 

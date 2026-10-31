@@ -25,7 +25,24 @@ export async function createRecord(collection, data) {
     );
 
     if (!res.ok) {
-        throw new Error("Create failed");
+        const responseText = await res.text();
+        let responseData = null;
+        try {
+            responseData = responseText ? JSON.parse(responseText) : null;
+        } catch {
+            responseData = null;
+        }
+
+        const errorDetails = responseData?.data
+            ? JSON.stringify(responseData.data)
+            : "";
+        const message = responseData?.message || `Create failed (${res.status})`;
+
+        throw new Error(
+            errorDetails
+                ? `${message}: ${errorDetails}`
+                : message
+        );
     }
 
     return await res.json();
@@ -75,7 +92,16 @@ export async function updateRecord(collection, id, data) {
             responseData = null;
         }
 
-        throw new Error(responseData?.message || `Update failed (${res.status})`);
+        const errorDetails = responseData?.data
+            ? JSON.stringify(responseData.data)
+            : "";
+        const message = responseData?.message || `Update failed (${res.status})`;
+
+        throw new Error(
+            errorDetails
+                ? `${message}: ${errorDetails}`
+                : message
+        );
     }
 
     return await res.json();
@@ -109,11 +135,17 @@ export async function getRecords(collection) {
     return data.items || [];
 }
 
-export async function getRecordsFilter(collection, field, value) {
+export async function getRecordsFilter(
+    collection,
+    field,
+    value,
+    page = 1,
+    perPage = 30
+) {
     const token = localStorage.getItem("token");
-    let url = `${URL_LOCAL}/api/collections/${collection}/records`;
+    let url = `${URL_LOCAL}/api/collections/${collection}/records?page=${page}&perPage=${perPage}`;
     const filter = `${field} = "${value}"`;
-    url += `?filter=${encodeURIComponent(filter)}`;
+    url += `&filter=${encodeURIComponent(filter)}`;
     const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -122,6 +154,28 @@ export async function getRecordsFilter(collection, field, value) {
     if (!res.ok) throw new Error("Fetch failed");
     const data = await res.json();
     return data.items || [];
+}
+
+/**
+ * Lấy record theo filter PocketBase tùy ý, ví dụ: `title = "abc" && stage = "x"`.
+ * Giá trị chuỗi trong filter nên được tạo bằng quoteFilterValue().
+ */
+export async function getRecordsByFilter(collection, filter, page = 1, perPage = 200) {
+    const token = localStorage.getItem("token");
+    const url = `${URL_LOCAL}/api/collections/${collection}/records` +
+        `?page=${page}&perPage=${perPage}&filter=${encodeURIComponent(filter)}`;
+    const res = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    if (!res.ok) throw new Error("Fetch failed");
+    const data = await res.json();
+    return data.items || [];
+}
+
+export function quoteFilterValue(value) {
+    return `"${String(value ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
 }
 
 export async function loadInventoryItemEachPage(collection, page = 1, size = 7) {

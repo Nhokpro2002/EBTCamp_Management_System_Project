@@ -7,5 +7,9 @@ export const inventoryVariable = {
 
     searchKeyword: "",
     selectedBrand: "",
-    selectedType: ""
+
+    // Import: vật tư vừa quét, chờ cộng kho
+    importItem: null,
+    // Export: danh sách vật tư đã quét, mỗi phần tử { item, quantity }
+    exportList: []
 }

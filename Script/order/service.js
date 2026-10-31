@@ -5,16 +5,9 @@ import * as ui from "./ui.js";
 import { orderPageMessage } from "./message.js";
 import { orderDetailPageData } from "./state.js";
 
-const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
 const COLLECTION_ORDER_ITEMS = "Order_Items";
 const COLLECTION_USERS = "Users";
 const COLLECTION_PROJECTS = "Projects";
-
-export async function loadInventoryItemList() {
-    const result = await api.getRecords(COLLECTION_INVENTORY_ITEMS);
-    orderDetailPageData.inventoryItemList = result;
-    return result;
-}
 
 export async function loadOrderItemList(projectID) {
     return api.getRecordsFilter(COLLECTION_ORDER_ITEMS, "project", projectID);
@@ -158,6 +151,4 @@ export async function loadProjectList() {
     result.forEach(project => {
         projectFilter.add(new Option(project.name || "Untitled project", project.id));
     });
-
-    ui.updateAddMaterialButton();
 }

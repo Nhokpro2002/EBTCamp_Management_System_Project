@@ -8,7 +8,8 @@ let touched = {
     email: false,
     password: false,
     passwordConfirm: false,
-    department: false
+    department: false,
+    position: false
 
 };
 
@@ -90,6 +91,24 @@ function validateForm() {
         }
     }
 
+    // POSITION
+    const position = $("#position").val() || [];
+
+    if (touched.position) {
+        if (!Array.isArray(position) || position.length === 0) {
+            $("#error_position").text("Please select at least one position");
+            $("#position")
+                .addClass("is-invalid")
+                .removeClass("is-valid");
+            valid = false;
+        } else {
+            $("#error_position").text("");
+            $("#position")
+                .addClass("is-valid")
+                .removeClass("is-invalid");
+        }
+    }
+
     // EMAIL
     const email = $("#email").val().trim();
     const emailRegex = /^[A-Za-z0-9._%+-]+@lgdisplay\.com$/;
@@ -141,13 +160,13 @@ function validateForm() {
 }
 
 function setupTouchEvents() {
-    $("#employee_id, #employee_name, #email, #password, #passwordConfirm, #department").on("blur", function () {
+    $("#employee_id, #employee_name, #email, #password, #passwordConfirm, #department, #position").on("blur change", function () {
         const id = $(this).attr("id");
         touched[id] = true;
         validateForm();
     });
 
-    $("input").on("input", function () {
+    $("input, select").on("input change", function () {
         validateForm();
     });
 }
@@ -165,6 +184,7 @@ async function registerNewUser() {
         employee_name: $("#employee_name").val().trim(),
         email: $("#email").val().trim(),
         department: $("#department").val(),
+        position: $("#position").val() || [],
         password: $("#password").val(),
         passwordConfirm: $("#passwordConfirm").val()
     };
