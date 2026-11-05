@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
+    <script src="../Script/auth/auth.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machine Setup Workflow</title> <!-- Bootstrap -->
+    <title>Tiến độ dự án</title> <!-- Bootstrap -->
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap Icons -->
     <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet"> <!-- DHTMLX Gantt -->
@@ -25,41 +26,52 @@
 
     <div class="workflow-shell">
         <aside class="sidebar">
-            <div class="logo">
-                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
+            <div class="logo sidebar-brand">
+                <span class="brand-mark"><img src="../Image/LG-Symbol.png" alt=""></span><span
+                    class="brand-text"><strong>LG Display</strong><small>Assembly Room Management</small></span>
             </div>
 
             <ul class="menu">
-                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a></li>
-                <li><a href="inventory.html"><i class="bi bi-box"></i> Inventory</a></li>
-                <li><a href="order.html"><i class="bi bi-receipt"></i> Order</a></li>
-                <li class="active"><a href="project.html"><i class="bi bi-kanban"></i> Project</a></li>
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Tổng quan</a></li>
+                <li>
+                    <details class="menu-report menu-inventory">
+                        <summary><i class="bi bi-box"></i> Kho vật tư <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="stock-import.html"><i class="bi bi-box-arrow-in-down"></i> Nhập kho</a></li>
+                            <li><a href="stock-export.html"><i class="bi bi-box-arrow-up"></i> Xuất kho</a></li>
+                            <li><a href="inventory.html"><i class="bi bi-archive"></i> Lưu kho</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li class="active"><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li>
                     <a href="notification.html">
                         <span class="notification-icon">
                             <i class="bi bi-bell"></i>
                             <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
                         </span>
-                        Notification
+                        Thông báo
                     </a>
                 </li>
                 <li>
                     <details class="menu-report">
-                        <summary><i class="bi bi-file-earmark-text"></i> Report <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <summary><i class="bi bi-file-earmark-text"></i> Báo cáo <i
+                                class="bi bi-chevron-down report-chevron"></i></summary>
                         <ul class="report-submenu">
-                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Daily Report</a></li>
-                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Báo cáo ngày</a></li>
+                            <li><span class="report-submenu-disabled">Báo cáo tuần <small>Sắp có</small></span></li>
                         </ul>
                     </details>
                 </li>
-                <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+                <li><a href="#"><i class="bi bi-gear"></i> Cài đặt</a></li>
             </ul>
 
-            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
-                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Mở hồ sơ cá nhân">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="Ảnh đại diện">
                 <span class="user-info">
-                    <h6 class="user-name">User</h6>
-                    <small class="user-role">Profile</small>
+                    <h6 class="user-name">Người dùng</h6>
+                    <small class="user-role">Hồ sơ</small>
                 </span>
             </a>
         </aside>
@@ -67,263 +79,255 @@
         <main class="workflow-content">
             <div class="workflow-page">
 
-        <!-- ================= DASHBOARD ================= -->
-        <section class="workflow-toolbar">
+                <!-- ================= DASHBOARD ================= -->
+                <section class="workflow-toolbar">
 
-            <!-- Summary -->
-            <div class="summary-area">
+                    <!-- Summary -->
+                    <div class="summary-area">
 
-                <div class="summary-card">
-                    <div class="summary-icon purple">
-                        <i class="bi bi-calendar-event"></i>
+                        <div class="summary-card">
+                            <div class="summary-icon purple">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+
+                            <div>
+                                <span>Ngày bắt đầu</span>
+                                <strong id="project-start-date">
+
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="summary-icon green">
+                                <i class="bi bi-calendar-check"></i>
+                            </div>
+
+                            <div>
+                                <span>Ngày kết thúc</span>
+                                <strong id="project-end-date"></strong>
+                            </div>
+                        </div>
+
+                        <div class="summary-card">
+                            <div class="summary-icon blue">
+                                <i class="bi bi-clipboard2-check"></i>
+                            </div>
+
+                            <div>
+                                <span>Tổng số task</span>
+                                <strong id="total-task-count">0</strong>
+                            </div>
+                        </div>
+
+                        <!-- Tiến độ dự án: cùng hàng với các thẻ tổng quan -->
+                        <div class="summary-card project-progress-card">
+                            <div class="circular-progress project-circular-progress">
+                                <svg viewBox="0 0 44 44" aria-hidden="true">
+                                    <circle class="progress-bg" cx="22" cy="22" r="18"></circle>
+                                    <circle id="progress-circle" class="progress-value" cx="22" cy="22" r="18"></circle>
+                                </svg>
+                                <strong id="project-progress">0%</strong>
+                            </div>
+
+                            <div>
+                                <span>Tiến độ dự án</span>
+                            </div>
+                        </div>
+
+                        <!-- Chú thích màu thanh task / stage trên Gantt -->
+                        <div class="summary-card status-legend" aria-label="Chú thích màu">
+                            <span class="legend-title">Chú thích</span>
+                            <ul class="legend-list">
+                                <li><span class="legend-dot is-done" aria-hidden="true"></span>Hoàn thành</li>
+                                <li><span class="legend-dot is-doing" aria-hidden="true"></span>Đang làm</li>
+                                <li><span class="legend-dot is-todo" aria-hidden="true"></span>Chưa xử lý</li>
+                            </ul>
+                        </div>
+
                     </div>
 
+
+                    <!-- Gantt controls -->
+                    <div class="gantt-controls">
+
+                        <div class="view-switch">
+
+                            <button id="btnDay" class="view-button active">
+
+                                Ngày
+
+                            </button>
+
+                            <button id="btnWeek" class="view-button">
+
+                                Tuần
+
+                            </button>
+
+                            <button id="btnMonth" class="view-button">
+
+                                Tháng
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <section class="workflow-progress-row" aria-label="Tiến độ và issue của các stage">
+                    <div id="stage-progress-grid" class="stage-progress-grid"></div>
+                </section>
+
+                <!-- ================= GANTT ================= -->
+                <section class="gantt-card">
+                    <div id="gantt_here"></div>
+                </section>
+
+            </div>
+
+
+            <!-- ================= TASK MODAL ================= -->
+
+            <div id="taskModal" class="task-modal">
+
+                <div class="task-modal-overlay">
+                </div>
+
+                <div class="task-modal-content">
+
+                    <div class="task-modal-header">
+                        <h5>Tạo task</h5>
+                    </div>
+
+                    <div class="task-modal-body">
+
+                        <label>Stage</label>
+                        <input id="stage-name" type="text" disabled />
+
+                        <label>Tên task</label>
+                        <input id="task-name" type="text" placeholder="Nhập tên task" />
+
+                        <label>Ngày bắt đầu</label>
+                        <input id="start-date" type="date" />
+
+                        <label>Thời lượng (ngày)</label>
+                        <input id="duration" type="number" min="1" placeholder="Số ngày" />
+
+                    </div>
+
+                    <div class="task-modal-footer">
+
+                        <button id="btnCancel" class="btn-cancel">
+                            Hủy
+                        </button>
+
+                        <button id="btnCreate" class="btn-create">
+                            Tạo
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ================= EVIDENCE IMAGE VIEWER ================= -->
+
+            <dialog id="evidence-viewer" class="evidence-viewer" aria-labelledby="evidence-viewer-title">
+                <div class="evidence-viewer-content">
+                    <header class="evidence-viewer-header">
+                        <h5 id="evidence-viewer-title"><i class="bi bi-flag-fill"></i> Ảnh minh chứng</h5>
+                        <button type="button" class="evidence-viewer-close" data-close-evidence aria-label="Đóng">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </header>
+                    <div id="evidence-viewer-body" class="evidence-viewer-body"></div>
+                </div>
+            </dialog>
+
+            <section class="issues-panel">
+                <div class="issues-header">
                     <div>
-                        <span>Start Date</span>
-                        <strong id="project-start-date">
+                        <div class="title-row">
+                            <span class="title-icon">⚠</span>
+                            <h2>Issues <span class="issue-count"></span></h2>
+                        </div>
+                        <p>Các vấn đề phát sinh trong dự án, theo dõi và xử lý kịp thời.</p>
+                    </div>
 
-                        </strong>
+                    <div class="issue-toolbar">
+                        <select id="stageFilter">
+                            <option value="all">Tất cả giai đoạn</option>
+                            <option value="Design">Design</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Assembly">Assembly</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Program">Program</option>
+                        </select>
+
+                        <div class="search-box">
+                            <span>⌕</span>
+                            <input id="searchInput" type="search" placeholder="Tìm kiếm issue...">
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="summary-card">
-                    <div class="summary-icon green">
-                        <i class="bi bi-calendar-check"></i>
+                <div class="issues-content">
+                    <aside class="issue-summary">
+                        <div class="summary-stage">
+                            <h4>Theo giai đoạn</h4>
+                            <button type="button" class="stage-stat" data-stage="Design"><span><i
+                                        class="dot design"></i>Design</span><b>0</b></button>
+                            <button type="button" class="stage-stat" data-stage="Mechanical"><span><i
+                                        class="dot mechanical"></i>Mechanical</span><b>0</b></button>
+                            <button type="button" class="stage-stat" data-stage="Assembly"><span><i
+                                        class="dot assembly"></i>Assembly</span><b>0</b></button>
+                            <button type="button" class="stage-stat" data-stage="Electric"><span><i
+                                        class="dot electric"></i>Electric</span><b>0</b></button>
+                            <button type="button" class="stage-stat" data-stage="Program"><span><i
+                                        class="dot program"></i>Program</span><b>0</b></button>
+                        </div>
+                    </aside>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="check"><input type="checkbox" id="selectAll"></th>
+                                    <!-- ID và Stage không hiện nhưng vẫn lưu ở data-* của dòng -->
+                                    <th>Tiêu đề</th>
+                                    <th>Loại vấn đề</th>
+                                    <th>Giải pháp</th>
+                                    <th>Người xử lý</th>
+                                    <th>Thời hạn</th>
+                                    <th>Người báo cáo</th> <!--Là người tạo issue-->
+                                    <th>Ngày tạo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="issueTableBody"></tbody>
+                        </table>
+
+                        <div id="emptyState" class="empty-state hidden">
+                            <div>⌕</div>
+                            <h3>Không tìm thấy issue</h3>
+                            <p>Thử đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
+                        </div>
                     </div>
-
-                    <div>
-                        <span>End Date</span>
-                        <strong id="project-end-date"></strong>
-                    </div>
                 </div>
+            </section>
 
-                <div class="summary-card">
-                    <div class="summary-icon blue">
-                        <i class="bi bi-clipboard2-check"></i>
-                    </div>
+            <!-- ================= ISSUE BULK ACTIONS (hiện khi có row được chọn) ================= -->
 
-                    <div>
-                        <span>Total Tasks</span>
-                        <strong id="total-task-count">0</strong>
-                    </div>
-                </div>
-
-
-            </div>
-
-
-            <!-- Gantt controls -->
-            <div class="gantt-controls">
-
-                <div class="view-switch">
-
-                    <button id="btnDay" class="view-button active">
-
-                        Day
-
-                    </button>
-
-                    <button id="btnWeek" class="view-button">
-
-                        Week
-
-                    </button>
-
-                    <button id="btnMonth" class="view-button">
-
-                        Month
-
-                    </button>
-
-                </div>
-
-
-                <button class="control-button" id="btnToday">
-                    Today
+            <div id="issueBulkBar" class="issue-bulk-bar" role="region" aria-label="Issue đã chọn" inert>
+                <span id="issueBulkCount" class="issue-bulk-count">Đã chọn 0</span>
+                <button type="button" id="btnDeleteIssues" class="btn-delete-issues">
+                    <i class="bi bi-trash" aria-hidden="true"></i> Xóa
                 </button>
-
-                <button class="icon-button" id="btnCalendar">
-                    <i class="bi bi-calendar3"></i>
-                </button>
-
-                <button class="icon-button" id="btnZoomOut">
-                    <i class="bi bi-zoom-out"></i>
-                </button>
-
-                <button class="icon-button" id="btnZoomIn">
-                    <i class="bi bi-zoom-in"></i>
-                </button>
-
-                <button class="control-button" id="btnFit">
-                    Fit
-                </button>
-
-                <button class="icon-button" id="btnSettings">
-                    <i class="bi bi-gear"></i>
-                </button>
-
             </div>
-
-        </section>
-
-        <section class="workflow-progress-row" aria-label="Project and stage progress">
-            <div class="summary-card progress-card project-progress-card">
-                <div>
-                    <span>Project Progress</span>
-                </div>
-
-                <div class="circular-progress">
-                    <svg viewBox="0 0 44 44">
-                        <circle class="progress-bg" cx="22" cy="22" r="18"></circle>
-                        <circle id="progress-circle" class="progress-value" cx="22" cy="22" r="18"></circle>
-                    </svg>
-                    <strong id="project-progress">0%</strong>
-                </div>
-            </div>
-
-            <div id="stage-progress-grid" class="stage-progress-grid"></div>
-        </section>
-
-        <!-- ================= GANTT ================= -->
-        <section class="gantt-card">
-            <div id="gantt_here"></div>
-        </section>
-
-            </div>
-
-
-    <!-- ================= TASK MODAL ================= -->
-
-    <div id="taskModal" class="task-modal">
-
-        <div class="task-modal-overlay">
-        </div>
-
-        <div class="task-modal-content">
-
-            <div class="task-modal-header">
-                <h5>Create Task</h5>
-            </div>
-
-            <div class="task-modal-body">
-
-                <label>Stage</label>
-                <input id="stage-name" type="text" disabled />
-
-                <label>Task name</label>
-                <input id="task-name" type="text" placeholder="Enter task name" />
-
-                <label>Start date</label>
-                <input id="start-date" type="date" />
-
-                <label>Duration (days)</label>
-                <input id="duration" type="number" min="1" placeholder="Days" />
-
-            </div>
-
-            <div class="task-modal-footer">
-
-                <button id="btnCancel" class="btn-cancel">
-                    Cancel
-                </button>
-
-                <button id="btnCreate" class="btn-create">
-                    Create
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ================= EVIDENCE IMAGE VIEWER ================= -->
-
-    <dialog id="evidence-viewer" class="evidence-viewer" aria-labelledby="evidence-viewer-title">
-        <div class="evidence-viewer-content">
-            <header class="evidence-viewer-header">
-                <h5 id="evidence-viewer-title"><i class="bi bi-flag-fill"></i> Evidence images</h5>
-                <button type="button" class="evidence-viewer-close" data-close-evidence aria-label="Close">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </header>
-            <div id="evidence-viewer-body" class="evidence-viewer-body"></div>
-        </div>
-    </dialog>
-
-    <section class="issues-panel">
-        <div class="issues-header">
-            <div>
-                <div class="title-row">
-                    <span class="title-icon">⚠</span>
-                    <h2>Issues <span class="issue-count"></span></h2>
-                </div>
-                <p>Các vấn đề phát sinh trong dự án, theo dõi và xử lý kịp thời.</p>
-            </div>
-
-            <div class="issue-toolbar">
-                <select id="stageFilter">
-                    <option value="all">Tất cả giai đoạn</option>
-                    <option value="Design">Design</option>
-                    <option value="Mechanical">Mechanical</option>
-                    <option value="Assembly">Assembly</option>
-                    <option value="Electric">Electric</option>
-                    <option value="Program">Program</option>
-                </select>
-
-                <div class="search-box">
-                    <span>⌕</span>
-                    <input id="searchInput" type="search" placeholder="Tìm kiếm issue...">
-                </div>
-
-            </div>
-        </div>
-
-        <div class="issues-content">
-            <aside class="issue-summary">
-                <div class="summary-stage">
-                    <h4>Theo giai đoạn</h4>
-                    <button type="button" class="stage-stat" data-stage="Design"><span><i class="dot design"></i>Design</span><b>0</b></button>
-                    <button type="button" class="stage-stat" data-stage="Mechanical"><span><i class="dot mechanical"></i>Mechanical</span><b>0</b></button>
-                    <button type="button" class="stage-stat" data-stage="Assembly"><span><i class="dot assembly"></i>Assembly</span><b>0</b></button>
-                    <button type="button" class="stage-stat" data-stage="Electric"><span><i class="dot electric"></i>Electric</span><b>0</b></button>
-                    <button type="button" class="stage-stat" data-stage="Program"><span><i class="dot program"></i>Program</span><b>0</b></button>
-                </div>
-            </aside>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="check"><input type="checkbox" id="selectAll"></th>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Stage</th>
-                            <th>Solution</th>
-                            <th>Reporter</th> <!--Là người tạo issue-->
-                            <th>Created Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="issueTableBody"></tbody>
-                </table>
-
-                <div id="emptyState" class="empty-state hidden">
-                    <div>⌕</div>
-                    <h3>Issue not found</h3>
-                    <p>Try changing the filters or search keywords.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ================= ISSUE BULK ACTIONS (hiện khi có row được chọn) ================= -->
-
-    <div id="issueBulkBar" class="issue-bulk-bar" role="region" aria-label="Selected issues" inert>
-        <span id="issueBulkCount" class="issue-bulk-count">0 selected</span>
-        <button type="button" id="btnDeleteIssues" class="btn-delete-issues">
-            <i class="bi bi-trash" aria-hidden="true"></i> Delete
-        </button>
-    </div>
 
         </main>
     </div>

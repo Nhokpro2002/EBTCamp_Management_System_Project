@@ -28,7 +28,7 @@ function validateForm() {
         if (!onlyValidChars || !hasLetter || !hasNumber) {
 
             $("#error_employee_id").text(
-                "10-255 chars, must contain lowercase letters and numbers"
+                "10–255 ký tự, gồm chữ thường và số"
             );
 
             $("#employee_id")
@@ -51,7 +51,7 @@ function validateForm() {
     const employeeName = $("#employee_name").val().trim();
     if (touched.employee_name) {
         if (employeeName === "") {
-            $("#error_employee_name").text("Employee name required");
+            $("#error_employee_name").text("Vui lòng nhập họ tên");
             $("#employee_name")
                 .addClass("is-invalid")
                 .removeClass("is-valid");
@@ -72,7 +72,7 @@ function validateForm() {
         if (department === "") {
 
             $("#errorDepartment").text(
-                "Please select your department"
+                "Vui lòng chọn bộ phận"
             );
 
             $("#department")
@@ -96,7 +96,7 @@ function validateForm() {
 
     if (touched.position) {
         if (!Array.isArray(position) || position.length === 0) {
-            $("#error_position").text("Please select at least one position");
+            $("#error_position").text("Vui lòng chọn ít nhất một chức vụ");
             $("#position")
                 .addClass("is-invalid")
                 .removeClass("is-valid");
@@ -114,7 +114,7 @@ function validateForm() {
     const emailRegex = /^[A-Za-z0-9._%+-]+@lgdisplay\.com$/;
     if (touched.email) {
         if (!emailRegex.test(email)) {
-            $("#errorEmail").text("Must contain @lgdisplay.com");
+            $("#errorEmail").text("Email phải có đuôi @lgdisplay.com");
             $("#email").addClass("is-invalid").removeClass("is-valid");
             valid = false;
         } else {
@@ -133,7 +133,7 @@ function validateForm() {
 
     if (touched.password) {
         if (!okPassword) {
-            $("#errorPassword").text("8-30 chars, uppercase, number, special character required");
+            $("#errorPassword").text("8–30 ký tự, gồm chữ hoa, số và ký tự đặc biệt");
             $("#password").addClass("is-invalid").removeClass("is-valid");
             valid = false;
         } else {
@@ -146,7 +146,7 @@ function validateForm() {
     const confirm = $("#passwordConfirm").val();
     if (touched.passwordConfirm) {
         if (confirm !== password || confirm === "") {
-            $("#errorPasswordConfirm").text("Not match password");
+            $("#errorPasswordConfirm").text("Mật khẩu xác nhận không khớp");
             $("#passwordConfirm").addClass("is-invalid").removeClass("is-valid");
             valid = false;
         } else {
@@ -175,7 +175,7 @@ async function registerNewUser() {
     Object.keys(touched).forEach(k => touched[k] = true);
 
     if (!validateForm()) {
-        Swal.fire("Error", "Please fix validation errors", "error");
+        Swal.fire("Lỗi", "Vui lòng sửa các ô nhập chưa hợp lệ", "error");
         return;
     }
 
@@ -197,12 +197,12 @@ async function registerNewUser() {
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Create failed");
+        if (!res.ok) throw new Error(data.message || "Tạo tài khoản thất bại");
 
         Swal.fire({
             icon: "success",
-            title: "Success",
-            text: "Register account successfully",
+            title: "Thành công",
+            text: "Đăng ký tài khoản thành công",
             confirmButtonText: "OK"
         }).then((result) => {
 
@@ -219,7 +219,7 @@ async function registerNewUser() {
     } catch (error) {
         Swal.fire({
             icon: "error",
-            title: "Error",
+            title: "Lỗi",
             text: error.message,
             showConfirmButton: true
 

@@ -1,69 +1,59 @@
-import * as api from "../services/generic.api.js";
+import * as inventoryApi from "../services/inventory.api.js";
 import * as ui from "./ui.js";
 import * as utils from "../utils/utils.js";
-
-const COLLECTION_INVENTORY_ITEMS = "Inventory_Items";
 
 import { inventoryItemPageMessage } from "./inventory_items_page_message.js"
 import { inventoryVariable } from "./state.js";
 
-export async function changePage(page) {
+export { parseScannedCode } from "../services/inventory.api.js";
+
+/**
+ * Chuyển trang trên danh sách đang lọc (search / brand / QR).
+ */
+export function changePage(page) {
     if (page < 1 || page > inventoryVariable.totalPages)
         return;
     inventoryVariable.currentInventoryPage = page;
-    await loadInventoryItemData("Inventory_Items");
-    const start = (inventoryVariable.currentInventoryPage - 1) * inventoryVariable.pageSize;
-    const end = start + inventoryVariable.pageSize;
-    inventoryVariable.inventoryItemFiltered = inventoryVariable.inventoryItemFull.slice(start, end);
-    ui.renderTable(inventoryVariable.inventoryItemFiltered);
+    ui.renderCurrentPage();
 }
 
-export async function loadInventoryItemData(collection) {
+/**
+ * Load toàn bộ vật tư (tất cả các trang của PocketBase).
+ */
+export async function loadInventoryItemData() {
     try {
-        const response = await api.getRecords(collection);
-        if (response) {
-            inventoryVariable.inventoryItemFull = response;
-            return response;
-        }
-
+        const items = await inventoryApi.loadAllItems();
+        inventoryVariable.inventoryItemFull = items;
+        return items;
     } catch (error) {
         console.log(error);
     }
 }
 
 /**
- * Load lại data từ database và vẽ lại bảng (giữ search/brand filter đang chọn).
+ * Load lại data từ database và vẽ lại bảng
+ * (giữ nguyên search / brand / QR filter và trang đang xem).
  */
 export async function reloadInventory() {
-    await loadInventoryItemData(COLLECTION_INVENTORY_ITEMS);
-    inventoryVariable.totalPages = Math.max(1, Math.ceil(
-        inventoryVariable.inventoryItemFull.length / inventoryVariable.pageSize
-    ));
-    ui.applyFilter();
-    ui.renderMaterialCodeOptions(inventoryVariable.inventoryItemFull);
-}
+    await loadInventoryItemData();
 
-/**
- * @returns {Promise<boolean>} true nếu lưu thành công
- */
-export async function saveItem(data) {
-    try {
-        const response = await api.createRecord(COLLECTION_INVENTORY_ITEMS, data);
-        if (response) {
-            utils.showSuccess(inventoryItemPageMessage.saveSuccess);
-            return true;
+    if (inventoryVariable.scanItems) {
+        try {
+            inventoryVariable.scanItems = await inventoryApi.findItemsByCode(inventoryVariable.scanCode);
+            ui.renderScanFilter(inventoryVariable.scanCode, inventoryVariable.scanItems.length);
+        } catch (error) {
+            console.error(error);
         }
-    } catch (error) {
-        console.log(error);
-        utils.showError(inventoryItemPageMessage.saveFailed);
     }
-    return false;
+
+    ui.applyFilter(false);
+    ui.renderInventoryStats(inventoryVariable.inventoryItemFull);
 }
 
 export async function deleteItem(IDList) {
     try {
         for (const id of IDList) {
-            await api.deleteRecord(COLLECTION_INVENTORY_ITEMS, id);
+            await inventoryApi.deleteItem(id);
         }
 
         utils.showSuccess(inventoryItemPageMessage.deleteSuccess);
@@ -74,76 +64,37 @@ export async function deleteItem(IDList) {
 }
 
 // =====================================================
-// IMPORT / EXPORT (QR code = field `code` của vật tư)
+// LỌC BẰNG QUÉT QR TRÊN TRANG
 // =====================================================
 
-/**
- * Chuẩn hóa nội dung quét được (máy quét có thể gửi kèm khoảng trắng / xuống dòng).
- */
-export function normalizeCode(value) {
-    return String(value ?? "").trim();
-}
-
-export function parseQuantity(value) {
-    const quantity = Number(value);
-    return Number.isInteger(quantity) && quantity > 0 ? quantity : null;
-}
+let scanFilterVersion = 0;
 
 /**
- * Tìm vật tư trong database theo code.
- * @returns {Promise<Object|null>}
+ * Lọc bảng theo code vừa quét (tra trực tiếp trong database).
+ * @returns {Promise<number>} số vật tư tìm được
  */
-export async function findItemByCode(code) {
-    const items = await api.getRecordsByFilter(
-        COLLECTION_INVENTORY_ITEMS,
-        `code = ${api.quoteFilterValue(code)}`,
-        1,
-        1
-    );
-    return items[0] ?? null;
-}
+export async function applyScanFilter(code) {
+    const version = ++scanFilterVersion;
 
-/**
- * Cộng (delta > 0) hoặc trừ (delta < 0) tồn kho.
- * Đọc lại stock mới nhất từ database ngay trước khi ghi để hạn chế sai lệch.
- * @returns {Promise<Object>} record sau khi cập nhật
- */
-export async function changeStock(itemID, delta) {
-    const [latest] = await api.getRecordsByFilter(
-        COLLECTION_INVENTORY_ITEMS,
-        `id = ${api.quoteFilterValue(itemID)}`,
-        1,
-        1
-    );
-    if (!latest) {
-        throw new Error("Material not found");
+    inventoryVariable.scanCode = code;
+    ui.renderScanFilter(code, "loading");
+
+    const items = await inventoryApi.findItemsByCode(code);
+    // Đã quét mã khác hoặc đã bỏ lọc trong lúc chờ → bỏ kết quả cũ
+    if (version !== scanFilterVersion) {
+        return items.length;
     }
 
-    const nextStock = (Number(latest.stock) || 0) + delta;
-    if (nextStock < 0) {
-        throw new Error(`Not enough stock for ${latest.name} (in stock: ${latest.stock})`);
-    }
-
-    return api.updateRecord(COLLECTION_INVENTORY_ITEMS, itemID, { stock: nextStock });
+    inventoryVariable.scanItems = items;
+    ui.renderScanFilter(code, items.length);
+    ui.applyFilter();
+    return items.length;
 }
 
-/**
- * Trừ kho cho toàn bộ danh sách export.
- * @returns {Promise<{ exportedIDs: string[], errors: string[] }>}
- */
-export async function exportItems(exportList) {
-    const exportedIDs = [];
-    const errors = [];
-
-    for (const { item, quantity } of exportList) {
-        try {
-            await changeStock(item.id, -quantity);
-            exportedIDs.push(item.id);
-        } catch (error) {
-            console.error(error);
-            errors.push(error.message);
-        }
-    }
-
-    return { exportedIDs, errors };
+export function clearScanFilter() {
+    scanFilterVersion++;
+    inventoryVariable.scanCode = "";
+    inventoryVariable.scanItems = null;
+    ui.renderScanFilter("");
+    ui.applyFilter();
 }

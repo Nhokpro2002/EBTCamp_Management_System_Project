@@ -12,13 +12,20 @@ const addSelectedTasksButton = ui.getAddSelectedTasksButton();
 
 const user = readCurrentUser();
 let hasUnsavedChanges = false;
+// Sau lần bấm Lưu đầu tiên mới tô đỏ ô bắt buộc còn thiếu (không làm phiền khi mới thêm task)
+let showRequiredErrors = false;
 state.reporter = user;
+// Mỗi dự án, mỗi ngày chỉ có MỘT báo cáo chung cho tất cả mọi người.
+// Đã nộp rồi thì khóa; chỉ Part Leader được sửa báo cáo cũ.
+state.canEditSubmitted = service.canEditSubmittedReport(user);
+// Tên người nộp báo cáo đang xem (field `reporter`) — chưa nộp thì là chính mình
+state.reportOwnerName = getReporterName(user);
 state.workDate = getLocalDate(new Date());
 dateInput.value = state.workDate;
 ui.setReporter(user);
 
 if (!user) {
-    ui.setMessage("Your signed-in account could not be read. Please sign in again.", "error");
+    ui.setMessage("Không đọc được tài khoản đăng nhập. Vui lòng đăng nhập lại.", "error");
     saveButton.disabled = true;
 }
 
@@ -27,6 +34,7 @@ try {
         service.loadProjects(),
         service.loadUsers()
     ]);
+
     const queryProjectID = new URLSearchParams(location.search).get("projectID");
     const savedProjectID = queryProjectID ||
         localStorage.getItem("currentProjectID") ||
@@ -40,15 +48,15 @@ try {
         await loadProject(savedProjectID);
     } else {
         resetReportView();
-        ui.setMessage("Choose a project to load its tasks and reports.");
+        ui.setMessage("Chọn dự án để tải task và báo cáo.");
     }
 } catch (error) {
     console.error("Failed to initialize daily report:", error);
-    ui.setMessage(`Could not initialize the daily report: ${error.message}`, "error");
+    ui.setMessage(`Không khởi tạo được báo cáo ngày: ${error.message}`, "error");
 }
 
 projectSelect.addEventListener("change", async () => {
-    if (hasUnsavedChanges && !window.confirm("Discard unsaved report changes?")) {
+    if (hasUnsavedChanges && !window.confirm("Bỏ các thay đổi chưa lưu của báo cáo?")) {
         projectSelect.value = state.projectID;
         return;
     }
@@ -69,7 +77,7 @@ dateInput.addEventListener("change", async () => {
     if (!dateInput.value || !state.projectID) {
         return;
     }
-    if (hasUnsavedChanges && !window.confirm("Discard unsaved report changes?")) {
+    if (hasUnsavedChanges && !window.confirm("Bỏ các thay đổi chưa lưu của báo cáo?")) {
         dateInput.value = state.workDate;
         return;
     }
@@ -131,7 +139,7 @@ taskReportList.addEventListener("click", event => {
     }
 
     const removeButton = event.target.closest("[data-remove-task]");
-    if (!removeButton) {
+    if (!removeButton || isReportLocked()) {
         return;
     }
     hasUnsavedChanges = true;
@@ -200,6 +208,8 @@ async function loadProject(projectID) {
     state.tasks = [];
     state.reports = [];
     state.taskReports = {};
+    state.isSubmitted = false;
+    showRequiredErrors = false;
     state.workDate = dateInput.value || getLocalDate(new Date());
     localStorage.setItem("currentProjectID", state.projectID);
     const project = state.projects.find(
@@ -209,17 +219,17 @@ async function loadProject(projectID) {
         localStorage.setItem("projectName", project.name);
     }
 
-    ui.setMessage("Loading project tasks...");
+    ui.setMessage("Đang tải task của dự án...");
     try {
         [state.tasks, state.issues] = await Promise.all([
             service.loadProjectTasks(state.projectID),
             service.loadProjectIssues(state.projectID)
         ]);
         await loadReports();
-        taskPickerButton.disabled = state.tasks.length === 0;
+        updateTaskPickerButton();
     } catch (error) {
         console.error("Failed to load project tasks:", error);
-        ui.setMessage(`Could not load project tasks: ${error.message}`, "error");
+        ui.setMessage(`Không tải được task của dự án: ${error.message}`, "error");
         renderReport();
     }
 }
@@ -228,30 +238,14 @@ async function loadReports() {
     if (!state.projectID || !state.workDate) {
         return;
     }
-    ui.setMessage("Loading reports for this date...");
+    ui.setMessage("Đang tải báo cáo của ngày này...");
     try {
-        const { reportRecords, taskReports } =
-            await service.loadReportsForDate(
-                state.workDate,
-                getReporterName(state.reporter)
-            );
-        const reportRecordID = reportRecords[0]?.id || "";
-        const duplicateReportRecordIDs = reportRecords
-            .slice(1)
-            .map(report => report.id);
-        const reportTaskDailyReportIDs = [
-            ...new Set(reportRecords.flatMap(report =>
-                service.getRelationIDs(report.task_daily_reports)
-            ))
-        ];
-        const taskIDs = new Set(state.tasks.map(task => String(task.id)));
-        const projectTaskReports = taskReports
-            .map(report => ({
-                report,
-                task: findTaskForReport(report, taskIDs)
-            }))
-            .filter(item => item.task)
-            .map(({ report, task }) => ({ ...report, task: task.id }));
+        const {
+            reportRecordID,
+            reportTaskDailyReportIDs,
+            projectTaskReports,
+            ownerNames
+        } = await fetchProjectReport(state.workDate);
         const taskReportEntries = {};
         projectTaskReports.forEach(report => {
             const task = state.tasks.find(
@@ -273,29 +267,67 @@ async function loadReports() {
             };
         });
         state.reportRecordID = reportRecordID;
-        state.duplicateReportRecordIDs = duplicateReportRecordIDs;
         state.reportTaskDailyReportIDs = reportTaskDailyReportIDs;
         state.reports = projectTaskReports;
         state.taskReports = taskReportEntries;
+        // Đã có báo cáo của dự án + ngày này (bất kể ai nộp) → đã báo cáo
+        state.isSubmitted = projectTaskReports.length > 0;
+        showRequiredErrors = false;
+        // Part Leader sửa báo cáo cũ vẫn giữ tên người nộp gốc
+        state.reportOwnerName = ownerNames[0] || getReporterName(state.reporter);
+        ui.setReporterName(state.isSubmitted ? ownerNames.join(", ") : state.reportOwnerName);
         renderReport();
-        taskPickerButton.disabled = state.tasks.length === 0;
         ui.setMessage(
-            projectTaskReports.length
-                ? `Loaded ${projectTaskReports.length} saved report${projectTaskReports.length === 1 ? "" : "s"} for this date.`
-                : "No saved reports for this date yet."
+            state.isSubmitted
+                ? `Đã tải báo cáo của ngày này (${projectTaskReports.length} task).`
+                : "Ngày này dự án chưa có báo cáo."
         );
         return true;
     } catch (error) {
         console.error("Failed to load daily reports:", error);
-        ui.setMessage(`Could not load reports for this date: ${error.message}`, "error");
+        ui.setMessage(`Không tải được báo cáo của ngày này: ${error.message}`, "error");
         return false;
     }
+}
+
+/**
+ * Báo cáo chung của dự án đang chọn trong một ngày (của bất kỳ ai nộp).
+ * Một bản ghi Reports có thể chứa task của nhiều dự án → chỉ lấy phần thuộc dự án này.
+ */
+async function fetchProjectReport(workDate) {
+    const { reportRecords, taskReports } = await service.loadReportsForDate(workDate);
+
+    const taskIDs = new Set(state.tasks.map(task => String(task.id)));
+    const projectTaskReports = taskReports
+        .map(report => ({
+            report,
+            task: findTaskForReport(report, taskIDs)
+        }))
+        .filter(item => item.task)
+        .map(({ report, task }) => ({ ...report, task: task.id }));
+
+    // Bản ghi Reports chứa báo cáo của dự án này (bình thường chỉ có 1)
+    const projectReportIDs = new Set(projectTaskReports.map(report => String(report.reportID)));
+    const projectReportRecords = reportRecords.filter(report =>
+        projectReportIDs.has(String(report.id))
+    );
+    const mainRecord = projectReportRecords[0];
+
+    return {
+        reportRecordID: mainRecord?.id || "",
+        // Giữ toàn bộ task report của bản ghi (kể cả của dự án khác nếu có) khi cập nhật
+        reportTaskDailyReportIDs: mainRecord
+            ? service.getRelationIDs(mainRecord.task_daily_reports)
+            : [],
+        projectTaskReports,
+        ownerNames: [...new Set(projectReportRecords.map(report => report.reporter).filter(Boolean))]
+    };
 }
 
 function addTaskToReport(taskID) {
     const task = state.tasks.find(item => String(item.id) === String(taskID));
     if (!task) {
-        ui.setMessage("The selected task could not be found.", "error");
+        ui.setMessage("Không tìm thấy task đã chọn.", "error");
         return;
     }
     const key = String(task.id);
@@ -326,16 +358,25 @@ function updateEntryFromRow(row) {
     );
     entry.detail = row.querySelector(".task-detail-input").value;
     entry.files = Array.from(row.querySelector(".task-evidence-upload").files);
+
+    // Đã bấm Lưu mà còn thiếu → nhập bổ sung tới đâu thì bỏ tô đỏ tới đó
+    if (showRequiredErrors) {
+        ui.setRowRequiredErrors(row, service.getMissingRequiredFields(entry));
+    }
 }
 
 async function saveReports() {
     if (!state.reporter) {
-        ui.setMessage("Please sign in again before saving a report.", "error");
+        ui.setMessage("Vui lòng đăng nhập lại trước khi lưu báo cáo.", "error");
+        return;
+    }
+    if (isReportLocked()) {
+        ui.setMessage("Dự án đã có báo cáo của ngày này. Chỉ Part Leader mới được chỉnh sửa.", "error");
         return;
     }
     const entries = Object.values(state.taskReports);
     if (!entries.length) {
-        ui.setMessage("Add at least one task before saving the report.", "error");
+        ui.setMessage("Thêm ít nhất một task trước khi lưu báo cáo.", "error");
         return;
     }
 
@@ -347,6 +388,23 @@ async function saveReports() {
         entry.files = values.files;
     });
 
+    // Người làm và Chi tiết bắt buộc → báo lỗi, tô đỏ ô thiếu, không ghi gì vào database
+    showRequiredErrors = true;
+    const incompleteEntries = entries.filter(entry => {
+        const missing = service.getMissingRequiredFields(entry);
+        const row = ui.getTaskRow(entry.task.id);
+        if (row) ui.setRowRequiredErrors(row, missing);
+        return missing.worker || missing.detail;
+    });
+    if (incompleteEntries.length) {
+        const names = incompleteEntries.map(entry => `"${entry.task.name}"`).join(", ");
+        ui.setMessage(`Vui lòng nhập đủ Người làm và Chi tiết cho: ${names}.`, "error");
+        ui.getTaskRow(incompleteEntries[0].task.id)
+            ?.querySelector(".task-required-cell.is-invalid")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+    }
+
     try {
         entries.forEach(service.validateTaskReport);
     } catch (error) {
@@ -354,14 +412,37 @@ async function saveReports() {
         return;
     }
 
+    // Mỗi dự án mỗi ngày chỉ nộp 1 lần → người không phải Part Leader xác nhận trước
+    if (!state.isSubmitted && !state.canEditSubmitted && !window.confirm(
+        "Mỗi ngày dự án chỉ có một báo cáo. Sau khi lưu, báo cáo sẽ bị khóa và " +
+        "không ai chỉnh sửa được nữa (trừ Part Leader). Bạn chắc chắn muốn lưu?"
+    )) {
+        return;
+    }
+
     state.isSaving = true;
     ui.setSaving(true);
-    ui.setMessage("Saving daily reports...");
+    ui.setMessage("Đang lưu báo cáo...");
     try {
+        // Lần nộp đầu: kiểm tra lại, phòng trường hợp người khác vừa nộp trong lúc đang soạn
+        if (!state.isSubmitted) {
+            const latest = await fetchProjectReport(state.workDate);
+            if (latest.projectTaskReports.length > 0) {
+                hasUnsavedChanges = false;
+                await loadReports();
+                ui.setMessage(
+                    `${latest.ownerNames.join(", ") || "Một người khác"} vừa nộp báo cáo của ngày này. ` +
+                    "Báo cáo của bạn chưa được lưu.",
+                    "error"
+                );
+                return;
+            }
+        }
+
         for (const entry of entries) {
             entry.users = state.users;
             entry.workDate = state.workDate;
-            entry.reporter = getReporterName(state.reporter);
+            entry.reporter = state.reportOwnerName;
             const result = await service.saveTaskReport(entry);
             entry.report = result;
             entry.recordID = result.id;
@@ -371,22 +452,21 @@ async function saveReports() {
         }
         const reportRecord = await service.saveDailyReport({
             reportRecordID: state.reportRecordID,
-            duplicateReportRecordIDs: state.duplicateReportRecordIDs,
             taskDailyReportIDs: state.reportTaskDailyReportIDs,
             workDate: state.workDate,
-            reporter: getReporterName(state.reporter)
+            // Lần đầu: người đang nộp; Part Leader sửa: giữ tên người nộp gốc
+            reporter: state.reportOwnerName
         });
         state.reportRecordID = reportRecord.id;
-        state.duplicateReportRecordIDs = [];
         hasUnsavedChanges = false;
         ui.clearEvidenceFiles();
         const reportsLoaded = await loadReports();
         if (reportsLoaded) {
-            ui.setMessage("Daily reports saved successfully.", "success");
+            ui.setMessage("Đã lưu báo cáo ngày.", "success");
         }
     } catch (error) {
         console.error("Failed to save daily report:", error);
-        ui.setMessage(`Could not save daily report: ${error.message}`, "error");
+        ui.setMessage(`Không lưu được báo cáo: ${error.message}`, "error");
     } finally {
         state.isSaving = false;
         ui.setSaving(false);
@@ -408,11 +488,11 @@ async function createIssue(event) {
     const reporter = getReporterName(state.reporter);
 
     if (!task || !project || !title || !reporter) {
-        ui.setMessage("Sign in, select a project and task, and enter an issue title.", "error");
+        ui.setMessage("Hãy đăng nhập, chọn dự án, task và nhập tiêu đề issue.", "error");
         return;
     }
     if (!service.ISSUE_TYPES.includes(type)) {
-        ui.setMessage("Choose an issue type.", "error");
+        ui.setMessage("Vui lòng chọn loại issue.", "error");
         return;
     }
 
@@ -440,7 +520,7 @@ async function createIssue(event) {
         renderReport();
     } catch (error) {
         console.error("Failed to create issue from daily report:", error);
-        ui.setMessage(`Could not create issue: ${error.message}`, "error");
+        ui.setMessage(`Không tạo được issue: ${error.message}`, "error");
     } finally {
         ui.setIssueCreateSaving(false);
     }
@@ -454,7 +534,34 @@ function renderReport() {
         state.projectID
     );
     ui.renderTaskPicker(state.tasks, Object.keys(state.taskReports));
+
+    // Bảng vừa vẽ lại → tô đỏ lại các ô bắt buộc còn thiếu (nếu đã bấm Lưu)
+    if (showRequiredErrors) {
+        Object.values(state.taskReports).forEach(entry => {
+            const row = ui.getTaskRow(entry.task.id);
+            if (row) ui.setRowRequiredErrors(row, service.getMissingRequiredFields(entry));
+        });
+    }
+
+    ui.applyReportLock({
+        isSubmitted: state.isSubmitted,
+        isLocked: isReportLocked(),
+        workDate: state.workDate,
+        ownerName: state.reportOwnerName
+    });
+    updateTaskPickerButton();
     updateSaveButton();
+}
+
+/**
+ * Đã báo cáo dự án + ngày này và không phải Part Leader → không được sửa.
+ */
+function isReportLocked() {
+    return state.isSubmitted && !state.canEditSubmitted;
+}
+
+function updateTaskPickerButton() {
+    taskPickerButton.disabled = state.tasks.length === 0 || isReportLocked();
 }
 
 function resetReportView() {
@@ -463,13 +570,20 @@ function resetReportView() {
     state.reports = [];
     state.taskReports = {};
     state.reportRecordID = "";
-    state.duplicateReportRecordIDs = [];
     state.reportTaskDailyReportIDs = [];
+    state.isSubmitted = false;
+    showRequiredErrors = false;
+    state.reportOwnerName = getReporterName(state.reporter);
+    ui.setReporterName(state.reportOwnerName);
     renderReport();
-    taskPickerButton.disabled = true;
 }
 
 function updateSaveButton() {
+    if (isReportLocked()) {
+        ui.setSaveEnabled(false);
+        return;
+    }
+
     const entries = Object.values(state.taskReports);
 
     // Report rỗng (không có task) thì không cho lưu
@@ -530,10 +644,7 @@ function readCurrentUser() {
 }
 
 function getReporterName(currentUser) {
-    return currentUser?.employee_name ||
-        currentUser?.name ||
-        currentUser?.email ||
-        "";
+    return service.getReporterName(currentUser);
 }
 
 function getLocalDate(date) {

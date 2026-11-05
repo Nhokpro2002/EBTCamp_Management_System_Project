@@ -7,7 +7,6 @@ const pb = new PocketBase(URL_LOCAL);
 
 const panel = document.querySelector("#activity-list");
 const dateInput = document.querySelector("#filter-date");
-const badgeCount = document.querySelector("#badge-count");
 const searchInput = document.querySelector("#search-notifications");
 const projectSelect = document.querySelector("#projectSelect");
 const pageSizeSelect = document.querySelector("#page-size");
@@ -27,7 +26,6 @@ if (token) {
 // 1. State
 // =====================================================
 
-let newNotification = 0;
 const userRoles = service.getCurrentUserRoles();
 
 
@@ -102,13 +100,13 @@ async function loadActivity(selectedDate) {
     const loadSequence = ++activityLoadSequence;
     currentPage = 1;
     panel.setAttribute("aria-busy", "true");
-    panel.innerHTML = '<div class="activity-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Loading notifications...</div>';
-    paginationInfo.textContent = "0–0 of 0";
+    panel.innerHTML = '<div class="activity-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Đang tải thông báo...</div>';
+    paginationInfo.textContent = "0–0 / 0";
     previousPageButton.disabled = true;
     nextPageButton.disabled = true;
     try {
         if (!selectedDate) {
-            showActivityState("Choose a date to view notifications.");
+            showActivityState("Chọn ngày để xem thông báo.");
             return;
         }
 
@@ -128,7 +126,7 @@ async function loadActivity(selectedDate) {
         panel.innerHTML = "";
         activities.forEach(activity => ui.renderIssue(activity.data, true));
         if (!activities.length) {
-            showActivityState("No notifications found for this date.");
+            showActivityState("Không có thông báo nào trong ngày này.");
         }
         applyActivityFilters();
     } catch (error) {
@@ -137,7 +135,7 @@ async function loadActivity(selectedDate) {
         }
         console.error("Failed to load notifications:", error);
         showActivityState(
-            "Failed to load notifications. Please try again.",
+            "Không tải được thông báo. Vui lòng thử lại.",
             true
         );
     } finally {
@@ -186,7 +184,7 @@ function showActivityState(message, retry = false) {
     panel.innerHTML = `
         <div class="activity-state" role="${retry ? "alert" : "status"}">
             <span>${message}</span>
-            ${retry ? '<button type="button" class="activity-retry-btn" data-retry-activity>Try again</button>' : ""}
+            ${retry ? '<button type="button" class="activity-retry-btn" data-retry-activity>Thử lại</button>' : ""}
         </div>
     `;
 }
@@ -222,12 +220,12 @@ function applyActivityFilters(resetPage = false) {
         const emptyState = document.createElement("div");
         emptyState.id = "activity-filter-empty";
         emptyState.className = "activity-state";
-        emptyState.textContent = "No notifications match the selected filters.";
+        emptyState.textContent = "Không có thông báo nào khớp bộ lọc.";
         panel.appendChild(emptyState);
     }
     const firstItem = matchingItems.length ? startIndex + 1 : 0;
     const lastItem = Math.min(startIndex + pageSize, matchingItems.length);
-    paginationInfo.textContent = `${firstItem}–${lastItem} of ${matchingItems.length}`;
+    paginationInfo.textContent = `${firstItem}–${lastItem} / ${matchingItems.length}`;
     previousPageButton.disabled = currentPage <= 1;
     nextPageButton.disabled = currentPage >= totalPages;
 }
@@ -247,7 +245,7 @@ function subscribeRealtime() {
             return;
         }
 
-        increaseNotificationCount();
+        // Số trên sidebar do Script/notification/badge.js quản lý
         if (getBusinessDate(getActivityDate(event.record)) !== dateInput.value) {
             return;
         }
@@ -259,15 +257,6 @@ function subscribeRealtime() {
     });
 }
 
-
-function increaseNotificationCount() {
-    newNotification++;
-    badgeCount.textContent =
-        newNotification > 99
-            ? "99+"
-            : newNotification;
-    badgeCount.classList.remove("d-none");
-}
 
 function getActivityDate(record) {
     return new Date(record.created_date || record.createdDate || record.created);

@@ -1,0 +1,379 @@
+/* ==========================================================
+   TRANG NHẬP KHO (stock-import.html)
+   Nạp SAU inventory.css — dùng lại biến màu, .page-card, .stock-table...
+========================================================== */
+
+[hidden] {
+    display: none !important;
+}
+
+.import-excel-card {
+    padding: 22px 24px 24px;
+}
+
+.import-excel-card .page-card-header {
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.import-card-sub {
+    margin: 6px 0 0 42px;
+    color: var(--text-light);
+    font-size: 13.5px;
+}
+
+/* ---------- Vùng kéo thả file ---------- */
+.import-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 34px 20px 26px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, background-color .15s, box-shadow .15s;
+}
+
+.import-dropzone:hover,
+.import-dropzone:focus-within {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.import-dropzone.is-dragover {
+    border-color: var(--primary);
+    background: #dbeafe;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+}
+
+.import-dropzone.is-busy {
+    pointer-events: none;
+    opacity: .75;
+}
+
+.import-dropzone-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--primary);
+    font-size: 26px;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, .15);
+}
+
+.import-dropzone-title {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.import-dropzone-title u {
+    color: var(--primary);
+    text-underline-offset: 3px;
+}
+
+.import-dropzone-status {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.import-dropzone-status:empty {
+    display: none;
+}
+
+.import-columns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.import-column {
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #fff;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.import-column.is-required::after {
+    content: " *";
+    color: var(--danger);
+}
+
+.import-dropzone-hint {
+    max-width: 560px;
+    color: var(--text-light);
+    font-size: 12.5px;
+}
+
+/* ---------- Thông tin file đã chọn ---------- */
+.import-file-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.import-file-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 20px;
+}
+
+.import-file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.import-file-name {
+    overflow: hidden;
+    color: #0f172a;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- Thống kê ---------- */
+.import-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.import-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.import-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 17px;
+}
+
+.import-stat-value {
+    display: block;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+}
+
+.import-stat-value small {
+    color: var(--text-light);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.import-stat-label {
+    display: block;
+    color: var(--text-light);
+    font-size: 12.5px;
+}
+
+.import-stat.is-primary .import-stat-icon { background: var(--primary-light); color: var(--primary); }
+.import-stat.is-success .import-stat-icon { background: #dcfce7; color: #15803d; }
+.import-stat.is-warning .import-stat-icon { background: #fef3c7; color: #b45309; }
+.import-stat.is-danger .import-stat-icon { background: #fee2e2; color: #b91c1c; }
+.import-stat.is-danger { border-color: #fecaca; }
+
+/* ---------- Bảng xem trước ---------- */
+.import-table-wrap {
+    max-height: 52vh;
+    margin-top: 14px;
+}
+
+.import-table td {
+    padding: 9px 12px;
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+}
+
+.import-table .col-row {
+    width: 64px;
+}
+
+.import-table .col-item {
+    min-width: 240px;
+}
+
+.import-table .product-name {
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.import-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin-top: 3px;
+}
+
+.import-item-desc {
+    max-width: 380px;
+    overflow: hidden;
+    color: var(--text-light);
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.import-label-count {
+    color: #0f172a;
+    font-size: 15px;
+}
+
+.import-status-sub {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-light);
+    font-size: 11.5px;
+    white-space: nowrap;
+}
+
+.import-table tr.is-invalid > td {
+    background: #fffbfb;
+}
+
+.import-table tr.is-invalid .product-name,
+.import-table tr.is-invalid .code-chip {
+    opacity: .65;
+}
+
+.import-table tr.is-done > td {
+    background: #f6fef9;
+}
+
+.import-table tr.is-failed > td {
+    background: #fef2f2;
+}
+
+.excel-status.is-update {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.excel-status i {
+    font-size: 13px;
+}
+
+/* ---------- Thanh hành động ---------- */
+.import-action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    background: var(--primary-light);
+}
+
+.import-action-summary {
+    color: #1e3a8a;
+    font-size: 14px;
+}
+
+.import-action-summary b {
+    color: #0f172a;
+}
+
+.import-action-bar .btn-lg {
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* ---------- Lịch sử in tem ---------- */
+.import-log-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 28px 12px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    color: var(--text-light);
+    font-size: 13.5px;
+    text-align: center;
+}
+
+.import-log-empty i {
+    font-size: 26px;
+    color: #cbd5e1;
+}
+
+.import-log-scroll {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+    .import-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .import-excel-card {
+        padding: 18px 16px;
+    }
+
+    .import-card-sub {
+        margin-left: 0;
+    }
+
+    .import-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .import-action-bar .btn-lg {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .import-dropzone {
+        transition: none;
+    }
+}

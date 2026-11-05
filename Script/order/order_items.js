@@ -44,7 +44,7 @@ async function init() {
         renderInventory();
     } catch (error) {
         console.error("Failed to initialize order details.", error);
-        utils.showError("Failed to load order data.");
+        utils.showError("Không tải được dữ liệu đặt hàng.");
     }
 }
 
@@ -99,9 +99,9 @@ function bindEvents() {
 }
 
 function renderProjectOptions() {
-    projectFilter.replaceChildren(new Option("Select Project", ""));
+    projectFilter.replaceChildren(new Option("Chọn dự án", ""));
     state.projects.forEach(project => {
-        projectFilter.add(new Option(project.name || "Untitled project", project.id));
+        projectFilter.add(new Option(project.name || "Dự án chưa đặt tên", project.id));
     });
 
     const params = new URLSearchParams(window.location.search);
@@ -130,7 +130,7 @@ async function loadProjectOrders() {
     } catch (error) {
         if (loadVersion !== projectLoadVersion) return true;
         console.error("Failed to load project order items.", error);
-        utils.showError("Failed to load this project's order items.");
+        utils.showError("Không tải được danh sách đặt hàng của dự án này.");
         return false;
     }
 }
@@ -159,25 +159,25 @@ function renderInventory() {
                             <h6 title="${escapeHTML(item.name)}">${escapeHTML(item.name)}</h6>
                             <div class="text-muted">${escapeHTML(item.model)}</div>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary" type="button" data-add-inventory="${escapeHTML(item.id)}" ${projectFilter.value ? "" : "disabled"} aria-label="Add ${escapeHTML(item.name)}">
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-add-inventory="${escapeHTML(item.id)}" ${projectFilter.value ? "" : "disabled"} aria-label="Thêm ${escapeHTML(item.name)}">
                             <i class="bi bi-plus-lg"></i>
                         </button>
                     </div>
                 </div>
             `;
         }).join("")
-        : `<p class="text-muted mb-0">No materials match the current filters.</p>`;
+        : `<p class="text-muted mb-0">Không có vật tư nào khớp bộ lọc.</p>`;
 }
 
 function addInventoryItem(inventoryID) {
     if (!projectFilter.value) {
-        utils.showWarning("Select a project before adding materials.");
+        utils.showWarning("Hãy chọn dự án trước khi thêm vật tư.");
         return;
     }
 
     const item = state.inventory.find(inventoryItem => inventoryItem.id === inventoryID);
     if (!item) {
-        utils.showError("This material is no longer available in inventory.");
+        utils.showError("Vật tư này không còn trong kho.");
         return;
     }
 
@@ -185,7 +185,7 @@ function addInventoryItem(inventoryID) {
         order.name === item.name && order.model === item.model && order.code === item.code
     );
     if (duplicate) {
-        utils.showWarning("This material is already in the order.");
+        utils.showWarning("Vật tư này đã có trong đơn.");
         return;
     }
 
@@ -204,12 +204,12 @@ function addInventoryItem(inventoryID) {
 function renderOrders() {
     if (!orderTable) return;
     if (!projectFilter.value) {
-        orderTable.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">Select a project to view its order items.</td></tr>`;
+        orderTable.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">Chọn dự án để xem danh sách đặt hàng.</td></tr>`;
         updateSelection();
         return;
     }
     if (!state.orders.length) {
-        orderTable.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">No order items in this project yet.</td></tr>`;
+        orderTable.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">Dự án này chưa có vật tư đặt hàng.</td></tr>`;
         updateSelection();
         return;
     }
@@ -223,17 +223,17 @@ function renderOrders() {
         `).join("");
         return `
             <tr ${item.id ? `data-id="${escapeHTML(item.id)}"` : ""}>
-                <td class="text-center"><input type="checkbox" class="form-check-input row-checkbox" aria-label="Select ${escapeHTML(item.name)}"></td>
+                <td class="text-center"><input type="checkbox" class="form-check-input row-checkbox" aria-label="Chọn ${escapeHTML(item.name)}"></td>
                 <td>${escapeHTML(item.name)}</td>
                 <td>${escapeHTML(item.model)}</td>
                 <td>${escapeHTML(item.code)}</td>
                 <td>${escapeHTML(projectName)}</td>
-                <td><input type="number" min="0" step="1" class="form-control order-input" value="${Number(item.order_quantity) || 0}" aria-label="Order quantity"></td>
-                <td><input type="number" min="0" step="0.01" class="form-control unit-price-input" value="${Number(item.unit_price) || 0}" aria-label="Unit price"></td>
+                <td><input type="number" min="0" step="1" class="form-control order-input" value="${Number(item.order_quantity) || 0}" aria-label="Số lượng đặt"></td>
+                <td><input type="number" min="0" step="0.01" class="form-control unit-price-input" value="${Number(item.unit_price) || 0}" aria-label="Đơn giá"></td>
                 <td class="total-price-cell">${(Number(item.order_quantity) || 0) * (Number(item.unit_price) || 0)}</td>
                 <td>
-                    <select class="form-select requester-select" aria-label="Requester">
-                        <option value="">Select requester</option>
+                    <select class="form-select requester-select" aria-label="Người yêu cầu">
+                        <option value="">Chọn người yêu cầu</option>
                         ${requesterOptions}
                     </select>
                 </td>
@@ -299,13 +299,13 @@ async function saveSelected() {
         const refreshed = await loadProjectOrders();
         if (!refreshed) return;
         if (results.some(result => result.status === "rejected")) {
-            utils.showError("Some selected order items could not be saved.");
+            utils.showError("Một số dòng không lưu được.");
             return;
         }
-        utils.showSuccess("Selected order items saved.");
+        utils.showSuccess("Đã lưu các dòng đã chọn.");
     } catch (error) {
-        console.error("Failed to save selected order items.", error);
-        utils.showError("Failed to save selected order items.");
+        console.error("Không thể lưu các dòng đã chọn.", error);
+        utils.showError("Không thể lưu các dòng đã chọn.");
     }
 }
 
@@ -314,8 +314,8 @@ async function deleteSelected() {
     if (!items.length) return;
     const confirmation = await Swal.fire({
         icon: "warning",
-        title: "Delete selected items?",
-        text: `Delete ${items.length} selected item(s)?`,
+        title: "Xóa các dòng đã chọn?",
+        text: `Xóa ${items.length} dòng đã chọn?`,
         showCancelButton: true,
         confirmButtonText: "Delete",
         cancelButtonText: "Cancel",
@@ -330,13 +330,13 @@ async function deleteSelected() {
         const refreshed = await loadProjectOrders();
         if (!refreshed) return;
         if (results.some(result => result.status === "rejected")) {
-            utils.showError("Some selected order items could not be deleted.");
+            utils.showError("Một số dòng không xóa được.");
             return;
         }
-        utils.showSuccess("Selected order items deleted.");
+        utils.showSuccess("Đã xóa các dòng đã chọn.");
     } catch (error) {
-        console.error("Failed to delete selected order items.", error);
-        utils.showError("Failed to delete selected order items.");
+        console.error("Không thể xóa các dòng đã chọn.", error);
+        utils.showError("Không thể xóa các dòng đã chọn.");
     }
 }
 
@@ -344,22 +344,22 @@ async function exportSelected() {
     const items = getSelectedItems();
     if (!items.length) return;
     if (!window.ExcelJS) {
-        utils.showError("Excel export is unavailable. Please reload the page.");
+        utils.showError("Chưa thể xuất Excel. Vui lòng tải lại trang.");
         return;
     }
 
     const requesterNames = new Map(state.users.map(user => [user.id, user.employee_name]));
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet("Order");
+    const sheet = workbook.addWorksheet("Đặt hàng");
     sheet.columns = [
-        { header: "Name", key: "name", width: 24 },
+        { header: "Tên vật tư", key: "name", width: 24 },
         { header: "Model", key: "model", width: 20 },
         { header: "XCode/QCode", key: "code", width: 20 },
-        { header: "Project", key: "project", width: 28 },
-        { header: "Order", key: "order_quantity", width: 12 },
-        { header: "Unit Price", key: "unit_price", width: 16 },
-        { header: "Total Price", key: "total", width: 16 },
-        { header: "Requester", key: "requester", width: 24 }
+        { header: "Dự án", key: "project", width: 28 },
+        { header: "SL đặt", key: "order_quantity", width: 12 },
+        { header: "Đơn giá", key: "unit_price", width: 16 },
+        { header: "Thành tiền", key: "total", width: 16 },
+        { header: "Người yêu cầu", key: "requester", width: 24 }
     ];
     items.forEach(item => sheet.addRow({
         ...item,
@@ -381,7 +381,7 @@ async function exportSelected() {
         window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (error) {
         console.error("Failed to export order items.", error);
-        utils.showError("Failed to export selected order items.");
+        utils.showError("Không thể xuất Excel các dòng đã chọn.");
     }
 }
 

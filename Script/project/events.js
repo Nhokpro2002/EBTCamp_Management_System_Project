@@ -92,7 +92,7 @@ async function handleSubmitFormCreateProject() {
     const formData = ui.getCreateProjectFormData();
 
     if (!service.isValidProjectForm(formData)) {
-        utils.showPopup("Error", projectPageMessage.requiredFields, "error");
+        utils.showPopup("Lỗi", projectPageMessage.requiredFields, "error");
         return;
     }
 

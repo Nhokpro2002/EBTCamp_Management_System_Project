@@ -27,7 +27,7 @@ export function renderIssue(issue, prepend = false) {
                         <div class="activity-header">
     <span class="activity-title issue-title">
         <i class="bi bi-exclamation-triangle-fill issue-icon"></i>
-        New Issue
+        Issue mới
     </span>
 </div>
 
@@ -40,7 +40,7 @@ export function renderIssue(issue, prepend = false) {
     )}
                             </strong>
 
-                            has been raised.
+                            vừa được báo cáo.
 
                         </div>
 
@@ -48,7 +48,7 @@ export function renderIssue(issue, prepend = false) {
                         <div class="activity-fields">
 
                             <span class="field-label">
-                                Type:
+                                Loại:
                             </span>
 
                             <span class="field-value issue-type">
@@ -74,12 +74,12 @@ export function renderIssue(issue, prepend = false) {
                                 •
                             </span>
                             <span class="field-label">
-                                Posted by:
+                                Người báo:
                             </span>
                             <span class="updated-by">
                                 ${escapeHtml(
         issue.reporter ??
-        "Unknown"
+        "Không rõ"
     )}
                             </span>
                         </div>
@@ -127,9 +127,13 @@ function formatTime(date) {
     });
 }
 
+// dd/mm/yyyy (luôn đủ 2 chữ số, VD 04/11/2026)
 function formatDate(date) {
-    return date.toLocaleDateString("vi-VN", {
-        timeZone: "Asia/Ho_Chi_Minh"
+    return date.toLocaleDateString("en-GB", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
     });
 }
 

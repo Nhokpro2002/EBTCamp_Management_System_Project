@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
+    <script src="../Script/auth/auth.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title>Hồ sơ cá nhân</title>
 
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -18,154 +19,203 @@
 <body>
     <div class="wrapper">
         <aside class="sidebar">
-            <div class="logo">
-                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
+            <div class="logo sidebar-brand">
+                <span class="brand-mark"><img src="../Image/LG-Symbol.png" alt=""></span><span class="brand-text"><strong>LG Display</strong><small>Assembly Room Management</small></span>
             </div>
 
             <ul class="menu">
-                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a></li>
-                <li><a href="inventory.html"><i class="bi bi-box"></i> Inventory</a></li>
-                <li><a href="order.html"><i class="bi bi-receipt"></i> Order</a></li>
-                <li><a href="project.html"><i class="bi bi-kanban"></i> Project</a></li>
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Tổng quan</a></li>
+                <li>
+                    <details class="menu-report menu-inventory">
+                        <summary><i class="bi bi-box"></i> Kho vật tư <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="stock-import.html"><i class="bi bi-box-arrow-in-down"></i> Nhập kho</a></li>
+                            <li><a href="stock-export.html"><i class="bi bi-box-arrow-up"></i> Xuất kho</a></li>
+                            <li><a href="inventory.html"><i class="bi bi-archive"></i> Lưu kho</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li>
                     <a href="notification.html">
                         <span class="notification-icon">
                             <i class="bi bi-bell"></i>
                             <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
                         </span>
-                        Notification
+                        Thông báo
                     </a>
                 </li>
                 <li>
                     <details class="menu-report">
-                        <summary><i class="bi bi-file-earmark-text"></i> Report <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <summary><i class="bi bi-file-earmark-text"></i> Báo cáo <i class="bi bi-chevron-down report-chevron"></i></summary>
                         <ul class="report-submenu">
-                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Daily Report</a></li>
-                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Báo cáo ngày</a></li>
+                            <li><span class="report-submenu-disabled">Báo cáo tuần <small>Sắp có</small></span></li>
                         </ul>
                     </details>
                 </li>
-                <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+                <li><a href="#"><i class="bi bi-gear"></i> Cài đặt</a></li>
             </ul>
 
-            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
-                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Mở hồ sơ cá nhân">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="Ảnh đại diện">
                 <span class="user-info">
-                    <h6 class="user-name">User</h6>
-                    <small class="user-role">Profile</small>
+                    <h6 class="user-name">Người dùng</h6>
+                    <small class="user-role">Hồ sơ</small>
                 </span>
             </a>
         </aside>
 
-        <main class="content">
-            <div class="user-page-heading">
-                <div>
-                    <h1>User Profile</h1>
-                    <p>View your account details and manage your profile security.</p>
-                </div>
-                <button type="button" class="btn btn-outline-secondary" id="back-button">
-                    <i class="bi bi-arrow-left me-1"></i> Back
-                </button>
-            </div>
+        <main class="content" id="profile-page">
 
-            <section class="card profile-card">
-                <div class="profile-banner">
-                    <div class="profile-identity">
-                        <img id="profile-avatar" class="avatar" src="../Image/LG-Symbol.png" alt="Profile avatar">
-                        <div>
-                            <h2 id="profile-name">User</h2>
-                            <p id="profile-subtitle">Account profile</p>
-                        </div>
+            <header class="topbar">
+                <p class="breadcrumb-text">Tài khoản <i class="bi bi-chevron-right"></i> Hồ sơ</p>
+                <h2>Hồ sơ của tôi</h2>
+                <p class="topbar-subtitle">Quản lý ảnh, chức vụ và mật khẩu của bạn.</p>
+            </header>
+
+            <!-- ===== Ảnh nền + avatar + tên ===== -->
+            <section class="profile-hero" aria-label="Thông tin hồ sơ">
+                <div class="profile-cover" id="profile-cover">
+                    <!-- Nền mờ lấp khoảng trống + ảnh chính hiện trọn vẹn (không cắt) -->
+                    <span class="cover-backdrop" aria-hidden="true"></span>
+                    <img class="cover-photo" id="cover-photo" alt="Ảnh bìa" hidden>
+                    <button type="button" class="cover-edit-btn" id="changeCoverBtn">
+                        <i class="bi bi-camera" aria-hidden="true"></i> Đổi ảnh bìa
+                    </button>
+                    <input type="file" id="cover-file" accept="image/*" hidden>
+                    <span class="upload-overlay" aria-hidden="true">
+                        <span class="spinner-border" aria-hidden="true"></span>
+                    </span>
+                </div>
+
+                <div class="profile-hero-body">
+                    <div class="profile-avatar-wrap" id="avatar-wrap">
+                        <img id="profile-avatar" class="profile-avatar" src="../Image/LG-Symbol.png" alt="Ảnh đại diện">
+                        <button type="button" class="avatar-edit-btn" id="changeAvatarBtn"
+                            aria-label="Đổi ảnh đại diện" title="Đổi ảnh đại diện">
+                            <i class="bi bi-camera-fill" aria-hidden="true"></i>
+                        </button>
+                        <input type="file" id="avatar-file" accept="image/*" hidden>
+                        <span class="upload-overlay" aria-hidden="true">
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        </span>
+                    </div>
+
+                    <div class="profile-hero-info">
+                        <h1 id="profile-name">Người dùng</h1>
+                        <p class="profile-meta">
+                            <span><i class="bi bi-envelope" aria-hidden="true"></i><span id="profile-email">—</span></span>
+                            <span><i class="bi bi-building" aria-hidden="true"></i><span id="profile-department">—</span></span>
+                        </p>
+                        <div class="position-chips" id="profile-position-chips"></div>
                     </div>
                 </div>
-
-                <div class="card-body profile-content">
-                    <section class="profile-section" aria-labelledby="basic-info-heading">
-                        <h3 class="section-title" id="basic-info-heading">
-                            <i class="bi bi-person-vcard me-2"></i>Basic Information
-                        </h3>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="info-label" for="employee-id">Employee ID</label>
-                                <input class="form-control" id="employee-id" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label" for="vh-code">VH Code</label>
-                                <input class="form-control" id="vh-code" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label" for="full-name">Full Name</label>
-                                <input class="form-control" id="full-name" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label" for="email">Email</label>
-                                <input class="form-control" id="email" type="email" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label" for="phone">Phone</label>
-                                <input class="form-control" id="phone" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label" for="department">Department</label>
-                                <input class="form-control" id="department" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="info-label" for="position">Position</label>
-                                <input class="form-control" id="position" readonly>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="profile-section" aria-labelledby="avatar-heading">
-                        <h3 class="section-title" id="avatar-heading">
-                            <i class="bi bi-image me-2"></i>Profile Picture
-                        </h3>
-                        <form id="avatar-form">
-                            <label class="info-label" for="avatar-file">Choose a new image</label>
-                            <div class="avatar-controls">
-                                <input class="form-control" id="avatar-file" type="file" accept="image/*">
-                                <button type="submit" class="btn btn-primary" id="save-avatar" disabled>
-                                    <i class="bi bi-upload me-1"></i>Upload Avatar
-                                </button>
-                            </div>
-                            <div class="form-text">Image files only, up to 5 MB.</div>
-                        </form>
-                    </section>
-
-                    <section class="profile-section" aria-labelledby="password-heading">
-                        <h3 class="section-title" id="password-heading">
-                            <i class="bi bi-shield-lock me-2"></i>Change Password
-                        </h3>
-                        <form id="password-form">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="info-label" for="current-password">Current Password</label>
-                                    <input class="form-control" id="current-password" type="password"
-                                        autocomplete="current-password" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="info-label" for="new-password">New Password</label>
-                                    <input class="form-control" id="new-password" type="password"
-                                        autocomplete="new-password" required minlength="8">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="info-label" for="confirm-password">Confirm New Password</label>
-                                    <input class="form-control" id="confirm-password" type="password"
-                                        autocomplete="new-password" required minlength="8">
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary" id="change-password">
-                                    <i class="bi bi-key me-1"></i>Update Password
-                                </button>
-                            </div>
-                        </form>
-                    </section>
-
-                    <p id="profile-status" class="profile-status" role="status" hidden></p>
-                </div>
+                <p class="image-hint">JPG, PNG hoặc WebP · tối đa 5 MB</p>
             </section>
+
+            <div class="profile-grid">
+
+                <!-- ===== Thông tin tài khoản (chỉ xem) ===== -->
+                <section class="profile-panel" aria-labelledby="about-heading">
+                    <header class="panel-header">
+                        <i class="bi bi-person-vcard" aria-hidden="true"></i>
+                        <h3 id="about-heading">Thông tin</h3>
+                    </header>
+                    <dl class="info-list">
+                        <div><dt>Mã nhân viên</dt><dd id="employee-id">—</dd></div>
+                        <div><dt>VH Code</dt><dd id="vh-code">—</dd></div>
+                        <div><dt>Họ tên</dt><dd id="full-name">—</dd></div>
+                        <div><dt>Email</dt><dd id="email">—</dd></div>
+                        <div><dt>Số điện thoại</dt><dd id="phone">—</dd></div>
+                        <div><dt>Bộ phận</dt><dd id="department">—</dd></div>
+                    </dl>
+                    <p class="panel-note">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                        Liên hệ quản trị viên để thay đổi các thông tin này.
+                    </p>
+                </section>
+
+                <div class="profile-stack">
+
+                    <!-- ===== Position ===== -->
+                    <section class="profile-panel" aria-labelledby="position-heading">
+                        <header class="panel-header">
+                            <i class="bi bi-briefcase" aria-hidden="true"></i>
+                            <h3 id="position-heading">Chức vụ</h3>
+                        </header>
+                        <form id="position-form">
+                            <p class="panel-hint" id="position-hint">
+                                Chọn một hoặc nhiều chức vụ. Thông báo issue được gửi dựa theo các chức vụ này.
+                            </p>
+                            <div class="position-options" id="position-options" role="group"
+                                aria-labelledby="position-heading"></div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-light" id="resetPositionBtn" disabled>Đặt lại</button>
+                                <button type="submit" class="btn btn-primary" id="savePositionBtn" disabled>
+                                    <i class="bi bi-check-lg" aria-hidden="true"></i> Lưu chức vụ
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- ===== Password ===== -->
+                    <section class="profile-panel" aria-labelledby="password-heading">
+                        <header class="panel-header">
+                            <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                            <h3 id="password-heading">Đổi mật khẩu</h3>
+                        </header>
+                        <form id="password-form" autocomplete="on">
+                            <div class="password-fields">
+                                <div class="password-field is-full">
+                                    <label class="form-label" for="current-password">Mật khẩu hiện tại</label>
+                                    <div class="password-input">
+                                        <input class="form-control" id="current-password" type="password"
+                                            autocomplete="current-password" required>
+                                        <button type="button" class="password-toggle" data-toggle-password="current-password"
+                                            aria-label="Hiện mật khẩu" aria-pressed="false">
+                                            <i class="bi bi-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="password-field">
+                                    <label class="form-label" for="new-password">Mật khẩu mới</label>
+                                    <div class="password-input">
+                                        <input class="form-control" id="new-password" type="password"
+                                            autocomplete="new-password" required maxlength="30">
+                                        <button type="button" class="password-toggle" data-toggle-password="new-password"
+                                            aria-label="Hiện mật khẩu" aria-pressed="false">
+                                            <i class="bi bi-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="password-field">
+                                    <label class="form-label" for="confirm-password">Xác nhận mật khẩu mới</label>
+                                    <div class="password-input">
+                                        <input class="form-control" id="confirm-password" type="password"
+                                            autocomplete="new-password" required maxlength="30">
+                                        <button type="button" class="password-toggle" data-toggle-password="confirm-password"
+                                            aria-label="Hiện mật khẩu" aria-pressed="false">
+                                            <i class="bi bi-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="password-rules" id="password-rules" aria-live="polite"></ul>
+
+                            <div class="form-actions">
+                                <span class="form-actions-note">Bạn sẽ được đăng xuất sau khi đổi mật khẩu.</span>
+                                <button type="submit" class="btn btn-primary" id="change-password" disabled>
+                                    <i class="bi bi-key" aria-hidden="true"></i> Cập nhật mật khẩu
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                </div>
+            </div>
         </main>
     </div>
 

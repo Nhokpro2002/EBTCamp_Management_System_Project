@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
+    <script src="../Script/auth/auth.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Activities - Notifications</title>
+    <title>Thông báo</title>
 
     <!-- Bootstrap & Icons -->
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -24,58 +25,50 @@
                 SIDEBAR (THANH MENU BÊN TRÁI)
         ========================================================= -->
         <aside class="sidebar">
-            <div class="logo">
-                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
+            <div class="logo sidebar-brand">
+                <span class="brand-mark"><img src="../Image/LG-Symbol.png" alt=""></span><span class="brand-text"><strong>LG Display</strong><small>Assembly Room Management</small></span>
             </div>
 
             <ul class="menu">
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Tổng quan</a></li>
                 <li>
-                    <a href="dashboard.html">
-                        <i class="bi bi-grid"></i> Dashboard
-                    </a>
+                    <details class="menu-report menu-inventory">
+                        <summary><i class="bi bi-box"></i> Kho vật tư <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="stock-import.html"><i class="bi bi-box-arrow-in-down"></i> Nhập kho</a></li>
+                            <li><a href="stock-export.html"><i class="bi bi-box-arrow-up"></i> Xuất kho</a></li>
+                            <li><a href="inventory.html"><i class="bi bi-archive"></i> Lưu kho</a></li>
+                        </ul>
+                    </details>
                 </li>
-                <li>
-                    <a href="inventory.html">
-                        <i class="bi bi-box"></i> Inventory
-                    </a>
-                </li>
-                <li>
-                    <a href="order.html">
-                        <i class="bi bi-receipt"></i> Order
-                    </a>
-                </li>
-                <li>
-                    <a href="project.html">
-                        <i class="bi bi-kanban"></i> Project
-                    </a>
-                </li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li class="active">
                     <a href="notification.html">
-                        <span class="notification-icon" style="position: relative; display: inline-block;">
+                        <span class="notification-icon">
                             <i class="bi bi-bell"></i>
-                            <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none"
-                                style="position: absolute; top: -6px; right: -8px; font-size: 0.75rem; padding: 0.25em 0.45em; font-weight: bold;">0</span>
+                            <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
                         </span>
-                        Notification
+                        Thông báo
                     </a>
                 </li>
                 <li>
                     <details class="menu-report">
-                        <summary><i class="bi bi-file-earmark-text"></i> Report <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <summary><i class="bi bi-file-earmark-text"></i> Báo cáo <i class="bi bi-chevron-down report-chevron"></i></summary>
                         <ul class="report-submenu">
-                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Daily Report</a></li>
-                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Báo cáo ngày</a></li>
+                            <li><span class="report-submenu-disabled">Báo cáo tuần <small>Sắp có</small></span></li>
                         </ul>
                     </details>
                 </li>
-                <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+                <li><a href="#"><i class="bi bi-gear"></i> Cài đặt</a></li>
             </ul>
 
-            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
-                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Mở hồ sơ cá nhân">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="Ảnh đại diện">
                 <span class="user-info">
-                    <h6 class="user-name">User</h6>
-                    <small class="user-role">Profile</small>
+                    <h6 class="user-name">Người dùng</h6>
+                    <small class="user-role">Hồ sơ</small>
                 </span>
             </a>
         </aside>
@@ -88,25 +81,25 @@
             <!-- Đầu trang: Tiêu đề và Thanh công cụ chức năng -->
             <div class="content-header">
                 <div>
-                    <h2 class="page-title">Notifications</h2>
-                    <p class="page-subtitle">Issues assigned to your roles</p>
+                    <h2 class="page-title">Thông báo</h2>
+                    <p class="page-subtitle">Các issue liên quan đến chức vụ của bạn</p>
                 </div>
                 <div class="header-tools">
                     <div class="search-box">
                         <i class="bi bi-search search-icon"></i>
                         <input type="text" class="form-control" id="search-notifications"
-                            placeholder="Search notifications..." aria-label="Search notifications">
+                            placeholder="Tìm thông báo..." aria-label="Tìm thông báo">
                         <span class="search-shortcut">/</span>
                     </div>
 
-                    <select id="projectSelect" class="project-select" aria-label="Filter by project">
-                        <option value="" selected>All projects</option>
+                    <select id="projectSelect" class="project-select" aria-label="Lọc theo dự án">
+                        <option value="" selected>Tất cả dự án</option>
                     </select>
 
                     <!-- Hộp chọn ngày công cụ ở góc cuối cùng -->
                     <div class="date-picker-box">
                         <i class="bi bi-calendar3 calendar-icon"></i>
-                        <input type="date" id="filter-date" class="form-control" aria-label="Filter activities by date">
+                        <input type="date" id="filter-date" class="form-control" aria-label="Lọc theo ngày">
                     </div>
                 </div>
             </div>
@@ -116,9 +109,9 @@
             <div class="activity-panel">
                 <!-- Tiêu đề cột -->
                 <div class="panel-columns-header">
-                    <div class="col-activity">Activity</div>
-                    <div class="col-related">Related To</div>
-                    <div class="col-time">Time</div>
+                    <div class="col-activity">Nội dung</div>
+                    <div class="col-related">Dự án</div>
+                    <div class="col-time">Thời gian</div>
                 </div>
 
                 <!-- Danh sách chứa các thẻ thông báo render từ JS -->
@@ -128,19 +121,19 @@
 
             </div>
 
-            <div class="activity-pagination" aria-label="Activity pagination">
+            <div class="activity-pagination" aria-label="Phân trang">
                 <label class="page-size-control" for="page-size">
-                    Rows per page
+                    Số dòng mỗi trang
                     <select id="page-size" class="form-select form-select-sm">
                         <option value="10" selected>10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
                     </select>
                 </label>
-                <span id="pagination-info" aria-live="polite">0–0 of 0</span>
+                <span id="pagination-info" aria-live="polite">0–0 / 0</span>
                 <div class="pagination-buttons">
-                    <button type="button" id="previous-page" class="pagination-button" disabled>Previous</button>
-                    <button type="button" id="next-page" class="pagination-button" disabled>Next</button>
+                    <button type="button" id="previous-page" class="pagination-button" disabled>Trước</button>
+                    <button type="button" id="next-page" class="pagination-button" disabled>Sau</button>
                 </div>
             </div>
 

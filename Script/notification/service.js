@@ -1,45 +1,25 @@
 import * as api from "../services/generic.api.js";
+import { getUserRoles } from "../services/issue-roles.js";
+
+// Quy tắc type issue → position nằm ở Script/services/issue-roles.js (dùng chung với Workflow)
+export { getIssueTypesForRoles, isIssueForRoles } from "../services/issue-roles.js";
 
 // =====================================================
 // COLLECTIONS
 // =====================================================
 const COLLECTION_PROJECTS = "Projects";
 
-// =====================================================
-// ISSUE → ROLE MAPPING
-// Issue chỉ hiện trong Notification của user có role tương ứng
-// =====================================================
-const ISSUE_TYPE_ROLES = {
-    "electric": ["Electric"],
-    "mechanical": ["Mechanical"],
-    "program": ["Program"],
-    "robot": ["Robot"],
-    // "Purchasing Specialist" là tên role cũ, giữ lại cho user đã đăng ký trước đó
-    "missing material": ["Purchasing", "Purchasing Specialist"]
-};
-
 /**
- * Role (position) của user đang đăng nhập, lấy từ localStorage.
+ * Role (position) của user đang đăng nhập, lấy từ localStorage (viết thường).
+ * Issue chỉ hiện trong Notification của user có role tương ứng.
  * @returns {string[]}
  */
 export function getCurrentUserRoles() {
     try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const roles = Array.isArray(user?.position)
-            ? user.position
-            : String(user?.position || "").split(",");
-        return roles.map(role => role.trim().toLowerCase()).filter(Boolean);
+        return getUserRoles(JSON.parse(localStorage.getItem("user")));
     } catch {
         return [];
     }
-}
-
-/**
- * User có role phù hợp với type của issue không.
- */
-export function isIssueForRoles(issue, userRoles) {
-    const targetRoles = ISSUE_TYPE_ROLES[String(issue?.type || "").trim().toLowerCase()] || [];
-    return targetRoles.some(role => userRoles.includes(role.toLowerCase()));
 }
 
 export async function loadProjects() {
@@ -69,7 +49,7 @@ export async function loadProjects() {
         ];
 
         projectSelect.innerHTML = `
-            <option value="" selected>All projects</option>
+            <option value="" selected>Tất cả dự án</option>
         `;
 
         projects.forEach(project => {
@@ -84,7 +64,7 @@ export async function loadProjects() {
     } catch (error) {
         console.error("Failed to load projects:", error);
         projectSelect.replaceChildren(
-            new Option("Unable to load projects", "")
+            new Option("Không tải được danh sách dự án", "")
         );
         projectSelect.disabled = true;
         throw error;

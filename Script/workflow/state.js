@@ -17,6 +17,8 @@ export const projectData = { // mapping from stages and tasks
 }
 
 export const issueData = { // mapping from stages and tasks
-    issue: []
+    issue: [],
+    // Toàn bộ user — chọn người xử lý issue theo position
+    users: []
 }
 

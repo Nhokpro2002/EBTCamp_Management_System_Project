@@ -75,7 +75,7 @@ export async function exportExcel() {
     }
 
     if (!window.ExcelJS) {
-        utils.showError("Excel export is unavailable. Please reload the page.");
+        utils.showError("Chưa thể xuất Excel. Vui lòng tải lại trang.");
         return;
     }
 
@@ -85,24 +85,26 @@ export async function exportExcel() {
         orderDetailPageData.userList.map(user => [user.id, user.employee_name])
     );
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet("Order");
+    const sheet = workbook.addWorksheet("Đặt hàng");
 
     sheet.columns = [
-        { header: "Name", key: "name", width: 24 },
+        { header: "Tên vật tư", key: "name", width: 24 },
         { header: "Model", key: "model", width: 20 },
         { header: "XCode/QCode", key: "code", width: 20 },
-        { header: "Project", key: "project", width: 28 },
-        { header: "Stock", key: "stock", width: 12 },
-        { header: "Order", key: "order_quantity", width: 12 },
-        { header: "Unit Price", key: "unit_price", width: 16 },
-        { header: "Request Date", key: "request_date", width: 18 },
-        { header: "Requester", key: "requester", width: 24 }
+        { header: "Dự án", key: "project", width: 28 },
+        { header: "Tồn kho", key: "stock", width: 12 },
+        { header: "SL đặt", key: "order_quantity", width: 12 },
+        { header: "Đơn giá", key: "unit_price", width: 16 },
+        { header: "Ngày yêu cầu", key: "request_date", width: 18 },
+        { header: "Người yêu cầu", key: "requester", width: 24 }
     ];
 
     data.forEach(item => {
         sheet.addRow({
             ...item,
             project: projectName,
+            // File Excel: ngày dạng dd/mm/yyyy (database vẫn lưu yyyy-mm-dd)
+            request_date: utils.formatDateDisplay(item.request_date),
             requester: requesterMap.get(item.requester) || ""
         });
     });
@@ -137,7 +139,7 @@ export async function exportExcel() {
         window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (error) {
         console.error("Failed to export order items.", error);
-        utils.showError("Failed to export the selected order items.");
+        utils.showError("Không thể xuất Excel các dòng đã chọn.");
     }
 }
 
@@ -146,9 +148,9 @@ export async function loadProjectList() {
     orderDetailPageData.projectList = result;
 
     const projectFilter = document.getElementById("projectFilter");
-    projectFilter.replaceChildren(new Option("Select Project", ""));
+    projectFilter.replaceChildren(new Option("Chọn dự án", ""));
 
     result.forEach(project => {
-        projectFilter.add(new Option(project.name || "Untitled project", project.id));
+        projectFilter.add(new Option(project.name || "Dự án chưa đặt tên", project.id));
     });
 }

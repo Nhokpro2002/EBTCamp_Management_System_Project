@@ -70,7 +70,7 @@ async function loadSelectedProjectItems() {
         ui.applyFilter();
     } catch (error) {
         if (loadVersion !== projectLoadVersion) return;
-        console.error("Failed to load order items.", error);
+        console.error("Không tải được danh sách đặt hàng.", error);
         utils.showError(orderPageMessage.loadOrderFailed);
     }
 }

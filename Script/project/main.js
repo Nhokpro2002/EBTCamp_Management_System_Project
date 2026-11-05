@@ -10,30 +10,10 @@ import { projectPageMessage } from "./messages.js";
 // =========================
 events.bindEvents();
 
+// Chặn truy cập khi chưa đăng nhập: Script/auth/auth.js (nạp trong <head>)
 $(document).ready(function () {
-    if (!checkAuthentication()) return;
-
     initProjectPage();
 });
-
-// =========================
-// AUTH
-// =========================
-function checkAuthentication() {
-    const token = localStorage.getItem("token");
-
-    if (!token || !token.trim()) {
-        utils.showPopup("Warning", "You must login", "warning")
-            .then(() => {
-                // Đường dẫn tương đối: chạy được ở cả máy test lẫn server thật
-                window.location.href = "login.html";
-            });
-
-        return false;
-    }
-
-    return true;
-}
 
 // =========================
 // INIT DATA

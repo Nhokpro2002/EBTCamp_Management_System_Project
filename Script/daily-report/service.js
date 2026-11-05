@@ -12,6 +12,21 @@ const PAGE_SIZE = 100;
 const MAX_EVIDENCE_SIZE = 5 * 1024 * 1024;
 export const ISSUE_TYPES = ["Electric", "Mechanical", "Missing Material", "Program", "Robot"];
 
+// Role được phép sửa báo cáo đã lưu (tên đúng như trong field position của Users)
+const REPORT_EDITOR_ROLE = "Part Leader";
+
+/**
+ * User có quyền sửa báo cáo ngày đã lưu không (role Part Leader).
+ * position có thể là mảng (multi select) hoặc chuỗi "A, B".
+ */
+export function canEditSubmittedReport(user) {
+    const position = user?.position;
+    const roles = Array.isArray(position) ? position : String(position || "").split(",");
+    return roles.some(role =>
+        String(role).trim().toLowerCase() === REPORT_EDITOR_ROLE.toLowerCase()
+    );
+}
+
 
 export async function saveProjectIssue(issue) {
     const { tempID, taskID, ...data } = issue;
@@ -41,8 +56,29 @@ export async function loadProjects() {
     ];
 }
 
+/**
+ * Toàn bộ user (tất cả các trang) — dùng cho ô người làm và ô chọn người báo cáo của Part Leader.
+ */
 export async function loadUsers() {
-    return api.getRecords(COLLECTION_USERS);
+    const users = [];
+    let page = 1;
+    let totalPages = 1;
+
+    do {
+        const result = await api.loadInventoryItemEachPage(COLLECTION_USERS, page, 200);
+        users.push(...result.items);
+        totalPages = result.totalPages || 1;
+        page++;
+    } while (page <= totalPages);
+
+    return users;
+}
+
+/**
+ * Tên người báo cáo — giá trị lưu ở field `reporter` của Reports / TaskDailyReports.
+ */
+export function getReporterName(user) {
+    return user?.employee_name || user?.name || user?.email || "";
 }
 
 export async function loadProjectTasks(projectID) {
@@ -111,14 +147,19 @@ export function getWorkerNames(workerIDs, users) {
         .filter(Boolean);
 }
 
-export async function loadReportsForDate(workDate, reporter) {
-    const reportRecords = await getAllFilteredRecords(
+/**
+ * Mọi báo cáo (Reports) của một ngày, của bất kỳ người báo cáo nào,
+ * kèm các báo cáo task (TaskDailyReports) bên trong.
+ * Mỗi dự án mỗi ngày chỉ có một báo cáo chung → phải xét báo cáo của tất cả mọi người.
+ */
+export async function loadReportsForDate(workDate) {
+    // [ngày D, ngày D+1) — đúng cho cả field kiểu text ("2026-11-02") lẫn kiểu date ("2026-11-02 00:00:00.000Z")
+    const reportRecords = await getAllRecordsByFilter(
         COLLECTION_REPORTS,
-        "reporter",
-        reporter
+        `report_date >= ${api.quoteFilterValue(workDate)} && ` +
+        `report_date < ${api.quoteFilterValue(getNextDate(workDate))}`
     );
     const matchingReports = reportRecords.filter(report =>
-        report.reporter === reporter &&
         getDateOnly(report.report_date) === workDate
     );
     const reportGroups = await Promise.all(matchingReports.map(async reportRecord => {
@@ -133,7 +174,7 @@ export async function loadReportsForDate(workDate, reporter) {
             );
             const taskDailyReport = linkedRecords[0];
             if (!taskDailyReport) {
-                throw new Error(`Task daily report "${taskDailyReportID}" was not found.`);
+                throw new Error(`Không tìm thấy báo cáo task "${taskDailyReportID}".`);
             }
 
             return {
@@ -155,6 +196,19 @@ export async function loadReportsForDate(workDate, reporter) {
         reportRecords: reportGroups.map(group => group.reportRecord),
         taskReports: reportGroups.flatMap(group => group.taskReports)
     };
+}
+
+/**
+ * "2026-11-02" → "2026-11-03"
+ */
+function getNextDate(workDate) {
+    const [year, month, day] = workDate.split("-").map(Number);
+    const next = new Date(year, month - 1, day + 1);
+    return [
+        next.getFullYear(),
+        String(next.getMonth() + 1).padStart(2, "0"),
+        String(next.getDate()).padStart(2, "0")
+    ].join("-");
 }
 
 function getDateOnly(value) {
@@ -206,9 +260,12 @@ export async function saveTaskReport(taskReport) {
     return taskDailyReport;
 }
 
+/**
+ * Tạo (lần nộp đầu) hoặc cập nhật (Part Leader sửa) bản ghi Reports của dự án + ngày.
+ * Không xóa bản ghi Reports nào khác: chúng có thể là báo cáo của dự án khác cùng ngày.
+ */
 export async function saveDailyReport({
     reportRecordID,
-    duplicateReportRecordIDs,
     taskDailyReportIDs,
     workDate,
     reporter
@@ -218,23 +275,33 @@ export async function saveDailyReport({
         report_date: workDate,
         reporter
     };
-    const reportRecord = reportRecordID
-        ? await api.updateRecord(COLLECTION_REPORTS, reportRecordID, reportData)
-        : await api.createRecord(COLLECTION_REPORTS, reportData);
+    return reportRecordID
+        ? api.updateRecord(COLLECTION_REPORTS, reportRecordID, reportData)
+        : api.createRecord(COLLECTION_REPORTS, reportData);
+}
 
-    for (const duplicateID of duplicateReportRecordIDs) {
-        if (String(duplicateID) !== String(reportRecord.id)) {
-            await api.deleteRecord(COLLECTION_REPORTS, duplicateID);
-        }
-    }
-
-    return reportRecord;
+/**
+ * Các cột bắt buộc còn thiếu của một task trong báo cáo.
+ * @returns {{ worker: boolean, detail: boolean }} true = đang thiếu
+ */
+export function getMissingRequiredFields(taskReport) {
+    return {
+        worker: !(taskReport.workerIDs || []).length,
+        detail: !String(taskReport.detail || "").trim()
+    };
 }
 
 export function validateTaskReport(taskReport) {
-    const taskName = taskReport.task.name || taskReport.task.title || "this task";
+    const taskName = taskReport.task.name || taskReport.task.title || "task này";
     if (!["Not started", "Processing", "Done"].includes(taskReport.status)) {
-        throw new Error(`Choose a valid status for "${taskName}".`);
+        throw new Error(`Vui lòng chọn trạng thái hợp lệ cho "${taskName}".`);
+    }
+
+    // Người làm và Chi tiết là bắt buộc
+    const missing = getMissingRequiredFields(taskReport);
+    if (missing.worker || missing.detail) {
+        const fields = [missing.worker && "Người làm", missing.detail && "Chi tiết"].filter(Boolean);
+        throw new Error(`Vui lòng nhập ${fields.join(" và ")} cho "${taskName}".`);
     }
 
     const files = taskReport.files || [];
@@ -242,14 +309,14 @@ export function validateTaskReport(taskReport) {
         file => file.size > MAX_EVIDENCE_SIZE
     );
     if (oversizedFile) {
-        throw new Error(`${oversizedFile.name} exceeds the 5 MiB upload limit.`);
+        throw new Error(`${oversizedFile.name} vượt quá giới hạn 5 MiB.`);
     }
 
     const nonImage = files.find(
         file => !file.type.startsWith("image/")
     );
     if (nonImage) {
-        throw new Error(`${nonImage.name} is not an image file.`);
+        throw new Error(`${nonImage.name} không phải là file ảnh.`);
     }
 
     if (taskReport.status === "Done") {
@@ -257,7 +324,7 @@ export function validateTaskReport(taskReport) {
             files.length > 0;
         if (!hasEvidence) {
             throw new Error(
-                `Upload at least one image as evidence before marking "${taskName}" as Done.`
+                `Hãy tải lên ít nhất một ảnh minh chứng trước khi chuyển "${taskName}" sang Done.`
             );
         }
     }
@@ -315,6 +382,20 @@ export function getRelationIDs(value) {
         .map(getRelationID)
         .filter(Boolean)
         .map(String);
+}
+
+async function getAllRecordsByFilter(collection, filter) {
+    const records = [];
+    let page = 1;
+
+    while (true) {
+        const result = await api.getRecordsByFilter(collection, filter, page, PAGE_SIZE);
+        records.push(...result);
+        if (result.length < PAGE_SIZE) {
+            return records;
+        }
+        page += 1;
+    }
 }
 
 export async function getAllFilteredRecords(collection, field, value) {

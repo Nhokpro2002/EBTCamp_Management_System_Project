@@ -60,7 +60,7 @@ export function initOrderItemEvents() {
 
         const confirmation = await Swal.fire({
             icon: "warning",
-            title: "Delete selected items?",
+            title: "Xóa các dòng đã chọn?",
             text: orderPageMessage.deleteConfirm,
             showCancelButton: true,
             confirmButtonText: "Delete",

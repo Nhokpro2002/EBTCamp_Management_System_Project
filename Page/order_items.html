@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
+    <script src="../Script/auth/auth.js"></script>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Order Detail</title>
+     <title>Chi tiết đặt hàng</title>
 
      <!-- Bootstrap -->
      <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -40,25 +41,25 @@
                                              <i class="bi bi-search"></i>
                                         </span>
                                         <input type="text" class="form-control" id="searchInput"
-                                             placeholder="Search item...">
+                                             placeholder="Tìm vật tư...">
                                    </div>
 
                                    <button class="btn btn-outline-secondary" data-bs-toggle="collapse"
                                         data-bs-target="#filterPanel">
                                         <i class="bi bi-funnel"></i>
-                                        Filter
+                                        Bộ lọc
                                         <i class="bi bi-chevron-down ms-1"></i>
                                    </button>
 
                               </div>
 
-                              <select class="form-select" id="projectFilter" aria-label="Select project">
-                                   <option value="">Select Project</option>
+                              <select class="form-select" id="projectFilter" aria-label="Chọn dự án">
+                                   <option value="">Chọn dự án</option>
                               </select>
 
                               <button class="btn btn-outline-secondary ms-auto" id="back-project-page-button">
                                    <i class="bi bi-arrow-left"></i>
-                                   Back
+                                   Quay lại
                               </button>
                          </div>
 
@@ -68,9 +69,9 @@
                                    <div class="row align-items-end g-3">
                                         <!-- Danh mục -->
                                         <div class="col">
-                                             <label class="form-label">Category</label>
+                                             <label class="form-label">Nhóm</label>
                                              <select class="form-select" id="typeFilter">
-                                                  <option value="">All Category</option>
+                                                  <option value="">Tất cả nhóm</option>
                                                   <option>PLC</option>
                                                   <option>Power 24V</option>
                                                   <option>Relay</option>
@@ -81,9 +82,9 @@
                                         </div>
                                         <!-- Thương hiệu -->
                                         <div class="col">
-                                             <label class="form-label">Brand</label>
+                                             <label class="form-label">Hãng</label>
                                              <select class="form-select" id="brandFilter">
-                                                  <option value="">All Brand</option>
+                                                  <option value="">Tất cả hãng</option>
                                                   <option>LS</option>
                                                   <option>Mitsubishi</option>
                                                   <option>Chint</option>
@@ -95,7 +96,7 @@
                                         <div class="col-auto">
                                              <button class="btn btn-outline-secondary px-4" id="resetFilters" type="button" style="height:46px;">
                                                   <i class="bi bi-arrow-counterclockwise"></i>
-                                                  Reset
+                                                  Đặt lại
                                              </button>
                                         </div>
                                    </div>
@@ -116,15 +117,15 @@
      <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
           <button id="btnExport" class="btn btn-success shadow-sm" disabled>
                <i class="bi bi-file-earmark-excel me-2"></i>
-               Export Excel
+               Xuất Excel
           </button>
           <button id="btnSave" class="btn btn-primary shadow-sm" disabled>
                <i class="bi bi-floppy me-2"></i>
-               Save
+               Lưu
           </button>
           <button id="btnDelete" class="btn btn-danger shadow-sm" disabled style="margin-right: 10px;">
                <i class="bi bi-trash me-2"></i>
-               Delete
+               Xóa
           </button>
      </div>
 
@@ -137,16 +138,16 @@
                               <thead>
                                    <tr>
                                         <th style="width: 40px;" class="text-center">
-                                             <input type="checkbox" id="checkAll" class="form-check-input big-checkbox" aria-label="Select all order items">
+                                             <input type="checkbox" id="checkAll" class="form-check-input big-checkbox" aria-label="Chọn tất cả dòng">
                                         </th>
-                                        <th>Name</th>
+                                        <th>Tên vật tư</th>
                                         <th>Model</th>
                                         <th>XCode/QCode</th>
-                                        <th>Project</th>
-                                        <th>Order</th>
-                                        <th>Unit Price</th>
-                                        <th>Total Price</th>
-                                        <th>Requester</th>
+                                        <th>Dự án</th>
+                                        <th>SL đặt</th>
+                                        <th>Đơn giá</th>
+                                        <th>Thành tiền</th>
+                                        <th>Người yêu cầu</th>
                                    </tr>
                               </thead>
 

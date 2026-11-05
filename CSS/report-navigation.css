@@ -1,3 +1,204 @@
+/* ==========================================================
+   LOGO CÔNG TY TRÊN SIDEBAR (dùng chung cho mọi trang)
+   Biểu tượng LG tròn + chữ trắng, hợp với nền sidebar tối.
+   Selector "aside .logo.sidebar-brand" để ghi đè .logo riêng của từng trang.
+========================================================== */
+aside .logo.sidebar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    min-height: 76px;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
+    overflow: hidden;
+    font-size: inherit;
+    font-weight: inherit;
+    color: #fff;
+}
+
+aside .logo.sidebar-brand .brand-mark {
+    position: relative;
+    display: block;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .08), 0 4px 12px rgba(165, 0, 52, .35);
+}
+
+/* Ảnh gốc có nền trắng hai bên: cắt vuông giữa ảnh + phóng nhẹ để chỉ còn hình tròn đỏ */
+aside .logo.sidebar-brand .brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    object-fit: cover;
+    transform: scale(1.04);
+}
+
+aside .logo.sidebar-brand .brand-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.2;
+}
+
+aside .logo.sidebar-brand .brand-text strong {
+    color: #fff;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    white-space: nowrap;
+}
+
+aside .logo.sidebar-brand .brand-text small {
+    margin-top: 2px;
+    overflow: hidden;
+    color: #94a3b8;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==========================================================
+   SỐ THÔNG BÁO MỚI trên mục "Thông báo" (Script/notification/badge.js)
+   Đặt ở file dùng chung để trang nào cũng hiển thị giống nhau
+========================================================== */
+.menu .notification-icon {
+    position: relative;
+    display: inline-flex;
+}
+
+.menu .notification-icon #badge-count {
+    position: absolute;
+    top: -7px;
+    right: -10px;
+    min-width: 18px;
+    padding: .2em .4em;
+    font-size: .68rem;
+    font-weight: 700;
+    line-height: 1.1;
+    box-shadow: 0 0 0 2px #1f2937;
+}
+
+/* ==========================================================
+   MENU AVATAR (View profile / Logout) — tạo bởi Script/auth/auth.js
+========================================================== */
+.user-menu-wrap {
+    position: relative;
+}
+
+/* Nút avatar thay cho thẻ <a> cũ: giữ style .sidebar-user của từng trang */
+button.sidebar-user-button {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    width: stretch;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+button.sidebar-user-button:hover,
+button.sidebar-user-button:focus-visible,
+button.sidebar-user-button[aria-expanded="true"] {
+    background: rgba(255, 255, 255, .08);
+    color: inherit;
+}
+
+button.sidebar-user-button:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.sidebar-user-button .user-info {
+    min-width: 0;
+}
+
+.sidebar-user-button .user-name,
+.sidebar-user-button .user-role {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-user-caret {
+    margin-left: auto;
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+/* Menu bật lên phía trên khối avatar */
+.user-menu {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: calc(100% - 8px);
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 12px;
+    background: #1e293b;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+
+.user-menu[hidden] {
+    display: none;
+}
+
+.user-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.user-menu-item i {
+    font-size: 16px;
+}
+
+.user-menu-item:hover,
+.user-menu-item:focus-visible {
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+    outline: none;
+}
+
+.user-menu-item.is-danger {
+    color: #fca5a5;
+}
+
+.user-menu-item.is-danger:hover,
+.user-menu-item.is-danger:focus-visible {
+    background: rgba(220, 38, 38, .2);
+    color: #fecaca;
+}
+
 .menu-report {
     margin-bottom: 4px;
 }

@@ -103,7 +103,7 @@ function renderProjectCard(project) {
                         data-id="${project.id}"
                     >
                         <i class="bi bi-eye"></i>
-                        Progress
+                        Tiến độ
                     </button>
 
                     <button
@@ -112,7 +112,7 @@ function renderProjectCard(project) {
                         data-id="${project.id}"
                     >
                         <i class="bi bi-eye"></i>
-                        Material
+                        Vật tư
                     </button>
 
                 </div>
@@ -217,7 +217,7 @@ function renderPicSelect(users) {
             plugins: ['remove_button'],
             hideSelected: true,
             create: false,
-            placeholder: "Select PIC",
+            placeholder: "Chọn người phụ trách",
         });
         return;
     }

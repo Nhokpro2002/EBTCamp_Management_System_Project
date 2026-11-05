@@ -1,6 +1,20 @@
-/* =========================
-   Global
-========================= */
+/* ==========================================================
+   GLOBAL
+========================================================== */
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --text: #1f2937;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --bg: #f5f7fb;
+    --card: #fff;
+    --border-color: #e2e8f0;
+}
 
 * {
     margin: 0;
@@ -8,800 +22,723 @@
     box-sizing: border-box;
 }
 
-
 body {
-
-    background: #f5f7fb;
-
-    font-family:
-        "Times New Roman",
-        Times,
-        serif;
-
-    color: #1f2937;
-
+    background: var(--bg);
+    font-family: "Times New Roman", Times, serif;
+    color: var(--text);
 }
 
 
+/* ==========================================================
+   LAYOUT
+========================================================== */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
 
-/* =========================
-   Sidebar
-========================= */
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 40px;
+    background: var(--bg);
+}
 
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
 
 .sidebar {
-
-    position: fixed;
-
+    width: 232px;
+    background: linear-gradient(180deg, #111827, #1f2937);
+    border-right: 1px solid rgba(255, 255, 255, .12);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
     top: 0;
-    left: 0;
-
-    width: 260px;
-
     height: 100vh;
-
-    background:
-        linear-gradient(180deg,
-            #111827,
-            #1f2937);
-
-    color: white;
-
-    padding: 25px 18px;
-
-    z-index: 1000;
-
+    z-index: 100;
+    color: #ffffff;
 }
-
-
-
-/* Logo */
 
 .logo {
-
+    padding: 20px;
     display: flex;
-
     align-items: center;
-
-    gap: 12px;
-
-    font-size: 24px;
-
-    font-weight: 700;
-
-    margin-bottom: 40px;
-
+    justify-content: flex-start;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
 }
 
-
-.logo i {
-
-    font-size: 32px;
-
-    color: #60a5fa;
-
+.logo img {
+    height: 55px;
+    width: auto;
+    object-fit: contain;
 }
-
-
-
-
-/* Menu */
-
 
 .menu {
-
     list-style: none;
-
-    padding: 0;
-
+    padding: 12px 16px;
+    flex: 1;
 }
-
-
 
 .menu li {
-
-    margin-bottom: 8px;
-
+    margin-bottom: 4px;
 }
-
-
 
 .menu a {
-
     display: flex;
-
     align-items: center;
-
-    gap: 15px;
-
-    padding: 13px 15px;
-
-    color: #cbd5e1;
-
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
     text-decoration: none;
-
-    border-radius: 12px;
-
-    transition: .25s;
-
+    color: #cbd5e1;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
 }
-
-
 
 .menu a i {
-
-    font-size: 20px;
-
+    font-size: 18px;
 }
-
-
 
 .menu a:hover {
-
-    background:
-        rgba(255, 255, 255, .1);
-
-    color: white;
-
-    transform:
-        translateX(5px);
-
+    background: rgba(255, 255, 255, .1);
+    color: #ffffff;
 }
 
-
-
+/* Menu active chuyển nền đỏ giống ảnh */
 .menu .active a {
-
-    background: #2563eb;
-
-    color: white;
-
+    background: var(--primary);
+    color: #ffffff;
+    font-weight: 600;
 }
 
-
-
-/* =========================
-   Main
-========================= */
-
-
-.main {
-
-    margin-left: 260px;
-
-    padding: 30px;
-
-}
-
-
-
-/* =========================
-   Topbar
-========================= */
-
-
-.topbar {
-
+/* Khối thông tin tài khoản dưới góc trái */
+.sidebar-user {
+    padding: 16px;
+    margin: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .12);
     display: flex;
-
-    justify-content: space-between;
-
     align-items: center;
+    gap: 12px;
+}
 
-    margin-bottom: 30px;
+.sidebar-user-link {
+    color: inherit;
+    text-decoration: none;
+}
 
+.sidebar-user-link:hover,
+.sidebar-user-link:focus-visible {
+    color: inherit;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 10px;
+}
+
+.sidebar-user img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+    color: #ffffff;
+}
+
+.user-role {
+    font-size: 11px;
+    color: #cbd5e1;
+}
+
+.notification-icon {
+    position: relative;
+    display: inline-flex;
+}
+
+.notification-icon #badge-count {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    font-size: .7rem;
+    padding: .25em .45em;
+    font-weight: 700;
 }
 
 
+/* ==========================================================
+   CONTENT (vùng bên phải sidebar) — cùng kiểu với trang Inventory
+========================================================== */
+.content {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+.topbar {
+    padding: 4px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+}
 
 .topbar h2 {
-
+    font-size: 28px;
     font-weight: 700;
+    letter-spacing: -.02em;
+    color: #0f172a;
+    margin: 2px 0 4px;
+}
 
-    margin-bottom: 5px;
+.breadcrumb-text {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 13px;
+    font-weight: 500;
+}
 
+.topbar-subtitle {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 14px;
 }
 
 
-
-.topbar small {
-
-    color: #64748b;
-
+/* ==========================================================
+   STAT CARDS
+========================================================== */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
 }
-
-
-
-/* =========================
-   Statistic Cards
-========================= */
-
 
 .stat-card {
-
-
-    border: none;
-
-    border-radius: 20px;
-
-    background: white;
-
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, .06);
-
-
-    transition: .3s;
-
-
-}
-
-
-
-.stat-card:hover {
-
-
-    transform:
-        translateY(-8px);
-
-
-    box-shadow:
-        0 20px 40px rgba(0, 0, 0, .12);
-
-
-}
-
-
-
-.stat-card .card-body {
-
-
     display: flex;
-
     align-items: center;
-
-    gap: 20px;
-
-    padding: 25px;
-
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
 }
 
-
-
-.stat-card h6 {
-
-    color: #64748b;
-
-    font-size: 14px;
-
-    margin-bottom: 8px;
-
-}
-
-
-
-.stat-card h2 {
-
-
-    font-size: 32px;
-
-    font-weight: 700;
-
-    margin: 0;
-
-}
-
-
-
-.card-icon {
-
-
-    width: 65px;
-
-    height: 65px;
-
-
-    border-radius: 18px;
-
-
-    display: flex;
-
+.stat-icon {
+    display: inline-flex;
     align-items: center;
-
     justify-content: center;
-
-
-    color: white;
-
-
-    font-size: 30px;
-
-
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 20px;
 }
 
-
-
-.bg-primary {
-
-    background:
-        linear-gradient(135deg,
-            #2563eb,
-            #60a5fa) !important;
-
-}
-
-
-
-.bg-success {
-
-    background:
-        linear-gradient(135deg,
-            #059669,
-            #34d399) !important;
-
-}
-
-
-
-.bg-warning {
-
-    background:
-        linear-gradient(135deg,
-            #d97706,
-            #fbbf24) !important;
-
-}
-
-
-
-.bg-danger {
-
-    background:
-        linear-gradient(135deg,
-            #dc2626,
-            #fb7185) !important;
-
-}
-
-
-
-/* =========================
-   Chart Cards
-========================= */
-
-
-.dashboard-card {
-
-
-    border: none;
-
-    border-radius: 20px;
-
-    background: white;
-
-
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, .06);
-
-
-    overflow: hidden;
-
-
-}
-
-
-
-.dashboard-card:hover {
-
-
-    box-shadow:
-        0 15px 40px rgba(0, 0, 0, .1);
-
-
-}
-
-
-
-.dashboard-card .card-header {
-
-
-    background: white;
-
-
-    border: none;
-
-
-    font-size: 18px;
-
-
-    font-weight: 700;
-
-
-    padding: 20px 25px;
-
-
-}
-
-
-
-.dashboard-card .card-body {
-
-
-    padding: 25px;
-
-
-}
-
-
-
-canvas {
-
-    max-height: 350px;
-
-}
-
-
-
-/* =========================
-   Table
-========================= */
-
-
-.table {
-
-
-    margin: 0;
-
-}
-
-
-
-.table thead {
-
-
-    background: #f8fafc;
-
-
-}
-
-
-
-.table th {
-
-
-    color: #64748b;
-
-
-    font-size: 14px;
-
-
-    font-weight: 600;
-
-
-}
-
-
-
-.table td {
-
-
-    vertical-align: middle;
-
-
-}
-
-
-
-.table tbody tr {
-
-
-    transition: .2s;
-
-
-}
-
-
-
-.table tbody tr:hover {
-
-
-    background: #f1f5f9;
-
-
-    transform: scale(1.01);
-
-
-}
-
-
-
-/* =========================
-   Badge
-========================= */
-
-
-.badge {
-
-
-    padding: 8px 12px;
-
-    border-radius: 20px;
-
+.stat-icon.is-blue { background: #eff6ff; color: #2563eb; }
+.stat-icon.is-green { background: #ecfdf3; color: #059669; }
+.stat-icon.is-amber { background: #fffbeb; color: #d97706; }
+.stat-icon.is-red { background: #fef2f2; color: #dc2626; }
+
+.stat-label {
+    display: block;
+    color: var(--text-light);
+    font-size: 13px;
     font-weight: 500;
+}
 
+.stat-value {
+    display: block;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-note {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stat-note.is-up { color: #047857; }
+.stat-note.is-warn { color: #b91c1c; }
+
+
+/* ==========================================================
+   PANELS (khung biểu đồ / bảng)
+========================================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.span-8 { grid-column: span 8; }
+.span-6 { grid-column: span 6; }
+.span-4 { grid-column: span 4; }
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .05), 0 8px 24px rgba(15, 23, 42, .04);
+    overflow: hidden;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.panel-header i {
+    color: var(--primary);
+    font-size: 17px;
+}
+
+.panel-body {
+    flex: 1;
+    padding: 18px 20px;
+}
+
+.chart-box {
+    position: relative;
+    height: 300px;
+}
+
+.chart-box.is-small {
+    height: 260px;
 }
 
 
+/* ==========================================================
+   TABLE (Recent orders)
+========================================================== */
+.panel-body.is-flush {
+    padding: 0;
+}
 
-/* =========================
-   Low Stock
-========================= */
+.dashboard-table {
+    width: 100%;
+    margin: 0;
+}
+
+.dashboard-table thead th {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #f8fafc;
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.dashboard-table tbody td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.dashboard-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.dashboard-table tbody tr:hover > td {
+    background: #f8fafc;
+}
+
+.dashboard-table .badge {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
 
 
+/* ==========================================================
+   TOPBAR ACTIONS
+========================================================== */
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.last-updated {
+    color: var(--text-light);
+    font-size: 13px;
+}
+
+.btn-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Thẻ KPI có link (Projects, Low stock) */
+a.stat-card {
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+a.stat-card:hover,
+a.stat-card:focus-visible {
+    border-color: #bfdbfe;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, .1);
+}
+
+.stat-note {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.stat-note.is-warn {
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   PANEL EXTRAS
+========================================================== */
+.panel-link {
+    margin-left: auto;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.panel-link i {
+    color: inherit;
+    font-size: 12px;
+}
+
+.panel-link:hover {
+    text-decoration: underline;
+}
+
+/* Bảng project dài → cuộn trong khung */
+.table-scroll {
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.table-scroll thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.dashboard-table .col-progress {
+    width: 32%;
+}
+
+.project-link {
+    color: #0f172a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.project-link:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.cell-muted {
+    color: var(--text-light);
+}
+
+.cell-sub {
+    display: block;
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+/* Thanh tiến độ */
+.progress-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-cell span {
+    min-width: 38px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+    flex: 1;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #f1f5f9;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--primary);
+}
+
+.progress-fill.is-on-track { background: #2563eb; }
+.progress-fill.is-done { background: #10b981; }
+.progress-fill.is-late { background: #ef4444; }
+.progress-fill.is-warn { background: #f59e0b; }
+
+/* Số đếm nhỏ */
+.count-chip {
+    display: inline-block;
+    min-width: 28px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.count-chip.is-red { background: #fef2f2; color: #b91c1c; }
+.count-chip.is-amber { background: #fffbeb; color: #b45309; }
+
+.type-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: #334155;
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Màu stage giống trang Workflow (CSS/workflow.css) */
+.stage-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.stage-badge.design { background: #a1d5ff; color: #073374; }
+.stage-badge.mechanical { background: #bcf7ff; color: #00705d; }
+.stage-badge.assembly { background: #c9fbca; color: #006307; }
+.stage-badge.electric { background: #ffe3b9; color: #923300; }
+.stage-badge.program { background: #f6c6ff; color: #2f0168; }
+.stage-badge.default { background: #f1f5f9; color: #475569; }
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.status-pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status-pill.is-open { background: #fef2f2; color: #b91c1c; }
+.status-pill.is-solved { background: #ecfdf3; color: #047857; }
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px 0;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.empty-state i {
+    color: #cbd5e1;
+    font-size: 30px;
+}
+
+/* Biểu đồ không có dữ liệu → ẩn canvas, hiện thông báo */
+.chart-box.is-empty canvas {
+    visibility: hidden;
+}
+
+.chart-box.is-empty::after {
+    content: attr(data-empty-message);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   LOW STOCK LIST
+========================================================== */
 .stock-item {
-
-
-    margin-bottom: 20px;
-
-
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
+.stock-item + .stock-item {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+}
 
+.material-thumb {
+    position: relative;
+    display: flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #cbd5e1;
+    font-size: 18px;
+}
+
+.material-thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    object-fit: contain;
+    background: #fff;
+}
+
+.stock-info {
+    flex: 1;
+    min-width: 0;
+}
 
 .stock-header {
-
-
     display: flex;
-
     justify-content: space-between;
-
-    margin-bottom: 8px;
-
-
+    gap: 8px;
     font-size: 14px;
+}
 
+.stock-name {
+    overflow: hidden;
+    color: #0f172a;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
+.stock-count {
+    color: #b45309;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.stock-count.is-out {
+    color: #b91c1c;
+}
+
+.stock-info .progress-track {
+    margin-top: 6px;
+    height: 6px;
 }
 
 
-
-.progress {
-
-
-    height: 10px;
-
-    border-radius: 20px;
-
-    background: #e5e7eb;
-
-
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+@media (max-width: 1400px) {
+    .content {
+        padding: 26px 30px;
+    }
 }
 
+@media (max-width: 1200px) {
+    .stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-
-.progress-bar {
-
-
-    border-radius: 20px;
-
-
+    .span-8,
+    .span-6,
+    .span-4 {
+        grid-column: span 12;
+    }
 }
 
-
-
-/* =========================
-   Button
-========================= */
-
-
-.btn-primary {
-
-
-    border: none;
-
-
-    border-radius: 12px;
-
-
-    padding:
-        12px 20px;
-
-
-    background: #2563eb;
-
-
-    transition: .25s;
-
-
-}
-
-
-
-.btn-primary:hover {
-
-
-    background: #1d4ed8;
-
-
-    transform:
-        translateY(-2px);
-
-
-}
-
-
-
-/* =========================
-   Scrollbar
-========================= */
-
-
-::-webkit-scrollbar {
-
-    width: 8px;
-
-}
-
-
-
-::-webkit-scrollbar-thumb {
-
-
-    background: #94a3b8;
-
-
-    border-radius: 10px;
-
-
-}
-
-
-
-/* =========================
-   Responsive
-========================= */
-
-
-@media(max-width:992px) {
-
-
+@media (max-width: 992px) {
     .sidebar {
-
-        width: 80px;
-
-        padding: 20px 10px;
-
-    }
-
-
-    .logo span {
-
-
         display: none;
-
-
     }
 
-
-
-    .menu a {
-
-
-        justify-content: center;
-
-
-    }
-
-
-
-    .menu a i {
-
-
-        font-size: 22px;
-
-
-    }
-
-
-
-    .menu a {
-
-
-        font-size: 0;
-
-
-    }
-
-
-
-    .main {
-
-
-        margin-left: 80px;
-
+    .content {
         padding: 20px;
-
     }
-
-
 }
 
-
-
-@media(max-width:576px) {
-
+@media (max-width: 768px) {
+    .stat-grid {
+        grid-template-columns: 1fr;
+    }
 
     .topbar {
-
-
         flex-direction: column;
-
-
         align-items: flex-start;
-
-
-        gap: 20px;
-
-
+        gap: 12px;
     }
-
-
-    .main {
-
-
-        padding: 15px;
-
-
-    }
-
-
-}
-
-
-
-/* =========================
-   Animation
-========================= */
-
-
-@keyframes fadeUp {
-
-
-    from {
-
-
-        opacity: 0;
-
-
-        transform:
-            translateY(20px);
-
-
-    }
-
-
-    to {
-
-
-        opacity: 1;
-
-
-        transform:
-            translateY(0);
-
-
-    }
-
-
-}
-
-
-
-.stat-card,
-.dashboard-card {
-
-
-    animation:
-        fadeUp .5s ease;
-
-
 }

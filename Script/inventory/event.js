@@ -3,9 +3,16 @@ import { inventoryItemPageMessage } from "./inventory_items_page_message.js";
 import * as ui from "./ui.js";
 import * as service from "./service.js";
 import * as utils from "../utils/utils.js";
+import {
+    SCAN_MAX_KEY_GAP_MS,
+    SCAN_MIN_LENGTH,
+    isTypingTarget
+} from "../utils/scan-input.js";
 
-const MAX_LABELS = 200;
-
+// =====================================================
+// TRANG LƯU KHO: bảng tồn kho (lọc, phân trang, quét lọc, chọn / xóa)
+// Nhập kho / Xuất kho là 2 trang riêng: stock-import.html, stock-export.html
+// =====================================================
 export function initEvent() {
     const pagination = document.getElementById("pagination");
     pagination.addEventListener(
@@ -38,359 +45,125 @@ export function initEvent() {
 
     bindFilter("brandFilter", "change", "selectedBrand");
 
-    document
-        .getElementById("saveProductBtn")
-        .addEventListener("click", async () => {
-            if (!ui.validateProductForm()) return;
-            const inventoryItemData = ui.createPayload();
-            const saved = await service.saveItem(inventoryItemData);
-            if (!saved) return;
+    initSelectionEvents();
+    initScanFilterEvents();
+}
 
-            getModal("addProductModal").hide();
-            await service.reloadInventory();
-        });
+// =====================================================
+// LỌC BẰNG QUÉT QR TRÊN TRANG
+// Máy quét gõ rất nhanh rồi gửi Enter → nhận ra lần quét kể cả khi không ô nào đang focus.
+// =====================================================
+function initScanFilterEvents() {
+    let buffer = "";
+    let lastKeyTime = 0;
 
+    document.addEventListener("keydown", event => {
+        // Đang gõ vào ô nhập thì để ô đó xử lý
+        if (event.ctrlKey || event.altKey || event.metaKey || isTypingTarget(event.target)) {
+            buffer = "";
+            return;
+        }
 
-    document.getElementById("addProductModal").addEventListener("hidden.bs.modal", function () {
-        ui.resetProductForm();
+        if (event.key === "Escape" && inventoryVariable.scanItems) {
+            service.clearScanFilter();
+            return;
+        }
+
+        const now = performance.now();
+        if (now - lastKeyTime > SCAN_MAX_KEY_GAP_MS) {
+            buffer = "";
+        }
+        lastKeyTime = now;
+
+        if (event.key === "Enter") {
+            // "AAAA-51" → lọc theo code "AAAA"
+            const { code } = service.parseScannedCode(buffer);
+            buffer = "";
+            if (code.length >= SCAN_MIN_LENGTH) {
+                // Không để Enter bấm nhầm vào nút đang focus
+                event.preventDefault();
+                filterByScannedCode(code);
+            }
+            return;
+        }
+
+        if (event.key.length === 1) {
+            buffer += event.key;
+        }
     });
 
-    const btnDeleteSelected = document.getElementById("btnDeleteSelected");
+    document.getElementById("scanFilterBar").addEventListener("click", event => {
+        if (event.target.closest("#clearScanFilterBtn")) {
+            service.clearScanFilter();
+        }
+    });
+}
+
+async function filterByScannedCode(code) {
+    // Quét để xem đúng vật tư đó → bỏ search / brand đang chọn để không bị ẩn mất
+    inventoryVariable.searchKeyword = "";
+    inventoryVariable.selectedBrand = "";
+    document.getElementById("searchInput").value = "";
+    document.getElementById("brandFilter").value = "";
+
+    try {
+        await service.applyScanFilter(code);
+    } catch (error) {
+        console.error(error);
+        service.clearScanFilter();
+        utils.showError(inventoryItemPageMessage.lookupFailed);
+    }
+}
+
+// =====================================================
+// CHECKBOX / DELETE
+// =====================================================
+function initSelectionEvents() {
+    const tbody = document.getElementById("inventoryTable");
+
+    // Chọn / bỏ chọn tất cả dòng ở trang hiện tại
+    document.getElementById("checkAllItems").addEventListener("change", event => {
+        ui.setAllRowsChecked(event.target.checked);
+    });
+
+    tbody.addEventListener("change", event => {
+        if (event.target.matches(".row-checkbox")) {
+            ui.updateSelectionState();
+        }
+    });
+
+    // Bấm vào bất kỳ chỗ nào trên dòng cũng chọn / bỏ chọn dòng đó
+    tbody.addEventListener("click", event => {
+        if (event.target.closest("input, button, a, select, textarea")) return;
+
+        const checkbox = event.target.closest("tr")?.querySelector(".row-checkbox");
+        if (!checkbox) return;
+
+        checkbox.checked = !checkbox.checked;
+        ui.updateSelectionState();
+    });
+
+    document.getElementById("btnClearSelection").addEventListener("click", () => {
+        ui.setAllRowsChecked(false);
+    });
 
     document.getElementById("btnDeleteSelected").addEventListener("click", async () => {
-        const IDList = Array.from(
-            document.querySelectorAll(".row-checkbox:checked")
-        ).map(checkbox => checkbox.value);
+        const IDList = ui.getSelectedItemIDs();
+        if (!IDList.length) return;
 
-        if (IDList.length === 0) {
-            alert("Please select at least one item.");
-            return;
-        }
-
-        const confirmed = confirm(`Delete ${IDList.length} selected item(s)?`);
-        if (!confirmed) return;
-
-        await service.deleteItem(IDList);
-
-
-        inventoryVariable.inventoryItemFiltered =
-            inventoryVariable.inventoryItemFiltered.filter(
-                item => !IDList.includes(item.id)
-            );
-
-        ui.renderTable(inventoryVariable.inventoryItemFiltered);
-    });
-
-    initImportEvents();
-    initExportEvents();
-}
-
-function getModal(id) {
-    return bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
-}
-
-/**
- * Máy quét cầm tay (USB HID) gõ nội dung QR vào ô đang focus rồi gửi Enter.
- */
-function onEnter(element, handler) {
-    element.addEventListener("keydown", event => {
-        if (event.key !== "Enter") return;
-        event.preventDefault();
-        handler();
-    });
-}
-
-// =====================================================
-// IMPORT MATERIAL
-// =====================================================
-function initImportEvents() {
-    const importModal = document.getElementById("importModal");
-    const qrCodeInput = document.getElementById("qrCodeInput");
-    const qrLabelCount = document.getElementById("qrLabelCount");
-    const printQrBtn = document.getElementById("printQrBtn");
-    const scanInput = document.getElementById("importScanInput");
-    const quantityInput = document.getElementById("importQuantity");
-
-    let isLookingUp = false;
-
-    // ---------- Tạo QR ----------
-    const generateQr = () => {
-        const code = service.normalizeCode(qrCodeInput.value);
-        if (!code) {
-            utils.showError(inventoryItemPageMessage.codeRequired);
-            qrCodeInput.focus();
-            return;
-        }
-        if (!ui.renderQrPreview(code)) {
-            utils.showError(inventoryItemPageMessage.qrLibraryMissing);
-            return;
-        }
-        printQrBtn.disabled = false;
-    };
-
-    document.getElementById("generateQrBtn").addEventListener("click", generateQr);
-    onEnter(qrCodeInput, generateQr);
-
-    // Đổi code thì QR cũ không còn đúng → phải tạo lại trước khi in
-    qrCodeInput.addEventListener("input", () => {
-        ui.clearQrPreview();
-        printQrBtn.disabled = true;
-    });
-
-    printQrBtn.addEventListener("click", () => {
-        const count = service.parseQuantity(qrLabelCount.value);
-        if (!count || count > MAX_LABELS) {
-            utils.showError(`Labels must be between 1 and ${MAX_LABELS}.`);
-            return;
-        }
-        if (!ui.printQrLabels(service.normalizeCode(qrCodeInput.value), count)) {
-            utils.showError(inventoryItemPageMessage.printBlocked);
-        }
-    });
-
-    // ---------- Quét code ----------
-    const lookupImportCode = async () => {
-        const code = service.normalizeCode(scanInput.value);
-        if (!code || isLookingUp) return;
-
-        isLookingUp = true;
-        inventoryVariable.importItem = null;
-        ui.setImportReady(false);
-        ui.setScanResult("importScanResult", "Looking up...");
-
-        try {
-            const item = await service.findItemByCode(code);
-            if (!item) {
-                ui.renderImportNotFound(code);
-                return;
-            }
-
-            inventoryVariable.importItem = item;
-            ui.renderImportItem(item);
-            ui.setImportReady(true);
-            quantityInput.focus();
-            quantityInput.select();
-        } catch (error) {
-            console.error(error);
-            ui.setScanResult("importScanResult", inventoryItemPageMessage.lookupFailed, "error");
-        } finally {
-            isLookingUp = false;
-        }
-    };
-
-    onEnter(scanInput, lookupImportCode);
-
-    // Sửa/quét code khác → bỏ vật tư đang chọn cho tới khi Enter lại
-    scanInput.addEventListener("input", () => {
-        if (inventoryVariable.importItem) {
-            inventoryVariable.importItem = null;
-            ui.setImportReady(false);
-            ui.setScanResult("importScanResult", "");
-        }
-    });
-
-    // ---------- Cộng kho ----------
-    const saveImport = async () => {
-        const item = inventoryVariable.importItem;
-        if (!item) return;
-
-        const quantity = service.parseQuantity(quantityInput.value);
-        if (!quantity) {
-            utils.showError(inventoryItemPageMessage.invalidQuantity);
-            quantityInput.focus();
-            return;
-        }
-
-        ui.setImportSaving(true);
-        try {
-            const updated = await service.changeStock(item.id, quantity);
-            utils.showSuccess(inventoryItemPageMessage.importSuccess);
-            ui.setScanResult(
-                "importScanResult",
-                `<i class="bi bi-check-circle"></i> Added <b>${quantity}</b> to
-                 <b>${ui.escapeHtml(updated.name)}</b>. New stock: <b>${ui.escapeHtml(updated.stock)}</b>`,
-                "success"
-            );
-
-            // Sẵn sàng cho lần quét tiếp theo
-            inventoryVariable.importItem = null;
-            scanInput.value = "";
-            quantityInput.value = 1;
-            scanInput.focus();
-
-            await service.reloadInventory();
-        } catch (error) {
-            console.error(error);
-            utils.showError(`${inventoryItemPageMessage.importFailed}: ${error.message}`);
-        } finally {
-            ui.setImportSaving(false);
-            ui.setImportReady(Boolean(inventoryVariable.importItem));
-        }
-    };
-
-    document.getElementById("importSaveBtn").addEventListener("click", saveImport);
-    onEnter(quantityInput, saveImport);
-
-    // ---------- Code chưa có → tạo vật tư mới ----------
-    document.getElementById("importScanResult").addEventListener("click", event => {
-        if (!event.target.closest("#createFromScanBtn")) return;
-
-        const code = service.normalizeCode(scanInput.value);
-        const quantity = service.parseQuantity(quantityInput.value) ?? "";
-
-        importModal.addEventListener("hidden.bs.modal", () => {
-            ui.prefillProductForm({ code, stock: quantity });
-            getModal("addProductModal").show();
-        }, { once: true });
-        getModal("importModal").hide();
-    });
-
-    // ---------- Mở / đóng popup ----------
-    importModal.addEventListener("shown.bs.modal", () => scanInput.focus());
-
-    importModal.addEventListener("hidden.bs.modal", () => {
-        inventoryVariable.importItem = null;
-        scanInput.value = "";
-        quantityInput.value = 1;
-        ui.setImportReady(false);
-        ui.setScanResult("importScanResult", "");
-    });
-}
-
-// =====================================================
-// EXPORT MATERIAL
-// =====================================================
-function initExportEvents() {
-    const exportModal = document.getElementById("exportModal");
-    const scanInput = document.getElementById("exportScanInput");
-    const exportTable = document.getElementById("exportTable");
-
-    let isLookingUp = false;
-
-    const render = () => ui.renderExportTable(inventoryVariable.exportList);
-
-    const findRow = itemID =>
-        inventoryVariable.exportList.find(row => row.item.id === itemID);
-
-    // ---------- Quét code → thêm vào bảng ----------
-    const addScannedCode = async () => {
-        const code = service.normalizeCode(scanInput.value);
-        scanInput.value = "";
-        if (!code || isLookingUp) return;
-
-        // Quét lại vật tư đã có trong bảng → tăng số lượng
-        const existing = inventoryVariable.exportList.find(row => row.item.code === code);
-        if (existing) {
-            existing.quantity = (existing.quantity || 0) + 1;
-            ui.setScanResult("exportScanResult", `<b>${ui.escapeHtml(existing.item.name)}</b>: quantity ${existing.quantity}`, "success");
-            render();
-            return;
-        }
-
-        isLookingUp = true;
-        try {
-            const item = await service.findItemByCode(code);
-            if (!item) {
-                ui.setScanResult("exportScanResult", `Code <b>${ui.escapeHtml(code)}</b> is not in the inventory.`, "error");
-                return;
-            }
-            if (!(Number(item.stock) > 0)) {
-                ui.setScanResult("exportScanResult", `<b>${ui.escapeHtml(item.name)}</b> is out of stock.`, "error");
-                return;
-            }
-
-            inventoryVariable.exportList.push({ item, quantity: 1 });
-            ui.setScanResult("exportScanResult", `Added <b>${ui.escapeHtml(item.name)}</b>`, "success");
-            render();
-        } catch (error) {
-            console.error(error);
-            ui.setScanResult("exportScanResult", inventoryItemPageMessage.lookupFailed, "error");
-        } finally {
-            isLookingUp = false;
-            scanInput.focus();
-        }
-    };
-
-    onEnter(scanInput, addScannedCode);
-
-    // ---------- Sửa số lượng / xóa dòng ----------
-    exportTable.addEventListener("input", event => {
-        if (!event.target.matches(".export-quantity")) return;
-
-        const row = findRow(event.target.closest("tr").dataset.itemId);
-        if (!row) return;
-
-        row.quantity = service.parseQuantity(event.target.value);
-        ui.updateExportQuantityInput(event.target, row);
-        ui.updateExportSaveButton(inventoryVariable.exportList);
-    });
-
-    exportTable.addEventListener("click", event => {
-        if (!event.target.closest(".export-remove")) return;
-
-        const itemID = event.target.closest("tr").dataset.itemId;
-        inventoryVariable.exportList = inventoryVariable.exportList.filter(row => row.item.id !== itemID);
-        render();
-        scanInput.focus();
-    });
-
-    document.getElementById("exportClearBtn").addEventListener("click", () => {
-        inventoryVariable.exportList = [];
-        ui.setScanResult("exportScanResult", "");
-        render();
-        scanInput.focus();
-    });
-
-    // ---------- Lưu → trừ kho ----------
-    document.getElementById("exportSaveBtn").addEventListener("click", async () => {
-        const exportList = inventoryVariable.exportList;
-        if (!exportList.length) {
-            utils.showError(inventoryItemPageMessage.exportEmpty);
-            return;
-        }
-        if (!exportList.every(ui.isExportRowValid)) {
-            utils.showError(inventoryItemPageMessage.invalidQuantity);
-            return;
-        }
-
-        const total = exportList.reduce((sum, row) => sum + row.quantity, 0);
         const confirmed = await utils.showConfirm(
-            "Export materials?",
-            `${exportList.length} material(s), ${total} unit(s) will be removed from stock.`,
-            "Export"
+            `Xóa ${IDList.length} vật tư?`,
+            "Thao tác này không thể hoàn tác.",
+            "Delete"
         );
         if (!confirmed) return;
 
-        ui.setExportSaving(true);
+        ui.setDeleteSaving(true);
         try {
-            const { exportedIDs, errors } = await service.exportItems(exportList);
-
-            // Giữ lại các dòng lỗi để người dùng sửa và lưu lại
-            inventoryVariable.exportList = exportList.filter(row => !exportedIDs.includes(row.item.id));
-
-            if (errors.length) {
-                utils.showError(`${inventoryItemPageMessage.exportFailed}: ${errors.join("; ")}`);
-            } else {
-                utils.showSuccess(inventoryItemPageMessage.exportSuccess);
-                getModal("exportModal").hide();
-            }
-
+            await service.deleteItem(IDList);
             await service.reloadInventory();
-
-            // Cập nhật tồn kho mới nhất cho các dòng còn lại
-            inventoryVariable.exportList.forEach(row => {
-                row.item = inventoryVariable.inventoryItemFull.find(item => item.id === row.item.id) ?? row.item;
-            });
-            render();
         } finally {
-            ui.setExportSaving(false, inventoryVariable.exportList);
+            ui.setDeleteSaving(false);
         }
-    });
-
-    // ---------- Mở / đóng popup ----------
-    exportModal.addEventListener("show.bs.modal", render);
-    exportModal.addEventListener("shown.bs.modal", () => scanInput.focus());
-    exportModal.addEventListener("hidden.bs.modal", () => {
-        ui.setScanResult("exportScanResult", "");
     });
 }

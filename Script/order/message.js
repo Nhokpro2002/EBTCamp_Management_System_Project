@@ -1,20 +1,20 @@
 export const orderPageMessage = {
-    addItemSuccess: "Item added to the order successfully.",
-    deleteItemSuccess: "Item deleted from the order successfully.",
-    saveItemSuccess: "Item saved successfully.",
+    addItemSuccess: "Đã thêm vật tư vào đơn.",
+    deleteItemSuccess: "Đã xóa vật tư khỏi đơn.",
+    saveItemSuccess: "Đã lưu.",
 
-    saveItemFailed: "Failed to save items.",
-    deleteFailed: "Failed to delete items.",
+    saveItemFailed: "Không thể lưu.",
+    deleteFailed: "Không thể xóa.",
 
-    itemNotExist: "This item is deleted in the inventory or not exist.",
-    itemExistInOrder: "This item already exists in the order.",
+    itemNotExist: "Vật tư này đã bị xóa khỏi kho hoặc không tồn tại.",
+    itemExistInOrder: "Vật tư này đã có trong đơn.",
 
-    deleteConfirm: "Are you sure you want to delete the selected items?",
+    deleteConfirm: "Bạn có chắc muốn xóa các dòng đã chọn?",
 
-    loadProjectFailed: "Failed to load project",
-    loadOrderFailed: "Failed to load order items.",
-    loadDataFailed: "Failed to load order data.",
-    noItemsSelected: "Select at least one item first.",
+    loadProjectFailed: "Không tải được dự án",
+    loadOrderFailed: "Không tải được danh sách đặt hàng.",
+    loadDataFailed: "Không tải được dữ liệu đặt hàng.",
+    noItemsSelected: "Hãy chọn ít nhất một dòng.",
 
-    projectNotSelected: "Please select a project"
+    projectNotSelected: "Vui lòng chọn dự án"
 }

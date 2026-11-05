@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
+    <script src="../Script/auth/auth.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory</title>
+    <title>Kho vật tư</title>
 
     <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -19,41 +20,54 @@
 <body>
     <div class="wrapper">
         <aside class="sidebar">
-            <div class="logo">
-                <img src="../Image/lg_display_logo_web.png" alt="LG Display">
+            <div class="logo sidebar-brand">
+                <span class="brand-mark"><img src="../Image/LG-Symbol.png" alt=""></span><span
+                    class="brand-text"><strong>LG Display</strong><small>Assembly Room Management</small></span>
             </div>
 
             <ul class="menu">
-                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a></li>
-                <li class="active"><a href="inventory.html"><i class="bi bi-box"></i> Inventory</a></li>
-                <li><a href="order.html"><i class="bi bi-receipt"></i> Order</a></li>
-                <li><a href="project.html"><i class="bi bi-kanban"></i> Project</a></li>
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Tổng quan</a></li>
+                <li>
+                    <details class="menu-report menu-inventory" open>
+                        <summary><i class="bi bi-box"></i> Kho vật tư <i class="bi bi-chevron-down report-chevron"></i>
+                        </summary>
+                        <ul class="report-submenu">
+                            <li><a href="stock-import.html"><i class="bi bi-box-arrow-in-down"></i> Nhập kho</a></li>
+                            <li><a href="stock-export.html"><i class="bi bi-box-arrow-up"></i> Xuất kho</a></li>
+                            <li><a href="inventory.html" aria-current="page"><i class="bi bi-archive"></i> Lưu kho</a>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li>
                     <a href="notification.html">
                         <span class="notification-icon">
                             <i class="bi bi-bell"></i>
                             <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
                         </span>
-                        Notification
+                        Thông báo
                     </a>
                 </li>
                 <li>
                     <details class="menu-report">
-                        <summary><i class="bi bi-file-earmark-text"></i> Report <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <summary><i class="bi bi-file-earmark-text"></i> Báo cáo <i
+                                class="bi bi-chevron-down report-chevron"></i></summary>
                         <ul class="report-submenu">
-                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Daily Report</a></li>
-                            <li><span class="report-submenu-disabled">Weekly Report <small>Soon</small></span></li>
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Báo cáo ngày</a></li>
+                            <li><span class="report-submenu-disabled">Báo cáo tuần <small>Sắp có</small></span></li>
                         </ul>
                     </details>
                 </li>
-                <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+                <li><a href="#"><i class="bi bi-gear"></i> Cài đặt</a></li>
             </ul>
 
-            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Open user profile">
-                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="User avatar">
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Mở hồ sơ cá nhân">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="Ảnh đại diện">
                 <span class="user-info">
-                    <h6 class="user-name">User</h6>
-                    <small class="user-role">Profile</small>
+                    <h6 class="user-name">Người dùng</h6>
+                    <small class="user-role">Hồ sơ</small>
                 </span>
             </a>
         </aside>
@@ -62,332 +76,122 @@
 
             <header class="topbar">
                 <div>
-                    <h2>Inventory</h2>
-                    <p>Inventory <i class="bi bi-chevron-right"></i> Materials</p>
+                    <p class="breadcrumb-text">Kho vật tư <i class="bi bi-chevron-right"></i> Lưu kho</p>
+                    <h2>Lưu kho</h2>
+                    <p class="topbar-subtitle">Danh sách vật tư và số lượng đang tồn trong kho.</p>
                 </div>
             </header>
 
-            <section class="toolbar">
-                <div class="toolbar-left">
-
-                    <div class="search-box">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search material...">
+            <!-- Thống kê nhanh -->
+            <section class="stat-grid" aria-label="Tổng quan kho">
+                <article class="stat-card">
+                    <span class="stat-icon is-blue"><i class="bi bi-box-seam"></i></span>
+                    <div>
+                        <span class="stat-label">Vật tư</span>
+                        <strong class="stat-value" id="statTotalItems">0</strong>
                     </div>
-
-                    <select id="brandFilter" class="form-select">
-                        <option value="">All Brands</option>
-                        <option value="Schneider">Schneider</option>
-                        <option value="ABB">ABB</option>
-                        <option value="Siemens">Siemens</option>
-                        <option value="Mitsubishi">Mitsubishi</option>
-                        <option value="LS">LS</option>
-                        <option value="Fuji">Fuji</option>
-                        <option value="Omron">Omron</option>
-                    </select>
-                </div>
-
-                <div class="toolbar-right">
-                    <button type="button" class="btn btn-success" id="openImportBtn" data-bs-toggle="modal"
-                        data-bs-target="#importModal">
-                        <i class="bi bi-box-arrow-in-down"></i> Import Material
-                    </button>
-
-                    <button type="button" class="btn btn-danger" id="openExportBtn" data-bs-toggle="modal"
-                        data-bs-target="#exportModal">
-                        <i class="bi bi-box-arrow-up"></i> Export Material
-                    </button>
-                </div>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-icon is-green"><i class="bi bi-stack"></i></span>
+                    <div>
+                        <span class="stat-label">Tổng số lượng tồn</span>
+                        <strong class="stat-value" id="statTotalUnits">0</strong>
+                    </div>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-icon is-amber"><i class="bi bi-exclamation-triangle"></i></span>
+                    <div>
+                        <span class="stat-label">Sắp hết (&lt; 10)</span>
+                        <strong class="stat-value" id="statLowStock">0</strong>
+                    </div>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-icon is-red"><i class="bi bi-x-octagon"></i></span>
+                    <div>
+                        <span class="stat-label">Hết hàng</span>
+                        <strong class="stat-value" id="statOutOfStock">0</strong>
+                    </div>
+                </article>
             </section>
 
-            <section class="table-card">
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <th width="40"><input type="checkbox"></th>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Model</th>
-                                <th>XCode/QCode</th>
-                                <th>Brand</th>
-                                <th>Stock</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryTable">
-                            <!-- Render by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            <div class="inventory-card">
 
-            <div class="pagination-wrapper">
-                <span id="pageInfo" class="text-muted small"></span>
-                <nav>
-                    <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
-                </nav>
+                <section class="toolbar">
+                    <div class="toolbar-left">
+
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="searchInput" placeholder="Tìm vật tư hoặc quét QR...">
+                        </div>
+
+                        <select id="brandFilter" class="form-select">
+                            <option value="">Tất cả hãng</option>
+                            <option value="Schneider">Schneider</option>
+                            <option value="ABB">ABB</option>
+                            <option value="Siemens">Siemens</option>
+                            <option value="Mitsubishi">Mitsubishi</option>
+                            <option value="LS">LS</option>
+                            <option value="Fuji">Fuji</option>
+                            <option value="Omron">Omron</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- Hiện khi quét QR trên trang (lọc theo code) -->
+                <div id="scanFilterBar" class="scan-filter-bar" role="status" aria-live="polite" hidden></div>
+
+                <section class="table-card">
+                    <div class="table-responsive">
+                        <table class="table align-middle inventory-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-check">
+                                        <input type="checkbox" class="form-check-input" id="checkAllItems"
+                                            aria-label="Chọn tất cả vật tư trong trang">
+                                    </th>
+                                    <th>HÌNH ẢNH</th>
+                                    <th>TÊN SẢN PHẨM</th>
+                                    <th>MÔ TẢ</th>
+                                    <th>QCODE/XCODE</th>
+                                    <th>BRAND</th>
+                                    <th>STOCK</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTable">
+                                <!-- Render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <div class="pagination-wrapper">
+                    <span id="pageInfo" class="page-info"></span>
+                    <nav aria-label="Phân trang">
+                        <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
+                    </nav>
+                </div>
+
             </div>
 
         </main>
 
-        <div class="modal fade" id="addProductModal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add New Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <form id="addProductForm">
-                            <div class="row g-3">
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Image</label>
-                                    <input type="file" class="form-control" id="productImage" accept="image/*">
-                                    <div class="invalid-feedback">Please choose an image.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="productName" placeholder="Product name">
-                                    <div class="invalid-feedback">Product name is required.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">XCode / QCode</label>
-                                    <input type="text" class="form-control" id="productCode"
-                                        placeholder="Enter XCode / QCode">
-                                    <div class="invalid-feedback">XCode / QCode is required.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Brand</label>
-                                    <select class="form-select" id="productBrand">
-                                        <option value="">Select Brand</option>
-                                        <option>Schneider</option>
-                                        <option>ABB</option>
-                                        <option>Siemens</option>
-                                        <option>Mitsubishi</option>
-                                        <option>LS</option>
-                                        <option>Fuji</option>
-                                        <option>Omron</option>
-                                    </select>
-                                    <div class="invalid-feedback">Please select a brand.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Model</label>
-                                    <input type="text" class="form-control" id="productModel" placeholder="Enter model">
-                                    <div class="invalid-feedback">Model is required.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Type</label>
-                                    <select class="form-select" id="productType">
-                                        <option value="">Select Type</option>
-                                        <option>HMI</option>
-                                        <option>PLC</option>
-                                        <option>PSU</option>
-                                        <option>Relay</option>
-                                        <option>Inverter</option>
-                                        <option>Aptomat</option>
-                                        <option>Pilot Light</option>
-                                        <option>Servo Motor</option>
-                                        <option>Transformer</option>
-                                        <option>Limit Switch</option>
-                                        <option>Current Transformer</option>
-                                        <option>Solid State Relay</option>
-                                        <option>Surge Protective Device</option>
-                                        <option>Emergency Stop</option>
-                                        <option>Communication Module</option>
-                                        <option>Terminal Block</option>
-                                        <option>Power Meter</option>
-                                        <option>Temperature Controller</option>
-                                        <option>Proximity Sensor</option>
-                                        <option>Photoelectric Sensor</option>
-                                        <option>MCB</option>
-                                        <option>MCCB</option>
-                                        <option>ELCB</option>
-                                    </select>
-                                    <div class="invalid-feedback">Please select a type.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Stock</label>
-                                    <input type="number" class="form-control" id="productStock" min="0" placeholder="0">
-                                    <div class="invalid-feedback">Stock is required.</div>
-                                </div>
-
-                                <div class="col-12">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control" id="productDescription" rows="3"
-                                        placeholder="Enter product description"></textarea>
-                                    <div class="invalid-feedback">Description is required.</div>
-                                </div>
-
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="saveProductBtn">Save</button>
-                    </div>
-
-                </div>
+        <!-- Hiện khi có dòng được chọn, căn giữa vùng nội dung (không tính sidebar) -->
+        <div id="selectionBar" class="selection-bar" inert>
+            <div class="selection-bar-inner" role="region" aria-label="Vật tư đã chọn">
+                <span class="selection-count">
+                    <b id="selectionCount">0</b> đã chọn
+                </span>
+                <button type="button" id="btnClearSelection" class="btn btn-selection-clear">
+                    Bỏ chọn
+                </button>
+                <button type="button" id="btnDeleteSelected" class="btn btn-delete">
+                    <i class="bi bi-trash"></i> Xóa
+                </button>
             </div>
-        </div>
-
-        <!-- ========================================================
-                IMPORT MATERIAL: tạo/in QR + quét để cộng kho
-        ========================================================= -->
-        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalTitle">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="importModalTitle">
-                            <i class="bi bi-box-arrow-in-down"></i> Import Material
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-
-                        <!-- 1. Tạo QR -->
-                        <section class="stock-section">
-                            <h6 class="stock-section-title">1. Create QR label</h6>
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="qrCodeInput">Code</label>
-                                    <input type="text" class="form-control" id="qrCodeInput" list="materialCodeList"
-                                        placeholder="Enter or pick a material code" autocomplete="off">
-                                    <datalist id="materialCodeList"></datalist>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label" for="qrLabelCount">Labels</label>
-                                    <input type="number" class="form-control" id="qrLabelCount" min="1" max="200"
-                                        value="1">
-                                </div>
-                                <div class="col-md-3 d-flex gap-2">
-                                    <button type="button" class="btn btn-outline-primary flex-fill" id="generateQrBtn">
-                                        <i class="bi bi-qr-code"></i> Create
-                                    </button>
-                                    <button type="button" class="btn btn-primary flex-fill" id="printQrBtn" disabled>
-                                        <i class="bi bi-printer"></i> Print
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="qr-preview" id="qrPreview" hidden>
-                                <div id="qrPreviewCode"></div>
-                                <div class="qr-preview-text" id="qrPreviewText"></div>
-                            </div>
-                        </section>
-
-                        <!-- 2. Quét + cộng kho -->
-                        <section class="stock-section">
-                            <h6 class="stock-section-title">2. Scan and add to stock</h6>
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="importScanInput">Scanned code</label>
-                                    <div class="scan-input">
-                                        <i class="bi bi-upc-scan" aria-hidden="true"></i>
-                                        <input type="text" class="form-control" id="importScanInput"
-                                            placeholder="Scan QR or type code, then Enter" autocomplete="off">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label" for="importQuantity">Quantity</label>
-                                    <input type="number" class="form-control" id="importQuantity" min="1" value="1">
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="button" class="btn btn-success w-100" id="importSaveBtn" disabled>
-                                        <i class="bi bi-plus-lg"></i> Add to stock
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="scan-result" id="importScanResult" aria-live="polite"></div>
-                        </section>
-
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================================
-                EXPORT MATERIAL: quét để lấy hàng ra + trừ kho
-        ========================================================= -->
-        <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalTitle">
-            <div class="modal-dialog modal-xl modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exportModalTitle">
-                            <i class="bi bi-box-arrow-up"></i> Export Material
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <label class="form-label" for="exportScanInput">Scanned code</label>
-                        <div class="scan-input mb-2">
-                            <i class="bi bi-upc-scan" aria-hidden="true"></i>
-                            <input type="text" class="form-control" id="exportScanInput"
-                                placeholder="Scan QR or type code, then Enter" autocomplete="off">
-                        </div>
-                        <div class="scan-result" id="exportScanResult" aria-live="polite"></div>
-
-                        <div class="table-responsive export-table-wrap">
-                            <table class="table align-middle export-table">
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Name</th>
-                                        <th>Model</th>
-                                        <th>XCode/QCode</th>
-                                        <th>Brand</th>
-                                        <th>In stock</th>
-                                        <th width="140">Quantity out</th>
-                                        <th width="50"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="exportTable"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary me-auto" id="exportClearBtn">
-                            Clear list
-                        </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="exportSaveBtn" disabled>
-                            <i class="bi bi-check-lg"></i> Save
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div id="selectionBar" class="selection-bar">
-            <button id="btnDeleteSelected" class="btn btn-danger">
-                <i class="bi bi-trash me-1"></i> Delete
-            </button>
         </div>
 
     </div>
 
-    <script src="../Libs/Generate_QR_Code/qrcode.min.js"></script>
     <script type="module" src="../Script/inventory/main.js"></script>
     <script type="module" src="../Script/user/main.js"></script>
 </body>

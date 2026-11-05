@@ -1,4 +1,5 @@
 import * as utils from "../utils/utils.js";
+import * as service from "./service.js";
 
 // =====================================================
 // DOM ELEMENTS
@@ -131,33 +132,39 @@ function measureBarMetrics(container) {
     return metrics;
 }
 
+// Khoảng cách giữa cuối thanh task và chữ "Trễ x ngày"
+const DELAY_LABEL_GAP_PX = 6;
+// Số ngày chừa thêm cuối timeline để chữ không bị cắt
+const DELAY_LABEL_SPACE_DAYS = 4;
+
 function createDelaySegment(task, barMetrics) {
     const delayDays = getDelayDays(task);
     if (!delayDays) {
         return null;
     }
 
-    const pos = gantt.getTaskPosition(task, task.end_date, getDelayEndDate());
-    const label = `${delayDays} day${delayDays === 1 ? "" : "s"} late`;
+    // Chỉ ghi số ngày trễ ngay sau cuối thanh task (không vẽ đoạn kéo dài tới hôm nay)
+    const pos = gantt.getTaskPosition(task, task.start_date, task.end_date);
+    const label = `Trễ ${delayDays} ngày`;
 
     const top = pos.top + (barMetrics?.offsetTop ?? 0);
     const height = barMetrics?.height ?? pos.height;
 
     const el = document.createElement("div");
     el.className = "gantt_task_delay";
-    el.style.left = pos.left + "px";
+    el.style.left = (pos.left + pos.width + DELAY_LABEL_GAP_PX) + "px";
     el.style.top = top + "px";
-    el.style.width = pos.width + "px";
     el.style.height = height + "px";
     el.style.lineHeight = height + "px";
-    el.title = `${task.text}: ${label}`;
+    // Gắn id task → rê chuột vào đoạn trễ cũng hiện khung thông tin của task (tooltip Gantt)
+    el.setAttribute(gantt.config.task_attribute, task.id);
     el.textContent = label;
     return el;
 }
 
 /**
- * Mở rộng timeline tới hết hôm nay khi có task bị chậm,
- * để phần dôi ra không bị cắt mất.
+ * Có task bị chậm → chừa thêm vài ngày cuối timeline
+ * để chữ "Trễ x ngày" sau thanh task cuối cùng không bị cắt mất.
  */
 export function fitScaleToDelays() {
     gantt.config.start_date = undefined;
@@ -177,20 +184,17 @@ export function fitScaleToDelays() {
     if (!range.start_date || !range.end_date) {
         return;
     }
-    const delayEnd = getDelayEndDate();
     gantt.config.start_date = gantt.date.add(range.start_date, -1, "day");
-    gantt.config.end_date = gantt.date.add(
-        delayEnd > range.end_date ? delayEnd : range.end_date,
-        1,
-        "day"
-    );
+    gantt.config.end_date = gantt.date.add(range.end_date, DELAY_LABEL_SPACE_DAYS, "day");
 }
 
 // =====================================================
 // Task Color
 // =====================================================
-// Stage: màu riêng theo biến CSS --stage-<stage>-bg / -fg (dùng chung với bảng Issues).
-// Task: một màu chung cho cả dự án theo biến --task-* (workflow.css).
+// Thanh stage và thanh task: CÙNG một bộ màu theo biến --task-* (workflow.css):
+// nhạt = phần chưa hoàn thành, đậm = phần đã hoàn thành (khớp ô chú thích màu).
+// Màu riêng từng stage (--stage-<stage>-bg / -fg) chỉ còn dùng cho icon ở cột trái,
+// vòng tiến độ stage và bảng Issues → lưu ở task.stageColor.
 const STAGE_KEYS = ["design", "mechanical", "assembly", "electric", "program"];
 let stageColors = null;
 let taskColors = null;
@@ -227,13 +231,12 @@ export function setTaskColor(task) {
         return;
     }
 
+    // Thanh stage cùng màu với thanh task
+    Object.assign(task, getTaskColors());
+
+    // Màu riêng của stage: icon cột trái, vòng tiến độ stage
     const colors = getStageColors()[String(task.css || "").trim().toLowerCase()];
-    if (colors) {
-        task.color = colors.color;
-        task.progressColor = colors.progressColor;
-        // Chữ màu đậm của stage để đọc rõ trên nền thanh nhạt
-        task.textColor = colors.progressColor;
-    }
+    task.stageColor = colors?.progressColor || task.progressColor;
 }
 
 // =====================================================
@@ -292,7 +295,7 @@ export function renderReportHistoryMessage(node, message) {
  */
 export function renderReportHistory(node, history, isDone) {
     if (!history.length) {
-        renderReportHistoryMessage(node, "This task has not been reported yet.");
+        renderReportHistoryMessage(node, "Task này chưa có báo cáo nào.");
         return;
     }
 
@@ -303,14 +306,14 @@ export function renderReportHistory(node, history, isDone) {
             ${history.map((entry, index) => `
                 <li class="report-history-item">
                     <div class="report-history-meta">
-                        <span class="report-history-date">${escapeHtml(entry.date)}</span>
+                        <span class="report-history-date">${escapeHtml(utils.formatDateDisplay(entry.date) || entry.date)}</span>
                         <span class="report-history-status ${getWorkStatusClass(entry.status)}">
                             ${escapeHtml(entry.status)}
                         </span>
-                        ${entry.reporter ? `<span class="report-history-reporter">by ${escapeHtml(entry.reporter)}</span>` : ""}
+                        ${entry.reporter ? `<span class="report-history-reporter">bởi ${escapeHtml(entry.reporter)}</span>` : ""}
                         ${isDone && index === lastIndex ? `
                             <button type="button" class="report-history-flag"
-                                    title="View Image" aria-label="View Image">
+                                    title="Xem ảnh" aria-label="Xem ảnh">
                                 <i class="bi bi-flag-fill" aria-hidden="true"></i>
                             </button>
                         ` : ""}
@@ -322,7 +325,7 @@ export function renderReportHistory(node, history, isDone) {
                         </div>
                     ` : ""}
                     <p class="report-history-detail">
-                        ${entry.detail ? escapeHtml(entry.detail) : '<span class="report-history-no-detail">No detail.</span>'}
+                        ${entry.detail ? escapeHtml(entry.detail) : '<span class="report-history-no-detail">Không có chi tiết.</span>'}
                     </p>
                 </li>
             `).join("")}
@@ -351,10 +354,10 @@ export function openEvidenceViewer(imageUrls) {
     evidenceViewerBody.innerHTML = imageUrls.length
         ? imageUrls.map(url => `
             <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
-                <img src="${escapeHtml(url)}" alt="Evidence image" loading="lazy">
+                <img src="${escapeHtml(url)}" alt="Ảnh minh chứng" loading="lazy">
             </a>
         `).join("")
-        : '<p class="report-history-empty">No evidence images.</p>';
+        : '<p class="report-history-empty">Không có ảnh minh chứng.</p>';
 
     // <dialog> nằm ở top layer nên hiện đè lên lightbox của gantt
     evidenceViewer.showModal();
@@ -400,8 +403,9 @@ export function updateProgress(progress) {
 
 /**
  * @param {Array<{name: string, key: string, progress: number}>} stageProgressList
+ * @param {Object<string, { total: number, open: number }>} issueSummary số issue theo stage (key viết thường)
  */
-export function renderStageProgressCards(stageProgressList) {
+export function renderStageProgressCards(stageProgressList, issueSummary = {}) {
     const container = document.getElementById("stage-progress-grid");
     if (!container) return;
 
@@ -409,14 +413,29 @@ export function renderStageProgressCards(stageProgressList) {
         const colorTask = { css: item.key };
         setTaskColor(colorTask);
 
-        const color = colorTask.progressColor || "#2563eb";
+        // Vòng tiến độ vẫn giữ màu riêng của từng stage
+        const color = colorTask.stageColor || "#2563eb";
         const percent = Math.round(item.progress);
         const offset = PROGRESS_CIRCUMFERENCE - (percent / 100) * PROGRESS_CIRCUMFERENCE;
         const safeName = escapeHtml(item.name);
 
+        const issues = issueSummary[String(item.name || "").trim().toLowerCase()]
+            || issueSummary[item.key]
+            || { total: 0, open: 0 };
+
         return `
             <article class="stage-progress-card">
-                <span class="stage-progress-name">${safeName}</span>
+                <div class="stage-progress-info">
+                    <span class="stage-progress-name">${safeName}</span>
+                    <button type="button" class="stage-issue-link ${issues.open ? "has-open" : ""}"
+                        data-stage-issues="${safeName}"
+                        title="Xem issue của ${safeName}"
+                        aria-label="${issues.total} issue, ${issues.open} chưa xử lý — xem issue của ${safeName}">
+                        <i class="bi ${issues.open ? "bi-exclamation-triangle-fill" : "bi-check2-circle"}" aria-hidden="true"></i>
+                        <span><b>${issues.total}</b> issue</span>
+                        ${issues.open ? `<span class="stage-issue-open">${issues.open} chưa xử lý</span>` : ""}
+                    </button>
+                </div>
                 <div class="circular-progress stage-circular-progress"
                     style="--stage-progress-color:${color}"
                     role="img" aria-label="${safeName}: ${percent}%">
@@ -479,15 +498,47 @@ export function highlightStageStat(stage) {
     });
 }
 
-export function renderIssueTable(issues) {
-    issueTableBody.innerHTML = issues.map(issue => `
-        <tr>
+/**
+ * Dòng "Trễ hạn": tính từ task đang trễ, không phải bản ghi trong database
+ * → không xóa, không sửa giải pháp, không giao người xử lý; tự mất khi task xong / được dời hạn.
+ */
+function renderOverdueTaskRow(issue) {
+    return `
+        <tr class="is-overdue-task" data-issue-id="${escapeHtml(issue.id)}"
+            data-stage="${escapeHtml(issue.related_stage || "")}" data-task-id="${escapeHtml(issue.taskID)}">
             <td class="check">
-                <input type="checkbox" class="row-check" data-issue-id="${escapeHtml(issue.id)}"
-                       aria-label="Select issue ${escapeHtml(issue.title || issue.id)}">
+                <i class="bi bi-hourglass-split overdue-row-icon" title="Task trễ hạn (tự động)" aria-hidden="true"></i>
             </td>
             <td>
-                <span class="issue-id">${issue.id}</span>
+                <span class="issue-title">${escapeHtml(issue.title)}</span>
+            </td>
+            <td>
+                <span class="issue-type-chip is-overdue">${escapeHtml(issue.type)}</span>
+            </td>
+            <td class="solution">
+                <span class="overdue-note">
+                    Trễ <b>${issue.delayDays}</b> ngày — tự hết khi task hoàn thành hoặc được dời hạn
+                </span>
+            </td>
+            <td class="issue-handler"><span class="issue-muted">—</span></td>
+            <td class="issue-deadline">
+                <span class="deadline-value is-overdue" title="Ngày kết thúc theo kế hoạch">
+                    <i class="bi bi-alarm-fill" aria-hidden="true"></i>
+                    ${escapeHtml(formatDeadline(issue.deadline))}
+                </span>
+            </td>
+            <td><div class="assignee">${escapeHtml(issue.reporter)}</div></td>
+            <td>${escapeHtml(utils.formatDateDisplay(issue.created_date))}</td>
+        </tr>`;
+}
+
+export function renderIssueTable(issues) {
+    // ID và Stage không hiện trên bảng nhưng vẫn giữ ở data-* của dòng (lọc theo stage, xóa, sửa...)
+    issueTableBody.innerHTML = issues.map(issue => issue.isOverdueTask ? renderOverdueTaskRow(issue) : `
+        <tr data-issue-id="${escapeHtml(issue.id)}" data-stage="${escapeHtml(issue.related_stage || "")}">
+            <td class="check">
+                <input type="checkbox" class="row-check" data-issue-id="${escapeHtml(issue.id)}"
+                       aria-label="Chọn issue ${escapeHtml(issue.title || issue.id)}">
             </td>
             <td>
                 <span class="issue-title">
@@ -495,20 +546,21 @@ export function renderIssueTable(issues) {
                 </span>
             </td>
             <td>
-                <span class="stage-badge ${getStageClass(issue.related_stage)}">
-                ● ${escapeHtml(issue.related_stage || "")}
-                </span>
+                ${issue.type
+                    ? `<span class="issue-type-chip">${escapeHtml(issue.type)}</span>`
+                    : '<span class="issue-muted">—</span>'}
             </td>
             <td class="solution" data-issue-id="${escapeHtml(issue.id)}">
                 ${renderSolutionView(issue.solution)}
             </td>
+            ${renderAssignmentCells(issue)}
             <td>
                 <div class="assignee">
                     ${escapeHtml(issue.reporter || "")}
                 </div>
             </td>
             <td>
-                ${utils.formatDateDisplay(issue.created_date) || ""}
+                ${utils.formatDateTimeToDisplay(new Date(issue.created_date || issue.createdDate || issue.created || NaN))}
             </td>
         </tr>
     `).join("");
@@ -519,15 +571,110 @@ export function renderIssueTable(issues) {
     updateIssueSelection();
 }
 
+// ---------- Người xử lý + Thời hạn (chọn 1 lần, sau đó khóa) ----------
+
+function getTodayValue() {
+    const now = new Date();
+    return [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0")
+    ].join("-");
+}
+
+function formatDeadline(value) {
+    const [year, month, day] = String(value || "").slice(0, 10).split("-");
+    return year && month && day ? `${day}/${month}/${year}` : "";
+}
+
+/**
+ * Đã giao: hiện tên + ngày (khóa, quá hạn mà chưa có giải pháp thì tô đỏ).
+ * Chưa giao: ô chọn người (lọc theo position ứng với loại vấn đề) + ô ngày + nút Giao.
+ */
+function renderAssignmentCells(issue) {
+    const id = escapeHtml(issue.id);
+
+    if (service.isIssueAssigned(issue)) {
+        const deadlineDay = String(issue.deadline).slice(0, 10);
+        const isOverdue = deadlineDay < getTodayValue() && !String(issue.solution ?? "").trim();
+
+        return `
+            <td class="issue-handler">
+                <span class="handler-name" title="Đã giao — không thể thay đổi">
+                    <i class="bi bi-person-check-fill" aria-hidden="true"></i>
+                    ${escapeHtml(service.getHandlerName(issue))}
+                </span>
+            </td>
+            <td class="issue-deadline">
+                <span class="deadline-value ${isOverdue ? "is-overdue" : ""}"
+                      title="${isOverdue ? "Đã quá hạn" : "Đã giao — không thể thay đổi"}">
+                    <i class="bi ${isOverdue ? "bi-alarm-fill" : "bi-lock-fill"}" aria-hidden="true"></i>
+                    ${escapeHtml(formatDeadline(issue.deadline))}
+                </span>
+            </td>`;
+    }
+
+    const candidates = service.getHandlerCandidates(issue);
+    const currentHandler = Array.isArray(issue.handler) ? issue.handler[0] : issue.handler;
+    const options = candidates.length
+        ? `<option value="">Chọn người xử lý</option>` + candidates.map(user => `
+            <option value="${escapeHtml(user.id)}" ${user.id === currentHandler ? "selected" : ""}>
+                ${escapeHtml(service.getUserName(user))}
+            </option>`).join("")
+        : `<option value="">${issue.type ? "Không có người phù hợp" : "Issue chưa có loại vấn đề"}</option>`;
+
+    return `
+        <td class="issue-handler">
+            <select class="form-select form-select-sm handler-select" data-issue-id="${id}"
+                    ${candidates.length ? "" : "disabled"}
+                    aria-label="Người xử lý cho issue ${escapeHtml(issue.title || "")}">
+                ${options}
+            </select>
+        </td>
+        <td class="issue-deadline">
+            <div class="assign-controls">
+                <input type="date" class="form-control form-control-sm deadline-input" data-issue-id="${id}"
+                       min="${getTodayValue()}" value="${escapeHtml(String(issue.deadline || "").slice(0, 10))}"
+                       ${candidates.length ? "" : "disabled"}
+                       aria-label="Thời hạn cho issue ${escapeHtml(issue.title || "")}">
+                <button type="button" class="assign-button" data-assign-issue="${id}"
+                        ${candidates.length ? "" : "disabled"}
+                        title="Giao người xử lý và thời hạn (không thể thay đổi sau khi giao)">
+                    Giao
+                </button>
+            </div>
+        </td>`;
+}
+
+/**
+ * Người xử lý + thời hạn đang chọn trên một dòng chưa giao.
+ */
+export function getAssignmentValues(issueID) {
+    const row = issueTableBody.querySelector(`tr[data-issue-id="${CSS.escape(issueID)}"]`);
+    return {
+        handlerID: row?.querySelector(".handler-select")?.value || "",
+        deadline: row?.querySelector(".deadline-input")?.value || ""
+    };
+}
+
+export function setAssignSaving(issueID, isSaving) {
+    const button = issueTableBody.querySelector(`[data-assign-issue="${CSS.escape(issueID)}"]`);
+    if (!button) return;
+    button.disabled = isSaving;
+    button.innerHTML = isSaving
+        ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>'
+        : "Giao";
+}
+
 // ---------- Solution cell (inline edit) ----------
 function renderSolutionView(solution) {
     return `
         <div class="solution-view">
             ${solution
             ? `<span class="solution-text" title="${escapeHtml(solution)}">${escapeHtml(solution)}</span>`
-            : '<span class="solution-empty">No solution yet</span>'}
+            : '<span class="solution-empty">Chưa có giải pháp</span>'}
             <button type="button" class="solution-action" data-edit-solution
-                    title="Edit solution" aria-label="Edit solution">
+                    title="Sửa giải pháp" aria-label="Sửa giải pháp">
                 <i class="bi bi-pencil" aria-hidden="true"></i>
             </button>
         </div>
@@ -546,12 +693,12 @@ export function showSolutionEditor(cell, solution) {
     cell.innerHTML = `
         <div class="solution-editor">
             <textarea class="solution-input" rows="3"
-                      placeholder="Describe how the issue was solved">${escapeHtml(solution || "")}</textarea>
+                      placeholder="Mô tả cách đã xử lý issue">${escapeHtml(solution || "")}</textarea>
             <div class="solution-editor-actions">
                 <button type="button" class="solution-save" data-save-solution>
-                    <i class="bi bi-check-lg" aria-hidden="true"></i> Save
+                    <i class="bi bi-check-lg" aria-hidden="true"></i> Lưu
                 </button>
-                <button type="button" class="solution-cancel" data-cancel-solution>Cancel</button>
+                <button type="button" class="solution-cancel" data-cancel-solution>Hủy</button>
             </div>
         </div>
     `;
@@ -572,8 +719,8 @@ export function setSolutionSaving(cell, isSaving) {
     const saveButton = cell.querySelector("[data-save-solution]");
     if (saveButton) {
         saveButton.innerHTML = isSaving
-            ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Saving...'
-            : '<i class="bi bi-check-lg" aria-hidden="true"></i> Save';
+            ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Đang lưu...'
+            : '<i class="bi bi-check-lg" aria-hidden="true"></i> Lưu';
     }
 }
 
@@ -613,7 +760,7 @@ export function updateIssueSelection() {
     selectAllCheckbox.checked = total > 0 && selected === total;
     selectAllCheckbox.indeterminate = selected > 0 && selected < total;
 
-    issueBulkCount.textContent = `${selected} selected`;
+    issueBulkCount.textContent = `Đã chọn ${selected}`;
     issueBulkBar.classList.toggle("show", selected > 0);
     issueBulkBar.inert = selected === 0;
 }
@@ -621,8 +768,8 @@ export function updateIssueSelection() {
 export function setDeleteIssuesSaving(isSaving) {
     deleteIssuesButton.disabled = isSaving;
     deleteIssuesButton.innerHTML = isSaving
-        ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Deleting...'
-        : '<i class="bi bi-trash" aria-hidden="true"></i> Delete';
+        ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Đang xóa...'
+        : '<i class="bi bi-trash" aria-hidden="true"></i> Xóa';
 }
 
 // =====================================================
@@ -633,7 +780,7 @@ function getStageClass(stage) {
     return STAGE_KEYS.includes(key) ? key : "default";
 }
 
-function escapeHtml(value) {
+export function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
         "&": "&amp;",
         "<": "&lt;",

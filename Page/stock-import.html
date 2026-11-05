@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <script src="../Script/auth/auth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhập kho</title>
+
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/inventory.css">
+    <link rel="stylesheet" href="../CSS/stock-import.css">
+    <link rel="stylesheet" href="../CSS/report-navigation.css">
+    <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
+    <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="logo sidebar-brand">
+                <span class="brand-mark"><img src="../Image/LG-Symbol.png" alt=""></span><span class="brand-text"><strong>LG Display</strong><small>Assembly Room Management</small></span>
+            </div>
+
+            <ul class="menu">
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Tổng quan</a></li>
+                <li>
+                    <details class="menu-report menu-inventory" open>
+                        <summary><i class="bi bi-box"></i> Kho vật tư <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="stock-import.html" aria-current="page"><i class="bi bi-box-arrow-in-down"></i> Nhập kho</a></li>
+                            <li><a href="stock-export.html"><i class="bi bi-box-arrow-up"></i> Xuất kho</a></li>
+                            <li><a href="inventory.html"><i class="bi bi-archive"></i> Lưu kho</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
+                <li>
+                    <a href="notification.html">
+                        <span class="notification-icon">
+                            <i class="bi bi-bell"></i>
+                            <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
+                        </span>
+                        Thông báo
+                    </a>
+                </li>
+                <li>
+                    <details class="menu-report">
+                        <summary><i class="bi bi-file-earmark-text"></i> Báo cáo <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Báo cáo ngày</a></li>
+                            <li><span class="report-submenu-disabled">Báo cáo tuần <small>Sắp có</small></span></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="#"><i class="bi bi-gear"></i> Cài đặt</a></li>
+            </ul>
+
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Mở hồ sơ cá nhân">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="Ảnh đại diện">
+                <span class="user-info">
+                    <h6 class="user-name">Người dùng</h6>
+                    <small class="user-role">Hồ sơ</small>
+                </span>
+            </a>
+        </aside>
+
+        <main class="content">
+
+            <header class="topbar">
+                <div>
+                    <p class="breadcrumb-text">Kho vật tư <i class="bi bi-chevron-right"></i> Nhập kho</p>
+                    <h2>Nhập kho</h2>
+                    <p class="topbar-subtitle">In tem QR cho hàng mới về — mỗi tem là một chiếc hoặc một gói, in bao nhiêu tem thì tồn kho được cộng bấy nhiêu.</p>
+                </div>
+            </header>
+
+            <!-- 1. Nhập kho + in tem hàng loạt từ file Excel -->
+            <section class="page-card import-excel-card">
+                <div class="page-card-header">
+                    <div>
+                        <h3 class="page-card-title"><i class="bi bi-file-earmark-spreadsheet"></i> Nhập kho từ Excel</h3>
+                        <p class="import-card-sub">Đọc file → kiểm tra từng dòng → bấm <b>In tem &amp; nhập kho</b>. Tem in theo đúng thứ tự dòng trong file.</p>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="excelTemplateBtn">
+                        <i class="bi bi-download" aria-hidden="true"></i> Tải file mẫu
+                    </button>
+                </div>
+
+                <!-- Chưa chọn file: vùng kéo thả -->
+                <label class="import-dropzone" id="excelDropzone" for="excelFileInput">
+                    <input type="file" id="excelFileInput" class="visually-hidden"
+                        accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                    <span class="import-dropzone-icon"><i class="bi bi-cloud-arrow-up" aria-hidden="true"></i></span>
+                    <span class="import-dropzone-title">Kéo thả file <b>.xlsx</b> vào đây hoặc <u>bấm để chọn file</u></span>
+                    <span class="import-dropzone-status" id="excelReadingStatus" aria-live="polite"></span>
+                    <span class="import-columns">
+                        <span class="import-column is-required">Tên sản phẩm</span>
+                        <span class="import-column is-required">QCode/XCode</span>
+                        <span class="import-column is-required">Số lượng</span>
+                        <span class="import-column">Mô tả</span>
+                        <span class="import-column">Đơn vị đóng gói</span>
+                    </span>
+                    <span class="import-dropzone-hint">
+                        Có <b>Đơn vị đóng gói</b> → số tem = Số lượng / Đơn vị đóng gói (gói cuối lẻ vẫn 1 tem).
+                        Để trống → tính theo chiếc, mỗi chiếc 1 tem.
+                    </span>
+                </label>
+
+                <!-- Đã đọc file: thông tin file + thống kê + bảng xem trước -->
+                <div id="excelPreview" hidden>
+                    <div class="import-file-bar">
+                        <span class="import-file-icon"><i class="bi bi-file-earmark-excel" aria-hidden="true"></i></span>
+                        <div class="import-file-info">
+                            <div class="import-file-name" id="excelFileName"></div>
+                            <small class="text-muted" id="excelFileMeta"></small>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-light" id="excelClearBtn">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i> Chọn file khác
+                        </button>
+                    </div>
+
+                    <div class="import-stats" id="excelStats"></div>
+
+                    <div class="stock-table-wrap import-table-wrap">
+                        <table class="table stock-table import-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="col-row">Dòng</th>
+                                    <th>Vật tư</th>
+                                    <th class="text-end">Số lượng</th>
+                                    <th class="text-end">Đóng gói</th>
+                                    <th class="text-end">Số tem</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="excelPreviewBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="import-action-bar">
+                        <div class="import-action-summary" id="excelActionSummary"></div>
+                        <button type="button" class="btn btn-primary btn-lg" id="excelImportBtn" disabled>
+                            <i class="bi bi-printer" aria-hidden="true"></i> In tem &amp; nhập kho
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="stock-page-grid">
+
+                <!-- 2. In lẻ theo 1 mã -->
+                <section class="page-card">
+                    <h3 class="page-card-title"><i class="bi bi-qr-code"></i> In lẻ theo mã</h3>
+
+                    <div class="row g-3 align-items-end">
+                        <div class="col-sm-8">
+                            <label class="form-label" for="qrCodeInput">Mã vật tư</label>
+                            <div class="scan-input">
+                                <i class="bi bi-upc-scan" aria-hidden="true"></i>
+                                <input type="text" class="form-control" id="qrCodeInput" list="materialCodeList"
+                                    placeholder="Nhập hoặc chọn mã vật tư" autocomplete="off">
+                            </div>
+                            <datalist id="materialCodeList"></datalist>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label" for="qrLabelCount">Số tem</label>
+                            <input type="number" class="form-control" id="qrLabelCount" min="1" max="200" value="1">
+                        </div>
+                        <div class="col-12 d-flex gap-2">
+                            <button type="button" class="btn btn-outline-primary flex-fill" id="generateQrBtn">
+                                <i class="bi bi-eye"></i> Xem trước
+                            </button>
+                            <button type="button" class="btn btn-primary flex-fill" id="printQrBtn" disabled>
+                                <i class="bi bi-printer"></i> In tem
+                            </button>
+                        </div>
+                    </div>
+
+                    <p class="scan-help">
+                        Mỗi tem có mã riêng dạng <b>MÃ-số thứ tự</b> (VD: AAAA-51), nối tiếp lần in trước.
+                        Bấm <b>In tem</b> sẽ lưu số tem đã in <b>và cộng số tem vào tồn kho</b>.
+                    </p>
+
+                    <!-- Mã chưa có trong kho → nút tạo vật tư mới -->
+                    <div class="scan-result" id="labelLookupResult" aria-live="polite"></div>
+
+                    <div class="qr-preview" id="qrPreview" hidden>
+                        <div id="qrPreviewCode"></div>
+                        <div class="qr-preview-text" id="qrPreviewText"></div>
+                    </div>
+                </section>
+
+                <!-- 3. Lịch sử in tem (= các lần nhập kho) trong phiên làm việc này -->
+                <section class="page-card">
+                    <h3 class="page-card-title"><i class="bi bi-clock-history"></i> Lịch sử in tem</h3>
+                    <div class="import-log-empty" id="printLogEmpty">
+                        <i class="bi bi-inbox" aria-hidden="true"></i>
+                        Chưa in tem nào trong lần mở trang này.
+                    </div>
+                    <ul class="import-log import-log-scroll" id="printLog"></ul>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Tạo vật tư mới (khi quét mã chưa có trong kho) -->
+        <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductTitle">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductTitle">Thêm vật tư mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form id="addProductForm">
+                            <div class="row g-3">
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="productImage">Hình ảnh</label>
+                                    <input type="file" class="form-control" id="productImage" accept="image/*">
+                                    <div class="invalid-feedback">Vui lòng chọn hình ảnh.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="productName">Tên vật tư</label>
+                                    <input type="text" class="form-control" id="productName" placeholder="Tên vật tư">
+                                    <div class="invalid-feedback">Vui lòng nhập tên vật tư.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="productCode">XCode / QCode</label>
+                                    <input type="text" class="form-control" id="productCode"
+                                        placeholder="Nhập XCode / QCode">
+                                    <div class="invalid-feedback">Vui lòng nhập XCode / QCode.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="productBrand">Hãng</label>
+                                    <select class="form-select" id="productBrand">
+                                        <option value="">Chọn hãng</option>
+                                        <option>Schneider</option>
+                                        <option>ABB</option>
+                                        <option>Siemens</option>
+                                        <option>Mitsubishi</option>
+                                        <option>LS</option>
+                                        <option>Fuji</option>
+                                        <option>Omron</option>
+                                    </select>
+                                    <div class="invalid-feedback">Vui lòng chọn hãng.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="productModel">Model</label>
+                                    <input type="text" class="form-control" id="productModel" placeholder="Nhập model">
+                                    <div class="invalid-feedback">Vui lòng nhập model.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="productType">Loại</label>
+                                    <select class="form-select" id="productType">
+                                        <option value="">Chọn loại</option>
+                                        <option>HMI</option>
+                                        <option>PLC</option>
+                                        <option>PSU</option>
+                                        <option>Relay</option>
+                                        <option>Inverter</option>
+                                        <option>Aptomat</option>
+                                        <option>Pilot Light</option>
+                                        <option>Servo Motor</option>
+                                        <option>Transformer</option>
+                                        <option>Limit Switch</option>
+                                        <option>Current Transformer</option>
+                                        <option>Solid State Relay</option>
+                                        <option>Surge Protective Device</option>
+                                        <option>Emergency Stop</option>
+                                        <option>Communication Module</option>
+                                        <option>Terminal Block</option>
+                                        <option>Power Meter</option>
+                                        <option>Temperature Controller</option>
+                                        <option>Proximity Sensor</option>
+                                        <option>Photoelectric Sensor</option>
+                                        <option>MCB</option>
+                                        <option>MCCB</option>
+                                        <option>ELCB</option>
+                                    </select>
+                                    <div class="invalid-feedback">Vui lòng chọn loại.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label" for="productStock">Số lượng tồn</label>
+                                    <input type="number" class="form-control" id="productStock" min="0" placeholder="0">
+                                    <div class="invalid-feedback">Vui lòng nhập số lượng tồn.</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label" for="productDescription">Mô tả</label>
+                                    <textarea class="form-control" id="productDescription" rows="3"
+                                        placeholder="Nhập mô tả vật tư"></textarea>
+                                    <div class="invalid-feedback">Vui lòng nhập mô tả.</div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="saveProductBtn">Lưu</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Libs/Generate_QR_Code/qrcode.min.js"></script>
+    <script src="../Libs/ExcelJS/exceljs.min.js"></script>
+    <script type="module" src="../Script/stock-import/main.js"></script>
+    <script type="module" src="../Script/user/main.js"></script>
+</body>
+
+</html>

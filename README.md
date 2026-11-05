@@ -36,10 +36,28 @@ PocketBase collections with these fields:
   images are needed).
 - `Issues`: `type` (text or select: `Electric`, `Mechanical`,
   `Missing Material`, `Program`, `Robot`) is required when creating an issue
-  from Daily Report.
+  from Daily Report. `handler` (relation to `users`, or text holding the user
+  id) and `deadline` (date) are set once from the Workflow issue table; only
+  users whose `position` matches the issue type can be chosen, and both fields
+  are locked after assignment.
 - `users`: `position` (multiple select: `Part Leader`, `Senior Engineer`,
   `Purchasing`, `Technician`, `Unit Leader`, `Engineer`, `Mechanical`,
-  `Electric`, `Program`, `Robot`).
+  `Electric`, `Program`, `Robot`), `avatar` (image) and `background_image`
+  (image, the cover photo on the profile page). Users edit their own photos,
+  position and password on `user.html`; the collection's update rule must
+  allow a user to update their own record.
+
+- `Inventory_Items`: `auto_increment_id` (number) is the last QR label number
+  issued for the material. Printing N labels for code `AAAA` creates
+  `AAAA-<last+1>` … `AAAA-<last+N>` and saves `auto_increment_id = last + N`
+  together with `stock = stock + N` (printing labels is the stock-in step).
+  When scanning, the text before the last `-<number>` is the material code
+  used to add or remove stock.
+- The Nhập kho page can also create materials in bulk from an `.xlsx` file
+  (read with ExcelJS). The sheet needs a header row with `Tên sản phẩm`
+  (→ `name`), `QCode/XCode` (→ `code`) and optionally `Mô tả`
+  (→ `description`). Only codes not yet in `Inventory_Items` are created, with
+  `stock = 0` and `auto_increment_id = 0`; existing codes are skipped.
 
 On the Notification page an issue is shown only to users whose `position`
 matches its `type`: `Electric`, `Mechanical`, `Program` and `Robot` go to the
@@ -75,6 +93,17 @@ Each page in `Page/` has its own folder in `Script/` with the same layout
 
 Shared code lives in `Script/services/generic.api.js` (PocketBase requests),
 `Script/utils/` and `Script/config.js`.
+
+The warehouse ("Kho vật tư" in the sidebar) is split into three pages that
+share `Script/services/inventory.api.js` (material lookup, QR code parsing,
+stock changes, label numbering) and `Script/utils/scan-input.js` (handheld
+scanner detection):
+
+| Page                | Script folder           | Purpose                                         |
+|---------------------|-------------------------|-------------------------------------------------|
+| `stock-import.html` | `Script/stock-import/`  | Print QR labels; printing N labels adds N stock |
+| `stock-export.html` | `Script/stock-export/`  | Scan into a list, edit quantities, save (−)     |
+| `inventory.html`    | `Script/inventory/`     | Stock list: filter, scan-to-filter, delete      |
 
 ## Technologies
 

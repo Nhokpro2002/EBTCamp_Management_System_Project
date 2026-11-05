@@ -1,5 +1,6 @@
 import * as api from "../services/generic.api.js";
 import { URL_LOCAL } from "../config.js";
+import { getUsersForIssueType } from "../services/issue-roles.js";
 
 import { workflowData, projectData, issueData } from "./state.js";
 
@@ -14,6 +15,7 @@ const COLLECTION_PROJECTS = "Projects";
 const COLLECTION_ISSUES = "Issues";
 const COLLECTION_TASK_DAILY_REPORTS = "TaskDailyReports";
 const COLLECTION_REPORTS = "Reports";
+const COLLECTION_USERS = "Users";
 
 // Thứ tự hiển thị stage
 const STAGE_ORDER = {
@@ -37,7 +39,7 @@ export async function loadProjectData(projectID) {
     const project = result[0];
 
     if (!project) {
-        throw new Error(`Project not found: ${projectID}`);
+        throw new Error(`Không tìm thấy dự án: ${projectID}`);
     }
 
     projectData.startDate = project.start_date;
@@ -79,12 +81,105 @@ export async function loadStageData(projectID) {
     workflowData.tasks = taskResults.flat();
 }
 
+/**
+ * Toàn bộ issue của project (tất cả các trang, không chỉ 30 bản ghi đầu).
+ */
 export async function loadIssueData(projectID) {
-    issueData.issue = await api.getRecordsFilter(
+    const PAGE_SIZE = 200;
+    const filter = `project = ${api.quoteFilterValue(projectID)}`;
+    const issues = [];
+
+    for (let page = 1; ; page++) {
+        const items = await api.getRecordsByFilter(COLLECTION_ISSUES, filter, page, PAGE_SIZE);
+        issues.push(...items);
+        if (items.length < PAGE_SIZE) break;
+    }
+
+    issueData.issue = issues;
+}
+
+/**
+ * Toàn bộ user — để chọn người xử lý issue theo position.
+ */
+export async function loadUsers() {
+    const users = [];
+    let page = 1;
+    let totalPages = 1;
+
+    do {
+        const result = await api.loadInventoryItemEachPage(COLLECTION_USERS, page, 200);
+        users.push(...result.items);
+        totalPages = result.totalPages || 1;
+        page++;
+    } while (page <= totalPages);
+
+    issueData.users = users;
+}
+
+// =====================================================
+// NGƯỜI XỬ LÝ + THỜI HẠN CỦA ISSUE
+// Chọn 1 lần duy nhất: đã có cả handler và deadline thì không đổi được nữa.
+// =====================================================
+
+export function getUserName(user) {
+    return user?.employee_name || user?.name || user?.email || "";
+}
+
+/**
+ * Người có position phù hợp với type của issue (quy tắc ở services/issue-roles.js).
+ */
+export function getHandlerCandidates(issue) {
+    return getUsersForIssueType(issueData.users, issue?.type)
+        .sort((a, b) => getUserName(a).localeCompare(getUserName(b), "vi"));
+}
+
+/**
+ * Tên người xử lý để hiển thị (field handler lưu id user; dữ liệu cũ có thể lưu tên).
+ */
+export function getHandlerName(issue) {
+    const handler = Array.isArray(issue?.handler) ? issue.handler[0] : issue?.handler;
+    if (!handler) return "";
+    const user = issueData.users.find(item => item.id === handler);
+    return user ? getUserName(user) : String(handler);
+}
+
+export function isIssueAssigned(issue) {
+    return Boolean(issue?.handler && (Array.isArray(issue.handler) ? issue.handler.length : true)) &&
+        Boolean(String(issue?.deadline ?? "").trim());
+}
+
+/**
+ * Giao người xử lý + thời hạn cho issue (chỉ một lần).
+ * Đọc lại bản ghi mới nhất trước khi ghi: nếu người khác vừa giao thì không ghi đè.
+ */
+export async function assignIssueHandler(issueID, handlerID, deadline) {
+    const [latest] = await api.getRecordsByFilter(
         COLLECTION_ISSUES,
-        "project",
-        projectID
+        `id = ${api.quoteFilterValue(issueID)}`,
+        1,
+        1
     );
+    if (!latest) {
+        throw new Error("Không tìm thấy issue.");
+    }
+
+    const issue = findIssue(issueID);
+    if (isIssueAssigned(latest)) {
+        if (issue) Object.assign(issue, latest);
+        throw new Error("Issue này đã được giao người xử lý và thời hạn, không thể thay đổi.");
+    }
+
+    const candidate = getHandlerCandidates(latest).find(user => user.id === handlerID);
+    if (!candidate) {
+        throw new Error("Người xử lý không phù hợp với loại vấn đề của issue.");
+    }
+
+    const updated = await api.updateRecord(COLLECTION_ISSUES, issueID, {
+        handler: handlerID,
+        deadline
+    });
+    if (issue) Object.assign(issue, updated);
+    return updated;
 }
 
 // =====================================================
@@ -481,12 +576,82 @@ export async function deleteIssues(ids) {
     return { deletedIDs, failedIDs };
 }
 
+// =====================================================
+// TASK TRỄ HẠN = MỘT LOẠI ISSUE
+// Tính ra từ task (chưa xong mà đã quá ngày kết thúc), KHÔNG lưu vào database:
+// task hoàn thành hoặc được dời hạn → tự biến mất khỏi danh sách issue.
+// Cùng cách tính số ngày trễ với chữ "Trễ x ngày" trên Gantt.
+// =====================================================
+export const OVERDUE_ISSUE_TYPE = "Trễ hạn";
+
+function parseDay(value) {
+    const match = String(value ?? "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])) : null;
+}
+
+function toIsoDay(date) {
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+    ].join("-");
+}
+
+/**
+ * @returns {Array<Object>} issue ảo cho từng task đang trễ hạn
+ */
+export function getOverdueTaskIssues() {
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+    return workflowData.tasks.flatMap(task => {
+        if ((Number(task.progress) || 0) >= 1) return [];
+
+        const start = parseDay(task.start_date);
+        if (!start) return [];
+
+        // Ngày kết thúc theo Gantt = start + duration (mốc 00:00 ngày kế tiếp)
+        const end = new Date(start);
+        end.setDate(end.getDate() + (Number(task.duration) || 0));
+        if (end >= tomorrow) return [];
+
+        const delayDays = Math.round((tomorrow - end) / 86400000);
+        const lastDay = new Date(end);
+        lastDay.setDate(lastDay.getDate() - 1);
+        const stage = workflowData.stages.find(item => String(item.id) === String(task.stage));
+
+        return [{
+            id: `overdue-${task.id}`,
+            isOverdueTask: true,
+            taskID: task.id,
+            delayDays,
+            title: task.name,
+            type: OVERDUE_ISSUE_TYPE,
+            related_stage: stage?.name || task.css || "",
+            related_task: task.name,
+            solution: "",
+            reporter: "Hệ thống",
+            // Thời hạn = ngày kết thúc kế hoạch; ngày tạo = ngày bắt đầu bị trễ
+            deadline: toIsoDay(lastDay),
+            created_date: toIsoDay(end)
+        }];
+    });
+}
+
+/**
+ * Issue trong database + task trễ hạn.
+ */
+export function getAllIssues() {
+    return [...issueData.issue, ...getOverdueTaskIssues()];
+}
+
 /**
  * Đếm số issue theo stage (so khớp related_stage, không phân biệt hoa thường).
+ * Gồm cả task trễ hạn.
  * @returns {Object<string, number>} key là tên stage viết thường
  */
 export function countIssuesByStage() {
-    return issueData.issue.reduce((counts, issue) => {
+    return getAllIssues().reduce((counts, issue) => {
         const key = normalizeText(issue.related_stage);
         if (key) {
             counts[key] = (counts[key] || 0) + 1;
@@ -495,8 +660,27 @@ export function countIssuesByStage() {
     }, {});
 }
 
+/**
+ * Số issue theo stage: tổng và số chưa xử lý (chưa có solution).
+ * Task trễ hạn luôn tính là chưa xử lý.
+ * @returns {Object<string, { total: number, open: number }>} key = tên stage viết thường
+ */
+export function getIssueSummaryByStage() {
+    return getAllIssues().reduce((summary, issue) => {
+        const key = normalizeText(issue.related_stage);
+        if (!key) return summary;
+
+        summary[key] ??= { total: 0, open: 0 };
+        summary[key].total++;
+        if (!String(issue.solution ?? "").trim()) {
+            summary[key].open++;
+        }
+        return summary;
+    }, {});
+}
+
 export function filterIssues({ keyword, stage }) {
-    return issueData.issue.filter(issue => {
+    return getAllIssues().filter(issue => {
         const matchesStage =
             stage === "all" ||
             normalizeText(issue.related_stage) === normalizeText(stage);
@@ -505,8 +689,10 @@ export function filterIssues({ keyword, stage }) {
             issue.id,
             issue.title,
             issue.related_stage,
+            issue.type,
             issue.solution,
             issue.reporter,
+            getHandlerName(issue),
             issue.created_date
         ].join(" ").toLowerCase();
 

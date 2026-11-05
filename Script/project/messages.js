@@ -1,17 +1,17 @@
 export const projectPageMessage = {
-    createSuccess: "Project created successfully.",
-    updateSuccess: "Project updated successfully.",
-    deleteSuccess: "Project deleted successfully.",
+    createSuccess: "Đã tạo dự án.",
+    updateSuccess: "Đã cập nhật dự án.",
+    deleteSuccess: "Đã xóa dự án.",
 
-    createFailed: "Failed to create new project.",
-    updateFailed: "Failed to update project.",
-    deleteFailed: "Failed to delete project.",
+    createFailed: "Không thể tạo dự án mới.",
+    updateFailed: "Không thể cập nhật dự án.",
+    deleteFailed: "Không thể xóa dự án.",
 
-    loadSuccess: "Project loaded successfully.",
-    loadError: "Failed to load project.",
+    loadSuccess: "Đã tải dự án.",
+    loadError: "Không tải được dự án.",
 
-    requiredFields: "Please fill in all required fields.",
+    requiredFields: "Vui lòng điền đầy đủ các trường bắt buộc.",
 
-    deleteConfirm: "Are you sure you want to delete the selected items?"
+    deleteConfirm: "Bạn có chắc muốn xóa các mục đã chọn?"
 
 }

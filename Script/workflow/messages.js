@@ -1,31 +1,31 @@
 export const workflowPageMessage = {
-    createSuccess: "Task created successfully.",
-    updateSuccess: "Task updated successfully.",
-    deleteSuccess: "Task deleted successfully.",
+    createSuccess: "Đã tạo task.",
+    updateSuccess: "Đã cập nhật task.",
+    deleteSuccess: "Đã xóa task.",
 
-    createFailed: "Failed to create new task.",
-    updateFailed: "Failed to update task.",
-    deleteFailed: "Failed to delete task.",
+    createFailed: "Không thể tạo task mới.",
+    updateFailed: "Không thể cập nhật task.",
+    deleteFailed: "Không thể xóa task.",
 
-    taskNotExistInDB: "This item is deleted in the inventory or not exist.",
+    taskNotExistInDB: "Task này đã bị xóa hoặc không tồn tại.",
 
-    loadTaskListSuccess: "Task Data loaded successfully.",
-    loadTaskListError: "Failed to load task data.",
+    loadTaskListSuccess: "Đã tải dữ liệu task.",
+    loadTaskListError: "Không tải được dữ liệu task.",
 
-    loadStageListSuccess: "Stage Data loaded successfully.",
-    loadStageListError: "Failed to load stage data.",
+    loadStageListSuccess: "Đã tải dữ liệu stage.",
+    loadStageListError: "Không tải được dữ liệu stage.",
 
-    loadUserDataError: "Failed to load user data.",
+    loadUserDataError: "Không tải được dữ liệu người dùng.",
 
-    requiredFields: "Please fill in all required fields.",
+    requiredFields: "Vui lòng điền đầy đủ các trường bắt buộc.",
 
-    deleteIssueConfirm: "Delete the selected issues? This cannot be undone.",
-    deleteIssueSuccess: "Issues deleted successfully.",
-    deleteIssueFailed: "Failed to delete some issues.",
+    deleteIssueConfirm: "Xóa các issue đã chọn? Thao tác này không thể hoàn tác.",
+    deleteIssueSuccess: "Đã xóa issue.",
+    deleteIssueFailed: "Một số issue không xóa được.",
 
-    solutionUpdateSuccess: "Solution saved successfully.",
-    solutionUpdateFailed: "Failed to save solution.",
+    solutionUpdateSuccess: "Đã lưu giải pháp.",
+    solutionUpdateFailed: "Không thể lưu giải pháp.",
 
-    deleteConfirm: "Are you sure you want to delete the selected tasks?"
+    deleteConfirm: "Bạn có chắc muốn xóa các task đã chọn?"
 
 }

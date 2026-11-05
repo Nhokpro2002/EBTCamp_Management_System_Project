@@ -3,7 +3,7 @@ import * as ui from "./ui.js";
 import * as utils from "../utils/utils.js";
 
 import { setZoom } from "./gantt.js";
-import { workflowData, projectData, issueData } from "./state.js";
+import { workflowData, projectData } from "./state.js";
 import { workflowPageMessage } from "./messages.js";
 
 // =========================================================
@@ -21,7 +21,7 @@ export function bindGanttEvents() {
     gantt.attachEvent("onAfterTaskDrag", async function (id) {
         const success = await saveTask(id);
         if (success) {
-            renderStageProgress();
+            renderIssues();
         }
         gantt.batchUpdate(() => {
             gantt.clearAll();
@@ -36,7 +36,7 @@ export function bindGanttEvents() {
             return false;
         }
 
-        renderStageProgress();
+        renderIssues();
         return true;
     });
 
@@ -50,6 +50,9 @@ export function bindGanttEvents() {
     gantt.attachEvent("onAfterTaskDelete", async function (id) {
         try {
             await service.deleteTask(id);
+            // Bỏ task khỏi state → không còn tính là task trễ hạn / tiến độ stage
+            workflowData.tasks = workflowData.tasks.filter(task => String(task.id) !== String(id));
+            renderIssues();
         } catch (error) {
             console.log(error);
             utils.showError(workflowPageMessage.deleteFailed);
@@ -151,6 +154,21 @@ export function bindUIEvents() {
     ui.getIssueFilterInputs()
         .forEach(el => el.addEventListener("input", renderIssues));
 
+    // ---------- Thẻ tiến độ stage: bấm số issue → lọc bảng Issues theo stage ----------
+    document.getElementById("stage-progress-grid")?.addEventListener("click", event => {
+        const link = event.target.closest("[data-stage-issues]");
+        if (!link) return;
+
+        // Chọn đúng option của ô lọc stage (không phân biệt hoa / thường)
+        const stageName = link.dataset.stageIssues.trim().toLowerCase();
+        const option = [...document.getElementById("stageFilter").options]
+            .find(item => item.value.toLowerCase() === stageName);
+        ui.setStageFilter(option?.value ?? "all");
+        renderIssues();
+        document.querySelector(".issues-panel")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
     // ---------- Cột trái: bấm stage để lọc, bấm lại để bỏ lọc ----------
     ui.getStageStatButtons().forEach(button => {
         button.addEventListener("click", () => {
@@ -158,6 +176,12 @@ export function bindUIEvents() {
             ui.setStageFilter(stage === button.dataset.stage ? "all" : button.dataset.stage);
             renderIssues();
         });
+    });
+
+    // ---------- Người xử lý + thời hạn: giao 1 lần, sau đó khóa ----------
+    ui.getIssueTableBody().addEventListener("click", event => {
+        const button = event.target.closest("[data-assign-issue]");
+        if (button) assignIssue(button.dataset.assignIssue);
     });
 
     // ---------- Solution: sửa trực tiếp trong bảng ----------
@@ -197,7 +221,7 @@ async function handleDeleteIssues() {
     if (!ids.length) return;
 
     const confirmed = await utils.showConfirm(
-        `Delete ${ids.length} issue${ids.length === 1 ? "" : "s"}?`,
+        `Xóa ${ids.length} issue?`,
         workflowPageMessage.deleteIssueConfirm,
         "Delete"
     );
@@ -207,7 +231,6 @@ async function handleDeleteIssues() {
     try {
         const { failedIDs } = await service.deleteIssues(ids);
 
-        ui.renderIssueCount(issueData.issue.length);
         renderIssues();
 
         if (failedIDs.length) {
@@ -217,6 +240,41 @@ async function handleDeleteIssues() {
         }
     } finally {
         ui.setDeleteIssuesSaving(false);
+    }
+}
+
+// =========================================================
+// GIAO NGƯỜI XỬ LÝ + THỜI HẠN
+// =========================================================
+async function assignIssue(issueID) {
+    const issue = service.findIssue(issueID);
+    if (!issue) return;
+
+    const { handlerID, deadline } = ui.getAssignmentValues(issueID);
+    if (!handlerID || !deadline) {
+        utils.showError("Vui lòng chọn cả người xử lý và thời hạn.");
+        return;
+    }
+
+    const handler = service.getHandlerCandidates(issue).find(user => user.id === handlerID);
+    const [year, month, day] = deadline.split("-");
+    const confirmed = await utils.showConfirm(
+        "Giao người xử lý?",
+        `Giao "${issue.title}" cho ${service.getUserName(handler)}, hạn ${day}/${month}/${year}. ` +
+        "Sau khi giao sẽ không thể thay đổi người xử lý và thời hạn."
+    );
+    if (!confirmed) return;
+
+    ui.setAssignSaving(issueID, true);
+    try {
+        await service.assignIssueHandler(issueID, handlerID, deadline);
+        utils.showSuccess("Đã giao người xử lý cho issue.");
+    } catch (error) {
+        console.error(error);
+        utils.showError(error.message || "Không thể giao người xử lý.");
+    } finally {
+        // Vẽ lại bảng: dòng vừa giao chuyển sang trạng thái khóa
+        renderIssues();
     }
 }
 
@@ -241,6 +299,8 @@ async function saveIssueSolution(cell) {
     try {
         await service.updateIssueSolution(issueID, solution);
         ui.showSolutionView(cell, getIssueSolution(cell));
+        // Có / bỏ solution → đổi số issue "chưa xử lý" trong thẻ stage
+        renderStageProgress();
         utils.showSuccess(workflowPageMessage.solutionUpdateSuccess);
     } catch (error) {
         console.error(error);
@@ -254,17 +314,21 @@ async function saveIssueSolution(cell) {
 // =========================================================
 export function renderIssues() {
     const filters = ui.getIssueFilters();
+    // Số issue ở tiêu đề: issue trong database + task trễ hạn
+    ui.renderIssueCount(service.getAllIssues().length);
     ui.renderIssueTable(service.filterIssues(filters));
     ui.renderStageIssueCounts(service.countIssuesByStage());
     ui.highlightStageStat(filters.stage);
+    // Số issue trong thẻ tiến độ của từng stage
+    renderStageProgress();
 }
 
 /**
- * Vẽ tiến độ từng stage và tổng tiến độ project (trung bình các stage).
+ * Vẽ tiến độ từng stage (kèm số issue của stage) và tổng tiến độ project (trung bình các stage).
  */
 export function renderStageProgress() {
     const stageProgressList = service.getStageProgressList();
-    ui.renderStageProgressCards(stageProgressList);
+    ui.renderStageProgressCards(stageProgressList, service.getIssueSummaryByStage());
     ui.updateProgress(service.getOverallProgress(stageProgressList));
 }
 
@@ -278,7 +342,7 @@ export function renderStageProgress() {
  */
 async function saveTask(id, task = gantt.getTask(id)) {
     if (!service.findTask(id)) {
-        utils.showError("Task not found.");
+        utils.showError("Không tìm thấy task.");
         return false;
     }
 
@@ -311,7 +375,7 @@ async function loadReportHistory(taskID) {
     if (!node) return;
 
     workflowData.reportHistory = [];
-    ui.renderReportHistoryMessage(node, "Loading reports...");
+    ui.renderReportHistoryMessage(node, "Đang tải báo cáo...");
 
     const isCurrentLightbox = () => gantt.getState().lightbox == taskID;
 
@@ -328,7 +392,7 @@ async function loadReportHistory(taskID) {
     } catch (error) {
         console.error(error);
         if (isCurrentLightbox()) {
-            ui.renderReportHistoryMessage(node, "Could not load report history.");
+            ui.renderReportHistoryMessage(node, "Không tải được lịch sử báo cáo.");
         }
     }
 }
@@ -342,7 +406,7 @@ async function handleCreateTask() {
     const formData = ui.getTaskFormData();
 
     if (!service.isValidTaskInput(formData)) {
-        utils.showError("Invalid task data.");
+        utils.showError("Dữ liệu task không hợp lệ.");
         ui.closeTaskModal();
         return;
     }
@@ -357,7 +421,8 @@ async function handleCreateTask() {
 
             gantt.clearAll();
             gantt.parse(projectData);
-            renderStageProgress();
+            // Tiến độ stage + danh sách issue (task mới có thể đã trễ hạn)
+            renderIssues();
         }
     } catch (error) {
         console.error(error);

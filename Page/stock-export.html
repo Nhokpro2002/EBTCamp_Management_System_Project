@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <script src="../Script/auth/auth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xuất kho</title>
+
+    <link href="../Libs/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../Libs/Bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link href="../Libs/BootstrapIcon/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/inventory.css">
+    <link rel="stylesheet" href="../CSS/report-navigation.css">
+    <link href="../Libs/SweetAlert2/sweetalert2.min.css" rel="stylesheet">
+    <script src="../Libs/SweetAlert2/sweetalert2.min.js"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="logo sidebar-brand">
+                <span class="brand-mark"><img src="../Image/LG-Symbol.png" alt=""></span><span class="brand-text"><strong>LG Display</strong><small>Assembly Room Management</small></span>
+            </div>
+
+            <ul class="menu">
+                <li><a href="dashboard.html"><i class="bi bi-grid"></i> Tổng quan</a></li>
+                <li>
+                    <details class="menu-report menu-inventory" open>
+                        <summary><i class="bi bi-box"></i> Kho vật tư <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="stock-import.html"><i class="bi bi-box-arrow-in-down"></i> Nhập kho</a></li>
+                            <li><a href="stock-export.html" aria-current="page"><i class="bi bi-box-arrow-up"></i> Xuất kho</a></li>
+                            <li><a href="inventory.html"><i class="bi bi-archive"></i> Lưu kho</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
+                <li>
+                    <a href="notification.html">
+                        <span class="notification-icon">
+                            <i class="bi bi-bell"></i>
+                            <span id="badge-count" class="badge rounded-pill bg-danger text-white d-none">0</span>
+                        </span>
+                        Thông báo
+                    </a>
+                </li>
+                <li>
+                    <details class="menu-report">
+                        <summary><i class="bi bi-file-earmark-text"></i> Báo cáo <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="daily-report.html"><i class="bi bi-calendar-day"></i> Báo cáo ngày</a></li>
+                            <li><span class="report-submenu-disabled">Báo cáo tuần <small>Sắp có</small></span></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="#"><i class="bi bi-gear"></i> Cài đặt</a></li>
+            </ul>
+
+            <a class="sidebar-user sidebar-user-link" href="user.html" aria-label="Mở hồ sơ cá nhân">
+                <img class="sidebar-user-avatar" src="../Image/LG-Symbol.png" alt="Ảnh đại diện">
+                <span class="user-info">
+                    <h6 class="user-name">Người dùng</h6>
+                    <small class="user-role">Hồ sơ</small>
+                </span>
+            </a>
+        </aside>
+
+        <main class="content">
+
+            <header class="topbar">
+                <div>
+                    <p class="breadcrumb-text">Kho vật tư <i class="bi bi-chevron-right"></i> Xuất kho</p>
+                    <h2>Xuất kho</h2>
+                    <p class="topbar-subtitle">Quét tem QR của vật tư lấy ra, kiểm tra số lượng rồi lưu để trừ tồn kho.</p>
+                </div>
+            </header>
+
+            <!-- Quét -->
+            <section class="page-card">
+                <h3 class="page-card-title"><i class="bi bi-upc-scan"></i> Quét vật tư</h3>
+                <label class="form-label" for="exportScanInput">Mã đã quét</label>
+                <div class="scan-input">
+                    <i class="bi bi-upc-scan" aria-hidden="true"></i>
+                    <input type="text" class="form-control" id="exportScanInput"
+                        placeholder="Quét QR hoặc nhập mã rồi nhấn Enter" autocomplete="off">
+                </div>
+                <p class="scan-help">
+                    Quét một mã mới sẽ thêm dòng với SL xuất <b>1</b>; quét lại tem đó hoặc tem khác
+                    cùng mã sẽ cộng thêm <b>1</b> vào SL xuất.
+                    Tồn kho chỉ bị trừ khi bấm <b>Lưu xuất kho</b>.
+                </p>
+                <div class="scan-result" id="exportScanResult" aria-live="polite"></div>
+            </section>
+
+            <!-- Danh sách xuất -->
+            <section class="page-card">
+                <div class="page-card-header">
+                    <h3 class="page-card-title"><i class="bi bi-list-check"></i> Danh sách xuất kho</h3>
+                    <span class="export-summary">
+                        <b id="exportItemCount">0</b> vật tư · tổng <b id="exportTotalQuantity">0</b> cái
+                    </span>
+                </div>
+
+                <div class="table-responsive stock-table-wrap">
+                    <table class="table align-middle stock-table">
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên vật tư</th>
+                                <th>Model</th>
+                                <th>XCode/QCode</th>
+                                <th>Hãng</th>
+                                <th>Đang tồn</th>
+                                <th width="140">SL xuất</th>
+                                <th width="50"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="exportTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="stock-table-actions">
+                    <button type="button" class="btn btn-outline-secondary" id="exportClearBtn">
+                        Xóa danh sách
+                    </button>
+                    <button type="button" class="btn btn-danger" id="exportSaveBtn" disabled>
+                        <i class="bi bi-check-lg"></i> Lưu xuất kho
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="../Script/stock-export/main.js"></script>
+    <script type="module" src="../Script/user/main.js"></script>
+</body>
+
+</html>

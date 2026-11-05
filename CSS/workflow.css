@@ -276,21 +276,77 @@ body {
 /* =========================================================
    CIRCULAR PROGRESS
 ========================================================= */
-.progress-card {
-    min-width: 150px;
-    justify-content: space-between;
-}
 
 .workflow-progress-row {
     display: grid;
-    grid-template-columns: 170px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
     min-width: 0;
 }
 
-.project-progress-card {
-    height: 82px;
-    min-width: 0;
+/* Ô chú thích màu: dùng đúng màu của thanh task (--task-bg / --task-progress) */
+.status-legend {
+    gap: 14px;
+}
+
+.status-legend .legend-title {
+    color: #667085;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.status-legend > .legend-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.legend-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #253044;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.legend-dot {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--task-progress);
+    border-radius: 50%;
+}
+
+/* Đậm = hoàn thành */
+.legend-dot.is-done {
+    background: var(--task-progress);
+}
+
+/* Nửa đậm nửa nhạt = đang làm */
+.legend-dot.is-doing {
+    background: linear-gradient(90deg, var(--task-progress) 50%, var(--task-bg) 50%);
+}
+
+/* Nhạt = chưa xử lý tới */
+.legend-dot.is-todo {
+    background: var(--task-bg);
+}
+
+/* Tiến độ dự án nằm cùng hàng với các thẻ tổng quan: vòng tròn ở vị trí icon */
+.project-progress-card .project-circular-progress {
+    width: 48px;
+    height: 48px;
+}
+
+.project-progress-card .project-circular-progress strong {
+    font-size: 12px;
 }
 
 .stage-progress-grid {
@@ -306,19 +362,77 @@ body {
     justify-content: space-between;
     gap: 8px;
     min-width: 0;
-    height: 82px;
+    min-height: 82px;
     padding: 10px 12px;
     border-radius: 12px;
     background: #fff;
     box-shadow: 0 3px 12px rgba(0, 0, 0, .06);
 }
 
+.stage-progress-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+}
+
 .stage-progress-name {
+    max-width: 100%;
     overflow: hidden;
     color: #253044;
     font-size: 13px;
     font-weight: 600;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Số issue của stage — bấm để lọc bảng Issues */
+.stage-issue-link {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    max-width: 100%;
+    padding: 3px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 12px;
+    line-height: 1.3;
+    text-align: left;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+
+.stage-issue-link i {
+    color: #16a34a;
+}
+
+.stage-issue-link b {
+    color: #0f172a;
+}
+
+.stage-issue-link.has-open {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.stage-issue-link.has-open i {
+    color: #dc2626;
+}
+
+.stage-issue-open {
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.stage-issue-link:hover,
+.stage-issue-link:focus-visible {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    outline: none;
 }
 
 .stage-circular-progress {
@@ -454,47 +568,6 @@ body {
         inset 0 0 0 1px #2563eb;
 }
 
-
-/* Control buttons */
-
-.control-button,
-.icon-button {
-    height: 48px;
-
-    border: 1px solid #d9dee7;
-
-    background: white;
-
-    border-radius: 9px;
-
-    color: #344054;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: .2s;
-}
-
-
-.control-button {
-    padding: 0 16px;
-}
-
-
-.icon-button {
-    width: 48px;
-
-    font-size: 17px;
-}
-
-
-.control-button:hover,
-.icon-button:hover {
-    background: #f7f9fc;
-
-    transform: translateY(-1px);
-}
 
 
 /* =========================================================
@@ -637,14 +710,52 @@ body {
 
 
 /* =========================================================
+   TOOLTIP khi rê chuột vào thanh task / stage (gantt.templates.tooltip_text)
+========================================================= */
+.gantt_tooltip {
+    min-width: 180px;
+    max-width: 320px;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, .16);
+    color: #334155;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: normal;
+}
+
+.gantt-tip-title {
+    margin-bottom: 4px;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.gantt-tip-row {
+    color: #64748b;
+}
+
+.gantt-tip-row b {
+    color: #0f172a;
+}
+
+.gantt-tip-delay {
+    margin-top: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+
+/* =========================================================
    OVERDUE (DELAY) SEGMENT
 ========================================================= */
-
-/* Bo góc phải của thanh task để nối liền với phần dôi ra */
-.gantt_task_line.task-delayed {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-}
 
 .gantt_delay_layer {
     position: absolute;
@@ -655,31 +766,14 @@ body {
     pointer-events: none;
 }
 
-/* top/height được JS căn theo .gantt_task_line đã render.
-   Cùng tông màu task: sọc chéo nhạt + viền nét đứt màu nhạt. */
+/* Chữ "Trễ x ngày" ngay sau cuối thanh task (left/top/height do JS căn theo thanh).
+   Chỉ có chữ, không nền / sọc / viền. */
 .gantt_task_delay {
-    --delay-stripe-light: color-mix(in srgb, var(--task-progress) 6%, #fff);
-    --delay-stripe-dark: color-mix(in srgb, var(--task-progress) 18%, #fff);
-
-    border: 1.5px dashed color-mix(in srgb, var(--task-progress) 40%, #fff);
-    border-left: 0;
-
-    pointer-events: auto;
     position: absolute;
-    box-sizing: border-box;
-    padding: 0 6px;
-    overflow: hidden;
-    border-radius: 0 6px 6px 0;
-    background: repeating-linear-gradient(-45deg,
-            var(--delay-stripe-light) 0,
-            var(--delay-stripe-light) 6px,
-            var(--delay-stripe-dark) 6px,
-            var(--delay-stripe-dark) 12px);
-    color: var(--task-text);
+    pointer-events: auto; /* rê chuột vào vẫn hiện tooltip của task */
+    color: #b91c1c;
     font-size: 12px;
     font-weight: 700;
-    text-align: center;
-    text-overflow: ellipsis;
     white-space: nowrap;
     z-index: 1;
 }
@@ -699,12 +793,27 @@ body {
    TREE
 ========================================================= */
 
+/* Lưới bên trái: chữ nhỏ lại để hiện đủ tên task, ngày và số ngày */
 .gantt_tree_content {
-    font-size: 14px;
+    font-size: 12.5px;
 
     font-weight: 500;
 
     color: #243247;
+}
+
+.gantt_grid_data .gantt_cell {
+    font-size: 12.5px;
+}
+
+.gantt_grid_head_cell {
+    font-size: 12.5px !important;
+}
+
+.task-name-cell {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -937,10 +1046,6 @@ body {
         min-width: 250px;
     }
 
-    .workflow-progress-row {
-        grid-template-columns: 155px minmax(0, 1fr);
-    }
-
     .stage-progress-grid {
         gap: 8px;
     }
@@ -1000,8 +1105,8 @@ body {
     --stage-program-bg: #f6c6ff;
     --stage-program-fg: #2f0168;
 
-    /* Màu chung cho mọi task trên Gantt (ui.js đọc các biến này).
-       Chữ đậm trên nền nhạt ~11:1, chữ trắng trên nền đậm ~7.5:1 → đọc rõ không cần bóng */
+    /* Màu chung cho mọi thanh task VÀ thanh stage trên Gantt (ui.js đọc các biến này),
+       dùng luôn cho ô chú thích màu. Chữ đậm trên nền nhạt ~11:1, chữ trắng trên nền đậm ~7.5:1 */
     --task-bg: #cfe0fb;        /* phần chưa hoàn thành */
     --task-progress: #1e4fa8;  /* phần đã hoàn thành */
     --task-text: #0f2a5c;      /* chữ trên phần chưa hoàn thành */
@@ -1106,12 +1211,44 @@ select {
     min-height: 350px;
 }
 
+/* Cột giai đoạn bên trái: thu hẹp để bảng Issues đủ chỗ, không phải kéo ngang */
 .issue-summary {
-    width: 205px;
-    flex: 0 0 205px;
-    padding: 15px 12px;
+    width: 150px;
+    flex: 0 0 150px;
+    padding: 14px 8px;
     border-right: 1px solid var(--border);
     background: #fbfcfe;
+}
+
+/* Màn hình hẹp: cột giai đoạn chuyển lên trên bảng thành một hàng ngang */
+@media (max-width: 1280px) {
+    .issues-content {
+        flex-direction: column;
+    }
+
+    .issue-summary {
+        width: auto;
+        flex: none;
+        padding: 10px 12px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .issue-summary .summary-stage {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .issue-summary .summary-stage h4 {
+        margin: 0 6px 0 0;
+    }
+
+    .issue-summary .stage-stat {
+        width: auto;
+        gap: 8px;
+    }
 }
 
 .summary-stage h4 {
@@ -1228,9 +1365,10 @@ select {
     position: relative;
 }
 
+/* Không ép độ rộng tối thiểu: bảng co theo vùng hiển thị, chỉ kéo ngang khi màn hình quá hẹp */
 table {
     width: 100%;
-    min-width: 1050px;
+    min-width: 860px;
     border-collapse: collapse;
     font-size: 12px;
 }
@@ -1275,13 +1413,138 @@ input[type="checkbox"] {
 }
 
 .issue-title {
+    display: block;
+    min-width: 140px;
+    max-width: 240px;
     color: #31506f;
+    font-weight: 600;
+    /* Tiêu đề dài xuống dòng thay vì làm bảng phình ngang */
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* Loại vấn đề */
+.issue-type-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.issue-muted {
+    color: #94a3b8;
+}
+
+/* Task trễ hạn (issue tự động, không lưu database) */
+.issue-type-chip.is-overdue {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+tr.is-overdue-task {
+    background: #fffafa;
+}
+
+.overdue-row-icon {
+    color: #dc2626;
+    font-size: 14px;
+}
+
+.overdue-note {
+    display: block;
+    color: #7f1d1d;
+    font-size: 12px;
+    white-space: normal;
+}
+
+/* Người xử lý + Thời hạn */
+.issue-handler {
+    min-width: 140px;
+}
+
+.issue-deadline {
+    min-width: 180px;
+}
+
+.handler-select,
+.deadline-input {
+    min-width: 0;
+    border-color: #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.assign-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.assign-controls .deadline-input {
+    flex: 1;
+}
+
+.assign-button {
+    flex: 0 0 auto;
+    height: 31px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 13px;
     font-weight: 600;
 }
 
+.assign-button:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.assign-button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* Đã giao: khóa, chỉ hiển thị */
+.handler-name,
+.deadline-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #0f172a;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.handler-name i {
+    color: #16a34a;
+}
+
+.deadline-value i {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.deadline-value.is-overdue {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.deadline-value.is-overdue i {
+    color: #dc2626;
+}
+
 .solution {
-    min-width: 200px;
-    max-width: 280px;
+    min-width: 150px;
+    max-width: 240px;
 }
 
 .solution-view {

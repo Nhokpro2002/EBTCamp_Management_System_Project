@@ -4,7 +4,7 @@ import * as ui from "./ui.js";
 import * as utils from "../utils/utils.js";
 
 import { setupGantt } from "./gantt.js";
-import { workflowData, projectData, issueData } from "./state.js";
+import { workflowData, projectData } from "./state.js";
 
 // =====================================================
 // INIT APP
@@ -23,7 +23,7 @@ async function initPage() {
     const projectID = new URLSearchParams(location.search).get("projectID");
 
     if (!projectID) {
-        utils.showError("Project ID is missing from the workflow URL.");
+        utils.showError("Thiếu mã dự án (projectID) trên đường dẫn.");
         return;
     }
 
@@ -44,14 +44,17 @@ async function initPage() {
         updateProjectStatistics();
 
         // ---------- Issues ----------
-        await service.loadIssueData(projectID);
-        ui.renderIssueCount(issueData.issue.length);
+        await Promise.all([
+            service.loadIssueData(projectID),
+            service.loadUsers()
+        ]);
+        // Bảng Issues + số issue (gồm cả task trễ hạn)
         events.renderIssues();
 
         gantt.render();
     } catch (error) {
         console.error(error);
-        utils.showError("Failed to load workflow data.");
+        utils.showError("Không tải được dữ liệu tiến độ.");
     }
 }
 

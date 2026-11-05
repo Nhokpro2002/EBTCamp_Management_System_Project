@@ -45,7 +45,7 @@ export function renderOrderItemTable(orderItemList) {
 
     tbody.innerHTML = pageItems.length
         ? pageItems.map(createOrderItemRow).join("")
-        : `<tr><td colspan="10" class="text-center text-muted py-4">No order items to display.</td></tr>`;
+        : `<tr><td colspan="10" class="text-center text-muted py-4">Không có dòng nào để hiển thị.</td></tr>`;
 
     renderPagination(orderItemList.length, totalPages);
     bindCheckboxEvents();
@@ -57,7 +57,7 @@ function renderPagination(totalItems, totalPages) {
     if (!pagination || !pageInfo) return;
 
     if (!totalItems) {
-        pageInfo.textContent = "No items";
+        pageInfo.textContent = "Không có dòng nào";
         pagination.replaceChildren();
         return;
     }
@@ -65,7 +65,7 @@ function renderPagination(totalItems, totalPages) {
     const currentPage = orderDetailPageData.currentPage;
     const firstItem = (currentPage - 1) * orderDetailPageData.pageSize + 1;
     const lastItem = Math.min(currentPage * orderDetailPageData.pageSize, totalItems);
-    pageInfo.textContent = `Showing ${firstItem}-${lastItem} of ${totalItems}`;
+    pageInfo.textContent = `Hiển thị ${firstItem}-${lastItem} / ${totalItems}`;
 
     const pages = [];
     for (let page = 1; page <= totalPages; page += 1) {
@@ -172,18 +172,18 @@ export function createOrderItemRow(item) {
     return `
         <tr ${item.id ? `data-id="${escapeHTML(item.id)}"` : ""}>
             <td class="text-center">
-                <input type="checkbox" class="form-check-input row-checkbox" aria-label="Select ${escapeHTML(item.name)}">
+                <input type="checkbox" class="form-check-input row-checkbox" aria-label="Chọn ${escapeHTML(item.name)}">
             </td>
             <td><span class="d-inline-block text-truncate order-cell-text" title="${escapeHTML(item.name)}">${escapeHTML(item.name)}</span></td>
             <td><span class="d-inline-block text-truncate order-cell-text" title="${escapeHTML(item.model)}">${escapeHTML(item.model)}</span></td>
             <td class="text-center">${escapeHTML(item.code)}</td>
             <td class="text-center">${stock}</td>
-            <td><input type="number" class="form-control order-input" value="${order}" min="0" step="1" aria-label="Order quantity for ${escapeHTML(item.name)}"></td>
-            <td><input type="number" class="form-control unit-price-input" value="${unitPrice}" min="0" step="0.01" aria-label="Unit price for ${escapeHTML(item.name)}"></td>
-            <td><input type="date" class="form-control request-date-input" value="${requestDate}" aria-label="Request date for ${escapeHTML(item.name)}"></td>
+            <td><input type="number" class="form-control order-input" value="${order}" min="0" step="1" aria-label="Số lượng đặt cho ${escapeHTML(item.name)}"></td>
+            <td><input type="number" class="form-control unit-price-input" value="${unitPrice}" min="0" step="0.01" aria-label="Đơn giá cho ${escapeHTML(item.name)}"></td>
+            <td><input type="date" class="form-control request-date-input" value="${requestDate}" aria-label="Ngày yêu cầu cho ${escapeHTML(item.name)}"></td>
             <td>
-                <select class="form-select requester-select" aria-label="Requester for ${escapeHTML(item.name)}">
-                    <option value="">Select requester</option>
+                <select class="form-select requester-select" aria-label="Người yêu cầu cho ${escapeHTML(item.name)}">
+                    <option value="">Chọn người yêu cầu</option>
                     ${userOptions}
                 </select>
             </td>

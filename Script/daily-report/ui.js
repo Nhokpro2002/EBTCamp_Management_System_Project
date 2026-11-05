@@ -22,11 +22,18 @@ service.ISSUE_TYPES.forEach(type => issueTypeSelect.add(new Option(type, type)))
 
 export function setReporter(user) {
     reporterName.textContent =
-        user?.employee_name || user?.name || user?.email || "Unknown user";
+        user?.employee_name || user?.name || user?.email || "Không rõ";
+}
+
+/**
+ * Ô "Người báo cáo": người đã nộp báo cáo của ngày (hoặc người đang đăng nhập nếu chưa nộp).
+ */
+export function setReporterName(name) {
+    reporterName.textContent = name || "Không rõ";
 }
 
 export function renderProjects(projects, selectedProjectID) {
-    projectSelect.replaceChildren(new Option("Select a project", ""));
+    projectSelect.replaceChildren(new Option("Chọn dự án", ""));
     projects.forEach(project => {
         projectSelect.add(
             new Option(project.name, project.id, false, String(project.id) === String(selectedProjectID))
@@ -38,7 +45,7 @@ export function renderTaskPicker(tasks, selectedTaskIDs = []) {
     const selectedIDs = new Set(selectedTaskIDs.map(String));
     const stages = new Map();
     tasks.forEach(task => {
-        const stageName = task.stage_name || "Other tasks";
+        const stageName = task.stage_name || "Task khác";
         if (!stages.has(stageName)) {
             stages.set(stageName, []);
         }
@@ -57,14 +64,14 @@ export function renderTaskPicker(tasks, selectedTaskIDs = []) {
                                 <input type="checkbox" value="${escapeHtml(task.id)}"
                                        ${alreadyAdded ? "checked disabled" : ""}>
                                 <span>${escapeHtml(task.name)}</span>
-                                ${alreadyAdded ? '<small>Added</small>' : ""}
+                                ${alreadyAdded ? '<small>Đã thêm</small>' : ""}
                             </label>
                         `;
         }).join("")}
                 </div>
             </section>
         `).join("")
-        : '<div class="report-empty-state"><i class="bi bi-inbox"></i>No tasks in this project.</div>';
+        : '<div class="report-empty-state"><i class="bi bi-inbox"></i>Dự án này chưa có task nào.</div>';
 
     updateTaskPickerSelectionCount();
     openTaskPickerButton.disabled = tasks.length === 0;
@@ -79,7 +86,7 @@ export function getSelectedTaskIDs() {
 export function updateTaskPickerSelectionCount() {
     const count = getSelectedTaskIDs().length;
     taskPickerSelectionCount.textContent =
-        `${count} task${count === 1 ? "" : "s"} selected`;
+        `Đã chọn ${count} task`;
     addSelectedTasksButton.disabled = count === 0;
 }
 
@@ -100,7 +107,7 @@ export function renderTaskReports(taskReports, users, issues, projectID) {
                 input
             ])
     );
-    taskCount.textContent = `${reports.length} task${reports.length === 1 ? "" : "s"}`;
+    taskCount.textContent = `${reports.length} task`;
 
     taskReportList.innerHTML = reports.length
         ? `
@@ -110,12 +117,12 @@ export function renderTaskReports(taskReports, users, issues, projectID) {
                         <tr>
                             <th>Task</th>
                             <th>Stage</th>
-                            <th>Work status</th>
-                            <th>Worker</th>
-                            <th>Detail</th>
+                            <th>Trạng thái</th>
+                            <th>Người làm <span class="required-mark" aria-hidden="true">*</span></th>
+                            <th>Chi tiết <span class="required-mark" aria-hidden="true">*</span></th>
                             <th>Issues</th>
-                            <th>Evidence image</th>
-                            <th aria-label="Actions"></th>
+                            <th>Ảnh minh chứng</th>
+                            <th aria-label="Thao tác"></th>
                         </tr>
                     </thead>
                     <tbody>${reports.map(entry =>
@@ -124,7 +131,7 @@ export function renderTaskReports(taskReports, users, issues, projectID) {
                 </table>
             </div>
         `
-        : '<div class="report-empty-state"><i class="bi bi-clipboard2-plus"></i>Choose a project and select tasks to start a report.</div>';
+        : '<div class="report-empty-state"><i class="bi bi-clipboard2-plus"></i>Chọn dự án và các task để bắt đầu báo cáo.</div>';
 
     taskReportList.querySelectorAll("tbody tr").forEach(row => {
         const existingInput = existingUploads.get(row.dataset.taskId);
@@ -153,39 +160,41 @@ function renderTaskReportRow(entry, users, issues, projectID) {
                 <i class="bi bi-image"></i>${escapeHtml(fileName)}
             </a>
         `).join("")
-        : '<span class="task-evidence-empty">No saved evidence yet.</span>';
+        : '<span class="task-evidence-empty">Chưa có ảnh minh chứng.</span>';
 
     return `
         <tr data-task-id="${escapeHtml(task.id)}">
             <td class="report-task-name">${escapeHtml(task.name)}</td>
-            <td>${escapeHtml(task.stage_name || "Project task")}</td>
+            <td>${escapeHtml(task.stage_name || "Task dự án")}</td>
             <td>
-                <select class="task-status-select ${getStatusClass(entry.status)}" aria-label="Work status for ${escapeHtml(task.name)}">
+                <select class="task-status-select ${getStatusClass(entry.status)}" aria-label="Trạng thái của ${escapeHtml(task.name)}">
                     ${renderStatusOptions(entry.status)}
                 </select>
-                <span class="task-evidence-required"${entry.status === "Done" && !hasEvidence ? "" : " hidden"}>Evidence required</span>
+                <span class="task-evidence-required"${entry.status === "Done" && !hasEvidence ? "" : " hidden"}>Cần ảnh minh chứng</span>
             </td>
-            <td>
+            <td class="task-required-cell" data-required="worker">
                 ${renderWorker(entry, users)}
+                <small class="task-required-error" hidden>Vui lòng chọn người làm</small>
             </td>
-            <td>
-                <textarea class="task-detail-input" rows="3"
-                          placeholder="What was handled today?"
-                          aria-label="Work detail for ${escapeHtml(task.name)}">${escapeHtml(entry.detail || "")}</textarea>
+            <td class="task-required-cell" data-required="detail">
+                <textarea class="task-detail-input" rows="3" required
+                          placeholder="Hôm nay đã xử lý những gì?"
+                          aria-label="Chi tiết công việc của ${escapeHtml(task.name)}">${escapeHtml(entry.detail || "")}</textarea>
+                <small class="task-required-error" hidden>Vui lòng nhập chi tiết</small>
             </td>
             <td>${renderIssues(linkedIssues, projectID, task.id)}</td>
             <td>
                 <div class="task-evidence-controls"${entry.status === "Done" ? "" : " hidden"}>
                     <div class="task-evidence-list">${evidenceLinks}</div>
                     <input class="task-evidence-upload" type="file" accept="image/*" multiple
-                           aria-label="Upload evidence images for ${escapeHtml(task.name)}">
-                    <small class="task-evidence-help">Images only, max 5 MiB each.</small>
+                           aria-label="Tải ảnh minh chứng cho ${escapeHtml(task.name)}">
+                    <small class="task-evidence-help">Chỉ nhận ảnh, tối đa 5 MiB mỗi ảnh.</small>
                 </div>
             </td>
             <td>
                 ${entry.recordID ? "" : `
                     <button type="button" class="task-report-remove" data-remove-task="${escapeHtml(task.id)}"
-                            aria-label="Remove ${escapeHtml(task.name)} from this report">
+                            aria-label="Bỏ ${escapeHtml(task.name)} khỏi báo cáo">
                         <i class="bi bi-x-lg"></i>
                     </button>
                 `}
@@ -209,27 +218,27 @@ function renderIssues(issues, projectID, taskID) {
         <div class="task-issue-list">
             ${issues.length ? issues.map(issue => issue.tempID ? `
                 <span class="task-issue-link is-pending"
-                      title="Not saved yet. It will be saved when you record the report.">
+                      title="Chưa lưu. Issue sẽ được lưu khi bạn lưu báo cáo.">
                     <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
                     <span>${escapeHtml(issue.title)}</span>
                     <small>${escapeHtml(issue.type || "")}</small>
-                    <small class="task-issue-pending-badge">Pending</small>
+                    <small class="task-issue-pending-badge">Chờ lưu</small>
                     <button type="button" data-remove-pending-issue="${escapeHtml(issue.tempID)}"
-                            aria-label="Remove issue ${escapeHtml(issue.title)}">
+                            aria-label="Bỏ issue ${escapeHtml(issue.title)}">
                         <i class="bi bi-x" aria-hidden="true"></i>
                     </button>
                 </span>
             ` : `
                 <a class="task-issue-link"
                    href="workflow.html?projectID=${encodeURIComponent(projectID)}#issues-panel"
-                   title="${escapeHtml(issue.description || issue.title || "View issue in workflow")}">
+                   title="${escapeHtml(issue.description || issue.title || "Xem issue trong trang tiến độ")}">
                     <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
-                    <span>${escapeHtml(issue.title || "Untitled issue")}</span>
+                    <span>${escapeHtml(issue.title || "Issue chưa đặt tên")}</span>
                     ${issue.type ? `<small>${escapeHtml(issue.type)}</small>` : ""}
                 </a>
-            `).join("") : '<span class="task-issue-empty">No linked issues</span>'}
+            `).join("") : '<span class="task-issue-empty">Chưa có issue</span>'}
             <button type="button" class="task-issue-create" data-create-issue="${escapeHtml(taskID)}">
-                <i class="bi bi-plus-lg" aria-hidden="true"></i> Create issue
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tạo issue
             </button>
         </div>
     `;
@@ -257,8 +266,8 @@ export function getIssueTaskID() {
 export function setIssueCreateSaving(isSaving) {
     submitIssueButton.disabled = isSaving;
     submitIssueButton.innerHTML = isSaving
-        ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Creating...'
-        : '<i class="bi bi-exclamation-triangle"></i> Create issue';
+        ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Đang tạo...'
+        : '<i class="bi bi-exclamation-triangle"></i> Tạo issue';
 }
 
 function normalizeText(value) {
@@ -274,6 +283,24 @@ function renderStatusOptions(selectedStatus) {
 export function updateStatusStyle(select) {
     select.classList.remove("status-not-started", "status-processing", "status-done");
     select.classList.add(getStatusClass(select.value));
+}
+
+/**
+ * Tô đỏ ô Người làm / Chi tiết còn thiếu của một dòng task.
+ * @param {{ worker: boolean, detail: boolean }} missing true = đang thiếu
+ */
+export function setRowRequiredErrors(row, missing) {
+    row.querySelectorAll(".task-required-cell").forEach(cell => {
+        const isMissing = Boolean(missing[cell.dataset.required]);
+        cell.classList.toggle("is-invalid", isMissing);
+        cell.querySelector(".task-required-error").hidden = !isMissing;
+    });
+    row.querySelector(".task-detail-input")
+        ?.setAttribute("aria-invalid", String(Boolean(missing.detail)));
+}
+
+export function getTaskRow(taskID) {
+    return taskReportList.querySelector(`tr[data-task-id="${CSS.escape(String(taskID))}"]`);
 }
 
 export function updateEvidenceRequirement(row, entry) {
@@ -311,7 +338,7 @@ function renderWorker(entry, users) {
     return `
         <div class="task-worker-picker">
             <select class="task-worker-select" multiple hidden
-                    aria-label="Selected workers for ${escapeHtml(entry.task.name)}">
+                    aria-label="Người làm của ${escapeHtml(entry.task.name)}">
                 ${users.map(user => {
         const workerID = String(user.id);
         return `<option value="${escapeHtml(workerID)}" ${selectedIDs.has(workerID) ? "selected" : ""}>${escapeHtml(getWorkerLabel(user))}</option>`;
@@ -320,7 +347,7 @@ function renderWorker(entry, users) {
             <div class="task-worker-selected" aria-live="polite"></div>
             <button type="button" class="task-worker-toggle" data-worker-toggle
                     aria-expanded="false">
-                <span>Select workers</span>
+                <span>Chọn người làm</span>
                 <i class="bi bi-chevron-down" aria-hidden="true"></i>
             </button>
             <div class="task-worker-options" role="listbox" hidden></div>
@@ -350,7 +377,7 @@ function updateWorkerPicker(row) {
         <span class="task-worker-chip">
             ${escapeHtml(option.textContent)}
             <button type="button" data-worker-remove="${escapeHtml(option.value)}"
-                    aria-label="Remove ${escapeHtml(option.textContent)}">
+                    aria-label="Bỏ ${escapeHtml(option.textContent)}">
                 <i class="bi bi-x" aria-hidden="true"></i>
             </button>
         </span>
@@ -366,7 +393,7 @@ function updateWorkerPicker(row) {
                 ${escapeHtml(option.textContent)}
             </button>
         `).join("")
-        : '<span class="task-worker-empty">All members are selected.</span>';
+        : '<span class="task-worker-empty">Đã chọn tất cả thành viên.</span>';
     toggleButton.disabled = select.options.length === 0;
 }
 
@@ -428,8 +455,8 @@ export function setMessage(message, type = "") {
 export function setSaving(isSaving) {
     saveButton.disabled = isSaving || saveButton.dataset.valid !== "true";
     saveButton.innerHTML = isSaving
-        ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Saving...'
-        : '<i class="bi bi-floppy"></i> Record report';
+        ? '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Đang lưu...'
+        : '<i class="bi bi-floppy"></i> Lưu báo cáo';
 }
 
 export function getFormValues(taskID) {
@@ -448,6 +475,58 @@ export function getFormValues(taskID) {
         detail: card.querySelector(".task-detail-input").value.trim(),
         files: Array.from(card.querySelector(".task-evidence-upload").files)
     };
+}
+
+// =====================================================
+// KHÓA BÁO CÁO ĐÃ LƯU
+// =====================================================
+const lockBanner = document.querySelector("#report-lock-banner");
+
+/**
+ * Hiện trạng thái báo cáo đã lưu và khóa các ô nhập khi không có quyền sửa.
+ * Nút "Tạo issue" vẫn dùng được (issue lưu riêng, không thuộc báo cáo).
+ * @param {{ isSubmitted: boolean, isLocked: boolean, workDate: string,
+ *            ownerName: string }} options
+ */
+export function applyReportLock({ isSubmitted, isLocked, workDate, ownerName = "" }) {
+    const dateText = escapeHtml(formatDisplayDate(workDate));
+    const submittedBy = ownerName ? ` bởi <b>${escapeHtml(ownerName)}</b>` : "";
+
+    if (!isSubmitted) {
+        lockBanner.hidden = true;
+        lockBanner.innerHTML = "";
+    } else if (isLocked) {
+        lockBanner.className = "report-lock-banner is-locked";
+        lockBanner.innerHTML = `
+            <i class="bi bi-lock-fill" aria-hidden="true"></i>
+            <div>
+                <strong>Dự án đã được báo cáo ngày ${dateText}${submittedBy}</strong>
+                <span>Mỗi ngày chỉ có một báo cáo và báo cáo đã bị khóa. Chỉ Part Leader mới được chỉnh sửa.</span>
+            </div>`;
+        lockBanner.hidden = false;
+    } else {
+        lockBanner.className = "report-lock-banner is-editable";
+        lockBanner.innerHTML = `
+            <i class="bi bi-unlock-fill" aria-hidden="true"></i>
+            <div>
+                <strong>Dự án đã được báo cáo ngày ${dateText}${submittedBy}</strong>
+                <span>Bạn là Part Leader nên có thể chỉnh sửa báo cáo này. Báo cáo vẫn giữ tên người nộp.</span>
+            </div>`;
+        lockBanner.hidden = false;
+    }
+
+    taskReportList.classList.toggle("is-locked", isLocked);
+    taskReportList
+        .querySelectorAll("input, select, textarea, button")
+        .forEach(control => {
+            if (control.matches("[data-create-issue]")) return;
+            control.disabled = isLocked;
+        });
+}
+
+function formatDisplayDate(value) {
+    const [year, month, day] = String(value || "").split("-");
+    return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
 export function setSaveEnabled(isEnabled) {

@@ -36,7 +36,7 @@ export async function createRecord(collection, data) {
         const errorDetails = responseData?.data
             ? JSON.stringify(responseData.data)
             : "";
-        const message = responseData?.message || `Create failed (${res.status})`;
+        const message = responseData?.message || `Tạo thất bại (${res.status})`;
 
         throw new Error(
             errorDetails
@@ -95,7 +95,7 @@ export async function updateRecord(collection, id, data) {
         const errorDetails = responseData?.data
             ? JSON.stringify(responseData.data)
             : "";
-        const message = responseData?.message || `Update failed (${res.status})`;
+        const message = responseData?.message || `Cập nhật thất bại (${res.status})`;
 
         throw new Error(
             errorDetails
@@ -118,7 +118,7 @@ export async function deleteRecord(collection, id) {
             }
         }
     );
-    if (!res.ok) throw new Error("Delete failed");
+    if (!res.ok) throw new Error("Xóa thất bại");
     return true;
 }
 
@@ -130,7 +130,7 @@ export async function getRecords(collection) {
             Authorization: `Bearer ${token}`
         }
     });
-    if (!res.ok) throw new Error("Fetch failed");
+    if (!res.ok) throw new Error("Không tải được dữ liệu");
     const data = await res.json();
     return data.items || [];
 }
@@ -151,7 +151,7 @@ export async function getRecordsFilter(
             Authorization: `Bearer ${token}`
         }
     });
-    if (!res.ok) throw new Error("Fetch failed");
+    if (!res.ok) throw new Error("Không tải được dữ liệu");
     const data = await res.json();
     return data.items || [];
 }
@@ -169,7 +169,7 @@ export async function getRecordsByFilter(collection, filter, page = 1, perPage =
             Authorization: `Bearer ${token}`
         }
     });
-    if (!res.ok) throw new Error("Fetch failed");
+    if (!res.ok) throw new Error("Không tải được dữ liệu");
     const data = await res.json();
     return data.items || [];
 }
@@ -191,7 +191,7 @@ export async function loadInventoryItemEachPage(collection, page = 1, size = 7) 
     );
 
     if (!res.ok) {
-        throw new Error("Cannot load inventory items");
+        throw new Error("Không tải được dữ liệu");
     }
     return await res.json();
 }

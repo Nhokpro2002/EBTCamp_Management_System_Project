@@ -6,21 +6,29 @@ const Toast = Swal.mixin({
 });
 
 
-export function formatDateInput(dateStr) {
-    if (!dateStr) return "";
-
-    // yyyy-MM-dd hoặc yyyy-MM-dd HH:mm:ss...
-    const datePart = dateStr.split(" ")[0];
-    const [year, month, day] = datePart.split("-");
-
-    if (!year || !month || !day) return "";
-
-    return `${month}/${day}/${year}`;
+/**
+ * Ngày từ PocketBase ("2026-11-04" / "2026-11-04 00:00:00.000Z") → hiển thị "04/11/2026".
+ * Chỉ dùng để HIỂN THỊ; khi lưu xuống database vẫn dùng dạng yyyy-mm-dd.
+ */
+export function formatDateDisplay(dateStr) {
+    const match = String(dateStr ?? "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : "";
 }
 
-export function formatDateDisplay(dateStr) {
-    if (!dateStr) return "";
-    return dateStr.split(" ")[0];
+/**
+ * Date (thời điểm) → "04/11/2026" theo giờ Việt Nam.
+ */
+export function formatDateTimeToDisplay(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+    const parts = Object.fromEntries(
+        new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Asia/Ho_Chi_Minh",
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }).formatToParts(date).map(part => [part.type, part.value])
+    );
+    return `${parts.day}/${parts.month}/${parts.year}`;
 }
 
 
