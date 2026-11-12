@@ -65,7 +65,7 @@ export async function createMaterial(formData) {
 
 // =====================================================
 // NHẬP KHO + IN TEM TỪ EXCEL
-//   Tên sản phẩm → name, QCode/XCode → code, Mô tả → description
+//   Tên sản phẩm → name, QCode/XCode → code, Mô tả → description, Đơn vị đóng gói -> packing_unit
 //   Số tem (= số lượng cộng vào stock và auto_increment_id):
 //     - có Đơn vị đóng gói  → Số lượng / Đơn vị đóng gói (làm tròn lên: gói cuối lẻ vẫn 1 tem)
 //     - không có            → Số lượng (tính theo chiếc)
@@ -142,8 +142,9 @@ export async function readExcelImport(file) {
         const name = row.name.trim();
         const code = row.code.trim();
         const description = row.description.trim();
-        const result = calculateRow({ ...row, name, code });
-        const base = { ...row, name, code, description };
+        const packing_unit = row.packSize?.trim() || null;
+        const result = calculateRow({ ...row, name, code, packing_unit });
+        const base = { ...row, name, code, description, packing_unit };
 
         if (result.error) return { ...base, status: "invalid", error: result.error };
 
@@ -208,7 +209,7 @@ export function getExcelTotals() {
  * @returns {Promise<{ labels: string[], doneRows: Object[], errors: string[] }>}
  *   labels: toàn bộ tem cần in, đúng thứ tự dòng Excel, trong mỗi dòng số tăng dần
  */
-export async function importExcelAndReserveLabels(onProgress = () => {}) {
+export async function importExcelAndReserveLabels(onProgress = () => { }) {
     const rows = getReadyRows();
     const labels = [];
     const doneRows = [];
@@ -222,13 +223,17 @@ export async function importExcelAndReserveLabels(onProgress = () => {}) {
                     name: row.name,
                     code: row.targetCode,
                     description: row.description,
+                    packing_unit: row.packing_unit,
                     stock: 0,
                     auto_increment_id: 0
                 });
                 state.items.push(created);
             }
 
-            const fields = { name: row.name };
+            const fields = {
+                name: row.name,
+                packing_unit: row.packing_unit
+            };
             if (row.description) fields.description = row.description;   // ô trống → giữ mô tả cũ
 
             const result = await inventoryApi.reserveLabelSerials(row.targetCode, row.labelCount, {
