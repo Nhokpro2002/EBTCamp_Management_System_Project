@@ -121,6 +121,10 @@ export function createItem(formData) {
     return api.createRecord(COLLECTION_INVENTORY_ITEMS, formData);
 }
 
+export function updateItem(id, data) {
+    return api.updateRecord(COLLECTION_INVENTORY_ITEMS, id, data);
+}
+
 export function deleteItem(id) {
     return api.deleteRecord(COLLECTION_INVENTORY_ITEMS, id);
 }

@@ -63,5 +63,6 @@ async function initPage() {
 // =====================================================
 function updateProjectStatistics() {
     ui.renderTotalTaskCount(service.getTotalTaskCount());
+    ui.renderPlanTaskCount(service.getPlanTaskCount());
     events.renderStageProgress();
 }

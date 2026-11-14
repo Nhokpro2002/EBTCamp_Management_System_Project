@@ -91,11 +91,11 @@ function validateForm() {
         }
     }
 
-    // POSITION
-    const position = $("#position").val() || [];
+    // POSITION (checkbox, chọn được nhiều chức vụ)
+    const position = getSelectedPositions();
 
     if (touched.position) {
-        if (!Array.isArray(position) || position.length === 0) {
+        if (position.length === 0) {
             $("#error_position").text("Vui lòng chọn ít nhất một chức vụ");
             $("#position")
                 .addClass("is-invalid")
@@ -159,10 +159,21 @@ function validateForm() {
     return valid;
 }
 
+function getSelectedPositions() {
+    return $("#position input[name='position']:checked")
+        .map((_, input) => input.value)
+        .get();
+}
+
 function setupTouchEvents() {
-    $("#employee_id, #employee_name, #email, #password, #passwordConfirm, #department, #position").on("blur change", function () {
+    $("#employee_id, #employee_name, #email, #password, #passwordConfirm, #department").on("blur change", function () {
         const id = $(this).attr("id");
         touched[id] = true;
+        validateForm();
+    });
+
+    $("#position input[name='position']").on("change", function () {
+        touched.position = true;
         validateForm();
     });
 
@@ -184,7 +195,7 @@ async function registerNewUser() {
         employee_name: $("#employee_name").val().trim(),
         email: $("#email").val().trim(),
         department: $("#department").val(),
-        position: $("#position").val() || [],
+        position: getSelectedPositions(),
         password: $("#password").val(),
         passwordConfirm: $("#passwordConfirm").val()
     };

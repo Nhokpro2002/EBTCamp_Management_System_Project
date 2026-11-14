@@ -23,10 +23,7 @@ export function bindGanttEvents() {
         if (success) {
             renderIssues();
         }
-        gantt.batchUpdate(() => {
-            gantt.clearAll();
-            gantt.parse(projectData);
-        });
+        reloadGantt();
     });
 
     // ---------- Lightbox Save ----------
@@ -103,6 +100,16 @@ export function bindUIEvents() {
         e.preventDefault();
         e.stopPropagation();
         openCreateTaskModal(icon.dataset.id, icon.dataset.name);
+    });
+
+    // ---------- Nút "Duyệt" trên task Plan (chỉ Part Leader thấy) ----------
+    document.addEventListener("click", function (e) {
+        const button = e.target.closest(".task-accept-button");
+        if (!button) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        handleAcceptTask(button.dataset.id, button);
     });
 
     // ---------- Modal buttons ----------
@@ -337,6 +344,64 @@ export function renderStageProgress() {
 // =========================================================
 
 /**
+ * Part Leader duyệt task Plan → Accepted, rồi vẽ lại gantt / tiến độ / issue.
+ */
+async function handleAcceptTask(taskID, button) {
+    if (!service.canAcceptTask()) {
+        utils.showError(workflowPageMessage.acceptForbidden);
+        return;
+    }
+
+    const task = service.findTask(taskID);
+    if (!task) {
+        utils.showError(workflowPageMessage.taskNotExistInDB);
+        return;
+    }
+
+    const confirmation = await Swal.fire({
+        icon: "question",
+        title: "Duyệt task?",
+        html: `Task <b>${ui.escapeHtml(task.name)}</b> sẽ chuyển sang <b>Accepted</b> và bắt đầu được tính tiến độ, trễ hạn và báo cáo ngày.`,
+        showCancelButton: true,
+        confirmButtonText: "Duyệt",
+        cancelButtonText: "Hủy"
+    });
+    if (!confirmation.isConfirmed) return;
+
+    button.disabled = true;
+    try {
+        await service.acceptTask(taskID);
+        utils.showSuccess(workflowPageMessage.acceptSuccess);
+        reloadGantt();
+        updateTaskStatistics();
+    } catch (error) {
+        console.error(error);
+        utils.showError(workflowPageMessage.acceptFailed);
+        button.disabled = false;
+    }
+}
+
+/**
+ * Tổng số task, số task chờ duyệt, tiến độ stage + danh sách issue.
+ */
+function updateTaskStatistics() {
+    ui.renderTotalTaskCount(service.getTotalTaskCount());
+    ui.renderPlanTaskCount(service.getPlanTaskCount());
+    renderIssues();
+}
+
+/**
+ * Vẽ lại gantt từ state hiện tại (dựng lại dữ liệu bằng mappingData rồi parse).
+ */
+function reloadGantt() {
+    service.mappingData();
+    gantt.batchUpdate(() => {
+        gantt.clearAll();
+        gantt.parse(projectData);
+    });
+}
+
+/**
  * Lưu task đang sửa trên gantt về database.
  * @returns {Promise<boolean>}
  */
@@ -353,7 +418,7 @@ async function saveTask(id, task = gantt.getTask(id)) {
         duration: task.duration,
         progress: task.progress,
         updatedBy:
-            JSON.parse(localStorage.getItem("user"))
+            JSON.parse(sessionStorage.getItem("user"))
                 ?.employee_name ?? ""
     };
 
@@ -418,11 +483,8 @@ async function handleCreateTask() {
             utils.showSuccess(workflowPageMessage.createSuccess);
 
             service.addTaskToState(task);
-
-            gantt.clearAll();
-            gantt.parse(projectData);
-            // Tiến độ stage + danh sách issue (task mới có thể đã trễ hạn)
-            renderIssues();
+            reloadGantt();
+            updateTaskStatistics();
         }
     } catch (error) {
         console.error(error);

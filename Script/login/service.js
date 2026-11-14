@@ -14,8 +14,8 @@ export async function loginUser(data) {
             throw new Error("Email hoặc mật khẩu không đúng.");
         }
 
-        localStorage.setItem("token", result.token);
-        localStorage.setItem("user", JSON.stringify(result.record));
+        sessionStorage.setItem("token", result.token);
+        sessionStorage.setItem("user", JSON.stringify(result.record));
 
         // Quay lại trang đang mở trước khi bị chuyển về login (auth.js), mặc định là Inventory
         const target = window.EBTAuth?.getRedirectTarget() ?? "inventory.html";

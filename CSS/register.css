@@ -144,6 +144,63 @@ a:hover {
 
 
 /* =========================
+   POSITION (multi checkbox)
+========================= */
+
+.position-group {
+    grid-column: 1 / 3;
+}
+
+.position-hint {
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.position-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.position-options.is-invalid {
+    border-color: #dc2626;
+}
+
+.position-options.is-valid {
+    border-color: #22c55e;
+}
+
+.position-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.position-option:hover {
+    border-color: #2563eb;
+}
+
+.position-option:has(input:checked) {
+    border-color: #2563eb;
+    background: rgba(37, 99, 235, .08);
+    color: #1d4ed8;
+}
+
+.position-option input {
+    accent-color: #2563eb;
+}
+
+
+/* =========================
    ERROR
 ========================= */
 

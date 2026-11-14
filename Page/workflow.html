@@ -43,7 +43,15 @@
                         </ul>
                     </details>
                 </li>
-                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li>
+                    <details class="menu-report menu-order">
+                        <summary><i class="bi bi-receipt"></i> Đơn hàng <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="order.html"><i class="bi bi-cart-plus"></i> Tạo đơn hàng</a></li>
+                            <li><a href="order-tracking.html"><i class="bi bi-clipboard-data"></i> Theo dõi đơn hàng</a></li>
+                        </ul>
+                    </details>
+                </li>
                 <li class="active"><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li>
                     <a href="notification.html">
@@ -117,6 +125,11 @@
                             <div>
                                 <span>Tổng số task</span>
                                 <strong id="total-task-count">0</strong>
+                                <small class="plan-task-count" id="plan-task-count" hidden
+                                       title="Task kế hoạch đang chờ Part Leader duyệt">
+                                    <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                                    <b id="plan-task-count-value">0</b> chờ duyệt
+                                </small>
                             </div>
                         </div>
 

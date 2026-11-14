@@ -41,7 +41,15 @@
                         </ul>
                     </details>
                 </li>
-                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li>
+                    <details class="menu-report menu-order">
+                        <summary><i class="bi bi-receipt"></i> Đơn hàng <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="order.html"><i class="bi bi-cart-plus"></i> Tạo đơn hàng</a></li>
+                            <li><a href="order-tracking.html"><i class="bi bi-clipboard-data"></i> Theo dõi đơn hàng</a></li>
+                        </ul>
+                    </details>
+                </li>
                 <li><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li class="active">
                     <a href="notification.html">
@@ -78,11 +86,11 @@
         ========================================================= -->
         <main class="content">
 
-            <!-- Đầu trang: Tiêu đề và Thanh công cụ chức năng -->
+            <!-- Đầu trang: tiêu đề + công cụ -->
             <div class="content-header">
                 <div>
                     <h2 class="page-title">Thông báo</h2>
-                    <p class="page-subtitle">Các issue liên quan đến chức vụ của bạn</p>
+                    <p class="page-subtitle">Issue và task cần bạn chú ý</p>
                 </div>
                 <div class="header-tools">
                     <div class="search-box">
@@ -96,29 +104,39 @@
                         <option value="" selected>Tất cả dự án</option>
                     </select>
 
-                    <!-- Hộp chọn ngày công cụ ở góc cuối cùng -->
-                    <div class="date-picker-box">
-                        <i class="bi bi-calendar3 calendar-icon"></i>
-                        <input type="date" id="filter-date" class="form-control" aria-label="Lọc theo ngày">
-                    </div>
+                    <button type="button" class="btn-outline-custom" id="mark-all-read" disabled>
+                        <i class="bi bi-check2-all"></i> Đánh dấu tất cả đã đọc
+                    </button>
                 </div>
             </div>
 
+            <!-- Tab phân loại -->
+            <div class="notification-tabs" role="tablist" aria-label="Phân loại thông báo">
+                <button type="button" class="notification-tab active" role="tab" aria-selected="true" data-tab="all">
+                    <i class="bi bi-inbox"></i> Tất cả <span class="tab-count" data-count="all"></span>
+                </button>
+                <button type="button" class="notification-tab" role="tab" aria-selected="false" data-tab="unread">
+                    <i class="bi bi-envelope"></i> Chưa đọc <span class="tab-count" data-count="unread"></span>
+                </button>
+                <button type="button" class="notification-tab" role="tab" aria-selected="false" data-tab="issue">
+                    <i class="bi bi-exclamation-triangle"></i> Issue <span class="tab-count" data-count="issue"></span>
+                </button>
+                <button type="button" class="notification-tab" role="tab" aria-selected="false" data-tab="task">
+                    <i class="bi bi-clipboard-check"></i> Duyệt task <span class="tab-count" data-count="task"></span>
+                </button>
+            </div>
 
             <!-- Bảng danh sách thông báo -->
             <div class="activity-panel">
-                <!-- Tiêu đề cột -->
                 <div class="panel-columns-header">
                     <div class="col-activity">Nội dung</div>
                     <div class="col-related">Dự án</div>
                     <div class="col-time">Thời gian</div>
                 </div>
 
-                <!-- Danh sách chứa các thẻ thông báo render từ JS -->
-                <div id="activity-list">
-                    <!-- Các dữ liệu thông báo tự động đẩy vào từ file main.js -->
+                <div id="activity-list" aria-live="polite">
+                    <!-- Render bằng Script/notification/main.js -->
                 </div>
-
             </div>
 
             <div class="activity-pagination" aria-label="Phân trang">

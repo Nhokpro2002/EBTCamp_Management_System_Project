@@ -118,32 +118,6 @@
                     <div class="form-group">
 
                          <label class="form-label">
-                              Chức vụ
-                         </label>
-
-                         <select class="form-control" id="position" multiple size="10">
-
-                              <option value="Part Leader">Part Leader</option>
-                              <option value="Senior Engineer">Senior Engineer</option>
-                              <option value="Purchasing">Purchasing</option>
-                              <option value="Technician">Technician</option>
-                              <option value="Unit Leader">Unit Leader</option>
-                              <option value="Engineer">Engineer</option>
-                              <option value="Mechanical">Mechanical</option>
-                              <option value="Electric">Electric</option>
-                              <option value="Program">Program</option>
-                              <option value="Robot">Robot</option>
-
-                         </select>
-
-                         <div class="error" id="error_position"></div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                         <label class="form-label">
                               Mật khẩu
                          </label>
 
@@ -171,6 +145,32 @@
                     </div>
 
 
+                    <div class="form-group position-group">
+
+                         <label class="form-label">
+                              Chức vụ <small class="position-hint">(có thể chọn nhiều)</small>
+                         </label>
+
+                         <div class="position-options" id="position" role="group" aria-label="Chức vụ">
+
+                              <label class="position-option"><input type="checkbox" name="position" value="Part Leader"><span>Part Leader</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Senior Engineer"><span>Senior Engineer</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Purchasing"><span>Purchasing</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Technician"><span>Technician</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Unit Leader"><span>Unit Leader</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Engineer"><span>Engineer</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Mechanical"><span>Mechanical</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Electric"><span>Electric</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Program"><span>Program</span></label>
+                              <label class="position-option"><input type="checkbox" name="position" value="Robot"><span>Robot</span></label>
+
+                         </div>
+
+                         <div class="error" id="error_position"></div>
+
+                    </div>
+
+
                     <!-- BUTTON -->
                     <div class="register-action">
 
@@ -191,7 +191,7 @@
 
                     Đã có tài khoản?
 
-                    <a href="./login.html">
+                    <a href="./login.html?logout">
                          Đăng nhập
                     </a>
 

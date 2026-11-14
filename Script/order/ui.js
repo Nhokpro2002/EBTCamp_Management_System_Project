@@ -1,7 +1,16 @@
-import { orderDetailPageData } from "./state.js";
-import { URL_LOCAL } from "../config.js";
+// =====================================================
+// UI DÙNG CHUNG cho order.html (sửa được) và order-tracking.html (chỉ xem).
+// orderPageState.editable quyết định bảng có ô nhập / checkbox hay không.
+// Phần tử nào không có trên trang thì bỏ qua (không lỗi).
+// =====================================================
+import * as service from "./service.js";
+import { orderPageState } from "./state.js";
 
-function escapeHTML(value) {
+const moneyFormat = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 2 });
+
+const byId = id => document.getElementById(id);
+
+export function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, character => ({
         "&": "&amp;",
         "<": "&lt;",
@@ -11,50 +20,200 @@ function escapeHTML(value) {
     })[character]);
 }
 
-export function renderInventoryItemList(inventoryItemList) {
-    const container = document.querySelector("#inventoryItemList");
-    if (!container) return;
+export function formatMoney(value) {
+    return moneyFormat.format(Number(value) || 0);
+}
 
-    container.innerHTML = inventoryItemList.map(item => {
-        const image = item.image
-            ? `${URL_LOCAL}/api/files/Inventory_Items/${encodeURIComponent(item.id)}/${encodeURIComponent(item.image)}`
-            : "";
-        return `
-            <div class="inventory-item" data-id="${escapeHTML(item.id)}">
-                <div class="d-flex">
-                    ${image ? `<img src="${image}" class="item-image" alt="">` : ""}
-                    <div class="ms-3 flex-grow-1">
-                        <h6 title="${escapeHTML(item.name)}">${escapeHTML(item.name)}</h6>
-                        <div class="text-muted">${escapeHTML(item.model)}</div>
-                    </div>
-                </div>
-            </div>
-        `;
+function formatDate(iso) {
+    const match = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return match ? `${match[3]}/${match[2]}/${match[1]}` : "";
+}
+
+const muted = '<span class="cell-muted">-</span>';
+
+// =====================================================
+// OPTION CHO CÁC Ô SELECT
+// =====================================================
+
+function renderOptions(list, selectedValue, getValue, getLabel) {
+    return list.map(entry => {
+        const value = String(getValue(entry));
+        return `<option value="${escapeHTML(value)}" ${value === String(selectedValue ?? "") ? "selected" : ""}>${escapeHTML(getLabel(entry))}</option>`;
     }).join("");
 }
 
-export function renderOrderItemTable(orderItemList) {
-    const tbody = document.getElementById("orderTable");
-    if (!tbody) return;
+const userOptions = selected =>
+    renderOptions(orderPageState.users, selected, user => user.id, user => user.employee_name || user.email || user.id);
 
-    const pageSize = orderDetailPageData.pageSize;
-    const totalPages = Math.max(1, Math.ceil(orderItemList.length / pageSize));
-    orderDetailPageData.currentPage = Math.min(orderDetailPageData.currentPage, totalPages);
-    const start = (orderDetailPageData.currentPage - 1) * pageSize;
-    const pageItems = orderItemList.slice(start, start + pageSize);
+const projectOptions = selected =>
+    renderOptions(orderPageState.projects, selected, project => project.id, project => project.name || "Dự án chưa đặt tên");
+
+/**
+ * Nhãn của đơn hàng (Orders) trong ô lọc tháng.
+ */
+export function getMonthOrderLabel(order) {
+    return `Đơn hàng tháng ${Number(order.month) || "?"}`;
+}
+
+/**
+ * Đổ dữ liệu vào các ô lọc và (nếu có) các ô select của form thêm vật tư.
+ */
+export function renderFilterOptions() {
+    const projectFilter = byId("projectFilter");
+    if (projectFilter) {
+        projectFilter.innerHTML =
+            `<option value="">Tất cả dự án</option>${projectOptions(orderPageState.filters.project)}`;
+    }
+
+    // Trang Theo dõi: lọc theo đơn hàng (tháng)
+    const monthFilter = byId("monthFilter");
+    if (monthFilter) {
+        monthFilter.innerHTML = `<option value="">Tất cả tháng</option>${renderOptions(
+            orderPageState.monthOrders,
+            orderPageState.filters.order,
+            order => order.id,
+            getMonthOrderLabel
+        )}`;
+    }
+
+    // Form thêm vật tư (trang Tạo đơn hàng)
+    if (byId("createProject")) {
+        byId("createProject").innerHTML = `<option value="">Chọn dự án</option>${projectOptions("")}`;
+        byId("createRequester").innerHTML = `<option value="">Chọn người yêu cầu</option>${userOptions("")}`;
+        byId("inventoryOptions").innerHTML = orderPageState.inventory
+            .map(item => `<option value="${escapeHTML(getInventoryLabel(item))}"></option>`)
+            .join("");
+    }
+}
+
+/**
+ * Nhãn của vật tư trong ô gợi ý: "Tên — CODE"
+ */
+export function getInventoryLabel(item) {
+    return item.code ? `${item.name} — ${item.code}` : String(item.name || "");
+}
+
+// =====================================================
+// BẢNG
+// =====================================================
+
+function renderCommonCells(item) {
+    const name = escapeHTML(item.name);
+    return {
+        name: `<td><span class="order-cell-text" title="${name}">${name}</span></td>`,
+        month: `<td><span class="month-chip">${item.month ? `Tháng ${escapeHTML(item.month)}` : "-"}</span></td>`,
+        code: `<td>${item.code ? `<span class="code-chip">${escapeHTML(item.code)}</span>` : muted}</td>`,
+        description: `<td>${item.description
+            ? `<span class="order-description" title="${escapeHTML(item.description)}">${escapeHTML(item.description)}</span>`
+            : muted}</td>`,
+        total: `<td class="order-total">${formatMoney(service.getTotal(item))}</td>`
+    };
+}
+
+/**
+ * Dòng chỉ xem (trang Theo dõi).
+ */
+function renderReadonlyRow(item) {
+    const cells = renderCommonCells(item);
+    const requester = service.getRequesterName(item);
+    const project = service.getProjectName(item);
+
+    return `
+        <tr data-id="${escapeHTML(item.id)}">
+            ${cells.name}
+            ${cells.month}
+            ${cells.code}
+            ${cells.description}
+            <td class="text-end">${formatMoney(item.order_quantity)}</td>
+            <td class="text-end">${formatMoney(item.unit_price)}</td>
+            ${cells.total}
+            <td>${requester ? escapeHTML(requester) : muted}</td>
+            <td>${item.request_date ? formatDate(item.request_date) : muted}</td>
+            <td>${project ? `<span class="project-chip">${escapeHTML(project)}</span>` : muted}</td>
+        </tr>`;
+}
+
+/**
+ * Dòng sửa được (trang Tạo đơn hàng).
+ */
+function renderEditableRow(item) {
+    const cells = renderCommonCells(item);
+    const name = escapeHTML(item.name);
+    // Dự án / người yêu cầu không còn trong danh sách → vẫn hiện tên từ expand
+    const missingProject = item.project && !orderPageState.projects.some(project => project.id === item.project);
+    const missingUser = item.requester && !orderPageState.users.some(user => user.id === item.requester);
+
+    return `
+        <tr data-id="${escapeHTML(item.id)}" class="${item._dirty ? "is-dirty" : ""}">
+            <td class="text-center">
+                <input type="checkbox" class="form-check-input row-checkbox" aria-label="Chọn ${name}">
+            </td>
+            ${cells.name}
+            ${cells.month}
+            ${cells.code}
+            ${cells.description}
+            <td><input type="number" class="form-control form-control-sm order-field order-quantity" data-field="order_quantity" value="${Number(item.order_quantity) || 0}" min="0" step="1" aria-label="Số lượng của ${name}"></td>
+            <td><input type="number" class="form-control form-control-sm order-field order-price" data-field="unit_price" value="${Number(item.unit_price) || 0}" min="0" step="0.01" aria-label="Đơn giá của ${name}"></td>
+            ${cells.total}
+            <td>
+                <select class="form-select form-select-sm order-field order-requester" data-field="requester" aria-label="Người yêu cầu của ${name}">
+                    <option value="">Chọn người yêu cầu</option>
+                    ${missingUser ? `<option value="${escapeHTML(item.requester)}" selected>${escapeHTML(service.getRequesterName(item) || item.requester)}</option>` : ""}
+                    ${userOptions(item.requester)}
+                </select>
+            </td>
+            <td><input type="date" class="form-control form-control-sm order-field order-date" data-field="request_date" value="${escapeHTML(item.request_date)}" aria-label="Ngày yêu cầu của ${name}"></td>
+            <td>
+                <select class="form-select form-select-sm order-field order-project" data-field="project" aria-label="Dự án của ${name}">
+                    <option value="">Chọn dự án</option>
+                    ${missingProject ? `<option value="${escapeHTML(item.project)}" selected>${escapeHTML(service.getProjectName(item) || item.project)}</option>` : ""}
+                    ${projectOptions(item.project)}
+                </select>
+            </td>
+        </tr>`;
+}
+
+function renderEmptyRow(message) {
+    const colspan = orderPageState.editable ? 11 : 10;
+    return `<tr class="empty-row"><td colspan="${colspan}" class="text-center text-muted py-4">${message}</td></tr>`;
+}
+
+export function renderLoading() {
+    const tbody = byId("orderTable");
+    if (tbody) {
+        tbody.innerHTML = renderEmptyRow('<span class="spinner-border spinner-border-sm me-2"></span>Đang tải đơn hàng...');
+    }
+}
+
+export function renderTable() {
+    const tbody = byId("orderTable");
+    const list = orderPageState.filtered;
+    const pageSize = orderPageState.pageSize;
+    const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+    orderPageState.currentPage = Math.min(Math.max(1, orderPageState.currentPage), totalPages);
+
+    const start = (orderPageState.currentPage - 1) * pageSize;
+    const pageItems = list.slice(start, start + pageSize);
+    const renderRow = orderPageState.editable ? renderEditableRow : renderReadonlyRow;
+
+    const emptyMessage = orderPageState.items.length
+        ? "Không có vật tư nào khớp bộ lọc."
+        : orderPageState.editable
+            ? "Đơn hàng chưa có vật tư nào. Bấm \"Thêm vật tư\" để bắt đầu."
+            : "Chưa có đơn hàng nào.";
 
     tbody.innerHTML = pageItems.length
-        ? pageItems.map(createOrderItemRow).join("")
-        : `<tr><td colspan="10" class="text-center text-muted py-4">Không có dòng nào để hiển thị.</td></tr>`;
+        ? pageItems.map(renderRow).join("")
+        : renderEmptyRow(emptyMessage);
 
-    renderPagination(orderItemList.length, totalPages);
-    bindCheckboxEvents();
+    renderPagination(list.length, totalPages);
+    renderGrandTotal();
+    updateSelectionState();
 }
 
 function renderPagination(totalItems, totalPages) {
-    const pagination = document.getElementById("pagination");
-    const pageInfo = document.getElementById("pageInfo");
-    if (!pagination || !pageInfo) return;
+    const pagination = byId("pagination");
+    const pageInfo = byId("pageInfo");
 
     if (!totalItems) {
         pageInfo.textContent = "Không có dòng nào";
@@ -62,132 +221,134 @@ function renderPagination(totalItems, totalPages) {
         return;
     }
 
-    const currentPage = orderDetailPageData.currentPage;
-    const firstItem = (currentPage - 1) * orderDetailPageData.pageSize + 1;
-    const lastItem = Math.min(currentPage * orderDetailPageData.pageSize, totalItems);
+    const currentPage = orderPageState.currentPage;
+    const firstItem = (currentPage - 1) * orderPageState.pageSize + 1;
+    const lastItem = Math.min(currentPage * orderPageState.pageSize, totalItems);
     pageInfo.textContent = `Hiển thị ${firstItem}-${lastItem} / ${totalItems}`;
 
-    const pages = [];
-    for (let page = 1; page <= totalPages; page += 1) {
-        pages.push(`
-            <li class="page-item ${page === currentPage ? "active" : ""}">
-                <button class="page-link" type="button" data-page="${page}" aria-current="${page === currentPage ? "page" : "false"}">${page}</button>
-            </li>
-        `);
-    }
-    pagination.innerHTML = pages.join("");
+    pagination.innerHTML = Array.from({ length: totalPages }, (_, index) => {
+        const page = index + 1;
+        const active = page === currentPage;
+        return `
+            <li class="page-item ${active ? "active" : ""}">
+                <button class="page-link" type="button" data-page="${page}" ${active ? 'aria-current="page"' : ""}>${page}</button>
+            </li>`;
+    }).join("");
 }
 
-function bindCheckboxEvents() {
-    const checkboxes = document.querySelectorAll(".row-checkbox");
-    const selectionBar = document.getElementById("selectionBar");
-
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener("change", updateSelectionState);
-    });
-
-    updateSelectionState();
-
-    function updateSelectionState() {
-        const selectedCount = document.querySelectorAll(".row-checkbox:checked").length;
-        selectionBar?.classList.toggle("show", selectedCount > 0);
-        ["saveSelected", "exportExcelSelected", "deleteSelected"].forEach(id => {
-            const button = document.getElementById(id);
-            if (button) button.disabled = selectedCount === 0;
-        });
-
-        const checkAll = document.getElementById("checkAll");
-        if (checkAll) {
-            checkAll.checked = checkboxes.length > 0 &&
-                [...checkboxes].every(checkbox => checkbox.checked);
-            checkAll.indeterminate = selectedCount > 0 &&
-                selectedCount < checkboxes.length;
-        }
-    }
+export function renderGrandTotal() {
+    const total = orderPageState.filtered.reduce((sum, item) => sum + service.getTotal(item), 0);
+    const element = byId("grandTotal");
+    if (element) element.textContent = formatMoney(total);
 }
 
-export function applyFilter() {
-    const keyword = orderDetailPageData.searchKeyword;
-    orderDetailPageData.orderItemFilter = orderDetailPageData.orderItemList.filter(item => {
-        const matchSearch = !keyword || [
-            item.name,
-            item.model,
-            item.code
-        ].some(value => String(value ?? "").toLowerCase().includes(keyword));
-        const matchBrand = !orderDetailPageData.selectedBrand ||
-            item.brand === orderDetailPageData.selectedBrand;
-        const matchType = !orderDetailPageData.selectedType ||
-            item.type === orderDetailPageData.selectedType;
-
-        return matchSearch && matchBrand && matchType;
-    });
-
-    orderDetailPageData.currentPage = 1;
-    renderOrderItemTable(orderDetailPageData.orderItemFilter);
+/**
+ * Cập nhật ô Tổng + đánh dấu dòng đã sửa (chưa lưu) mà không vẽ lại cả bảng.
+ */
+export function refreshRow(row, item) {
+    row.querySelector(".order-total").textContent = formatMoney(service.getTotal(item));
+    row.classList.toggle("is-dirty", item._dirty);
 }
 
-export function getSelectedRows() {
-    return [...document.querySelectorAll(".row-checkbox:checked")];
-}
+// =====================================================
+// CHỌN DÒNG / THANH THAO TÁC (chỉ trang Tạo đơn hàng)
+// =====================================================
 
 export function getRowCheckboxes() {
-    return [...document.querySelectorAll(".row-checkbox")];
+    const tbody = byId("orderTable");
+    return tbody ? [...tbody.querySelectorAll(".row-checkbox")] : [];
 }
 
-export function getSelectedItems() {
-    const project = document.getElementById("projectFilter")?.value || "";
+export function getSelectedIDs() {
+    return getRowCheckboxes()
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.closest("tr").dataset.id);
+}
 
-    return getSelectedRows().map(checkbox => {
-        const row = checkbox.closest("tr");
-        const readText = index => row.children[index]?.textContent.trim() || "";
-        const id = row.dataset.id || null;
-
-        return {
-            ...(id ? { id } : {}),
-            name: readText(1),
-            model: readText(2),
-            code: readText(3),
-            stock: Number(readText(4)) || 0,
-            project,
-            order_quantity: Number(row.querySelector(".order-input")?.value) || 0,
-            unit_price: Number(row.querySelector(".unit-price-input")?.value) || 0,
-            request_date: row.querySelector(".request-date-input")?.value || "",
-            requester: row.querySelector(".requester-select")?.value || "",
-            status: readText(9)
-        };
+export function setAllRowsChecked(checked) {
+    getRowCheckboxes().forEach(checkbox => {
+        checkbox.checked = checked;
     });
+    updateSelectionState();
 }
 
-export function createOrderItemRow(item) {
-    const order = Number(item.order_quantity) || 0;
-    const unitPrice = Number(item.unit_price) || 0;
-    const requestDate = escapeHTML(item.request_date || "");
-    const userOptions = orderDetailPageData.userList.map(user => `
-        <option value="${escapeHTML(user.id)}" ${user.id === (item.requester?.id || item.requester) ? "selected" : ""}>
-            ${escapeHTML(user.employee_name)}
-        </option>
-    `).join("");
-    const stock = Number(item.stock) || 0;
+export function updateSelectionState() {
+    const selectionBar = byId("selectionBar");
+    if (!selectionBar) return;
 
-    return `
-        <tr ${item.id ? `data-id="${escapeHTML(item.id)}"` : ""}>
-            <td class="text-center">
-                <input type="checkbox" class="form-check-input row-checkbox" aria-label="Chọn ${escapeHTML(item.name)}">
-            </td>
-            <td><span class="d-inline-block text-truncate order-cell-text" title="${escapeHTML(item.name)}">${escapeHTML(item.name)}</span></td>
-            <td><span class="d-inline-block text-truncate order-cell-text" title="${escapeHTML(item.model)}">${escapeHTML(item.model)}</span></td>
-            <td class="text-center">${escapeHTML(item.code)}</td>
-            <td class="text-center">${stock}</td>
-            <td><input type="number" class="form-control order-input" value="${order}" min="0" step="1" aria-label="Số lượng đặt cho ${escapeHTML(item.name)}"></td>
-            <td><input type="number" class="form-control unit-price-input" value="${unitPrice}" min="0" step="0.01" aria-label="Đơn giá cho ${escapeHTML(item.name)}"></td>
-            <td><input type="date" class="form-control request-date-input" value="${requestDate}" aria-label="Ngày yêu cầu cho ${escapeHTML(item.name)}"></td>
-            <td>
-                <select class="form-select requester-select" aria-label="Người yêu cầu cho ${escapeHTML(item.name)}">
-                    <option value="">Chọn người yêu cầu</option>
-                    ${userOptions}
-                </select>
-            </td>
-            <td class="text-center">${escapeHTML(item.status || "Pending")}</td>
-        </tr>
-    `;
+    const checkboxes = getRowCheckboxes();
+    const selectedCount = checkboxes.filter(checkbox => checkbox.checked).length;
+
+    checkboxes.forEach(checkbox => {
+        checkbox.closest("tr").classList.toggle("is-selected", checkbox.checked);
+    });
+
+    byId("selectionCount").textContent = selectedCount;
+    selectionBar.classList.toggle("show", selectedCount > 0);
+    // Ẩn thì không cho tab vào các nút bên trong
+    selectionBar.inert = selectedCount === 0;
+    Object.keys(ACTION_LABELS).forEach(id => {
+        byId(id).disabled = selectedCount === 0;
+    });
+
+    const checkAll = byId("checkAll");
+    checkAll.checked = checkboxes.length > 0 && selectedCount === checkboxes.length;
+    checkAll.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+}
+
+const ACTION_LABELS = {
+    saveSelected: { idle: '<i class="bi bi-check-lg"></i> Lưu', busy: "Đang lưu..." },
+    exportExcelSelected: { idle: '<i class="bi bi-file-earmark-spreadsheet"></i> Xuất Excel', busy: "Đang xuất..." },
+    deleteSelected: { idle: '<i class="bi bi-trash"></i> Xóa', busy: "Đang xóa..." }
+};
+
+/**
+ * Khóa các nút trên thanh thao tác; nút đang chạy (busyID) hiện spinner.
+ */
+export function setActionsBusy(busy, busyID = "") {
+    Object.entries(ACTION_LABELS).forEach(([id, label]) => {
+        const button = byId(id);
+        button.disabled = busy || getSelectedIDs().length === 0;
+        button.innerHTML = busy && id === busyID
+            ? `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> ${label.busy}`
+            : label.idle;
+    });
+    byId("btnClearSelection").disabled = busy;
+}
+
+// =====================================================
+// TRANG TẠO ĐƠN HÀNG: trạng thái đơn của tháng
+// =====================================================
+
+/**
+ * "loading" | "empty" (tháng chưa có đơn) | "ready" (đã có đơn)
+ */
+export function renderMonthOrderState(state, month) {
+    byId("orderLoadingState").hidden = state !== "loading";
+    byId("noOrderState").hidden = state !== "empty";
+    byId("orderWorkspace").hidden = state !== "ready";
+    byId("btnAddItem").hidden = state !== "ready";
+
+    byId("orderTitle").textContent = `Tạo đơn hàng tháng ${month}`;
+    byId("noOrderTitle").textContent = `Chưa có đơn hàng tháng ${month}`;
+    byId("btnCreateMonthOrderText").textContent = `Tạo đơn hàng tháng ${month}`;
+    const createMonthText = byId("createMonthText");
+    if (createMonthText) createMonthText.textContent = `Tháng ${month}`;
+}
+
+// =====================================================
+// TRANG THEO DÕI: thống kê
+// =====================================================
+
+export function renderTrackingStats() {
+    const list = orderPageState.filtered;
+    const set = (id, value) => {
+        const element = byId(id);
+        if (element) element.textContent = value;
+    };
+
+    set("statOrderCount", new Set(list.map(item => item.order)).size);
+    set("statItemCount", list.length);
+    set("statProjectCount", new Set(list.map(item => item.project).filter(Boolean)).size);
+    set("statTotalAmount", formatMoney(list.reduce((sum, item) => sum + service.getTotal(item), 0)));
 }

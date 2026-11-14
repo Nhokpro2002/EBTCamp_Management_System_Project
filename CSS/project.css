@@ -787,13 +787,54 @@ body {
     overflow: visible;
 }
 
-.project-page>.toolbar {
+/* Header trang: breadcrumb + tiêu đề lớn (giống các trang khác) */
+.project-page>.topbar {
 
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin: 0 0 20px;
-    padding: 0;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 18px;
+    padding: 4px 0 0;
+    margin-bottom: 22px;
+}
+
+.topbar h2 {
+
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: #0f172a;
+    margin: 2px 0 4px;
+}
+
+.breadcrumb-text {
+
+    margin: 0;
+    color: var(--text-light);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.breadcrumb-text i {
+
+    margin: 0 6px;
+    font-size: 10px;
+}
+
+.topbar-subtitle {
+
+    margin: 0;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+
+    .project-page>.topbar {
+
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 .btn-create-project {

@@ -94,7 +94,11 @@ export async function loadProjectTasks(projectID) {
             stage.id
         ))
     );
-    const tasks = taskPages.flat();
+    // Task Plan (chưa được Part Leader duyệt) chưa hoạt động → không báo cáo được.
+    // Task cũ chưa có status coi như đã duyệt.
+    const tasks = taskPages.flat().filter(task =>
+        String(task.status || "").trim().toLowerCase() !== "plan"
+    );
 
     return tasks.map(task => ({
         ...task,
@@ -226,24 +230,23 @@ export async function saveTaskReport(taskReport) {
         detail: taskReport.detail || ""
     };
 
-    let taskDailyReport = taskReport.recordID
-        ? await api.updateRecord(COLLECTION_DAILY_REPORTS, taskReport.recordID, data)
-        : await api.createRecord(COLLECTION_DAILY_REPORTS, data);
+    // Dữ liệu + ảnh gửi trong MỘT request:
+    //   - Lần nộp đầu: chỉ 1 lệnh tạo (không tạo xong rồi sửa để up ảnh → không cần quyền Update,
+    //     và không còn bản ghi "mồ côi" khi bước up ảnh lỗi).
+    //   - Part Leader sửa báo cáo đã lưu: 1 lệnh sửa; "evidence_image+" = thêm ảnh, giữ ảnh cũ.
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+
+    const isUpdate = Boolean(taskReport.recordID);
+    taskReport.files.forEach(file => {
+        formData.append(isUpdate ? "evidence_image+" : "evidence_image", file);
+    });
+
+    const taskDailyReport = isUpdate
+        ? await api.updateRecord(COLLECTION_DAILY_REPORTS, taskReport.recordID, formData)
+        : await api.createRecord(COLLECTION_DAILY_REPORTS, formData);
 
     taskReport.recordID = taskDailyReport.id;
-
-    // Ảnh đã lưu vẫn nằm trên bản ghi; chỉ upload thêm các ảnh mới chọn.
-    let hasEvidence = getEvidenceFiles(taskDailyReport).length > 0;
-    for (const file of taskReport.files) {
-        const formData = new FormData();
-        formData.append(hasEvidence ? "evidence_image+" : "evidence_image", file);
-        taskDailyReport = await api.updateRecord(
-            COLLECTION_DAILY_REPORTS,
-            taskDailyReport.id,
-            formData
-        );
-        hasEvidence = true;
-    }
 
     taskReport.report = taskDailyReport;
     taskReport.files = [];
@@ -319,14 +322,12 @@ export function validateTaskReport(taskReport) {
         throw new Error(`${nonImage.name} không phải là file ảnh.`);
     }
 
-    if (taskReport.status === "Done") {
-        const hasEvidence = getEvidenceFiles(taskReport.report).length > 0 ||
-            files.length > 0;
-        if (!hasEvidence) {
-            throw new Error(
-                `Hãy tải lên ít nhất một ảnh minh chứng trước khi chuyển "${taskName}" sang Done.`
-            );
-        }
+    const hasEvidence = getEvidenceFiles(taskReport.report).length > 0 ||
+        files.length > 0;
+    if (!hasEvidence) {
+        throw new Error(
+            `Hãy tải lên ít nhất một ảnh minh chứng cho "${taskName}".`
+        );
     }
 }
 

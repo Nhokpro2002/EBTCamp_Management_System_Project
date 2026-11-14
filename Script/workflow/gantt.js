@@ -1,4 +1,5 @@
 import * as ui from "./ui.js";
+import * as service from "./service.js";
 
 // =====================================================
 // GANTT SETUP
@@ -90,6 +91,10 @@ function setupGeneralConfig() {
     gantt.config.scale_height = 60;
     gantt.config.autosize = false;
     gantt.config.fit_tasks = true;
+    // ui.fitScaleToDelays() đặt gantt.config.start_date / end_date để chừa chỗ cho chữ "Trễ x ngày".
+    // Mặc định DHTMLX ẨN KHỎI LƯỚI mọi dòng mà nó coi là nằm ngoài khoảng đó (kể cả stage) →
+    // sau khi tạo task, các stage / task cũ có thể biến mất. Luôn hiện đủ mọi dòng.
+    gantt.config.show_tasks_outside_timescale = true;
     gantt.config.open_tree_initially = true;
     gantt.config.order_branch = true;
     gantt.config.order_branch_free = true;
@@ -169,7 +174,21 @@ function setupColumns() {
  */
 function renderTaskNameCell(task) {
     if (task.$level !== 0) {
-        return `<span class="task-name-cell" title="${ui.escapeHtml(task.text)}">${ui.escapeHtml(task.text)}</span>`;
+        const name = ui.escapeHtml(task.text);
+        const nameCell = `<span class="task-name-cell" title="${name}">${name}</span>`;
+        if (!service.isPlanTask(task)) {
+            return nameCell;
+        }
+
+        // Task Plan: Part Leader thấy nút "Duyệt", người khác thấy nhãn "Chờ duyệt"
+        const badge = service.canAcceptTask()
+            ? `<button type="button" class="task-accept-button" data-id="${ui.escapeHtml(task.id)}"
+                   title="Duyệt kế hoạch: chuyển task sang Accepted"
+                   aria-label="Duyệt task ${name}">
+                   <i class="bi bi-check2" aria-hidden="true"></i> Duyệt
+               </button>`
+            : `<span class="task-plan-badge" title="Kế hoạch chờ Part Leader duyệt">Chờ duyệt</span>`;
+        return `<span class="task-name-row">${nameCell}${badge}</span>`;
     }
 
     const iconClass = STAGE_ICONS[(task.css || "").toLowerCase()];
@@ -203,7 +222,17 @@ function setupTemplates() {
             classes.push("task-delayed");
         }
 
+        // Kế hoạch chờ duyệt: thanh nét đứt, mờ
+        if (service.isPlanTask(task)) {
+            classes.push("task-plan");
+        }
+
         return classes.join(" ");
+    };
+
+    // Dòng task Plan ở lưới bên trái: nền nhạt để dễ nhận ra
+    gantt.templates.grid_row_class = function (start, end, task) {
+        return service.isPlanTask(task) ? "task-plan-row" : "";
     };
 
     // Thanh stage — chữ 2 lớp: màu đậm trên phần chưa hoàn thành,
@@ -237,6 +266,7 @@ function setupTemplates() {
         const delayDays = ui.getDelayDays(task);
 
         return `<div class="gantt-tip-title">${name}</div>
+                ${service.isPlanTask(task) ? `<div class="gantt-tip-plan"><i class="bi bi-hourglass-split"></i> Kế hoạch — chờ Part Leader duyệt</div>` : ""}
                 <div class="gantt-tip-row">${formatTooltipDate(start)} → ${formatTooltipDate(lastDay)}</div>
                 <div class="gantt-tip-row">Tiến độ: <b>${percent}%</b></div>
                 ${delayDays ? `<div class="gantt-tip-delay"><i class="bi bi-exclamation-triangle-fill"></i> Trễ ${delayDays} ngày</div>` : ""}`;

@@ -1,7 +1,7 @@
 import { URL_LOCAL } from "../config.js";
 
 export async function createRecord(collection, data) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const isFormData = data instanceof FormData;
     const options = {
         method: "POST",
@@ -64,7 +64,7 @@ export async function login(collection, data) {
 }
 
 export async function updateRecord(collection, id, data) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const isFormData = data instanceof FormData;
     const headers = {
         "Authorization": `Bearer ${token}`
@@ -108,7 +108,7 @@ export async function updateRecord(collection, id, data) {
 }
 
 export async function deleteRecord(collection, id) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch(
         `${URL_LOCAL}/api/collections/${collection}/records/${id}`,
         {
@@ -123,7 +123,7 @@ export async function deleteRecord(collection, id) {
 }
 
 export async function getRecords(collection) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     let url = `${URL_LOCAL}/api/collections/${collection}/records`;
     const res = await fetch(url, {
         headers: {
@@ -142,7 +142,7 @@ export async function getRecordsFilter(
     page = 1,
     perPage = 30
 ) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     let url = `${URL_LOCAL}/api/collections/${collection}/records?page=${page}&perPage=${perPage}`;
     const filter = `${field} = "${value}"`;
     url += `&filter=${encodeURIComponent(filter)}`;
@@ -161,7 +161,7 @@ export async function getRecordsFilter(
  * Giá trị chuỗi trong filter nên được tạo bằng quoteFilterValue().
  */
 export async function getRecordsByFilter(collection, filter, page = 1, perPage = 200) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const url = `${URL_LOCAL}/api/collections/${collection}/records` +
         `?page=${page}&perPage=${perPage}&filter=${encodeURIComponent(filter)}`;
     const res = await fetch(url, {
@@ -174,12 +174,41 @@ export async function getRecordsByFilter(collection, filter, page = 1, perPage =
     return data.items || [];
 }
 
+/**
+ * Lấy TẤT CẢ record của collection (tự đi qua mọi trang, 500 record / trang).
+ * @param {object} [options]
+ * @param {string} [options.filter]  filter PocketBase
+ * @param {string} [options.expand]  relation cần expand, ví dụ "requester,project"
+ * @param {string} [options.sort]    ví dụ "-created"
+ */
+export async function getAllRecords(collection, { filter = "", expand = "", sort = "" } = {}) {
+    const token = sessionStorage.getItem("token");
+    const perPage = 500;
+    const items = [];
+
+    for (let page = 1; ; page += 1) {
+        const params = new URLSearchParams({ page: String(page), perPage: String(perPage) });
+        if (filter) params.set("filter", filter);
+        if (expand) params.set("expand", expand);
+        if (sort) params.set("sort", sort);
+
+        const res = await fetch(`${URL_LOCAL}/api/collections/${collection}/records?${params}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error("Không tải được dữ liệu");
+
+        const data = await res.json();
+        items.push(...(data.items || []));
+        if (page >= (data.totalPages || 1)) return items;
+    }
+}
+
 export function quoteFilterValue(value) {
     return `"${String(value ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
 }
 
 export async function loadInventoryItemEachPage(collection, page = 1, size = 7) {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch(
         `${URL_LOCAL}/api/collections/${collection}/records?page=${page}&perPage=${size}`,
         {

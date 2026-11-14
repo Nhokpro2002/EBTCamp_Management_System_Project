@@ -50,7 +50,15 @@
                         </ul>
                     </details>
                 </li>
-                <li><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li>
+                    <details class="menu-report menu-order">
+                        <summary><i class="bi bi-receipt"></i> Đơn hàng <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="order.html"><i class="bi bi-cart-plus"></i> Tạo đơn hàng</a></li>
+                            <li><a href="order-tracking.html"><i class="bi bi-clipboard-data"></i> Theo dõi đơn hàng</a></li>
+                        </ul>
+                    </details>
+                </li>
                 <li class="active"><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li>
                     <a href="notification.html">
@@ -87,11 +95,16 @@
         <main class="content">
             <div class="project-page">
 
-                <div class="toolbar">
+                <header class="topbar">
+                    <div>
+                        <p class="breadcrumb-text">Quản lý <i class="bi bi-chevron-right"></i> Dự án</p>
+                        <h2>Dự án</h2>
+                        <p class="topbar-subtitle">Danh sách các dự án đang được quản lý trong phòng lắp ráp.</p>
+                    </div>
                     <button type="button" class="btn btn-create-project">
-                        Thêm dự án
+                        <i class="bi bi-plus-lg"></i> Thêm dự án
                     </button>
-                </div>
+                </header>
 
                 <!-- Project grid: chỉ chứa các project card -->
                 <section id="projectGrid" class="project-grid"></section>

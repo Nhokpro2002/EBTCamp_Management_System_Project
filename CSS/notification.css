@@ -838,3 +838,151 @@ body {
 .activity-state .spinner-border {
     color: var(--primary);
 }
+
+
+/* =========================================================
+   THÔNG BÁO PHÂN LOẠI (collection Notifications)
+========================================================= */
+
+.btn-outline-custom:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+/* Tab phân loại */
+.notification-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.notification-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+.notification-tab:hover {
+    border-color: #cbd5e1;
+    color: var(--text-main);
+}
+
+.notification-tab.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+}
+
+.tab-count {
+    min-width: 20px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.tab-count[hidden] {
+    display: none;
+}
+
+.notification-tab.active .tab-count {
+    background: #fff;
+    color: var(--primary);
+}
+
+/* Một thông báo */
+.notification-item {
+    cursor: pointer;
+}
+
+.notification-item:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+}
+
+.notification-item.is-unread {
+    background: #f8fbff;
+    box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.notification-item.is-unread .activity-title {
+    color: #0f172a;
+}
+
+.notification-item:not(.is-unread) .activity-title,
+.notification-item:not(.is-unread) .activity-desc {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.activity-content {
+    min-width: 0;
+}
+
+/* Icon theo loại */
+.notification-icon-issue { background: #fef2f2; color: #dc2626; }
+.notification-icon-resolved { background: #ecfdf5; color: #059669; }
+.notification-icon-plan { background: #fef3c7; color: #b45309; }
+.notification-icon-accepted { background: #eff6ff; color: #2563eb; }
+.notification-icon-system { background: #e0e7ff; color: #4f46e5; }
+
+.activity-icon {
+    flex: 0 0 auto;
+}
+
+/* Nhãn loại thông báo cạnh tiêu đề */
+.notification-type-chip {
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.notification-chip-issue { background: #fef2f2; color: #b91c1c; }
+.notification-chip-resolved { background: #ecfdf5; color: #047857; }
+.notification-chip-plan { background: #fef3c7; color: #92400e; }
+.notification-chip-accepted { background: #eff6ff; color: #1d4ed8; }
+.notification-chip-system { background: #e0e7ff; color: #4338ca; }
+
+/* Nút đánh dấu đã đọc từng thông báo */
+.notification-read-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin-top: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text-muted);
+}
+
+.notification-read-button:hover,
+.notification-read-button:focus-visible {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Tiêu đề thông báo issue (Issue mới, Được giao issue): màu đỏ, kể cả khi đã đọc */
+.notification-item .activity-title.notification-title-issue {
+    color: #dc2626;
+}
+
+.notification-item:not(.is-unread) .activity-title.notification-title-issue {
+    color: #ef4444;
+}

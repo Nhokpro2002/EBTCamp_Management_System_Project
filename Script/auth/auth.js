@@ -7,14 +7,25 @@
 //   Trang login:          <script src="../Script/auth/auth.js" data-guest></script>
 //     (đã đăng nhập rồi thì chuyển thẳng vào hệ thống)
 //   Trang register không nạp file này (ai cũng mở được, kể cả khi đang đăng nhập).
+//   login.html?logout → luôn hiện form đăng nhập (xóa phiên hiện tại), dùng cho link
+//   "Đăng nhập" ở trang register.
+//
+// Phiên đăng nhập (token, user) lưu trong sessionStorage: đóng tab / trình duyệt là
+// mất, lần sau vào lại phải đăng nhập lại.
 // =====================================================
 (function () {
     const LOGIN_PAGE = "login.html";
     const HOME_PAGE = "inventory.html";
     const GUEST_PAGES = ["login.html", "register.html"];
-    // localStorage key của phiên đăng nhập ("pocketbase_auth" do PocketBase SDK tự lưu)
-    const SESSION_KEYS = ["token", "user", "pocketbase_auth"];
+    // sessionStorage key của phiên đăng nhập
+    const SESSION_KEYS = ["token", "user"];
+    // Bản cũ lưu phiên trong localStorage ("pocketbase_auth" do PocketBase SDK tự lưu) → luôn xóa
+    const LEGACY_LOCAL_KEYS = ["token", "user", "pocketbase_auth"];
+    // Ghi vào localStorage khi đăng xuất để các tab khác cùng thoát
+    const LOGOUT_SIGNAL_KEY = "ebt_logout_at";
     const SESSION_CHECK_INTERVAL_MS = 60 * 1000;
+
+    LEGACY_LOCAL_KEYS.forEach(key => localStorage.removeItem(key));
 
     const isGuestPage = document.currentScript?.hasAttribute("data-guest") ?? false;
     // Số thông báo trên sidebar (module riêng, nạp sau khi trang dựng xong)
@@ -37,7 +48,7 @@
     }
 
     function isLoggedIn() {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         if (!token || !token.trim()) return false;
 
         const payload = readTokenPayload(token);
@@ -48,7 +59,8 @@
     }
 
     function clearSession() {
-        SESSION_KEYS.forEach(key => localStorage.removeItem(key));
+        SESSION_KEYS.forEach(key => sessionStorage.removeItem(key));
+        LEGACY_LOCAL_KEYS.forEach(key => localStorage.removeItem(key));
     }
 
     function getCurrentPage() {
@@ -91,6 +103,7 @@
     }
 
     function logout() {
+        localStorage.setItem(LOGOUT_SIGNAL_KEY, String(Date.now()));
         redirectToLogin(false);
     }
 
@@ -99,6 +112,15 @@
 
     // ---------- Trang login / register ----------
     if (isGuestPage) {
+        // Bấm "Đăng nhập" từ trang register → luôn ở lại form đăng nhập
+        const params = new URLSearchParams(location.search);
+        if (params.has("logout")) {
+            clearSession();
+            params.delete("logout");
+            const query = params.toString();
+            history.replaceState(null, "", location.pathname + (query ? `?${query}` : "") + location.hash);
+            return;
+        }
         if (isLoggedIn()) {
             location.replace(getRedirectTarget());
         }
@@ -119,7 +141,7 @@
     window.addEventListener("pageshow", ensureLoggedIn);
     // Logout ở tab khác → tab này cũng thoát
     window.addEventListener("storage", event => {
-        if (event.key === null || SESSION_KEYS.includes(event.key)) ensureLoggedIn();
+        if (event.key === LOGOUT_SIGNAL_KEY && event.newValue) redirectToLogin(false);
     });
     // Token hết hạn trong lúc đang mở trang
     setInterval(ensureLoggedIn, SESSION_CHECK_INTERVAL_MS);

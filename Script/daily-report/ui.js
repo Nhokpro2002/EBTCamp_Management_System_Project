@@ -170,7 +170,7 @@ function renderTaskReportRow(entry, users, issues, projectID) {
                 <select class="task-status-select ${getStatusClass(entry.status)}" aria-label="Trạng thái của ${escapeHtml(task.name)}">
                     ${renderStatusOptions(entry.status)}
                 </select>
-                <span class="task-evidence-required"${entry.status === "Done" && !hasEvidence ? "" : " hidden"}>Cần ảnh minh chứng</span>
+                <span class="task-evidence-required"${hasEvidence ? " hidden" : ""}>Cần ảnh minh chứng</span>
             </td>
             <td class="task-required-cell" data-required="worker">
                 ${renderWorker(entry, users)}
@@ -184,7 +184,7 @@ function renderTaskReportRow(entry, users, issues, projectID) {
             </td>
             <td>${renderIssues(linkedIssues, projectID, task.id)}</td>
             <td>
-                <div class="task-evidence-controls"${entry.status === "Done" ? "" : " hidden"}>
+                <div class="task-evidence-controls">
                     <div class="task-evidence-list">${evidenceLinks}</div>
                     <input class="task-evidence-upload" type="file" accept="image/*" multiple
                            aria-label="Tải ảnh minh chứng cho ${escapeHtml(task.name)}">
@@ -307,18 +307,10 @@ export function updateEvidenceRequirement(row, entry) {
     const hasEvidence = service.getEvidenceFiles(entry.report).length > 0 ||
         (entry.files && entry.files.length > 0);
 
-    const evidenceControls = row.querySelector(".task-evidence-controls");
-    const statusSelect = row.querySelector(".task-status-select");
+    // Mọi task đều cần ảnh minh chứng, không phụ thuộc trạng thái.
     const evidenceRequired = row.querySelector(".task-evidence-required");
-
-    if (!evidenceControls) return;
-
-    // Chỉ hiển thị ô upload/thông báo khi task ở trạng thái Done,
-    // tránh ảnh hưởng logic enable/disable cho report không ở Done.
-    evidenceControls.hidden = statusSelect.value !== "Done";
-
     if (evidenceRequired) {
-        evidenceRequired.hidden = statusSelect.value !== "Done" || hasEvidence;
+        evidenceRequired.hidden = hasEvidence;
     }
 }
 

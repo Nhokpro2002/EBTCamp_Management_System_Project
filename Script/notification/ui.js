@@ -1,122 +1,132 @@
+import { NOTIFICATION_TYPE } from "./service.js";
+
 const panel = document.querySelector("#activity-list");
 
+// Icon + màu theo loại thông báo
+const TYPE_STYLES = {
+    [NOTIFICATION_TYPE.ISSUE_CREATED]: { icon: "bi-exclamation-triangle-fill", tone: "issue", label: "Issue mới" },
+    [NOTIFICATION_TYPE.ISSUE_ASSIGNED]: { icon: "bi-person-check-fill", tone: "issue", label: "Được giao issue" },
+    [NOTIFICATION_TYPE.ISSUE_RESOLVED]: { icon: "bi-check-circle-fill", tone: "resolved", label: "Issue có giải pháp" },
+    [NOTIFICATION_TYPE.TASK_PLAN_SUBMITTED]: { icon: "bi-hourglass-split", tone: "plan", label: "Task chờ duyệt" },
+    [NOTIFICATION_TYPE.TASK_ACCEPTED]: { icon: "bi-patch-check-fill", tone: "accepted", label: "Task đã duyệt" }
+};
+const DEFAULT_STYLE = { icon: "bi-bell-fill", tone: "system", label: "Thông báo" };
+
+const CATEGORY_LABELS = {
+    issue: "Issue",
+    task: "Task"
+};
+
 // =====================================================
-// Render Issue
+// DANH SÁCH
 // =====================================================
 
-export function renderIssue(issue, prepend = false) {
+function renderNotification(notification) {
+    const style = TYPE_STYLES[notification.type] || DEFAULT_STYLE;
+    const created = new Date(notification.created);
+    const projectName = notification.expand?.project?.name || "";
+    const actorName = notification.expand?.actor?.employee_name || "";
+    const unread = !notification.is_read;
+    // Nhãn cạnh tiêu đề = nhóm thông báo (tiêu đề đã nói rõ sự kiện, tránh lặp chữ)
+    const categoryLabel = CATEGORY_LABELS[notification.category] || "";
 
-    const created = new Date(issue.created_date || issue.createdDate || issue.created);
+    return `
+        <div class="activity-item notification-item ${unread ? "is-unread" : ""}"
+             data-id="${escapeHtml(notification.id)}"
+             data-link="${escapeHtml(notification.link || "")}"
+             role="button" tabindex="0"
+             aria-label="${escapeHtml(notification.title)}${unread ? " (chưa đọc)" : ""}">
 
-    const time = formatTime(created);
-    const date = formatDate(created);
-
-
-    const html = `
-
-        <div class="activity-item" data-type="issue" data-project-id="${escapeHtml(issue.project ?? "")}" data-project-name="${escapeHtml(issue.project_name ?? "")}">
-
-            <!-- Activity -->
             <div class="col-activity">
-
                 <div class="activity-main">
-
+                    <span class="activity-icon notification-icon-${style.tone}" aria-hidden="true">
+                        <i class="bi ${style.icon}"></i>
+                    </span>
                     <div class="activity-content">
-
-
                         <div class="activity-header">
-    <span class="activity-title issue-title">
-        <i class="bi bi-exclamation-triangle-fill issue-icon"></i>
-        Issue mới
-    </span>
-</div>
-
-
-                        <div class="activity-desc">
-
-                            <strong>
-                                ${escapeHtml(
-        issue.title ?? "-"
-    )}
-                            </strong>
-
-                            vừa được báo cáo.
-
+                            ${unread ? '<span class="activity-dot-unread" title="Chưa đọc"></span>' : ""}
+                            <span class="activity-title notification-title-${style.tone}">${escapeHtml(notification.title || style.label)}</span>
+                            ${categoryLabel ? `<span class="notification-type-chip notification-chip-${style.tone}">${categoryLabel}</span>` : ""}
                         </div>
-
-
-                        <div class="activity-fields">
-
-                            <span class="field-label">
-                                Loại:
-                            </span>
-
-                            <span class="field-value issue-type">
-                                ${escapeHtml(issue.type || "-")}
-                            </span>
-
-                            <span class="field-separator">
-                                •
-                            </span>
-
-                            <span class="field-label">
-                                Stage:
-                            </span>
-
-                            <span class="stage-badge ${getStageClass(issue.related_stage)}">
-                                ${escapeHtml(
-        issue.related_stage ?? "-"
-    )}
-                            </span>
-
-
-                            <span class="field-separator">
-                                •
-                            </span>
-                            <span class="field-label">
-                                Người báo:
-                            </span>
-                            <span class="updated-by">
-                                ${escapeHtml(
-        issue.reporter ??
-        "Không rõ"
-    )}
-                            </span>
-                        </div>
+                        <div class="activity-desc">${escapeHtml(notification.message || "")}</div>
+                        ${actorName ? `<div class="activity-fields"><span class="field-label">Người thực hiện:</span><span class="updated-by">${escapeHtml(actorName)}</span></div>` : ""}
                     </div>
                 </div>
             </div>
 
-
-            <!-- Related -->
             <div class="col-related">
                 <div class="activity-relation">
-                    <span class="relation-badge badge-project">
-                    ${escapeHtml(issue.project_name || "")}
-                    </span>
+                    ${projectName ? `<span class="relation-badge badge-project">${escapeHtml(projectName)}</span>` : ""}
                 </div>
             </div>
 
-            <!-- Time -->
             <div class="col-time">
                 <div class="activity-meta">
-                    <div class="activity-time">
-                        ${time}
-                    </div>
-                    <div class="activity-date">
-                        ${date}
-                    </div>
+                    <div class="activity-time">${formatTime(created)}</div>
+                    <div class="activity-date">${formatDate(created)}</div>
+                    ${unread ? `<button type="button" class="notification-read-button" data-mark-read="${escapeHtml(notification.id)}" title="Đánh dấu đã đọc" aria-label="Đánh dấu đã đọc"><i class="bi bi-check2"></i></button>` : ""}
                 </div>
             </div>
-
-        </div>
-
-    `;
-
-
-    panel.insertAdjacentHTML(prepend ? "afterbegin" : "beforeend", html);
-
+        </div>`;
 }
+
+export function renderNotifications(list) {
+    panel.innerHTML = list.map(renderNotification).join("");
+}
+
+export function renderState(message, retry = false) {
+    panel.innerHTML = `
+        <div class="activity-state" role="${retry ? "alert" : "status"}">
+            <span>${escapeHtml(message)}</span>
+            ${retry ? '<button type="button" class="activity-retry-btn" data-retry-activity>Thử lại</button>' : ""}
+        </div>`;
+}
+
+export function renderLoading() {
+    panel.innerHTML = '<div class="activity-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Đang tải thông báo...</div>';
+}
+
+// =====================================================
+// TAB / BỘ LỌC / PHÂN TRANG
+// =====================================================
+
+export function renderTabCounts(counts) {
+    Object.entries(counts).forEach(([key, value]) => {
+        const element = document.querySelector(`.tab-count[data-count="${key}"]`);
+        if (!element) return;
+        element.textContent = value ? String(value) : "";
+        element.hidden = !value;
+    });
+}
+
+export function setActiveTab(tab) {
+    document.querySelectorAll(".notification-tab").forEach(button => {
+        const active = button.dataset.tab === tab;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+    });
+}
+
+export function renderProjectOptions(projects, selected) {
+    const select = document.getElementById("projectSelect");
+    select.innerHTML = '<option value="">Tất cả dự án</option>' + projects
+        .map(project => `<option value="${escapeHtml(project.id)}" ${project.id === selected ? "selected" : ""}>${escapeHtml(project.name || "Dự án chưa đặt tên")}</option>`)
+        .join("");
+}
+
+export function renderPagination({ first, last, total, page, totalPages }) {
+    document.getElementById("pagination-info").textContent = `${first}–${last} / ${total}`;
+    document.getElementById("previous-page").disabled = page <= 1;
+    document.getElementById("next-page").disabled = page >= totalPages;
+}
+
+export function setMarkAllEnabled(enabled) {
+    document.getElementById("mark-all-read").disabled = !enabled;
+}
+
+// =====================================================
+// HELPERS
+// =====================================================
 
 function formatTime(date) {
     return date.toLocaleTimeString("vi-VN", {
@@ -127,7 +137,7 @@ function formatTime(date) {
     });
 }
 
-// dd/mm/yyyy (luôn đủ 2 chữ số, VD 04/11/2026)
+// dd/mm/yyyy
 function formatDate(date) {
     return date.toLocaleDateString("en-GB", {
         timeZone: "Asia/Ho_Chi_Minh",
@@ -137,38 +147,12 @@ function formatDate(date) {
     });
 }
 
-// =====================================================
-// Helpers - Security
-// =====================================================
-
 export function escapeHtml(value) {
-    return String(value ?? "")
-        .replace(/[&<>"']/g, char => ({
-
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-        }[char]));
-}
-
-// =====================================================
-// Helpers - Stage
-// =====================================================
-function getStageClass(stage) {
-    switch (stage?.toLowerCase()) {
-        case "design":
-            return "stage-badge-design";
-        case "mechanical":
-            return "stage-badge-mechanical";
-        case "assembly":
-            return "stage-badge-assembly";
-        case "electric":
-            return "stage-badge-electric";
-        case "program":
-            return "stage-badge-program";
-        default:
-            return "stage-badge-default";
-    }
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    }[char]));
 }

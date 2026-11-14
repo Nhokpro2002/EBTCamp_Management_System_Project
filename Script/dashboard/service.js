@@ -60,7 +60,12 @@ export async function loadDashboardData() {
         getAllRecords(COLLECTION_MATERIALS)
     ]);
 
-    Object.assign(state, { projects, stages, tasks, issues, materials });
+    // Task Plan (chưa được Part Leader duyệt) chưa hoạt động → không tính tiến độ / trễ hạn / tổng task
+    const activeTasks = tasks.filter(task =>
+        String(task.status || "").trim().toLowerCase() !== "plan"
+    );
+
+    Object.assign(state, { projects, stages, tasks: activeTasks, issues, materials });
 }
 
 // =====================================================

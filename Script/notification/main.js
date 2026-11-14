@@ -1,297 +1,278 @@
+// =====================================================
+// TRANG THÔNG BÁO (notification.html)
+// Thông báo của user đang đăng nhập (collection Notifications):
+//   - Tab: Tất cả / Chưa đọc / Issue / Duyệt task (kèm số chưa đọc)
+//   - Lọc theo dự án + tìm kiếm, phân trang
+//   - Bấm thông báo → đánh dấu đã đọc + mở trang liên quan (link)
+//   - Realtime: thông báo mới hiện ngay
+// =====================================================
 import * as service from "./service.js";
 import * as ui from "./ui.js";
 
 import { URL_LOCAL } from "../config.js";
+import { COLLECTION_NOTIFICATIONS } from "../services/notification.api.js";
 
-const pb = new PocketBase(URL_LOCAL);
-
-const panel = document.querySelector("#activity-list");
-const dateInput = document.querySelector("#filter-date");
-const searchInput = document.querySelector("#search-notifications");
-const projectSelect = document.querySelector("#projectSelect");
-const pageSizeSelect = document.querySelector("#page-size");
-const paginationInfo = document.querySelector("#pagination-info");
-const previousPageButton = document.querySelector("#previous-page");
-const nextPageButton = document.querySelector("#next-page");
-let activityLoadSequence = 0;
-let currentPage = 1;
-let pageSize = Number(pageSizeSelect.value);
-
-const token = localStorage.getItem("token");
-if (token) {
-    pb.authStore.save(token);
-}
+const state = {
+    notifications: [],
+    tab: "all",          // all | unread | issue | task
+    project: "",
+    query: "",
+    page: 1,
+    pageSize: Number(document.getElementById("page-size").value) || 10
+};
 
 // =====================================================
-// 1. State
+// LỌC + VẼ
 // =====================================================
 
-const userRoles = service.getCurrentUserRoles();
-
-
-// =====================================================
-// 2. Initialization
-// =====================================================
-
-const todayStr = getBusinessDate(new Date());
-
-dateInput.value = todayStr;
-
-try {
-    await service.loadProjects();
-} catch (error) {
-    console.error("Failed to initialize project filter:", error);
-}
-
-// =====================================================
-// Load initial data
-// =====================================================
-
-await loadActivity(todayStr);
-
-subscribeRealtime();
-
-dateInput.addEventListener("change", async (event) => {
-    await loadActivity(event.target.value);
-});
-
-searchInput?.addEventListener("input", () => applyActivityFilters(true));
-projectSelect?.addEventListener("change", () => applyActivityFilters(true));
-pageSizeSelect?.addEventListener("change", () => {
-    pageSize = Number(pageSizeSelect.value);
-    applyActivityFilters(true);
-});
-previousPageButton?.addEventListener("click", () => {
-    currentPage--;
-    applyActivityFilters();
-});
-nextPageButton?.addEventListener("click", () => {
-    currentPage++;
-    applyActivityFilters();
-});
-
-document.addEventListener("keydown", event => {
-    const target = event.target;
-    const isTypingTarget =
-        target instanceof HTMLElement &&
-        (target.matches("input, textarea, select") || target.isContentEditable);
-    if (event.key === "/" && !isTypingTarget) {
-        event.preventDefault();
-        searchInput?.focus();
-    } else if (event.key === "Escape" && event.target === searchInput) {
-        searchInput.value = "";
-        applyActivityFilters(true);
-        searchInput.blur();
-    }
-});
-
-panel.addEventListener("click", event => {
-    if (event.target.closest("[data-retry-activity]")) {
-        loadActivity(dateInput.value);
-    }
-});
-
-// =====================================================
-// 3. Load Issue Notifications
-// Chỉ hiện issue có type phù hợp với role của user
-// =====================================================
-
-async function loadActivity(selectedDate) {
-    const loadSequence = ++activityLoadSequence;
-    currentPage = 1;
-    panel.setAttribute("aria-busy", "true");
-    panel.innerHTML = '<div class="activity-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Đang tải thông báo...</div>';
-    paginationInfo.textContent = "0–0 / 0";
-    previousPageButton.disabled = true;
-    nextPageButton.disabled = true;
-    try {
-        if (!selectedDate) {
-            showActivityState("Chọn ngày để xem thông báo.");
-            return;
-        }
-
-        const { startOfDay, endOfDay } = getDateRange(selectedDate);
-        const issues = await loadIssuesForDate(startOfDay, endOfDay);
-        if (loadSequence !== activityLoadSequence) {
-            return;
-        }
-        const activities = issues.items
-            .filter(issue => service.isIssueForRoles(issue, userRoles))
-            .map(issue => ({
-                data: issue,
-                date: getActivityDate(issue)
-            }));
-
-        activities.sort((first, second) => first.date - second.date);
-        panel.innerHTML = "";
-        activities.forEach(activity => ui.renderIssue(activity.data, true));
-        if (!activities.length) {
-            showActivityState("Không có thông báo nào trong ngày này.");
-        }
-        applyActivityFilters();
-    } catch (error) {
-        if (loadSequence !== activityLoadSequence) {
-            return;
-        }
-        console.error("Failed to load notifications:", error);
-        showActivityState(
-            "Không tải được thông báo. Vui lòng thử lại.",
-            true
-        );
-    } finally {
-        if (loadSequence === activityLoadSequence) {
-            panel.setAttribute("aria-busy", "false");
-        }
+function matchesTab(notification, tab) {
+    switch (tab) {
+        case "unread":
+            return !notification.is_read;
+        case "issue":
+            return notification.category === service.NOTIFICATION_CATEGORY.ISSUE;
+        case "task":
+            return notification.category === service.NOTIFICATION_CATEGORY.TASK;
+        default:
+            return true;
     }
 }
 
-async function getAllActivityRecords(collection, options) {
-    const firstPage = await pb.collection(collection).getList(1, 100, options);
-    const remainingPages = await Promise.all(
-        Array.from(
-            { length: Math.max(0, firstPage.totalPages - 1) },
-            (_, index) => pb.collection(collection).getList(index + 2, 100, options)
-        )
+function getFiltered() {
+    const query = state.query;
+    return state.notifications.filter(notification =>
+        matchesTab(notification, state.tab) &&
+        (!state.project || notification.project === state.project) &&
+        (!query || [
+            notification.title,
+            notification.message,
+            notification.expand?.actor?.employee_name,
+            notification.expand?.project?.name
+        ].some(value => String(value ?? "").toLocaleLowerCase().includes(query)))
     );
-    return {
-        items: [
-            ...firstPage.items,
-            ...remainingPages.flatMap(page => page.items)
-        ]
-    };
 }
 
-async function loadIssuesForDate(startOfDay, endOfDay) {
+function render() {
+    // Số trên tab = số CHƯA ĐỌC của từng loại
+    const unread = state.notifications.filter(notification => !notification.is_read);
+    ui.renderTabCounts({
+        all: unread.length,
+        unread: unread.length,
+        issue: unread.filter(notification => matchesTab(notification, "issue")).length,
+        task: unread.filter(notification => matchesTab(notification, "task")).length
+    });
+    ui.setMarkAllEnabled(unread.length > 0);
+
+    const list = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(list.length / state.pageSize));
+    state.page = Math.min(Math.max(1, state.page), totalPages);
+    const start = (state.page - 1) * state.pageSize;
+    const pageItems = list.slice(start, start + state.pageSize);
+
+    if (!state.notifications.length) {
+        ui.renderState("Bạn chưa có thông báo nào.");
+    } else if (!pageItems.length) {
+        ui.renderState("Không có thông báo nào khớp bộ lọc.");
+    } else {
+        ui.renderNotifications(pageItems);
+    }
+
+    ui.renderPagination({
+        first: list.length ? start + 1 : 0,
+        last: Math.min(start + state.pageSize, list.length),
+        total: list.length,
+        page: state.page,
+        totalPages
+    });
+}
+
+// =====================================================
+// ĐÃ ĐỌC
+// =====================================================
+
+async function markRead(id) {
+    const notification = state.notifications.find(item => item.id === id);
+    if (!notification || notification.is_read) return;
+
+    notification.is_read = true;
+    render();
     try {
-        return await getAllActivityRecords("Issues", {
-            sort: "-created_date",
-            filter: `created_date >= "${startOfDay}" && created_date <= "${endOfDay}"`
+        await service.markAsRead(id);
+    } catch (error) {
+        console.error("Không đánh dấu được đã đọc.", error);
+        notification.is_read = false;
+        render();
+    }
+}
+
+async function openNotification(id) {
+    const notification = state.notifications.find(item => item.id === id);
+    if (!notification) return;
+
+    await markRead(id);
+    if (notification.link) {
+        window.location.href = notification.link;
+    }
+}
+
+async function markAllRead() {
+    const ids = state.notifications.filter(item => !item.is_read).map(item => item.id);
+    if (!ids.length) return;
+
+    document.getElementById("mark-all-read").disabled = true;
+    const done = new Set(await service.markAllAsRead(ids));
+    state.notifications.forEach(item => {
+        if (done.has(item.id)) item.is_read = true;
+    });
+    render();
+}
+
+// =====================================================
+// SỰ KIỆN
+// =====================================================
+
+function bindEvents() {
+    const panel = document.getElementById("activity-list");
+    const searchInput = document.getElementById("search-notifications");
+
+    document.querySelectorAll(".notification-tab").forEach(button => {
+        button.addEventListener("click", () => {
+            state.tab = button.dataset.tab;
+            state.page = 1;
+            ui.setActiveTab(state.tab);
+            render();
         });
-    } catch (customDateError) {
-        try {
-            return await getAllActivityRecords("Issues", {
-                sort: "-created",
-                filter: `created >= "${startOfDay}" && created <= "${endOfDay}"`
-            });
-        } catch (fallbackError) {
-            console.warn("Issue date-field query failed:", customDateError);
-            throw fallbackError;
+    });
+
+    document.getElementById("projectSelect").addEventListener("change", event => {
+        state.project = event.target.value;
+        state.page = 1;
+        render();
+    });
+
+    searchInput.addEventListener("input", () => {
+        state.query = searchInput.value.trim().toLocaleLowerCase();
+        state.page = 1;
+        render();
+    });
+
+    document.getElementById("page-size").addEventListener("change", event => {
+        state.pageSize = Number(event.target.value) || 10;
+        state.page = 1;
+        render();
+    });
+    document.getElementById("previous-page").addEventListener("click", () => {
+        state.page--;
+        render();
+    });
+    document.getElementById("next-page").addEventListener("click", () => {
+        state.page++;
+        render();
+    });
+
+    document.getElementById("mark-all-read").addEventListener("click", markAllRead);
+
+    panel.addEventListener("click", event => {
+        if (event.target.closest("[data-retry-activity]")) {
+            loadAll();
+            return;
         }
-    }
-}
 
-function showActivityState(message, retry = false) {
-    panel.innerHTML = `
-        <div class="activity-state" role="${retry ? "alert" : "status"}">
-            <span>${message}</span>
-            ${retry ? '<button type="button" class="activity-retry-btn" data-retry-activity>Thử lại</button>' : ""}
-        </div>
-    `;
-}
+        const readButton = event.target.closest("[data-mark-read]");
+        if (readButton) {
+            event.stopPropagation();
+            markRead(readButton.dataset.markRead);
+            return;
+        }
 
-function applyActivityFilters(resetPage = false) {
-    if (resetPage) {
-        currentPage = 1;
-    }
-    const query = searchInput?.value.trim().toLocaleLowerCase() || "";
-    const projectId = projectSelect?.value || "";
-    const selectedProjectName = projectSelect?.selectedOptions[0]?.textContent
-        .trim()
-        .toLocaleLowerCase() || "";
-    const matchingItems = [...panel.querySelectorAll(".activity-item")].filter(item => {
-        const matchesProject = !projectId ||
-            item.dataset.projectId === projectId ||
-            item.dataset.projectName?.toLocaleLowerCase() === selectedProjectName;
-        const matchesSearch =
-            !query || item.textContent.toLocaleLowerCase().includes(query);
-        return matchesProject && matchesSearch;
+        const item = event.target.closest(".notification-item");
+        if (item) openNotification(item.dataset.id);
     });
 
-    const totalPages = Math.max(1, Math.ceil(matchingItems.length / pageSize));
-    currentPage = Math.min(Math.max(currentPage, 1), totalPages);
-    const startIndex = (currentPage - 1) * pageSize;
-    const visibleItems = new Set(matchingItems.slice(startIndex, startIndex + pageSize));
-    panel.querySelectorAll(".activity-item").forEach(item => {
-        item.hidden = !visibleItems.has(item);
+    panel.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        const item = event.target.closest(".notification-item");
+        if (!item || event.target !== item) return;
+        event.preventDefault();
+        openNotification(item.dataset.id);
     });
 
-    panel.querySelector("#activity-filter-empty")?.remove();
-    if (panel.querySelector(".activity-item") && matchingItems.length === 0) {
-        const emptyState = document.createElement("div");
-        emptyState.id = "activity-filter-empty";
-        emptyState.className = "activity-state";
-        emptyState.textContent = "Không có thông báo nào khớp bộ lọc.";
-        panel.appendChild(emptyState);
-    }
-    const firstItem = matchingItems.length ? startIndex + 1 : 0;
-    const lastItem = Math.min(startIndex + pageSize, matchingItems.length);
-    paginationInfo.textContent = `${firstItem}–${lastItem} / ${matchingItems.length}`;
-    previousPageButton.disabled = currentPage <= 1;
-    nextPageButton.disabled = currentPage >= totalPages;
+    // "/" để tìm, Esc để xóa tìm kiếm
+    document.addEventListener("keydown", event => {
+        const target = event.target;
+        const isTyping = target instanceof HTMLElement &&
+            (target.matches("input, textarea, select") || target.isContentEditable);
+        if (event.key === "/" && !isTyping) {
+            event.preventDefault();
+            searchInput.focus();
+        } else if (event.key === "Escape" && target === searchInput) {
+            searchInput.value = "";
+            state.query = "";
+            render();
+            searchInput.blur();
+        }
+    });
 }
 
 // =====================================================
-// 4. Realtime
+// TẢI DỮ LIỆU + REALTIME
 // =====================================================
+
+async function loadAll() {
+    ui.renderLoading();
+    try {
+        state.notifications = await service.loadNotifications();
+        render();
+    } catch (error) {
+        console.error("Failed to load notifications:", error);
+        ui.renderState("Không tải được thông báo. Vui lòng thử lại.", true);
+    }
+}
+
+async function loadProjects() {
+    try {
+        ui.renderProjectOptions(await service.loadProjects(), state.project);
+    } catch (error) {
+        console.error("Failed to load projects:", error);
+    }
+}
 
 function subscribeRealtime() {
-    pb.collection("Issues").subscribe("*", event => {
-        if (event.action !== "create") {
-            return;
+    if (!window.PocketBase) return;
+
+    const pb = new PocketBase(URL_LOCAL);
+    // Mặc định SDK lưu token vào localStorage ("pocketbase_auth") → còn sau khi đóng trình duyệt.
+    // Thay bằng BaseAuthStore (chỉ giữ trong bộ nhớ); bản UMD không export class này nên lấy qua prototype.
+    const MemoryAuthStore = Object.getPrototypeOf(Object.getPrototypeOf(pb.authStore)).constructor;
+    pb.authStore = new MemoryAuthStore();
+    const token = sessionStorage.getItem("token");
+    if (token) pb.authStore.save(token);
+
+    const userID = service.getCurrentUserID();
+
+    // PocketBase chỉ đẩy bản ghi user được phép xem (recipient = mình); kiểm tra lại cho chắc
+    pb.collection(COLLECTION_NOTIFICATIONS).subscribe("*", async event => {
+        if (event.record.recipient !== userID) return;
+
+        if (event.action === "create") {
+            // Lấy lại kèm expand (actor, project) để hiện đủ thông tin
+            try {
+                const full = await pb.collection(COLLECTION_NOTIFICATIONS).getOne(event.record.id, { expand: "actor,project" });
+                state.notifications.unshift(full);
+            } catch {
+                state.notifications.unshift(event.record);
+            }
+        } else if (event.action === "update") {
+            const existing = state.notifications.find(item => item.id === event.record.id);
+            if (existing) existing.is_read = event.record.is_read;
+        } else if (event.action === "delete") {
+            state.notifications = state.notifications.filter(item => item.id !== event.record.id);
         }
-
-        // Issue chỉ báo cho user có role phù hợp với type
-        if (!service.isIssueForRoles(event.record, userRoles)) {
-            return;
-        }
-
-        // Số trên sidebar do Script/notification/badge.js quản lý
-        if (getBusinessDate(getActivityDate(event.record)) !== dateInput.value) {
-            return;
-        }
-
-        // Thay thông báo "không có dữ liệu" bằng issue mới
-        panel.querySelector(".activity-state")?.remove();
-        ui.renderIssue(event.record, true);
-        applyActivityFilters(true);
-    });
+        render();
+    }).catch(error => console.warn("Không đăng ký được thông báo realtime.", error));
 }
 
-
-function getActivityDate(record) {
-    return new Date(record.created_date || record.createdDate || record.created);
-}
-
-function getBusinessDate(date) {
-    const parts = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Ho_Chi_Minh",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    }).formatToParts(date);
-    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
-    return `${values.year}-${values.month}-${values.day}`;
-}
-
-// =====================================================
-// 8. Helpers - Date / Time
-// =====================================================
-
-function getDateRange(selectedDate) {
-
-    const startOfDay =
-        new Date(
-            `${selectedDate}T00:00:00+07:00`
-        );
-
-    const endOfDay =
-        new Date(
-            `${selectedDate}T23:59:59.999+07:00`
-        );
-
-
-    return {
-        startOfDay: startOfDay.toISOString(),
-        endOfDay: endOfDay.toISOString()
-    };
-}
+bindEvents();
+loadProjects();
+await loadAll();
+subscribeRealtime();

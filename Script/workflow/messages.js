@@ -1,5 +1,8 @@
 export const workflowPageMessage = {
-    createSuccess: "Đã tạo task.",
+    createSuccess: "Đã tạo task (kế hoạch, chờ Part Leader duyệt).",
+    acceptSuccess: "Đã duyệt task.",
+    acceptFailed: "Không thể duyệt task.",
+    acceptForbidden: "Chỉ Part Leader mới được duyệt task.",
     updateSuccess: "Đã cập nhật task.",
     deleteSuccess: "Đã xóa task.",
 

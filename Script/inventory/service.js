@@ -50,6 +50,75 @@ export async function reloadInventory() {
     ui.renderInventoryStats(inventoryVariable.inventoryItemFull);
 }
 
+// =====================================================
+// SỬA TRỰC TIẾP TRÊN BẢNG (packing_unit, stock)
+// =====================================================
+
+const INLINE_FIELDS = {
+    packing_unit: {
+        parse: value => ({ ok: true, value: value.trim() }),
+        success: inventoryItemPageMessage.packingUnitUpdated,
+        failed: inventoryItemPageMessage.packingUnitFailed
+    },
+    stock: {
+        // Số nguyên ≥ 0
+        parse: value => {
+            const text = value.trim();
+            const number = Number(text);
+            return text !== "" && Number.isInteger(number) && number >= 0
+                ? { ok: true, value: number }
+                : { ok: false };
+        },
+        success: inventoryItemPageMessage.stockUpdated,
+        failed: inventoryItemPageMessage.stockFailed,
+        invalid: inventoryItemPageMessage.stockInvalid
+    }
+};
+
+/**
+ * Kiểm tra + chuẩn hóa giá trị vừa nhập.
+ * @returns {{ ok: boolean, value?: any }}
+ */
+export function parseInlineValue(field, rawValue) {
+    const config = INLINE_FIELDS[field];
+    return config ? config.parse(String(rawValue ?? "")) : { ok: false };
+}
+
+export function getInlineInvalidMessage(field) {
+    return INLINE_FIELDS[field]?.invalid || inventoryItemPageMessage.updateFailed;
+}
+
+/**
+ * Lưu một field của vật tư (sửa trực tiếp trên bảng).
+ * Đồng bộ lại bản ghi trong state để lọc / phân trang / thống kê không dùng giá trị cũ.
+ * @returns {Promise<{ ok: boolean, value?: any }>} giá trị đã lưu (theo server)
+ */
+export async function updateItemField(itemID, field, value) {
+    const config = INLINE_FIELDS[field];
+    if (!config) return { ok: false };
+
+    try {
+        const updated = await inventoryApi.updateItem(itemID, { [field]: value });
+        const savedValue = updated?.[field] ?? value;
+
+        [inventoryVariable.inventoryItemFull, inventoryVariable.scanItems || []].forEach(list => {
+            const item = list.find(entry => entry.id === itemID);
+            if (item) item[field] = savedValue;
+        });
+
+        if (field === "stock") {
+            ui.renderInventoryStats(inventoryVariable.inventoryItemFull);
+        }
+
+        utils.showSuccess(config.success);
+        return { ok: true, value: savedValue };
+    } catch (error) {
+        console.error(error);
+        utils.showError(config.failed);
+        return { ok: false };
+    }
+}
+
 export async function deleteItem(IDList) {
     try {
         for (const id of IDList) {

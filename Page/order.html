@@ -56,7 +56,15 @@
                         </ul>
                     </details>
                 </li>
-                <li class="active"><a href="order.html"><i class="bi bi-receipt"></i> Đặt hàng</a></li>
+                <li>
+                    <details class="menu-report menu-order" open>
+                        <summary><i class="bi bi-receipt"></i> Đơn hàng <i class="bi bi-chevron-down report-chevron"></i></summary>
+                        <ul class="report-submenu">
+                            <li><a href="order.html" aria-current="page"><i class="bi bi-cart-plus"></i> Tạo đơn hàng</a></li>
+                            <li><a href="order-tracking.html"><i class="bi bi-clipboard-data"></i> Theo dõi đơn hàng</a></li>
+                        </ul>
+                    </details>
+                </li>
                 <li><a href="project.html"><i class="bi bi-kanban"></i> Dự án</a></li>
                 <li>
                     <a href="notification.html">
@@ -95,146 +103,197 @@
             <!-- Header -->
             <header class="topbar">
                 <div>
-                    <h2>Đặt hàng</h2>
-                    <p>
-                        Đặt hàng
-                        <i class="bi bi-chevron-right"></i>
-                        Vật tư
-                    </p>
+                    <p class="breadcrumb-text">Đơn hàng <i class="bi bi-chevron-right"></i> Tạo đơn hàng</p>
+                    <h2 id="orderTitle">Tạo đơn hàng</h2>
+                    <p class="topbar-subtitle">Mỗi tháng một đơn hàng chung, thêm vật tư cho nhiều dự án (mua chung).</p>
                 </div>
-
-                <div class="header-right">
-                    <button class="btn btn-light position-relative">
-                        <i class="bi bi-bell"></i>
-                        <span class="badge bg-danger notification-badge">
-                            3
-                        </span>
-                    </button>
-
-                    <button class="btn btn-outline-danger">
-                        <i class="bi bi-person-circle"></i>
-                        Quản trị
-                    </button>
-                </div>
+                <button type="button" class="btn btn-primary btn-create-order" id="btnAddItem" hidden>
+                    <i class="bi bi-plus-lg"></i> Thêm vật tư
+                </button>
             </header>
 
-            <!-- =======================
-                    TOOLBAR
-            ======================== -->
-            <section class="toolbar">
-                <div class="toolbar-left">
-                    <div class="search-box">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="searchInput" placeholder="Tìm vật tư...">
+            <!-- Đang tải đơn hàng của tháng hiện tại -->
+            <section class="order-empty-state" id="orderLoadingState">
+                <span class="spinner-border text-primary" aria-hidden="true"></span>
+                <p class="mb-0">Đang tải đơn hàng...</p>
+            </section>
+
+            <!-- Tháng hiện tại chưa có đơn hàng -->
+            <section class="order-empty-state" id="noOrderState" hidden>
+                <span class="order-empty-icon"><i class="bi bi-cart-plus" aria-hidden="true"></i></span>
+                <h5 id="noOrderTitle">Chưa có đơn hàng tháng này</h5>
+                <p>Tạo đơn hàng của tháng để bắt đầu thêm vật tư cho các dự án.</p>
+                <button type="button" class="btn btn-primary btn-create-order" id="btnCreateMonthOrder">
+                    <i class="bi bi-plus-lg"></i> <span id="btnCreateMonthOrderText">Tạo đơn hàng</span>
+                </button>
+            </section>
+
+            <div class="order-card" id="orderWorkspace" hidden>
+
+                <!-- =======================
+                        TOOLBAR / FILTER
+                ======================== -->
+                <section class="toolbar">
+                    <div class="toolbar-left">
+                        <div class="toolbar-project">
+                            <i class="bi bi-kanban" aria-hidden="true"></i>
+                            <select id="projectFilter" class="form-select" aria-label="Lọc theo dự án">
+                                <option value="">Tất cả dự án</option>
+                            </select>
+                        </div>
+
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="nameFilter" placeholder="Tên sản phẩm..." aria-label="Lọc theo tên sản phẩm">
+                        </div>
+
+                        <div class="search-box search-box-sm">
+                            <i class="bi bi-upc-scan"></i>
+                            <input type="text" id="codeFilter" placeholder="QCode / XCode..." aria-label="Lọc theo QCode / XCode">
+                        </div>
                     </div>
 
-                    <select id="brandFilter" class="form-select">
-                        <option value="">Tất cả hãng</option>
-                        <option value="Schneider">Schneider</option>
-                        <option value="ABB">ABB</option>
-                        <option value="Siemens">Siemens</option>
-                        <option value="Mitsubishi">Mitsubishi</option>
-                        <option value="LS">LS</option>
-                        <option value="Fuji">Fuji</option>
-                        <option value="Omron">Omron</option>
-                    </select>
+                    <button type="button" class="btn btn-light btn-reset-filter" id="resetFilters">
+                        <i class="bi bi-arrow-counterclockwise"></i> Xóa lọc
+                    </button>
+                </section>
 
-                    <select id="typeFilter" class="form-select">
-                        <option value="">Tất cả loại</option>
-                        <option value="HMI">HMI</option>
-                        <option value="PLC">PLC</option>
-                        <option value="PSU">PSU</option>
-                        <option value="Relay">Relay</option>
-                        <option value="Inverter">Inverter</option>
-                        <option value="Aptomat">Aptomat</option>
-                        <option value="Pilot Light">Pilot Light</option>
-                        <option value="Servo Motor">Servo Motor</option>
-                        <option value="Transformer">Transformer</option>
-                        <option value="Limit Switch">Limit Switch</option>
-                        <option value="Current Transformer">Current Transformer</option>
-                        <option value="Solid State Relay">Solid State Relay</option>
-                        <option value="Surge Protective Device">Surge Protective Device</option>
-                        <option value="Emergency Stop">Emergency Stop</option>
-                        <option value="Communication Module">Communication Module</option>
-                        <option value="Terminal Block">Terminal Block</option>
-                        <option value="Power Meter">Power Meter</option>
-                        <option value="Temperature Controller">Temperature Controller</option>
-                        <option value="Proximity Sensor">Proximity Sensor</option>
-                        <option value="Photoelectric Sensor">Photoelectric Sensor</option>
-                        <option value="MCB">MCB</option>
-                        <option value="MCCB">MCCB</option>
-                    </select>
+                <!-- =======================
+                        TABLE
+                ======================== -->
+                <section class="table-card">
+                    <div class="table-responsive">
+                        <table class="table align-middle order-table">
+                            <thead>
+                                <tr>
+                                    <th class="fixed-col" width="40">
+                                        <input type="checkbox" class="form-check-input" id="checkAll" aria-label="Chọn tất cả dòng">
+                                    </th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Tháng</th>
+                                    <th>QCode/XCode</th>
+                                    <th>Mô tả</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Tổng</th>
+                                    <th>Người yêu cầu</th>
+                                    <th>Ngày yêu cầu</th>
+                                    <th>Dự án</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderTable">
+                                <!-- Render by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-                    <select id="projectFilter" class="form-select" aria-label="Chọn dự án">
-                        <option value="">Chọn dự án</option>
-                    </select>
-
-
+                <div class="table-footer">
+                    <span id="pageInfo" class="text-muted small"></span>
+                    <span class="order-grand-total">Tổng tiền (theo bộ lọc): <strong id="grandTotal">0</strong></span>
+                    <nav aria-label="Phân trang đơn hàng">
+                        <ul class="pagination pagination-sm mb-0" id="pagination">
+                        </ul>
+                    </nav>
                 </div>
 
-            </section>
-
-            <!-- =======================
-                    TABLE
-            ======================== -->
-            <section class="table-card">
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
-                            <tr>
-                                <!-- Fixed -->
-                                <th class="fixed-col" width="40">
-                                    <input type="checkbox" id="checkAll" aria-label="Chọn tất cả dòng">
-                                </th>
-                                <th>Tên vật tư</th>
-                                <th>Model</th>
-                                <th>XCode/QCode</th>
-                                <th>Tồn kho</th>
-                                <th>SL đặt</th>
-                                <th>Đơn giá</th>
-                                <th>Ngày yêu cầu</th>
-                                <th>Người yêu cầu</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="orderTable">
-                            <!-- Render by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <div class="d-flex justify-content-between align-items-center p-2 border-top">
-                <span id="pageInfo" class="text-muted small"></span>
-                <nav>
-                    <ul class="pagination pagination-sm mb-0" id="pagination">
-                    </ul>
-                </nav>
             </div>
 
         </main>
 
     </div>
 
-    <div id="selectionBar" class="selection-bar d-flex justify-content-center gap-3"
-        aria-label="Thao tác với dòng đã chọn">
+    <!-- Hiện khi có dòng được chọn, căn giữa vùng nội dung (không tính sidebar) -->
+    <div id="selectionBar" class="selection-bar" inert>
+        <div class="selection-bar-inner" role="region" aria-label="Đơn hàng đã chọn">
+            <span class="selection-count">
+                <b id="selectionCount">0</b> đã chọn
+            </span>
+            <button type="button" id="btnClearSelection" class="btn btn-selection-clear">
+                Bỏ chọn
+            </button>
+            <button type="button" id="saveSelected" class="btn btn-selection-action btn-save" disabled>
+                <i class="bi bi-check-lg"></i> Lưu
+            </button>
+            <button type="button" id="exportExcelSelected" class="btn btn-selection-action btn-excel" disabled>
+                <i class="bi bi-file-earmark-spreadsheet"></i> Xuất Excel
+            </button>
+            <button type="button" id="deleteSelected" class="btn btn-selection-action btn-delete" disabled>
+                <i class="bi bi-trash"></i> Xóa
+            </button>
+        </div>
+    </div>
 
-        <button id="saveSelected" class="btn btn-primary" disabled>
-            <i class="bi bi-download me-1"></i>
-            Lưu
-        </button>
+    <!-- =======================
+            MODAL TẠO ĐƠN HÀNG
+    ======================== -->
+    <div class="modal fade" id="createOrderModal" tabindex="-1" aria-labelledby="createOrderTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <form class="modal-content" id="createOrderForm" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createOrderTitle">Thêm vật tư vào đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
 
-        <button id="exportExcelSelected" class="btn btn-success" disabled>
-            <i class="bi bi-file-earmark-spreadsheet me-1"></i>
-            Xuất Excel
-        </button>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="createItem">Sản phẩm (từ kho vật tư)</label>
+                            <input class="form-control" id="createItem" list="inventoryOptions"
+                                placeholder="Gõ tên hoặc QCode/XCode để tìm..." autocomplete="off" required>
+                            <datalist id="inventoryOptions"></datalist>
+                            <div class="form-text" id="createItemInfo">Chọn một vật tư có sẵn trong kho.</div>
+                        </div>
 
-        <button id="deleteSelected" class="btn btn-danger" disabled>
-            <i class="bi bi-trash me-1"></i>
-            Xóa
-        </button>
+                        <div class="col-md-6">
+                            <label class="form-label" for="createProject">Dự án</label>
+                            <select class="form-select" id="createProject" required>
+                                <option value="">Chọn dự án</option>
+                            </select>
+                        </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label">Tháng (theo đơn hàng)</label>
+                            <div class="form-control-plaintext fw-semibold" id="createMonthText">-</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="createQuantity">Số lượng</label>
+                            <input type="number" class="form-control" id="createQuantity" min="1" step="1" value="1" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="createUnitPrice">Đơn giá</label>
+                            <input type="number" class="form-control" id="createUnitPrice" min="0" step="0.01" value="0" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Tổng</label>
+                            <div class="form-control-plaintext fw-bold" id="createTotal">0</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="createRequester">Người yêu cầu</label>
+                            <select class="form-select" id="createRequester" required>
+                                <option value="">Chọn người yêu cầu</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="createRequestDate">Ngày yêu cầu</label>
+                            <input type="date" class="form-control" id="createRequestDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary" id="createOrderSubmit">
+                        <i class="bi bi-check-lg"></i> Thêm vào đơn
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
 </body>

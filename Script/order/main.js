@@ -1,77 +1,68 @@
+// =====================================================
+// TRANG TẠO ĐƠN HÀNG (order.html)
+// Mỗi tháng 1 đơn hàng (Orders) chung cho mọi dự án.
+// Vào trang → tìm đơn của tháng hiện tại:
+//   - chưa có → hiện nút "Tạo đơn hàng tháng N"
+//   - đã có   → bảng vật tư trong đơn (Order_Items): thêm / sửa / xóa / xuất Excel
+// =====================================================
 import * as service from "./service.js";
 import * as ui from "./ui.js";
 import * as event from "./event.js";
 import * as utils from "../utils/utils.js";
 
-import { orderDetailPageData } from "./state.js";
+import { orderPageState } from "./state.js";
 import { orderPageMessage } from "./message.js";
 
-let projectLoadVersion = 0;
+const currentMonth = service.getCurrentMonth();
 
 async function init() {
-    event.initOrderItemEvents();
-    bindPageEvents();
-    ui.renderOrderItemTable([]);
+    orderPageState.editable = true;
+    event.initEvents({ onCreateMonthOrder: handleCreateMonthOrder });
+    ui.renderMonthOrderState("loading", currentMonth);
 
     try {
-        await Promise.all([
-            service.loadUserList(),
-            service.loadProjectList()
+        const [, monthOrder] = await Promise.all([
+            service.loadReferenceData(),
+            service.findMonthOrder(currentMonth)
         ]);
+        ui.renderFilterOptions();
+        await openMonthOrder(monthOrder);
     } catch (error) {
         console.error("Failed to initialize the order page.", error);
         utils.showError(orderPageMessage.loadDataFailed);
+        ui.renderMonthOrderState("empty", currentMonth);
     }
 }
 
-function bindPageEvents() {
-    const projectFilter = document.getElementById("projectFilter");
-    projectFilter?.addEventListener("change", loadSelectedProjectItems);
-
-    document.getElementById("checkAll")?.addEventListener("change", event => {
-        ui.getRowCheckboxes().forEach(checkbox => {
-            checkbox.checked = event.currentTarget.checked;
-        });
-        ui.getRowCheckboxes()[0]?.dispatchEvent(new Event("change", { bubbles: true }));
-        if (ui.getRowCheckboxes().length === 0) {
-            document.getElementById("selectionBar")?.classList.remove("show");
-        }
-    });
-
-    document.getElementById("pagination")?.addEventListener("click", event => {
-        const button = event.target.closest("[data-page]");
-        if (!button) return;
-
-        orderDetailPageData.currentPage = Number(button.dataset.page);
-        ui.renderOrderItemTable(orderDetailPageData.orderItemFilter);
-    });
-}
-
-async function loadSelectedProjectItems() {
-    const projectID = document.getElementById("projectFilter")?.value || "";
-    const loadVersion = ++projectLoadVersion;
-
-    orderDetailPageData.orderItemList = [];
-    orderDetailPageData.orderItemFilter = [];
-    orderDetailPageData.currentPage = 1;
-
-    if (!projectID) {
-        ui.renderOrderItemTable([]);
+/**
+ * Hiện đơn hàng của tháng (hoặc màn hình "chưa có đơn" nếu monthOrder = null).
+ */
+async function openMonthOrder(monthOrder) {
+    orderPageState.monthOrder = monthOrder;
+    if (!monthOrder) {
+        ui.renderMonthOrderState("empty", currentMonth);
         return;
     }
 
-    ui.renderOrderItemTable([]);
+    ui.renderMonthOrderState("ready", Number(monthOrder.month) || currentMonth);
+    ui.renderLoading();
+    await service.loadItems(monthOrder.id);
+    service.filterItems();
+    ui.renderTable();
+}
 
+async function handleCreateMonthOrder() {
+    const button = document.getElementById("btnCreateMonthOrder");
+    button.disabled = true;
     try {
-        const items = await service.loadOrderItemList(projectID);
-        if (loadVersion !== projectLoadVersion) return;
-
-        orderDetailPageData.orderItemList = items;
-        ui.applyFilter();
+        const monthOrder = await service.createMonthOrder(currentMonth);
+        utils.showSuccess(orderPageMessage.createOrderSuccess);
+        await openMonthOrder(monthOrder);
     } catch (error) {
-        if (loadVersion !== projectLoadVersion) return;
-        console.error("Không tải được danh sách đặt hàng.", error);
-        utils.showError(orderPageMessage.loadOrderFailed);
+        console.error("Failed to create month order.", error);
+        utils.showError(orderPageMessage.createOrderFailed);
+    } finally {
+        button.disabled = false;
     }
 }
 

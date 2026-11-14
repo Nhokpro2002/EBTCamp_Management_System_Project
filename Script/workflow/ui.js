@@ -65,6 +65,8 @@ export function renderTodayLine() {
 export function getDelayDays(task) {
     if (
         task.type === gantt.config.types.project ||
+        // Task Plan (chưa duyệt) chưa hoạt động → chưa tính trễ
+        service.isPlanTask(task) ||
         Number(task.progress || 0) >= 1 ||
         !task.end_date
     ) {
@@ -383,6 +385,16 @@ export function renderProjectDates(startDate, endDate) {
 
 export function renderTotalTaskCount(count) {
     document.getElementById("total-task-count").textContent = count;
+}
+
+/**
+ * Số task Plan đang chờ Part Leader duyệt (ẩn khi = 0).
+ */
+export function renderPlanTaskCount(count) {
+    const wrapper = document.getElementById("plan-task-count");
+    if (!wrapper) return;
+    document.getElementById("plan-task-count-value").textContent = count;
+    wrapper.hidden = count === 0;
 }
 
 /**

@@ -1,72 +1,56 @@
+// =====================================================
+// TRANG THÔNG BÁO: đọc / đánh dấu đã đọc collection Notifications
+// (API Rules: mỗi user chỉ thấy và sửa thông báo có recipient = chính mình)
+// =====================================================
 import * as api from "../services/generic.api.js";
-import { getUserRoles } from "../services/issue-roles.js";
+import { COLLECTION_NOTIFICATIONS } from "../services/notification.api.js";
 
-// Quy tắc type issue → position nằm ở Script/services/issue-roles.js (dùng chung với Workflow)
-export { getIssueTypesForRoles, isIssueForRoles } from "../services/issue-roles.js";
+export { NOTIFICATION_CATEGORY, NOTIFICATION_TYPE } from "../services/notification.api.js";
 
-// =====================================================
-// COLLECTIONS
-// =====================================================
 const COLLECTION_PROJECTS = "Projects";
 
-/**
- * Role (position) của user đang đăng nhập, lấy từ localStorage (viết thường).
- * Issue chỉ hiện trong Notification của user có role tương ứng.
- * @returns {string[]}
- */
-export function getCurrentUserRoles() {
+// Báo cho badge.js (ô số trên sidebar) đếm lại sau khi đánh dấu đã đọc
+export const NOTIFICATIONS_CHANGED_EVENT = "ebt:notifications-changed";
+
+export function getCurrentUserID() {
     try {
-        return getUserRoles(JSON.parse(localStorage.getItem("user")));
+        return JSON.parse(sessionStorage.getItem("user"))?.id || "";
     } catch {
-        return [];
+        return "";
     }
 }
 
-export async function loadProjects() {
-    const projectSelect = document.getElementById("projectSelect");
+/**
+ * Toàn bộ thông báo của user đang đăng nhập, mới nhất trước.
+ */
+export function loadNotifications() {
+    const userID = getCurrentUserID();
+    if (!userID) return Promise.resolve([]);
 
-    if (!projectSelect) return;
+    return api.getAllRecords(COLLECTION_NOTIFICATIONS, {
+        filter: `recipient = ${api.quoteFilterValue(userID)}`,
+        expand: "actor,project",
+        sort: "-created"
+    });
+}
 
-    try {
-        const firstPage = await api.loadInventoryItemEachPage(
-            COLLECTION_PROJECTS,
-            1,
-            200
-        );
-        const remainingPages = await Promise.all(
-            Array.from(
-                { length: Math.max(0, firstPage.totalPages - 1) },
-                (_, index) => api.loadInventoryItemEachPage(
-                    COLLECTION_PROJECTS,
-                    index + 2,
-                    200
-                )
-            )
-        );
-        const projects = [
-            ...firstPage.items,
-            ...remainingPages.flatMap(page => page.items)
-        ];
+export function loadProjects() {
+    return api.getAllRecords(COLLECTION_PROJECTS, { sort: "name" });
+}
 
-        projectSelect.innerHTML = `
-            <option value="" selected>Tất cả dự án</option>
-        `;
+export async function markAsRead(id) {
+    const updated = await api.updateRecord(COLLECTION_NOTIFICATIONS, id, { is_read: true });
+    window.dispatchEvent(new CustomEvent(NOTIFICATIONS_CHANGED_EVENT));
+    return updated;
+}
 
-        projects.forEach(project => {
-            const option = document.createElement("option");
-
-            option.value = project.id;
-            option.textContent = project.name;
-
-            projectSelect.appendChild(option);
-        });
-
-    } catch (error) {
-        console.error("Failed to load projects:", error);
-        projectSelect.replaceChildren(
-            new Option("Không tải được danh sách dự án", "")
-        );
-        projectSelect.disabled = true;
-        throw error;
-    }
+/**
+ * @returns {Promise<string[]>} id các thông báo đánh dấu thành công
+ */
+export async function markAllAsRead(ids) {
+    const results = await Promise.allSettled(
+        ids.map(id => api.updateRecord(COLLECTION_NOTIFICATIONS, id, { is_read: true }))
+    );
+    window.dispatchEvent(new CustomEvent(NOTIFICATIONS_CHANGED_EVENT));
+    return ids.filter((_, index) => results[index].status === "fulfilled");
 }

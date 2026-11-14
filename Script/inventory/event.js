@@ -47,6 +47,63 @@ export function initEvent() {
 
     initSelectionEvents();
     initScanFilterEvents();
+    initPackingUnitEvents();
+}
+
+// =====================================================
+// SỬA PACKING UNIT TRỰC TIẾP TRÊN BẢNG
+// Enter / bấm ra ngoài → lưu (nếu có thay đổi), Esc → trả lại giá trị cũ
+// =====================================================
+function initPackingUnitEvents() {
+    const tbody = document.getElementById("inventoryTable");
+
+    tbody.addEventListener("keydown", event => {
+        const input = event.target.closest(".inline-edit-input");
+        if (!input) return;
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+            input.blur();
+        } else if (event.key === "Escape") {
+            input.value = input.dataset.original;
+            input.blur();
+        }
+    });
+
+    // focusout nổi bọt lên tbody (blur thì không)
+    tbody.addEventListener("focusout", async event => {
+        const input = event.target.closest(".inline-edit-input");
+        if (!input || input.disabled) return;
+
+        const field = input.dataset.field;
+        const parsed = service.parseInlineValue(field, input.value);
+        if (!parsed.ok) {
+            utils.showError(service.getInlineInvalidMessage(field));
+            input.value = input.dataset.original;
+            return;
+        }
+
+        input.value = parsed.value;
+        if (String(parsed.value) === input.dataset.original) return;
+
+        const itemID = input.closest("tr")?.dataset.itemId;
+        if (!itemID) return;
+
+        input.disabled = true;
+        input.classList.add("is-saving");
+
+        const result = await service.updateItemField(itemID, field, parsed.value);
+
+        input.disabled = false;
+        input.classList.remove("is-saving");
+        if (result.ok) {
+            input.value = result.value;
+            input.dataset.original = String(result.value);
+            if (field === "stock") ui.refreshStockCell(input, result.value);
+        } else {
+            input.value = input.dataset.original;
+        }
+    });
 }
 
 // =====================================================
@@ -134,7 +191,7 @@ function initSelectionEvents() {
 
     // Bấm vào bất kỳ chỗ nào trên dòng cũng chọn / bỏ chọn dòng đó
     tbody.addEventListener("click", event => {
-        if (event.target.closest("input, button, a, select, textarea")) return;
+        if (event.target.closest("input, button, a, select, textarea, label")) return;
 
         const checkbox = event.target.closest("tr")?.querySelector(".row-checkbox");
         if (!checkbox) return;

@@ -817,6 +817,105 @@ body {
 }
 
 
+/* =========================================================
+   TASK PLAN (chờ Part Leader duyệt)
+========================================================= */
+
+/* Tên task + nút/nhãn duyệt trên cùng một dòng */
+.task-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.task-name-row .task-name-cell {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.task-plan-badge,
+.task-accept-button {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.task-plan-badge {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.task-accept-button {
+    border: 1px solid #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+.task-accept-button:hover,
+.task-accept-button:focus-visible {
+    background: #16a34a;
+    color: #fff;
+}
+
+.task-accept-button:disabled {
+    opacity: .6;
+    cursor: progress;
+}
+
+/* Dòng task Plan ở lưới bên trái: nền vàng nhạt, chữ nghiêng */
+.gantt_grid_data .gantt_row.task-plan-row,
+.gantt_grid_data .gantt_row.task-plan-row.odd {
+    background: #fffbeb;
+}
+
+.gantt_grid_data .gantt_row.task-plan-row .task-name-cell {
+    font-style: italic;
+    color: #78716c;
+}
+
+/* Thanh task Plan: viền nét đứt, mờ hơn task đã duyệt */
+.gantt_task_line.task-plan {
+    opacity: .6;
+    border: 1.5px dashed #b45309 !important;
+}
+
+.gantt-tip-plan {
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 700;
+}
+
+/* Số task chờ duyệt dưới "Tổng số task" */
+.plan-task-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    color: #b45309;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.plan-task-count[hidden] {
+    display: none;
+}
+
+
 .gantt_tree_icon {
     color: #2563eb;
 }

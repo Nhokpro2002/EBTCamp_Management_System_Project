@@ -1,6 +1,7 @@
 import * as api from "../services/generic.api.js";
 import { URL_LOCAL } from "../config.js";
-import { getUsersForIssueType } from "../services/issue-roles.js";
+import { getUsersForIssueType, getUserRoles } from "../services/issue-roles.js";
+import * as notification from "../services/notification.api.js";
 
 import { workflowData, projectData, issueData } from "./state.js";
 
@@ -16,6 +17,76 @@ const COLLECTION_ISSUES = "Issues";
 const COLLECTION_TASK_DAILY_REPORTS = "TaskDailyReports";
 const COLLECTION_REPORTS = "Reports";
 const COLLECTION_USERS = "Users";
+
+// =====================================================
+// TRẠNG THÁI DUYỆT TASK (field status của Tasks)
+//   Plan     = cấp dưới vừa lên kế hoạch, chờ Part Leader duyệt → chưa hoạt động
+//   Accepted = đã được duyệt → tính tiến độ, trễ hạn, được báo cáo ngày
+// Task cũ chưa có status (tạo trước khi có tính năng này) coi như Accepted.
+// =====================================================
+export const TASK_STATUS = {
+    PLAN: "Plan",
+    ACCEPTED: "Accepted"
+};
+
+// Role được duyệt task (tên đúng như trong field position của Users)
+const TASK_APPROVER_ROLE = "part leader";
+
+export function isPlanTask(task) {
+    return String(task?.status || "").trim().toLowerCase() === TASK_STATUS.PLAN.toLowerCase();
+}
+
+/**
+ * Task đã được duyệt (đang hoạt động). Task cũ không có status cũng tính là đã duyệt.
+ */
+export function isActiveTask(task) {
+    return !isPlanTask(task);
+}
+
+function getCurrentUser() {
+    try {
+        return JSON.parse(sessionStorage.getItem("user"));
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * User đang đăng nhập có quyền duyệt task không (Part Leader).
+ */
+export function canAcceptTask(user = getCurrentUser()) {
+    return getUserRoles(user).includes(TASK_APPROVER_ROLE);
+}
+
+/**
+ * Part Leader duyệt task: Plan → Accepted.
+ * @returns {Promise<Object>} task sau khi cập nhật (đã ghi vào state)
+ */
+export async function acceptTask(taskID) {
+    if (!canAcceptTask()) {
+        throw new Error("Chỉ Part Leader mới được duyệt task.");
+    }
+
+    const updated = await api.updateRecord(COLLECTION_TASKS, taskID, {
+        status: TASK_STATUS.ACCEPTED
+    });
+
+    const task = findTask(taskID);
+    if (task) {
+        task.status = updated?.status ?? TASK_STATUS.ACCEPTED;
+    }
+
+    // Báo cho người lên kế hoạch (không chờ, lỗi gửi không ảnh hưởng việc duyệt)
+    notification.notifyTaskAccepted(
+        { ...(task || {}), ...(updated || {}) },
+        { projectID: workflowData.projectID, projectName: projectData.projectName }
+    );
+    return task;
+}
+
+export function getPlanTaskCount() {
+    return workflowData.tasks.filter(isPlanTask).length;
+}
 
 // Thứ tự hiển thị stage
 const STAGE_ORDER = {
@@ -179,6 +250,9 @@ export async function assignIssueHandler(issueID, handlerID, deadline) {
         deadline
     });
     if (issue) Object.assign(issue, updated);
+
+    // Báo cho người được giao (không chờ)
+    notification.notifyIssueAssigned(updated, handlerID);
     return updated;
 }
 
@@ -200,19 +274,31 @@ export function isValidTaskInput({ name, startDate, duration }) {
  * Tạo task mới trong stage đang chọn.
  * @returns {Promise<Object>} Task vừa tạo.
  */
-export function createTask({ name, startDate, duration, stageName }) {
-    const user = JSON.parse(localStorage.getItem("user"));
+export async function createTask({ name, startDate, duration, stageName }) {
+    const user = JSON.parse(sessionStorage.getItem("user"));
 
-    return api.createRecord(COLLECTION_TASKS, {
+    const task = await api.createRecord(COLLECTION_TASKS, {
         name,
         start_date: startDate,
         duration,
         stage: workflowData.currentStageID,
         css: stageName?.toLowerCase(),
         progress: 0,
+        // Task mới luôn là kế hoạch, chờ Part Leader duyệt
+        status: TASK_STATUS.PLAN,
         createdBy: user?.employee_name ?? "",
+        // Relation → Users: để báo lại cho người tạo khi task được duyệt
+        created_by: user?.id ?? "",
         project_name: projectData.projectName
     });
+
+    // Báo cho Part Leader duyệt (không chờ)
+    notification.notifyTaskPlanSubmitted(task, {
+        projectID: workflowData.projectID,
+        projectName: projectData.projectName,
+        stageName
+    });
+    return task;
 }
 
 /**
@@ -304,41 +390,18 @@ export function toGanttTask(task) {
         start_date: task.start_date,
         duration: task.duration ?? 0,
         progress: task.progress ?? 0,
-        css: task.css
+        css: task.css,
+        status: task.status || ""
     };
 }
 
 /**
- * Thêm task vừa tạo vào state + dữ liệu gantt,
- * nối link từ task cuối cùng trong cùng stage.
+ * Thêm task vừa tạo vào state rồi dựng lại toàn bộ dữ liệu gantt từ state
+ * (cùng một cách với lúc tải trang: links, nhóm task theo stage đều được tính lại).
  */
 export function addTaskToState(task) {
     workflowData.tasks.push(task);
-    projectData.data.push(toGanttTask(task));
-
-    if (!workflowData.taskGroups[task.stage]) {
-        workflowData.taskGroups[task.stage] = [];
-    }
-
-    const stageTasks = workflowData.taskGroups[task.stage];
-
-    // lấy task cuối cùng trong stage (trước khi push)
-    const lastTaskInStage = stageTasks.length
-        ? stageTasks[stageTasks.length - 1]
-        : null;
-
-    stageTasks.push(task);
-
-    if (lastTaskInStage) {
-        projectData.links.push({
-            id: projectData.links.length
-                ? Math.max(...projectData.links.map(l => l.id)) + 1
-                : 1,
-            source: lastTaskInStage.id,
-            target: task.id,
-            type: "0"
-        });
-    }
+    mappingData();
 }
 
 // =====================================================
@@ -415,9 +478,12 @@ export function getStageProgressList() {
     return workflowData.stages.map(stage => {
         const key = String(stage.css || stage.name || "").trim().toLowerCase();
 
+        // Task Plan (chưa duyệt) chưa tính vào tiến độ
         const stageTasks = workflowData.tasks.filter(task =>
-            (stage.id != null && String(task.stage) === String(stage.id)) ||
-            (key && String(task.css || "").trim().toLowerCase() === key)
+            isActiveTask(task) && (
+                (stage.id != null && String(task.stage) === String(stage.id)) ||
+                (key && String(task.css || "").trim().toLowerCase() === key)
+            )
         );
 
         const progress = stageTasks.length
@@ -545,11 +611,18 @@ export function findIssue(id) {
  * @returns {Promise<Object>} Issue sau khi update.
  */
 export async function updateIssueSolution(id, solution) {
+    const issue = findIssue(id);
+    const hadSolution = Boolean(String(issue?.solution ?? "").trim());
+
     const updated = await api.updateRecord(COLLECTION_ISSUES, id, { solution });
 
-    const issue = findIssue(id);
     if (issue) {
         Object.assign(issue, updated);
+    }
+
+    // Lần đầu có giải pháp → báo cho người báo issue (sửa lại giải pháp thì không báo nữa)
+    if (!hadSolution && String(solution ?? "").trim()) {
+        notification.notifyIssueResolved(updated);
     }
     return updated;
 }
@@ -605,6 +678,8 @@ export function getOverdueTaskIssues() {
     const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
     return workflowData.tasks.flatMap(task => {
+        // Task Plan (chưa duyệt) chưa hoạt động → chưa tính trễ hạn
+        if (isPlanTask(task)) return [];
         if ((Number(task.progress) || 0) >= 1) return [];
 
         const start = parseDay(task.start_date);

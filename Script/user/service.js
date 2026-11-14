@@ -44,7 +44,7 @@ export const PASSWORD_RULES = [
 // USER (localStorage)
 // =====================================================
 export function readStoredUser() {
-    const storedValue = localStorage.getItem("user");
+    const storedValue = sessionStorage.getItem("user");
     if (!storedValue) return null;
 
     try {
@@ -61,7 +61,7 @@ export function readStoredUser() {
  */
 function saveUser(updatedRecord) {
     state.user = { ...state.user, ...updatedRecord };
-    localStorage.setItem("user", JSON.stringify(state.user));
+    sessionStorage.setItem("user", JSON.stringify(state.user));
     return state.user;
 }
 

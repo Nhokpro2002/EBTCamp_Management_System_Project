@@ -11,7 +11,7 @@ const tbody = document.getElementById("inventoryTable");
 
 export function changeIconAvatar() {
     const dropdownAvatar = document.querySelector('.dropdown img');
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(sessionStorage.getItem("user"));
     if (!dropdownAvatar || !userData) return;
     dropdownAvatar.src =
         `${URL_LOCAL}/api/files/${COLLECTION_USERS}/${userData.id}/${userData.avatar}?t=${Date.now()}`;
@@ -19,7 +19,7 @@ export function changeIconAvatar() {
 
 export function changeTopbarText() {
     const topbarText = document.querySelector('.topbar .text-muted');
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(sessionStorage.getItem("user"));
     if (!topbarText || !userData) return;
     topbarText.textContent = `Chào mừng trở lại, ${userData.employee_id} 👋`;
 }
@@ -58,13 +58,36 @@ function renderInventoryRow(item) {
                     : '<span class="cell-muted">-</span>'}
             </td>
             <td>${item.code ? `<span class="code-chip">${escapeHtml(item.code)}</span>` : '<span class="cell-muted">-</span>'}</td>
-            <td>${item.brand ? `<span class="brand-chip">${escapeHtml(item.brand)}</span>` : '<span class="cell-muted">-</span>'}</td>
+            <td class="col-packing-unit">
+                <input type="text" class="form-control form-control-sm packing-unit-input inline-edit-input" data-field="packing_unit"
+                    value="${escapeHtml(item.packing_unit ?? "")}"
+                    data-original="${escapeHtml(item.packing_unit ?? "")}"
+                    placeholder="-" maxlength="100"
+                    aria-label="Packing unit của ${name}"
+                    title="Sửa rồi nhấn Enter hoặc bấm ra ngoài để lưu, Esc để hủy">
+            </td>
             <td>
-                <span class="stock-badge ${status.className}" title="${status.label}">
-                    <span class="stock-dot" aria-hidden="true"></span>${stock}
-                </span>
+                <label class="stock-badge stock-edit ${status.className}" title="${status.label} — sửa rồi nhấn Enter hoặc bấm ra ngoài để lưu, Esc để hủy">
+                    <span class="stock-dot" aria-hidden="true"></span>
+                    <input type="number" class="stock-input inline-edit-input" data-field="stock"
+                        value="${stock}" data-original="${stock}" min="0" step="1" inputmode="numeric"
+                        aria-label="Stock của ${name}">
+                </label>
             </td>
         </tr>`;
+}
+
+/**
+ * Sau khi sửa stock: đổi màu / nhãn mức tồn của ô và cập nhật các ô thống kê.
+ */
+export function refreshStockCell(input, stock) {
+    const badge = input.closest(".stock-badge");
+    if (!badge) return;
+
+    const status = getStockStatus(stock);
+    badge.classList.remove("is-out", "is-low", "is-medium", "is-high");
+    badge.classList.add(status.className);
+    badge.title = `${status.label} — sửa rồi nhấn Enter hoặc bấm ra ngoài để lưu, Esc để hủy`;
 }
 
 function renderEmptyRow() {

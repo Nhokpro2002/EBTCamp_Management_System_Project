@@ -1,5 +1,6 @@
 import * as service from "./service.js";
 import * as ui from "./ui.js";
+import * as notification from "../services/notification.api.js";
 import { dailyReportState as state } from "./state.js";
 
 const projectSelect = ui.getProjectSelect();
@@ -115,12 +116,14 @@ taskReportList.addEventListener("click", event => {
     const workerOption = event.target.closest("[data-worker-option]");
     const workerRemove = event.target.closest("[data-worker-remove]");
     if (workerOption || workerRemove) {
+        // Lấy dòng TRƯỚC khi chọn/bỏ: ô người làm được vẽ lại nên nút vừa bấm
+        // bị gỡ khỏi trang, closest() sau đó sẽ trả về null
+        const row = event.target.closest("tr[data-task-id]");
         if (workerOption) {
             ui.selectWorker(workerOption);
         } else {
             ui.removeWorker(workerRemove);
         }
-        const row = event.target.closest("tr[data-task-id]");
         updateEntryFromRow(row);
         hasUnsavedChanges = true;
         updateSaveButton();
@@ -172,13 +175,6 @@ taskReportList.addEventListener("change", event => {
     hasUnsavedChanges = true;
     if (event.target.matches(".task-status-select")) {
         ui.updateStatusStyle(event.target);
-        if (event.target.value !== "Done") {
-            const upload = row.querySelector(".task-evidence-upload");
-            if (upload) {
-                upload.value = "";
-            }
-            state.taskReports[row.dataset.taskId].files = [];
-        }
     }
     ui.updateEvidenceRequirement(row, state.taskReports[row.dataset.taskId]);
     updateSaveButton();
@@ -347,6 +343,9 @@ function addTaskToReport(taskID) {
 }
 
 function updateEntryFromRow(row) {
+    if (!row) {
+        return;
+    }
     const entry = state.taskReports[row.dataset.taskId];
     if (!entry) {
         return;
@@ -508,6 +507,8 @@ async function createIssue(event) {
             reporter,
             createdDate: new Date().toISOString()
         });
+        // Báo cho người có chức vụ phụ trách loại issue (không chờ)
+        notification.notifyIssueCreated({ ...issue, type: issue.type || type, related_task: issue.related_task || task.name });
         // Giữ thông tin task để issue luôn hiện ở cột Issues của đúng task
         state.issues.unshift({
             ...issue,
@@ -597,13 +598,9 @@ function updateSaveButton() {
             return false;
         }
 
-        // Chỉ task Done mới bắt buộc có ảnh (ảnh mới chọn hoặc ảnh đã lưu trước đó)
-        if (entry.status === "Done") {
-            const hasSavedEvidence = service.getEvidenceFiles(entry.report).length > 0;
-            return files.length > 0 || hasSavedEvidence;
-        }
-
-        return true;
+        // Mọi task trong báo cáo ngày đều bắt buộc có ảnh (ảnh mới chọn hoặc ảnh đã lưu trước đó)
+        const hasSavedEvidence = service.getEvidenceFiles(entry.report).length > 0;
+        return files.length > 0 || hasSavedEvidence;
     });
 
     ui.setSaveEnabled(valid && !state.isSaving);
@@ -635,7 +632,7 @@ function normalizeText(value) {
 
 function readCurrentUser() {
     try {
-        const storedUser = localStorage.getItem("user");
+        const storedUser = sessionStorage.getItem("user");
         return storedUser ? JSON.parse(storedUser) : null;
     } catch (error) {
         console.error("Could not read signed-in user:", error);
